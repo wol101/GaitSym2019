@@ -1,0 +1,11 @@
+--style=ansi
+--indent=spaces=4
+--align-pointer=name
+--align-reference=name
+--convert-tabs
+--attach-namespaces
+--max-code-length=140
+--max-instatement-indent=40
+--pad-header
+--pad-oper
+--fill-empty-lines

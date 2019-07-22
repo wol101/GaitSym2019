@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogOutputSelect</class>
+ <widget class="QDialog" name="DialogOutputSelect">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>970</width>
+    <height>705</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Output Control</string>
+  </property>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

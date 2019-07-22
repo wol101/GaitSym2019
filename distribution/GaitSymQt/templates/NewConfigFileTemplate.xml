@@ -1,0 +1,7 @@
+<GAITSYMODE>
+<STATE SimulationTime="0" />
+  <IOCONTROL OldStyleInputs="false" SanityCheckAxis="Y" SanityCheckLeft="" SanityCheckRight="" />
+  <GLOBAL AllowInternalCollisions="false" BMR="0" CFM="1e-10" ContactMaxCorrectingVel="100" ContactSurfaceLayer="0.001" DistanceTravelledBodyID="Body0" ERP="0.2" FitnessType="DistanceTravelled" GravityVector="0.0 0.0 -9.81" IntegrationStepSize="1e-4" MechanicalEnergyLimit="0" MetabolicEnergyLimit="0" TimeLimit="3" />
+  <ENVIRONMENT Plane="0 0 1 0" />
+BODY_BOOKMARK
+</GAITSYMODE>
