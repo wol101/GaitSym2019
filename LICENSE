@@ -1,4 +1,6 @@
-                    GNU GENERAL PUBLIC LICENSE
+Note. This license covers the code in the distribution/src and distribution/GaitSymQt folders. The other code is included as a convenience to allow easy compilation and is covered by the open source licenses that the original authors used.
+
+                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
