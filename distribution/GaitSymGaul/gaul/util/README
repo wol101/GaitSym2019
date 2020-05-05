@@ -1,0 +1,42 @@
+gaul-devel/util/README
+======================
+
+These files are only here temporarially, in order to allow GAUL to compile and
+run.  They are basically included here to avoid unnecessary dependancies at
+this stage of the development.  Further development of these files should not
+occur in this CVS archive.  
+
+For information, these files are required for these reasons:
+
+gaul_util.h             Specification of general definitins and macros.
+
+avltree.{c,h}           Adel'son-Velskii and Landis tree implementation.
+
+compatibility.{c,h}     Miscellaneous functions for portability.
+
+dstr_util.{c,h}         Dynamical string implementation.
+
+linkedlist.{c,h}        Single- and double-linked list implementation.
+
+log_util.{c,h}          Portable, multi-processor aware, logging functions.
+
+memory_chunks.{c,h}     Efficient memory allocation with run-time sanity
+memory_util.{c,h}       checking, profiling and debugging facilities. 
+
+nn_util.{c,h}		Efficient Neural Network implementation with a
+nn_main.{c,h}		small and simple NN similation utility.
+
+mpi_util.{c,h}          Portable and generalised message passing wrappers.
+
+random_util.{c,h}       Portable and comprehensive pseudo-random number
+                        functions.
+
+str_util.{c,h}		String handling and manipulation functions.
+str_match.{c,h}
+
+table.{c,h}             Indexed table implementation.
+
+timer_util.{c,h}        General timers.
+
+Stewart Adcock, 09 July 2003.
+

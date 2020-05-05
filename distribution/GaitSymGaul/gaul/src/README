@@ -1,0 +1,46 @@
+gaul-devel/src/README
+=====================
+
+This directory contains the core GAUL source-code.  The files are:
+
+gaul.h                 The public header file to be included in source code
+                       which will link against the GAUL library.
+
+ga_core.{c,h}          Population and entity handling routines.
+
+ga_bitstring.{c,h}     Low-level bitstring handling functions.
+
+ga_chromo.c            Built-in chromosome handling routines.
+
+ga_utility.{c,h}       High level GA and convenience routines.
+
+ga_similarity.{c,h}    Entity and chromosome similarity measures.
+
+ga_select.c            Selection operators.
+
+ga_seed.c              Initialisation operators.
+
+ga_sa.{c,h}            Simulated Annealling optimisation functions.
+
+ga_stats.c             Convenience statistical functions.
+
+ga_tabu.{c,h}          Tabu Search functions.
+
+ga_climbing.{c,h}      Hill climbing optimisation functions.
+
+ga_simplex.{c,h}       Simplex search functions.
+
+ga_replace.c           Crowding, elimination and elitism operators.
+
+ga_qsort.{c,h}         Functions used internally to sort entities by fitness.
+
+ga_optim.{c,h}         Evolutionary optimisation functions.
+
+ga_mutate.c            Mutation operators.
+
+ga_intrinsics.{c,h}    Definition of S-Lang intrinsic functions.
+
+ga_crossover.c         Crossover operators.
+
+Stewart Adcock, 30 October 2002
+
