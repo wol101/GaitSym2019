@@ -39,15 +39,15 @@
  **********************************************************************/
 
 // wis - changes for Windows application generation
-#ifndef USE_QT
-#ifdef BUILDING_DLL
-#  define FUNCPROTO __declspec (dllexport)
-#else
-#  define FUNCPROTO __declspec (dllimport)
-#endif
-#else
+//#ifdef BUILDING_DLL
+//#  define FUNCPROTO __declspec (dllexport)
+//#else
+//#  define FUNCPROTO __declspec (dllimport)
+//#endif
+//#else
+//#  define FUNCPROTO
+//#endif
 #  define FUNCPROTO
-#endif
 // ~wis
 
 #  if defined __CYGWIN32__ && !defined __CYGWIN__
