@@ -108,8 +108,8 @@ boolean callbacks::score(population *pop, entity *entity)
     }
 
     m_xml_converter->ApplyGenome(pop->len_chromosomes, array);
-    int docTxtLen;
-    char *xml = m_xml_converter->GetFormattedXML(&docTxtLen);
+    size_t docTxtLen;
+    const char *xml = m_xml_converter->GetFormattedXML(&docTxtLen);
 
     // create the simulation object
     m_simulation = new Simulation();
@@ -182,8 +182,8 @@ boolean callbacks::generation_callback(int generation, population *pop)
     for (int i = 0; i < pop->len_chromosomes; i++)
         array[i] = ((double *)solution->chromosome[0])[i];
     m_xml_converter->ApplyGenome(pop->len_chromosomes, array);
-    int docTxtLen;
-    char *xml = m_xml_converter->GetFormattedXML(&docTxtLen);
+    size_t docTxtLen;
+    const char *xml = m_xml_converter->GetFormattedXML(&docTxtLen);
 
     char filename[64];
     sprintf(filename, "BestGenome%05d.xml", generation);
