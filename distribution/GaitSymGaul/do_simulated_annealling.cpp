@@ -31,7 +31,8 @@ void do_simulated_annealling(DataFile *config_file)
     int population_size;
     int chromosome_size;
     char model_config_file[512];
-    double sa_initial_temp, sa_final_temp, sa_temp_step, sa_temp_freq;
+    double sa_initial_temp, sa_final_temp, sa_temp_step;
+    int sa_temp_freq;
     int sa_max_iterations;
     double mutation_rate;
     int gaul_log_level = 4; // 0 none, 1 fatal, 2, warnings, 3 normal, 4 verbose, 5 fixme, 6 debug
@@ -138,8 +139,8 @@ void do_simulated_annealling(DataFile *config_file)
         for (int i = 0; i < pop->len_chromosomes; i++)
             array[i] = ((double *)solution->chromosome[0])[i];
         g_XMLConverter.ApplyGenome(pop->len_chromosomes, array);
-        int docTxtLen;
-        char *xml = g_XMLConverter.GetFormattedXML(&docTxtLen);
+        size_t docTxtLen;
+        const char *xml = g_XMLConverter.GetFormattedXML(&docTxtLen);
 
         sprintf(output_file, "%s/%05dBestGenome.xml", dir_name, i_ent);
         plog(LOG_VERBOSE, "Creating %s", output_file);
