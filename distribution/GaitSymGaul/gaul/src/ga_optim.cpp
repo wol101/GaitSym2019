@@ -1847,7 +1847,7 @@ static void gaul_survival(population *pop)
  */
   if (pop->elitism == GA_ELITISM_PARENTS_DIE || pop->elitism == GA_ELITISM_ONE_PARENT_SURVIVES)
     {
-    while (pop->orig_size>(pop->elitism == GA_ELITISM_ONE_PARENT_SURVIVES))
+    while (pop->orig_size > (pop->elitism == GA_ELITISM_ONE_PARENT_SURVIVES ? 1 : 0))
       {
       pop->orig_size--;
       ga_entity_dereference_by_rank(pop, pop->orig_size);
