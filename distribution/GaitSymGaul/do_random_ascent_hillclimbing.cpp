@@ -126,8 +126,8 @@ void do_random_ascent_hillclimbing(DataFile *config_file)
         for (int i = 0; i < pop->len_chromosomes; i++)
             array[i] = ((double *)solution->chromosome[0])[i];
         g_XMLConverter.ApplyGenome(pop->len_chromosomes, array);
-        int docTxtLen;
-        char *xml = g_XMLConverter.GetFormattedXML(&docTxtLen);
+        size_t docTxtLen;
+        const char *xml = g_XMLConverter.GetFormattedXML(&docTxtLen);
 
         sprintf(output_file, "%s/%05dBestGenome.xml", dir_name, i_ent);
         plog(LOG_VERBOSE, "Creating %s", output_file);
