@@ -24,6 +24,13 @@ public:
     explicit AboutDialog(QWidget *parent = nullptr);
     ~AboutDialog();
 
+public slots:
+    virtual void accept() Q_DECL_OVERRIDE;
+    virtual void reject() Q_DECL_OVERRIDE;
+
+protected:
+    void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
+
 private:
     Ui::AboutDialog *ui;
 };
