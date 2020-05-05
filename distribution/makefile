@@ -358,7 +358,7 @@ win32.c
 
 
 GAITSYMOBJ = $(addsuffix .o, $(basename $(GAITSYMSRC) ) )
-GAITSYMHEADER = $(addsuffix .h, $(basename $(GAITSYMSRC) ) ) PGDMath.h SimpleStrap.h
+GAITSYMHEADER = $(addsuffix .h, $(basename $(GAITSYMSRC) ) ) PGDMath.h SimpleStrap.h SmartEnum.h MPIStuff.h TCPIPMessage.h
 
 LIBCCDOBJ = $(addsuffix .o, $(basename $(LIBCCDSRC) ) )
 ODEOBJ = $(addsuffix .o, $(basename $(ODESRC) ) )
@@ -513,6 +513,6 @@ gaitsym_distribution_extras:
 	cp -rf scripts distribution/
 	cp makefile distribution/
 	find distribution -depth -type d -name CVS -print -exec rm -rf {} \;
-	rm -rf distribution/GaitSymQt/GaitSymQt.pro.*
+	rm -rf distribution/GaitSymQt/GaitSym*.pro.*
 
 
