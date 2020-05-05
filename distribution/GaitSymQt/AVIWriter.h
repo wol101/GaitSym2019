@@ -12,14 +12,16 @@
 
 #include <QString>
 
+class QImage;
+
 class AVIWriter
 {
 public:
     AVIWriter();
     virtual ~AVIWriter();
-    int InitialiseFile(const QString &aviFilename, unsigned int width, unsigned int height,
-                       unsigned int fps);
+    int InitialiseFile(const QString &aviFilename, unsigned int width, unsigned int height, unsigned int fps);
     int WriteAVI(unsigned int width, unsigned int height, const unsigned char *rgb, int quality);
+    int WriteAVI(const QImage &image, int quality);
 
 private:
     int CloseFile();
