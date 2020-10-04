@@ -47,7 +47,7 @@ void DrawMarker::initialise(SimulationWidget *simulationWidget)
 
 void DrawMarker::updateEntityPose()
 {
-    pgd::Vector p = m_marker->GetWorldPosition();
+    pgd::Vector3 p = m_marker->GetWorldPosition();
     pgd::Quaternion q = m_marker->GetWorldQuaternion();
     SetDisplayScale(m_marker->size1(), m_marker->size1(), m_marker->size1());
     SetDisplayRotationFromQuaternion(q.constData());
@@ -57,6 +57,7 @@ void DrawMarker::updateEntityPose()
 void DrawMarker::Draw()
 {
     m_facetedObject->Draw();
+    m_marker->setRedraw(false);
 }
 
 

@@ -33,6 +33,7 @@ def convert_old_model():
         sys.exit(1)
 
     # read the input XML file
+    if args.verbose: print('Reading "%s"' % (args.input_xml_file))
     input_tree = xml.etree.ElementTree.parse(args.input_xml_file)
     input_root = input_tree.getroot()
 
@@ -89,6 +90,7 @@ def convert_old_model():
     new_tree.tail = "\n"
 
     # just copy the global element
+    if args.verbose: print('Copying the GLOBAL')
     global_element.text = ""
     global_element.tail = "\n"
     new_tree.append(convert_global(global_element))
@@ -102,24 +104,32 @@ def convert_old_model():
         convert_muscle(muscle_list[key], marker_list, markers_only = True)
 
     # now create the tree in the right order
+    if args.verbose: print('Creating the BODYs')
     for key in body_list:
         new_tree.append(convert_body(body_list[key], marker_list, args))
+    if args.verbose: print('Creating the MARKERs')
     for key in marker_list:
         new_tree.append(marker_list[key])
+    if args.verbose: print('Creating the JOINTs')
     for key in joint_list:
         new_tree.append(convert_joint(joint_list[key], marker_list, markers_only = False))
+    if args.verbose: print('Creating the GEOMs')
     for key in geom_list:
         new_tree.append(convert_geom(geom_list[key], marker_list, markers_only = False))
+    if args.verbose: print('Creating the MUSCLEs and STRAPs')
     for key in muscle_list:
         (new_strap, new_muscle) = convert_muscle(muscle_list[key], marker_list, markers_only = False)
         new_tree.append(new_strap)
         new_tree.append(new_muscle)
+    if args.verbose: print('Creating the DATATARGETs')
     for key in data_target_list:
         new_tree.append(data_target_list[key])
+    if args.verbose: print('Creating the DRIVERs')
     for key in driver_list:
         new_tree.append(driver_list[key])
 
     # now do some generic size and colour fixes
+    if args.verbose: print('Doing some fixups')
     for child in new_tree:
         if child.tag == "GLOBAL":
             child.attrib["Size1"] = "1.0"
@@ -162,6 +172,7 @@ def convert_old_model():
             child.attrib["Size1"] = "0.05"
             child.attrib["Colour1"] = "Gold1"
 
+    if args.verbose: print('Writing "%s"' % (args.output_xml_file))
     out_file = open(args.output_xml_file, "wb")
     out_file.write(xml.etree.ElementTree.tostring(new_tree, encoding="utf-8", method="xml"))
     out_file.close()
@@ -336,15 +347,23 @@ def convert_joint(joint, marker_list, markers_only):
         body1_marker.tail = "\n"
         body1_marker.attrib["ID"] = joint.attrib["ID"] + "_Body1_Marker"
         body1_marker.attrib["BodyID"] = joint.attrib["Body1ID"]
-        body1_marker.attrib["Position"] = "0 0 0"
-        body1_marker.attrib["Quaternion"] = "1 0 0 0"
+        if joint.attrib["StressCalculationType"] == "None":
+            body1_marker.attrib["Position"] = "0 0 0"
+            body1_marker.attrib["Quaternion"] = "1 0 0 0"
+        else:
+            body1_marker.attrib["Position"] = joint.attrib["StressOrigin"]
+            body1_marker.attrib["Quaternion"] = joint.attrib["StressOrientation"]
         marker_list[body1_marker.attrib["ID"]] = body1_marker
         body2_marker = xml.etree.ElementTree.Element("MARKER")
         body2_marker.tail = "\n"
         body2_marker.attrib["ID"] = joint.attrib["ID"] + "_Body2_Marker"
         body2_marker.attrib["BodyID"] = joint.attrib["Body2ID"]
-        body2_marker.attrib["Position"] = "0 0 0"
-        body2_marker.attrib["Quaternion"] = "1 0 0 0"
+        if joint.attrib["StressCalculationType"] == "None":
+            body2_marker.attrib["Position"] = "0 0 0"
+            body2_marker.attrib["Quaternion"] = "1 0 0 0"
+        else:
+            body2_marker.attrib["Position"] = joint.attrib["StressOrigin"]
+            body2_marker.attrib["Quaternion"] = joint.attrib["StressOrientation"]
         marker_list[body2_marker.attrib["ID"]] = body2_marker
         if markers_only:
             return
@@ -355,7 +374,17 @@ def convert_joint(joint, marker_list, markers_only):
         new_joint.attrib["Type"] = joint.attrib["Type"]
         new_joint.attrib["Body1MarkerID"] = body1_marker.attrib["ID"]
         new_joint.attrib["Body2MarkerID"] = body2_marker.attrib["ID"]
-        new_joint.attrib["StressCalculationType"] = "None"
+        if joint.attrib["StressCalculationType"] == "None":
+            new_joint.attrib["StressCalculationType"] = "None"
+        else:
+            new_joint.attrib["StressCalculationType"] = joint.attrib["StressCalculationType"]
+            new_joint.attrib["StressBitmap"] = joint.attrib["StressBitmap"]
+            new_joint.attrib["StressBitmapDimensions"] = joint.attrib["StressBitmapDimensions"]
+            new_joint.attrib["StressBitmapPixelSize"] = joint.attrib["StressBitmapPixelSize"]
+            new_joint.attrib["StressLimit"] = joint.attrib["StressLimit"]
+            new_joint.attrib["StressBitmapDisplayRange"] = joint.attrib["StressBitmapDisplayRange"]
+            new_joint.attrib["LowPassType"] = "Butterworth2ndOrderLowPass"
+            new_joint.attrib["CutoffFrequency"] = joint.attrib["StressLimitCutoffFrequency"]
     else:
         print("Error: joint type \"%s\" unsupported" % (joint.attrib["Type"]))
         sys.exit(1)
@@ -708,7 +737,7 @@ def pretty_print_argparse_args(argparse_args):
 def quoted_if_necessary(input_list):
     output_list = []
     for item in input_list:
-        if re.search(r"[^a-zA-Z0-9_.-]", item):
+        if re.search(r"[^a-zA-Z0-9_./-]", item):
             item = "\"" + item + "\""
         output_list.append(item)
     return output_list

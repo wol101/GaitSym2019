@@ -25,9 +25,9 @@ FacetedCappedCylinder::FacetedCappedCylinder(double l, double r, size_t capped_c
     ca = std::cos(a);
 
     AllocateMemory((n) * 2 + (n / 4) * (n) * 4);
-    std::vector<pgd::Vector> triangleStrip;
+    std::vector<pgd::Vector3> triangleStrip;
     triangleStrip.reserve(2 * (n + 1));
-    pgd::Vector vec;
+    pgd::Vector3 vec;
 
     // draw cylinder body
     ny = 1;
@@ -38,9 +38,9 @@ FacetedCappedCylinder::FacetedCappedCylinder(double l, double r, size_t capped_c
         //glVertex3d (ny*r,nz*r,l);
         //glNormal3d (ny,nz,0);
         //glVertex3d (ny*r,nz*r,-l);
-        vec = pgd::Vector(ny * r, nz * r, l);
+        vec = pgd::Vector3(ny * r, nz * r, l);
         triangleStrip.push_back(vec);
-        vec = pgd::Vector(ny * r, nz * r, -l);
+        vec = pgd::Vector3(ny * r, nz * r, -l);
         triangleStrip.push_back(vec);
         // rotate ny,nz
         tmp = ca * ny - sa * nz;
@@ -69,9 +69,9 @@ FacetedCappedCylinder::FacetedCappedCylinder(double l, double r, size_t capped_c
             //glVertex3d (ny2*r,nz2*r,l+nx2*r);
             //glNormal3d (ny,nz,nx);
             //glVertex3d (ny*r,nz*r,l+nx*r);
-            vec = pgd::Vector(ny2 * r, nz2 * r, l + nx2 * r);
+            vec = pgd::Vector3(ny2 * r, nz2 * r, l + nx2 * r);
             triangleStrip.push_back(vec);
-            vec = pgd::Vector(ny * r, nz * r, l + nx * r);
+            vec = pgd::Vector3(ny * r, nz * r, l + nx * r);
             triangleStrip.push_back(vec);
             // rotate n,n2
             tmp = ca * ny - sa * nz;
@@ -106,9 +106,9 @@ FacetedCappedCylinder::FacetedCappedCylinder(double l, double r, size_t capped_c
             //glVertex3d (ny*r,nz*r,-l+nx*r);
             //glNormal3d (ny2,nz2,nx2);
             //glVertex3d (ny2*r,nz2*r,-l+nx2*r);
-            vec = pgd::Vector(ny * r, nz * r, -l + nx * r);
+            vec = pgd::Vector3(ny * r, nz * r, -l + nx * r);
             triangleStrip.push_back(vec);
-            vec = pgd::Vector(ny2 * r, nz2 * r, -l + nx2 * r);
+            vec = pgd::Vector3(ny2 * r, nz2 * r, -l + nx2 * r);
             triangleStrip.push_back(vec);
             // rotate n,n2
             tmp = ca * ny - sa * nz;
@@ -126,7 +126,7 @@ FacetedCappedCylinder::FacetedCappedCylinder(double l, double r, size_t capped_c
 //    qDebug() << "FacetedCappedCylinder " << GetNumTriangles() << " triangles created\n";
 }
 
-void FacetedCappedCylinder::AddTriangleStrip(std::vector<pgd::Vector> &triangleStrip)
+void FacetedCappedCylinder::AddTriangleStrip(std::vector<pgd::Vector3> &triangleStrip)
 {
     double triangle[9];
 

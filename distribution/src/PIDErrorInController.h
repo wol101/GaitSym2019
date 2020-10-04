@@ -26,6 +26,8 @@ public:
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
+    virtual std::string dumpToString();
+
 private:
 
     double m_Kp = 0;

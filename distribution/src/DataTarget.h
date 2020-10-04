@@ -13,7 +13,8 @@
 #include "NamedObject.h"
 #include "SmartEnum.h"
 
-#include <float.h>
+#include <cfloat>
+#include <tuple>
 
 class Body;
 class SimulationWindow;
@@ -22,54 +23,52 @@ class DataTarget: public NamedObject
 {
 public:
     DataTarget();
-    virtual ~DataTarget();
 
     SMART_ENUM(MatchType, matchTypeStrings, matchTypeCount, Linear, Square);
-//    enum MatchType { linear, square };
+    SMART_ENUM(InterpolationType, interpolationTypeStrings, interpolationTypeCount, Punctuated, Continuous);
 
-    void SetTargetTimes(int size, double *targetTimes);
-    virtual void SetTargetValues(int size, double *values) = 0;
+//    void SetTargetTimes(int size, double *targetTimes);
+//    virtual void SetTargetValues(int size, double *values) = 0;
 
-    int TargetMatch(double time, double tolerance);
-    int GetLastMatchIndex();
+//    int TargetMatch(double time, double tolerance);
+//    int GetLastMatchIndex();
 
-    void SetIntercept(double intercept);
-    void SetSlope(double slope);
-    void SetMatchType(MatchType t);
-    void SetAbortThreshold(double a);
+    void setIntercept(double intercept);
+    void setSlope(double slope);
+    void setMatchType(MatchType t);
+    void setAbortThreshold(double a);
 
-    double GetMatchValue(double time);
-    double GetMatchValue(int index);
+    std::tuple<double, bool> calculateMatchValue(double time);
 
-    virtual double GetError(int index) = 0;
-    virtual double GetError(double time) = 0;
+    double positiveFunction(double v);
 
-    double PositiveFunction(double v);
 
-    int TargetTimeListLength() const;
+//    int TargetTimeListLength() const;
 
-    const double *TargetTimeList() const;
+//    const double *TargetTimeList() const;
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
     virtual void appendToAttributes();
 
+    virtual double calculateError(double time) = 0;
+    virtual double calculateError(size_t index) = 0;
+
+protected:
+    std::vector<double> *targetTimeList();
+
 private:
-
-    int ProtectedTargetMatch(double time, double tolerance);
-
-    double m_Intercept = 0;
-    double m_Slope = -1;
-    MatchType m_MatchType = MatchType::Linear;
-    double m_AbortThreshold = -DBL_MAX;
-
-    std::vector<double> m_TargetTimeList;
-    int m_TargetTimeListLength = -1;
-
-    int m_LastMatchIndex = -1;
-
-
+    double m_intercept = 0;
+    double m_slope = 0;
+    MatchType m_matchType = MatchType::Linear;
+    InterpolationType m_interpolationType = InterpolationType::Punctuated;
+    double m_abortBelow = -DBL_MAX;
+    double m_abortAbove = DBL_MAX;
+    std::vector<double> m_targetTimeList;
+    size_t m_lastIndex = SIZE_MAX;
+    double m_lastTime = -DBL_MAX;
+    double m_lastValue = 0;
 };
 
 #endif

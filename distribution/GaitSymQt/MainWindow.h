@@ -17,24 +17,10 @@ namespace Ui {
 class MainWindow;
 }
 
-class GLWidget;
-class DialogVisibility;
-class QBoxLayout;
-class QListWidgetItem;
-class ViewControlWidget;
-class DialogLog;
-class Preferences;
-class SimulationWidget;
 class Simulation;
-class AVIWriter;
-class ElementTreeModel;
+class SimulationWidget;
 class QTreeWidgetItem;
-class Marker;
-class Body;
-class Joint;
-class Muscle;
-class Geom;
-class Driver;
+class MainWindowActions;
 
 class MainWindow : public QMainWindow
 {
@@ -44,6 +30,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     virtual ~MainWindow() Q_DECL_OVERRIDE;
 
+   friend MainWindowActions;
+
     enum Mode { constructionMode, runMode };
 
     Mode mode() const;
@@ -51,18 +39,12 @@ public:
     SimulationWidget *simulationWidget() const;
 
 public slots:
-    void setInterfaceValues();
     void processOneThing();
+    void handleCommandLineArguments();
 
-    void buttonCameraBack();
-    void buttonCameraBottom();
-    void buttonCameraFront();
-    void buttonCameraLeft();
-    void buttonCameraRight();
-    void buttonCameraTop();
     void comboBoxMeshDisplayMapCurrentTextChanged(const QString &text);
     void comboBoxMuscleColourMapCurrentTextChanged(const QString &text);
-    void comboBoxTrackingBodyCurrentTextChanged(const QString &text);
+    void comboBoxTrackingMarkerCurrentTextChanged(const QString &text);
     void deleteExistingBody(const QString &, bool force = false);
     void deleteExistingDriver(const QString &name, bool force = false);
     void deleteExistingGeom(const QString &, bool force = false);
@@ -75,77 +57,24 @@ public slots:
     void editExistingJoint(const QString &);
     void editExistingMarker(const QString &);
     void editExistingMuscle(const QString &);
-    void enterConstructionMode();
-    void enterRunMode();
     void handleElementTreeWidgetItemChanged(QTreeWidgetItem *item, int column);
-    void menu1280x720();
-    void menu1920x1080();
-    void menu640x480();
-    void menu800x600();
-    void menuAbout();
-    void menuCreateAssembly();
-    void menuCreateBody();
-    void menuCreateDriver();
-    void menuCreateGeom();
-    void menuCreateJoint();
-    void menuCreateMarker();
-    void menuCreateMuscle();
-    void menuDefaultView();
-    void menuDeleteAssembly();
-    void menuEditGlobal();
-    void menuExportMarkers();
-    void menuGeneticAlgorithm();
-    void menuImportWarehouse();
-    void menuNew();
-    void menuNextAscentHillclimbing();
-    void menuOpen();
-    void menuOutputs();
-    void menuPreferences();
-    void menuRandomAscentHillclimbing();
-    void menuRecordMovie();
-    void menuResetView();
-    void menuRestart();
-    void menuSave();
-    void menuSaveAs();
-    void menuSaveDefaultView();
-    void menuSimplexSearch();
-    void menuSimulatedAnnealing();
-    void menuStartAVISave();
-    void menuStartOBJSequenceSave();
-    void menuStartWarehouseExport();
-    void menuStopAVISave();
-    void menuStopOBJSequenceSave();
-    void menuStopWarehouseExport();
-    void menuTabuSearch();
-    void menuToggleFullScreen();
-    void moveExistingMarker(const QString &s, const QVector3D &p);
-    void objSnapshot();
-    void resizeAndCentre(int w, int h);
-    void radioButtonTrackingNone(int);
-    void radioButtonTrackingX(int);
-    void radioButtonTrackingY(int);
-    void radioButtonTrackingZ(int);
-    void run();
-    void snapshot();
-    void spinboxCOIXChanged(double);
-    void spinboxCOIYChanged(double);
-    void spinboxCOIZChanged(double);
-    void spinboxCursorNudgeChanged(double);
-    void spinboxCursorSizeChanged(double);
-    void spinboxDistanceChanged(double);
-    void spinboxFPSChanged(double);
-    void spinboxFarChanged(double);
-    void spinboxFoVChanged(double);
-    void spinboxNearChanged(double);
-    void spinboxSkip(int);
-    void spinboxTimeMax(double);
-    void spinboxTrackingOffsetChanged(double v);
-    void step();
 
-    void copy();
-    void cut();
-    void paste();
-    void selectAll();
+    void moveExistingMarker(const QString &s, const QVector3D &p);
+    void resizeAndCentre(int w, int h);
+    void radioButtonTracking();
+    void spinboxCOIXChanged(double v);
+    void spinboxCOIYChanged(double v);
+    void spinboxCOIZChanged(double v);
+    void spinboxCursorNudgeChanged(double v);
+    void spinboxCursorSizeChanged(double v);
+    void spinboxDistanceChanged(double v);
+    void spinboxFPSChanged(double v);
+    void spinboxFarChanged(double v);
+    void spinboxFoVChanged(double v);
+    void spinboxNearChanged(double v);
+    void spinboxSkip(int i);
+    void spinboxTimeMax(double v);
+    void spinboxTrackingOffsetChanged(double v);
 
     void setStatusString(const QString &s, int logLevel);
     void setUICOI(float x, float y, float z);
@@ -158,23 +87,18 @@ protected:
 
 private:
 
-    void menuOpen(const QString &fileName);
+    void setInterfaceValues();
     void writeSettings();
     static QByteArray readResource(const QString &resource);
     void updateEnable();
-    void menuCreateEditMarker(Marker *marker);
-    void menuCreateEditBody(Body *body);
-    void menuCreateEditJoint(Joint *joint);
-    void menuCreateEditGeom(Geom *geom);
-    void menuCreateEditMuscle(Muscle *muscle);
-    void menuCreateEditDriver(Driver *driver);
     void resizeSimulationWindow(int w, int h);
-    void updateComboBoxTrackingBody();
+    void updateComboBoxTrackingMarker();
+    void handleTracking();
 
 
     Ui::MainWindow *ui = nullptr;
 
-    QFileInfo m_configFile;
+    QFileInfo m_configFile; // maybe use windowFilePath() and windowTitle() instead
 
     bool m_movieFlag = false;
     bool m_saveOBJFileSequenceFlag = false;
@@ -188,7 +112,9 @@ private:
 
     Mode m_mode = constructionMode;
     bool m_noName = true;
-    bool m_saveRequired = false;
+    bool m_saveRequired = false; // should probably use the Qt isWindowModified() setWindowModified() functions
+
+    MainWindowActions *m_mainWindowActions = nullptr;
 };
 
 #endif // MAINWINDOW_H

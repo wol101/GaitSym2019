@@ -48,22 +48,19 @@ public:
 //        DriverError
 //    };
 
-    virtual void SetTargetValues(int size, double *values);
-
     void SetTarget(NamedObject *target);
     NamedObject *GetTarget();
 
     void SetDataType(DataType dataType) { m_DataType = dataType; }
     DataType GetDataType() { return m_DataType; }
 
-    virtual double GetError(double time);
-    virtual double GetError(int index);
-
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
+    virtual double calculateError(double time);
+    virtual double calculateError(size_t index);
 
 private:
 
@@ -72,7 +69,6 @@ private:
     std::set<DataType> m_noTargetList = {MetabolicEnergy, MechanicalEnergy};
 
     std::vector<double> m_ValueList;
-    int m_ValueListLength = -1;
     double m_errorScore = 0;
 };
 

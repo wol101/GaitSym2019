@@ -18,7 +18,7 @@ class Controller : public Driver, public Drivable
 public:
     Controller();
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
     virtual void appendToAttributes();

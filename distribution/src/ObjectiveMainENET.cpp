@@ -67,8 +67,6 @@ ObjectiveMainENET::ObjectiveMainENET(int argc, const char **argv)
     m_argparse.AddArgument("-mt"s, "--outputModelStateAtTime"s, "Output model state at this cycle"s, ""s, 1, false, ArgParse::Double);
     m_argparse.AddArgument("-mw"s, "--outputModelStateAtWarehouseDistance"s, "Output model state at this warehouse distance"s, ""s, 1, false, ArgParse::Double);
     m_argparse.AddArgument("-wd"s, "--warehouseFailDistanceAbort"s, "Abort the simulation when the warehouse distance fails"s, "0"s, 1, false, ArgParse::Bool);
-    m_argparse.AddArgument("-mm"s, "--mungeModelStateFlag"s, "Munge the model distance when written"s, "0"s, 1, false, ArgParse::Bool);
-    m_argparse.AddArgument("-mr"s, "--mungeRotationFlag"s, "Munge the model rotation when written"s, "0"s, 1, false, ArgParse::Bool);
     m_argparse.AddArgument("-de"s, "--debug"s, "Turn debugging on"s);
 
     m_argparse.AddArgument("-ol"s, "-outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
@@ -87,8 +85,6 @@ ObjectiveMainENET::ObjectiveMainENET(int argc, const char **argv)
     m_argparse.Get("--outputModelStateAtTime"s, &m_outputModelStateAtTime);
     m_argparse.Get("--outputModelStateAtCycle"s, &m_outputModelStateAtCycle);
     m_argparse.Get("--outputModelStateAtWarehouseDistance"s, &m_outputModelStateAtWarehouseDistance);
-    m_argparse.Get("--mungeModelStateFlag"s, &m_mungeModelStateFlag);
-    m_argparse.Get("--mungeRotationFlag"s, &m_mungeRotationFlag);
     m_argparse.Get("--simulationTimeLimit"s, &m_simulationTimeLimit);
     m_argparse.Get("--warehouseFailDistanceAbort"s, &m_warehouseFailDistanceAbort);
     m_argparse.Get("--modelState"s, &m_outputModelStateFilename);
@@ -396,8 +392,6 @@ int ObjectiveMainENET::ReadModel()
     if (m_outputModelStateAtCycle >= 0) m_simulation->SetOutputModelStateAtCycle(m_outputModelStateAtCycle);
     if (m_inputWarehouseFilename.size()) m_simulation->AddWarehouse(m_inputWarehouseFilename);
     if (m_outputModelStateAtWarehouseDistance >= 0) m_simulation->SetOutputModelStateAtWarehouseDistance(m_outputModelStateAtWarehouseDistance);
-    if (m_mungeModelStateFlag) m_simulation->SetMungeModelStateFlag(true);
-    if (m_mungeRotationFlag) m_simulation->SetMungeRotationFlag(true);
 
     if (m_simulation->LoadModel(xmlPtr, xmlLen))
     {

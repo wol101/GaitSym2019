@@ -20,6 +20,7 @@
 #include "pystring.h"
 
 #include <sstream>
+#include <algorithm>
 
 using namespace std::string_literals;
 
@@ -31,30 +32,15 @@ DataTargetScalar::~DataTargetScalar()
 {
 }
 
-void DataTargetScalar::SetTargetValues(int size, double *values)
-{
-    if (size <= 0)
-    {
-        std::cerr << "DataTarget::SetTargetValues error: size = " << size << "\n";
-        return;
-    }
-    m_ValueListLength = size;
-    m_ValueList.resize(size_t(m_ValueListLength));
-    for (size_t i = 0; i < size_t(m_ValueListLength); i++)
-    {
-        m_ValueList[i] = values[i];
-    }
-}
-
 // returns the difference between the target actual value and the desired value (actual - desired)
-double DataTargetScalar::GetError(int index)
+double DataTargetScalar::calculateError(size_t index)
 {
     m_errorScore = 0;
     const double *r;
     dVector3 result;
     dQuaternion q;
     pgd::Quaternion pq;
-    pgd::Vector pv;
+    pgd::Vector3 pv;
 
     Body *body;
     HingeJoint *hingeJoint;
@@ -64,8 +50,7 @@ double DataTargetScalar::GetError(int index)
     Geom *geom;
     TegotaeDriver *tegotaeDriver;
 
-    if (index < 0) index = 0;
-    if (index >= m_ValueListLength)
+    if (index >= m_ValueList.size())
     {
         std::cerr << "Warning: DataTargetScalar::GetMatchValue index out of range\n";
         return 0;
@@ -141,15 +126,15 @@ double DataTargetScalar::GetError(int index)
             break;
         case Q1:
             pq = marker->GetWorldQuaternion();
-            m_errorScore = (pq.v.x - m_ValueList[size_t(index)]);
+            m_errorScore = (pq.x - m_ValueList[size_t(index)]);
             break;
         case Q2:
             pq = marker->GetWorldQuaternion();
-            m_errorScore = (pq.v.y - m_ValueList[size_t(index)]);
+            m_errorScore = (pq.y - m_ValueList[size_t(index)]);
             break;
         case Q3:
             pq = marker->GetWorldQuaternion();
-            m_errorScore = (pq.v.z - m_ValueList[size_t(index)]);
+            m_errorScore = (pq.z - m_ValueList[size_t(index)]);
             break;
         case XP:
             pv = marker->GetWorldPosition();
@@ -313,7 +298,7 @@ double DataTargetScalar::GetError(int index)
         switch (m_DataType)
         {
         case DriverError:
-            pgd::Vector errorVector = tegotaeDriver->localErrorVector();
+            pgd::Vector3 errorVector = tegotaeDriver->localErrorVector();
             m_errorScore = errorVector.Magnitude() - m_ValueList[size_t(index)];
             break;
         }
@@ -339,15 +324,16 @@ double DataTargetScalar::GetError(int index)
 
     return m_errorScore;
 }
+
 // returns the difference between the target actual value and the desired value (actual - desired)
-double DataTargetScalar::GetError(double time)
+double DataTargetScalar::calculateError(double time)
 {
     m_errorScore = 0;
     const double *r;
     dVector3 result;
     dQuaternion q;
     pgd::Quaternion pq;
-    pgd::Vector pv;
+    pgd::Vector3 pv;
 
     Body *body;
     HingeJoint *hingeJoint;
@@ -357,14 +343,25 @@ double DataTargetScalar::GetError(double time)
     Geom *geom;
     TegotaeDriver *tegotaeDriver;
 
-    int index = GSUtil::BinarySearchRange(TargetTimeList(), TargetTimeListLength(), time);
-    if (index < 0) index = 0;
-    if (index >= m_ValueListLength - 1)
+    size_t index, indexNext;
+    auto lowerBound = std::lower_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
+    auto upperBound = std::upper_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
+    // time < lowerbound
+    if (lowerBound == targetTimeList()->end())
     {
-        std::cerr << "Warning: DataTargetScalar::GetMatchValue index out of range\n";
-        return 0;
+        index = 0;
+        indexNext = index;
     }
-    int indexNext = index + 1;
+    else if (upperBound == targetTimeList()->end())
+    {
+        index = targetTimeList()->size() - 1;
+        indexNext = index;
+    }
+    else
+    {
+        index = std::distance(targetTimeList()->begin(), lowerBound);
+        indexNext = std::min(index + 1, targetTimeList()->size() - 1);
+    }
 
     if ((body = dynamic_cast<Body *>(GetTarget())) != nullptr)
     {
@@ -372,55 +369,55 @@ double DataTargetScalar::GetError(double time)
         {
         case Q0:
             r = body->GetQuaternion();
-            m_errorScore = (r[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q1:
             r = body->GetQuaternion();
-            m_errorScore = (r[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q2:
             r = body->GetQuaternion();
-            m_errorScore = (r[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q3:
             r = body->GetQuaternion();
-            m_errorScore = (r[3] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[3] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case XP:
             r = body->GetPosition();
-            m_errorScore = (r[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YP:
             r = body->GetPosition();
-            m_errorScore = (r[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZP:
             r = body->GetPosition();
-            m_errorScore = (r[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case XV:
             r = body->GetLinearVelocity();
-            m_errorScore = (r[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YV:
             r = body->GetLinearVelocity();
-            m_errorScore = (r[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZV:
             r = body->GetLinearVelocity();
-            m_errorScore = (r[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case XRV:
             r = body->GetAngularVelocity();
-            m_errorScore = (r[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YRV:
             r = body->GetAngularVelocity();
-            m_errorScore = (r[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZRV:
             r = body->GetAngularVelocity();
-            m_errorScore = (r[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (r[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
@@ -432,43 +429,43 @@ double DataTargetScalar::GetError(double time)
         {
         case Q0:
             pq = marker->GetWorldQuaternion();
-            m_errorScore = (pq.n - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pq.n - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q1:
             pq = marker->GetWorldQuaternion();
-            m_errorScore = (pq.v.x - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pq.x - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q2:
             pq = marker->GetWorldQuaternion();
-            m_errorScore = (pq.v.y - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pq.y - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q3:
             pq = marker->GetWorldQuaternion();
-            m_errorScore = (pq.v.z - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pq.z - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case XP:
             pv = marker->GetWorldPosition();
-            m_errorScore = (pv.x - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pv.x - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YP:
             pv = marker->GetWorldPosition();
-            m_errorScore = (pv.y - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pv.y - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZP:
             pv = marker->GetWorldPosition();
-            m_errorScore = (pv.z - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pv.z - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case XV:
             pv = marker->GetWorldVelocity();
-            m_errorScore = (pv.x - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pv.x - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YV:
             pv = marker->GetWorldVelocity();
-            m_errorScore = (pv.y - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pv.y - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZV:
             pv = marker->GetWorldVelocity();
-            m_errorScore = (pv.z - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (pv.z - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
@@ -480,16 +477,16 @@ double DataTargetScalar::GetError(double time)
         switch (m_DataType)
         {
         case XP:
-            m_errorScore = (result[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YP:
-            m_errorScore = (result[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZP:
-            m_errorScore = (result[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Angle:
-            m_errorScore = (hingeJoint->GetHingeAngle() - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (hingeJoint->GetHingeAngle() - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
@@ -501,13 +498,13 @@ double DataTargetScalar::GetError(double time)
         switch (m_DataType)
         {
         case XP:
-            m_errorScore = (result[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YP:
-            m_errorScore = (result[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZP:
-            m_errorScore = (result[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
@@ -519,13 +516,13 @@ double DataTargetScalar::GetError(double time)
         switch (m_DataType)
         {
         case XP:
-            m_errorScore = (result[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YP:
-            m_errorScore = (result[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZP:
-            m_errorScore = (result[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
@@ -537,31 +534,31 @@ double DataTargetScalar::GetError(double time)
         {
         case Q0:
             geom->GetWorldQuaternion(q);
-            m_errorScore = (q[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (q[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q1:
             geom->GetWorldQuaternion(q);
-            m_errorScore = (q[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (q[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q2:
             geom->GetWorldQuaternion(q);
-            m_errorScore = (q[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (q[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case Q3:
             geom->GetWorldQuaternion(q);
-            m_errorScore = (q[3] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (q[3] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case XP:
             geom->GetWorldPosition(result);
-            m_errorScore = (result[0] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[0] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YP:
             geom->GetWorldPosition(result);
-            m_errorScore = (result[1] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[1] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZP:
             geom->GetWorldPosition(result);
-            m_errorScore = (result[2] - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (result[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
@@ -572,8 +569,8 @@ double DataTargetScalar::GetError(double time)
         switch (m_DataType)
         {
         case DriverError:
-            pgd::Vector errorVector = tegotaeDriver->localErrorVector();
-            m_errorScore = errorVector.Magnitude() - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time);
+            pgd::Vector3 errorVector = tegotaeDriver->localErrorVector();
+            m_errorScore = errorVector.Magnitude() - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time);
         }
     }
     else if (GetTarget() == nullptr)
@@ -581,10 +578,10 @@ double DataTargetScalar::GetError(double time)
         switch(m_DataType)
         {
         case MetabolicEnergy:
-            m_errorScore = (simulation()->GetMetabolicEnergy() - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (simulation()->GetMetabolicEnergy() - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case MechanicalEnergy:
-            m_errorScore = (simulation()->GetMechanicalEnergy() - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[indexNext], m_ValueList[indexNext], time));
+            m_errorScore = (simulation()->GetMechanicalEnergy() - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
@@ -595,18 +592,36 @@ double DataTargetScalar::GetError(double time)
         std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataTarget " << m_DataType << "\n";
     }
 
+    switch(std::fpclassify(m_errorScore))
+    {
+    case FP_NORMAL: break;
+    case FP_ZERO: break;
+    case FP_INFINITE:
+        std::cerr << "Warning: m_errorScore is FP_INFINITE\n";
+        return 0;
+    case FP_NAN:
+        std::cerr << "Warning: m_errorScore is FP_NAN\n";
+        return 0;
+    case FP_SUBNORMAL:
+        std::cerr << "Warning: m_errorScore is FP_SUBNORMAL\n";
+        return 0;
+    default:
+        std::cerr << "Warning: m_errorScore is unclassified\n";
+        return 0;
+    }
+
     return m_errorScore;
 }
 
-std::string DataTargetScalar::dump()
+std::string DataTargetScalar::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
-        ss << "Time\tTargetV\tActualV\tError\n";
+        ss << "Time\tActualV\tError\n";
     }
     Body *body;
     Geom *geom;
@@ -758,7 +773,7 @@ std::string DataTargetScalar::dump()
         switch (m_DataType)
         {
         case DriverError:
-            pgd::Vector errorVector = tegotaeDriver->localErrorVector();
+            pgd::Vector3 errorVector = tegotaeDriver->localErrorVector();
             ref = errorVector.Magnitude();
 
         }
@@ -778,8 +793,7 @@ std::string DataTargetScalar::dump()
         }
     }
 
-    int index = GSUtil::BinarySearchRange(TargetTimeList(), TargetTimeListLength(), simulation()->GetTime());
-    ss << simulation()->GetTime() << "\t" << GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[index + 1], m_ValueList[index + 1], simulation()->GetTime()) << "\t" << ref <<  "\t" << ref - GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_ValueList[size_t(index)], TargetTimeList()[index + 1], m_ValueList[index + 1], simulation()->GetTime()) << "\n";
+    ss << simulation()->GetTime() << "\t" << ref << "\t" << calculateError(simulation()->GetTime()) << "\n";
     return ss.str();
 }
 
@@ -839,15 +853,14 @@ std::string *DataTargetScalar::createFromAttributes()
         setLastError("DataTarget ID=\""s + name() +"\" No values found in TargetValues"s);
         return lastErrorPtr();
     }
-    if (int(targetValuesTokens.size()) != TargetTimeListLength())
+    if (int(targetValuesTokens.size()) != targetTimeList()->size())
     {
         setLastError("DataTargetScalar ID=\""s + name() +"\" Number of values in TargetValues does not match TargetTimes"s);
         return lastErrorPtr();
     }
-    std::vector<double> targetValues;
-    targetValues.reserve(targetValuesTokens.size());
-    for (auto token : targetValuesTokens) targetValues.push_back(GSUtil::Double(token));
-    SetTargetValues(int(targetValues.size()), targetValues.data());
+    m_ValueList.clear();
+    m_ValueList.reserve(targetValuesTokens.size());
+    for (auto token : targetValuesTokens) m_ValueList.push_back(GSUtil::Double(token));
 
     return nullptr;
 }
@@ -858,7 +871,7 @@ void DataTargetScalar::appendToAttributes()
     DataTarget::appendToAttributes();
     std::string buf;
     setAttribute("Type"s, "Scalar"s);
-    setAttribute("TargetValues"s, *GSUtil::ToString(m_ValueList.data(), size_t(m_ValueListLength), &buf));
+    setAttribute("TargetValues"s, *GSUtil::ToString(m_ValueList.data(), m_ValueList.size(), &buf));
     setAttribute("DataType", dataTypeStrings(m_DataType));
     if (m_noTargetList.count(m_DataType) == 0) setAttribute("TargetID"s, m_Target->name());
 }

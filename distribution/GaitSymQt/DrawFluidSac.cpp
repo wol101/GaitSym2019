@@ -66,11 +66,11 @@ void DrawFluidSac::initialise(SimulationWidget *simulationWidget)
         const std::vector<PointForce> &pointForceList = m_fluidSac->pointForceList();
         for (size_t i = 0; i < pointForceList.size(); i++)
         {
-            std::vector<pgd::Vector> polyline;
+            std::vector<pgd::Vector3> polyline;
             polyline.clear();
-            pgd::Vector f = pgd::Vector(pointForceList.at(i).vector[0], pointForceList.at(i).vector[1], pointForceList.at(i).vector[2]) * m_fluidSacForceScale;
-            polyline.push_back(pgd::Vector(pointForceList.at(i).point[0], pointForceList.at(i).point[1], pointForceList.at(i).point[2]));
-            polyline.push_back(pgd::Vector(pointForceList.at(i).point[0], pointForceList.at(i).point[1], pointForceList.at(i).point[2]) + f);
+            pgd::Vector3 f = pgd::Vector3(pointForceList.at(i).vector[0], pointForceList.at(i).vector[1], pointForceList.at(i).vector[2]) * m_fluidSacForceScale;
+            polyline.push_back(pgd::Vector3(pointForceList.at(i).point[0], pointForceList.at(i).point[1], pointForceList.at(i).point[2]));
+            polyline.push_back(pgd::Vector3(pointForceList.at(i).point[0], pointForceList.at(i).point[1], pointForceList.at(i).point[2]) + f);
             std::unique_ptr<FacetedObject> facetedPolyline = std::make_unique<FacetedPolyline>(&polyline, m_fluidSacForceRadius, m_fluidSacForceSegments, m_fluidSacForceColour, 1);
             m_facetedObjectForceList.push_back(std::move(facetedPolyline));
         }
@@ -125,6 +125,7 @@ void DrawFluidSac::Draw()
     {
         m_facetedObjectForceList.at(i)->Draw();
     }
+    m_fluidSac->setRedraw(false);
 }
 
 

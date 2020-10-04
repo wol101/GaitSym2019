@@ -19,26 +19,22 @@ class DataTargetQuaternion : public DataTarget
 {
 public:
     DataTargetQuaternion();
-    virtual ~DataTargetQuaternion();
 
     void SetTarget(NamedObject *target);
     NamedObject *GetTarget();
 
-    virtual void SetTargetValues(int size, double *values);
-
-    virtual double GetError(int valueListIndex);
-    virtual double GetError(double time);
-
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
+
+    virtual double calculateError(size_t valueListIndex);
+    virtual double calculateError(double time);
 
 private:
 
     NamedObject *m_Target = nullptr;
     std::vector<pgd::Quaternion> m_QValueList;
-    int m_QValueListLength = -1;
 
 };
 

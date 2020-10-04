@@ -36,8 +36,6 @@
 using namespace std::string_literals;
 
 static double CalculateForceError (double lce, void *params);
-// static double zeroin(double *ax, double *bx, double (*f)(double x, void *info), void *info, double *tol);
-static double zeroin(double ax, double bx, double (*f)(double x, void *info), void *info, double tol);
 
 // constructor
 
@@ -328,8 +326,7 @@ void MAMuscleComplete::SetActivation()
                 else
                 {
                     tol = m_Tolerance;
-//                    r = zeroin(&ax, &bx, &CalculateForceError, &m_Params, &tol);
-                    r = zeroin(ax, bx, &CalculateForceError, &m_Params, tol);
+                    r = GSUtil::zeroin(ax, bx, &CalculateForceError, &m_Params, tol);
                     m_Params.err = CalculateForceError (r, &m_Params); // this sets m_Params with all the correct values
                     m_Params.lastlpe = r;
                 }
@@ -645,15 +642,167 @@ double MAMuscleComplete::forcePerUnitArea() const
     return m_forcePerUnitArea;
 }
 
-std::string MAMuscleComplete::dump()
+void MAMuscleComplete::setForcePerUnitArea(double forcePerUnitArea)
+{
+    m_forcePerUnitArea = forcePerUnitArea;
+}
+
+double MAMuscleComplete::vMaxFactor() const
+{
+    return m_vMaxFactor;
+}
+
+void MAMuscleComplete::setVMaxFactor(double vMaxFactor)
+{
+    m_vMaxFactor = vMaxFactor;
+}
+
+void MAMuscleComplete::setPca(double pca)
+{
+    m_pca = pca;
+}
+
+void MAMuscleComplete::setFibreLength(double fibreLength)
+{
+    m_fibreLength = fibreLength;
+}
+
+double MAMuscleComplete::activationK() const
+{
+    return m_activationK;
+}
+
+void MAMuscleComplete::setActivationK(double activationK)
+{
+    m_activationK = activationK;
+}
+
+double MAMuscleComplete::width() const
+{
+    return m_width;
+}
+
+void MAMuscleComplete::setWidth(double width)
+{
+    m_width = width;
+}
+
+void MAMuscleComplete::setTendonLength(double tendonLength)
+{
+    m_tendonLength = tendonLength;
+}
+
+double MAMuscleComplete::akFastTwitchProportion() const
+{
+    return m_akFastTwitchProportion;
+}
+
+void MAMuscleComplete::setAkFastTwitchProportion(double akFastTwitchProportion)
+{
+    m_akFastTwitchProportion = akFastTwitchProportion;
+}
+
+double MAMuscleComplete::akTActivationA() const
+{
+    return m_akTActivationA;
+}
+
+void MAMuscleComplete::setAkTActivationA(double akTActivationA)
+{
+    m_akTActivationA = akTActivationA;
+}
+
+double MAMuscleComplete::akTActivationB() const
+{
+    return m_akTActivationB;
+}
+
+void MAMuscleComplete::setAkTActivationB(double akTActivationB)
+{
+    m_akTActivationB = akTActivationB;
+}
+
+double MAMuscleComplete::akTDeactivationA() const
+{
+    return m_akTDeactivationA;
+}
+
+void MAMuscleComplete::setAkTDeactivationA(double akTDeactivationA)
+{
+    m_akTDeactivationA = akTDeactivationA;
+}
+
+double MAMuscleComplete::akTDeactivationB() const
+{
+    return m_akTDeactivationB;
+}
+
+void MAMuscleComplete::setAkTDeactivationB(double akTDeactivationB)
+{
+    m_akTDeactivationB = akTDeactivationB;
+}
+
+double MAMuscleComplete::initialFibreLength() const
+{
+    return m_initialFibreLength;
+}
+
+void MAMuscleComplete::setInitialFibreLength(double initialFibreLength)
+{
+    m_initialFibreLength = initialFibreLength;
+}
+
+double MAMuscleComplete::startActivation() const
+{
+    return m_startActivation;
+}
+
+void MAMuscleComplete::setStartActivation(double startActivation)
+{
+    m_startActivation = startActivation;
+}
+
+MAMuscleComplete::StrainModel MAMuscleComplete::serialStrainModel() const
+{
+    return m_serialStrainModel;
+}
+
+void MAMuscleComplete::setSerialStrainModel(const StrainModel &serialStrainModel)
+{
+    m_serialStrainModel = serialStrainModel;
+}
+
+void MAMuscleComplete::setSerialStrainModel(const std::string &serialStrainModel)
+{
+    if (serialStrainModel == "Linear"s) m_serialStrainModel = MAMuscleComplete::linear;
+    if (serialStrainModel == "Square"s) m_serialStrainModel = MAMuscleComplete::square;
+}
+
+MAMuscleComplete::StrainModel MAMuscleComplete::parallelStrainModel() const
+{
+    return m_parallelStrainModel;
+}
+
+void MAMuscleComplete::setParallelStrainModel(const StrainModel &parallelStrainModel)
+{
+    m_parallelStrainModel = parallelStrainModel;
+}
+
+void MAMuscleComplete::setParallelStrainModel(const std::string &parallelStrainModel)
+{
+    if (parallelStrainModel == "Linear"s) m_parallelStrainModel = MAMuscleComplete::linear;
+    if (parallelStrainModel == "Square"s) m_parallelStrainModel = MAMuscleComplete::square;
+}
+
+std::string MAMuscleComplete::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
-         ss << "Time\tm_Stim\talpha\tlen\tv\tlastlpe\tfce\tlpe\tfpe\tlse\tfse\tvce\tvse\ttargetFce\tf0\terr\tESE\tEPE\tPSE\tPPE\tPCE\ttension\tlength\tvelocity\tPMECH\tPMET\n";
+        ss << "Time\tm_Stim\talpha\tlen\tv\tlastlpe\tfce\tlpe\tfpe\tlse\tfse\tvce\tvse\ttargetFce\tf0\terr\tESE\tEPE\tPSE\tPPE\tPCE\ttension\tlength\tvelocity\tPMECH\tPMET\n";
     }
     ss << simulation()->GetTime() << "\t" <<
           m_Stim << "\t" << m_Params.alpha << "\t" << m_Params.len << "\t" << m_Params.v << "\t" << m_Params.lastlpe << "\t" <<
@@ -666,421 +815,5 @@ std::string MAMuscleComplete::dump()
     return ss.str();
 }
 
-#ifdef FORTRAN_DERIVED_ZEROIN
 
-/* netlib function zeroin original fortran
-      double precision function zeroin(ax,bx,f,tol)
-      double precision ax,bx,f,tol
-c
-c      a zero of the function  f(x)  is computed in the interval ax,bx .
-c
-c  input..
-c
-c  ax     left endpoint of initial interval
-c  bx     right endpoint of initial interval
-c  f      function subprogram which evaluates f(x) for any x in
-c         the interval  ax,bx
-c  tol    desired length of the interval of uncertainty of the
-c         final result (.ge.0.)
-c
-c  output..
-c
-c  zeroin abscissa approximating a zero of  f  in the interval ax,bx
-c
-c      it is assumed  that   f(ax)   and   f(bx)   have  opposite  signs
-c  this is checked, and an error message is printed if this is not
-c  satisfied.   zeroin  returns a zero  x  in the given interval
-c  ax,bx  to within a tolerance  4*macheps*abs(x)+tol, where macheps  is
-c  the  relative machine precision defined as the smallest representable
-c  number such that  1.+macheps .gt. 1.
-c      this function subprogram is a slightly  modified  translation  of
-c  the algol 60 procedure  zero  given in  richard brent, algorithms for
-c  minimization without derivatives, prentice-hall, inc. (1973).
-c
-      double precision  a,b,c,d,e,eps,fa,fb,fc,tol1,xm,p,q,r,s
-      double precision  dabs, d1mach
-   10 eps = d1mach(4)
-      tol1 = eps+1.0d0
-c
-      a=ax
-      b=bx
-      fa=f(a)
-      fb=f(b)
-c     check that f(ax) and f(bx) have different signs
-      if (fa .eq.0.0d0 .or. fb .eq. 0.0d0) go to 20
-      if (fa * (fb/dabs(fb)) .le. 0.0d0) go to 20
-         write(6,2500)
-2500     format(1x,'f(ax) and f(bx) do not have different signs,',
-     1             ' zeroin is aborting')
-         return
-   20 c=a
-      fc=fa
-      d=b-a
-      e=d
-   30 if (dabs(fc).ge.dabs(fb)) go to 40
-      a=b
-      b=c
-      c=a
-      fa=fb
-      fb=fc
-      fc=fa
-   40 tol1=2.0d0*eps*dabs(b)+0.5d0*tol
-      xm = 0.5d0*(c-b)
-      if ((dabs(xm).le.tol1).or.(fb.eq.0.0d0)) go to 150
-c
-c see if a bisection is forced
-c
-      if ((dabs(e).ge.tol1).and.(dabs(fa).gt.dabs(fb))) go to 50
-      d=xm
-      e=d
-      go to 110
-   50 s=fb/fa
-      if (a.ne.c) go to 60
-c
-c linear interpolation
-c
-      p=2.0d0*xm*s
-      q=1.0d0-s
-      go to 70
-c
-c inverse quadratic interpolation
-c
-   60 q=fa/fc
-      r=fb/fc
-      p=s*(2.0d0*xm*q*(q-r)-(b-a)*(r-1.0d0))
-      q=(q-1.0d0)*(r-1.0d0)*(s-1.0d0)
-   70 if (p.le.0.0d0) go to 80
-      q=-q
-      go to 90
-   80 p=-p
-   90 s=e
-      e=d
-      if (((2.0d0*p).ge.(3.0d0*xm*q-dabs(tol1*q))).or.(p.ge.
-     *dabs(0.5d0*s*q))) go to 100
-      d=p/q
-      go to 110
-  100 d=xm
-      e=d
-  110 a=b
-      fa=fb
-      if (dabs(d).le.tol1) go to 120
-      b=b+d
-      go to 140
-  120 if (xm.le.0.0d0) go to 130
-      b=b+tol1
-      go to 140
-  130 b=b-tol1
-  140 fb=f(b)
-      if ((fb*(fc/dabs(fc))).gt.0.0d0) go to 20
-      go to 30
-  150 zeroin=b
-      return
-      end
-*/
-
-/* Standard C source for D1MACH */
-/*
-#include <stdio.h>
-#include <cfloat>
-#include <cmath>
-double d1mach_(long *i)
-{
-    switch(*i){
-      case 1: return DBL_MIN;
-      case 2: return DBL_MAX;
-      case 3: return DBL_EPSILON/FLT_RADIX;
-      case 4: return DBL_EPSILON;
-      case 5: return log10((double)FLT_RADIX);
-      }
-    fprintf(stderr, "invalid argument: d1mach(%ld)\n", *i);
-    exit(1); return 0;
-} */
-
-// zeroin.f -- translated by f2c (version 20031025).
-// and subsequently edited to improve readability slightly
-
-double zeroin(double *ax, double *bx, double (*f)(double x, void *info), void *info, double *tol)
-{
-    /* System generated locals */
-    double ret_val = 0, d__1, d__2;
-
-    /* Local variables */
-    double a, b, c__, d__, e, p, q, r__, s, fa, fb, fc, xm, eps, tol1;
-
-    /*      a zero of the function  f(x)  is computed in the interval ax,bx . */
-
-    /*  input.. */
-
-    /*  ax     left endpoint of initial interval */
-    /*  bx     right endpoint of initial interval */
-    /*  f      function subprogram which evaluates f(x) for any x in */
-    /*         the interval  ax,bx */
-    /*  tol    desired length of the interval of uncertainty of the */
-    /*         final result (>= 0.) */
-
-    /*  output.. */
-
-    /*  zeroin abscissa approximating a zero of  f  in the interval ax,bx */
-
-    /*      it is assumed  that   f(ax)   and   f(bx)   have  opposite  signs */
-    /*  this is checked, and an error message is printed if this is not */
-    /*  satisfied.   zeroin  returns a zero  x  in the given interval */
-    /*  ax,bx  to within a tolerance  4*macheps*fabs(x)+tol, where macheps  is */
-    /*  the  relative machine precision defined as the smallest representable */
-    /*  number such that  1.+macheps > 1. */
-    /*      this function subprogram is a slightly  modified  translation  of */
-    /*  the algol 60 procedure  zero  given in  richard brent, algorithms for */
-    /*  minimization without derivatives, prentice-hall, inc. (1973). */
-
-    /* L10: */
-    eps = DBL_EPSILON;
-    tol1 = eps + 1.;
-
-    a = *ax;
-    b = *bx;
-    fa = (*f)(a, info);
-    fb = (*f)(b, info);
-    /*     check that f(ax) and f(bx) have different signs */
-    if (fa == 0. || fb == 0.) {
-        goto L20;
-    }
-    if (fa * (fb / fabs(fb)) <= 0.) {
-        goto L20;
-    }
-    fprintf(stderr, "f(ax) and f(bx) do not have different signs, zeroin is aborting\n");
-    return ret_val;
-L20:
-    c__ = a;
-    fc = fa;
-    d__ = b - a;
-    e = d__;
-L30:
-    if (fabs(fc) >= fabs(fb)) {
-        goto L40;
-    }
-    a = b;
-    b = c__;
-    c__ = a;
-    fa = fb;
-    fb = fc;
-    fc = fa;
-L40:
-    tol1 = eps * 2. * fabs(b) + *tol * .5;
-    xm = (c__ - b) * .5;
-    if (fabs(xm) <= tol1 || fb == 0.) {
-        goto L150;
-    }
-
-    /* see if a bisection is forced */
-
-    if (fabs(e) >= tol1 && fabs(fa) > fabs(fb)) {
-        goto L50;
-    }
-    d__ = xm;
-    e = d__;
-    goto L110;
-L50:
-    s = fb / fa;
-    if (a != c__) {
-        goto L60;
-    }
-
-    /* linear interpolation */
-
-    p = xm * 2. * s;
-    q = 1. - s;
-    goto L70;
-
-    /* inverse quadratic interpolation */
-
-L60:
-    q = fa / fc;
-    r__ = fb / fc;
-    p = s * (xm * 2. * q * (q - r__) - (b - a) * (r__ - 1.));
-    q = (q - 1.) * (r__ - 1.) * (s - 1.);
-L70:
-    if (p <= 0.) {
-        goto L80;
-    }
-    q = -q;
-    goto L90;
-L80:
-    p = -p;
-L90:
-    s = e;
-    e = d__;
-    if (p * 2. >= xm * 3. * q - (d__1 = tol1 * q, fabs(d__1)) || p >= (d__2 =
-                                                                       s * .5 * q, fabs(d__2))) {
-        goto L100;
-    }
-    d__ = p / q;
-    goto L110;
-L100:
-    d__ = xm;
-    e = d__;
-L110:
-    a = b;
-    fa = fb;
-    if (fabs(d__) <= tol1) {
-        goto L120;
-    }
-    b += d__;
-    goto L140;
-L120:
-    if (xm <= 0.) {
-        goto L130;
-    }
-    b += tol1;
-    goto L140;
-L130:
-    b -= tol1;
-L140:
-    fb = (*f)(b, info);
-    if (fb * (fc / fabs(fc)) > 0.) {
-        goto L20;
-    }
-    goto L30;
-L150:
-    ret_val = b;
-    return ret_val;
-} /* zeroin_ */
-
-#else
-
-/*
- ************************************************************************
- *                  C math library
- * function ZEROIN - obtain a function zero within the given range
- *
- * Input
- *  double zeroin(ax,bx,f,tol)
- *  double ax;          Root will be seeked for within
- *  double bx;              a range [ax,bx]
- *  double (*f)(double x);      Name of the function whose zero
- *                  will be seeked for
- *  double tol;         Acceptable tolerance for the root
- *                  value.
- *                  May be specified as 0.0 to cause
- *                  the program to find the root as
- *                  accurate as possible
- *
- * Output
- *  Zeroin returns an estimate for the root with accuracy
- *  4*EPSILON*abs(x) + tol
- *
- * Algorithm
- *  G.Forsythe, M.Malcolm, C.Moler, Computer methods for mathematical
- *  computations. M., Mir, 1980, p.180 of the Russian edition
- *
- *  The function makes use of the bissection procedure combined with
- *  the linear or quadric inverse interpolation.
- *  At every step program operates on three abscissae - a, b, and c.
- *  b - the last and the best approximation to the root
- *  a - the last but one approximation
- *  c - the last but one or even earlier approximation than a that
- *      1) |f(b)| <= |f(c)|
- *      2) f(b) and f(c) have opposite signs, i.e. b and c confine
- *         the root
- *  At every step Zeroin selects one of the two new approximations, the
- *  former being obtained by the bissection procedure and the latter
- *  resulting in the interpolation (if a,b, and c are all different
- *  the quadric interpolation is utilized, otherwise the linear one).
- *  If the latter (i.e. obtained by the interpolation) point is
- *  reasonable (i.e. lies within the current interval [b,c] not being
- *  too close to the boundaries) it is accepted. The bissection result
- *  is used in the other case. Therefore, the range of uncertainty is
- *  ensured to be reduced at least by the factor 1.6
- *
- ************************************************************************
- */
-
-//double zeroin(ax,bx,f,tol)        /* An estimate to the root  */
-//double ax;                        /* Left border | of the range   */
-//double bx;                        /* Right border| the root is seeked*/
-//double (*f)(double x);            /* Function under investigation */
-//double tol;                       /* Acceptable tolerance     */
-
-double zeroin(double ax, double bx, double (*f)(double x, void *info), void *info, double tol)
-{
-    double a,b,c;             /* Abscissae, descr. see above  */
-    double fa;                /* f(a)             */
-    double fb;                /* f(b)             */
-    double fc;                /* f(c)             */
-
-    a = ax;  b = bx;  fa = (*f)(a, info);  fb = (*f)(b, info);
-    c = a;   fc = fa;
-
-    for(;;)       /* Main iteration loop  */
-    {
-        double prev_step = b-a;             /* Distance from the last but one*/
-        /* to the last approximation    */
-        double tol_act;                     /* Actual tolerance     */
-        double p;                           /* Interpolation step is calcu- */
-        double q;                           /* lated in the form p/q; divi- */
-                                            /* sion operations is delayed   */
-                                            /* until the last moment    */
-        double new_step;                    /* Step at this iteration       */
-
-        if( fabs(fc) < fabs(fb) )
-        {                                   /* Swap data for b to be the    */
-            a = b;  b = c;  c = a;          /* best approximation       */
-            fa=fb;  fb=fc;  fc=fa;
-        }
-        tol_act = 2*DBL_EPSILON*fabs(b) + tol/2;
-        new_step = (c-b)/2;
-
-        if( fabs(new_step) <= tol_act || fb == 0 )
-            return b;                       /* Acceptable approx. is found  */
-
-        /* Decide if the interpolation can be tried */
-        if( fabs(prev_step) >= tol_act      /* If prev_step was large enough*/
-                && fabs(fa) > fabs(fb) )    /* and was in true direction,   */
-        {                                   /* Interpolatiom may be tried   */
-            double t1,cb,t2;
-            cb = c-b;
-            if( a==c )                      /* If we have only two distinct */
-            {                               /* points linear interpolation  */
-                t1 = fb/fa;                 /* can only be applied      */
-                p = cb*t1;
-                q = 1.0 - t1;
-            }
-            else                            /* Quadric inverse interpolation*/
-            {
-                q = fa/fc;  t1 = fb/fc;  t2 = fb/fa;
-                p = t2 * ( cb*q*(q-t1) - (b-a)*(t1-1.0) );
-                q = (q-1.0) * (t1-1.0) * (t2-1.0);
-            }
-            if( p>0 )                       /* p was calculated with the op-*/
-                q = -q;                     /* posite sign; make p positive */
-            else                            /* and assign possible minus to */
-                p = -p;                     /* q                */
-
-            if( p < (0.75*cb*q-fabs(tol_act*q)/2)   /* If b+p/q falls in [b,c]*/
-                    && p < fabs(prev_step*q/2) )    /* and isn't too large  */
-                new_step = p/q;                     /* it is accepted   */
-                                                    /* If p/q is too large then the */
-                                                    /* bissection procedure can     */
-                                                    /* reduce [b,c] range to more   */
-                                                    /* extent           */
-        }
-
-        if( fabs(new_step) < tol_act )      /* Adjust the step to be not less*/
-        {
-            if( new_step > 0 )              /* than tolerance       */
-                new_step = tol_act;
-            else
-                new_step = -tol_act;
-        }
-
-        a = b;  fa = fb;                    /* Save the previous approx.    */
-        b += new_step;  fb = (*f)(b, info); /* Do step to a new approxim.   */
-        if( (fb > 0 && fc > 0) || (fb < 0 && fc < 0) )
-        {                                   /* Adjust c for it to have a sign*/
-            c = a;  fc = fa;                /* opposite to that of b    */
-        }
-    }
-
-}
-
-#endif
 

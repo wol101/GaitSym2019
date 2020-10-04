@@ -34,8 +34,8 @@ FacetedConicSegment::FacetedConicSegment(double l, double r1, double r2, size_t 
 
     size_t i;
     double theta = 2 * M_PI / sides;
-    pgd::Vector vertex;
-    std::vector<pgd::Vector> vertexList;
+    pgd::Vector3 vertex;
+    std::vector<pgd::Vector3> vertexList;
     double triangle[3 * 3];
 
     vertex.x = ox;

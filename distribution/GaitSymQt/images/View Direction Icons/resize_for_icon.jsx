@@ -12,7 +12,7 @@ app.preferences.rulerUnits = Units.PIXELS;
 
 if (!outputFolder.exists) outputFolder.create();
 
-var widths = [64, 32, 24, 16];
+var widths = [128, 64, 32, 24, 16];
 var i;
 var j;
 for (j = 0; j < inputFiles.length; j++)

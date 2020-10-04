@@ -18,6 +18,7 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QMessageBox>
+#include <QTimer>
 
 #if defined(QT_DEBUG) && defined(Q_OS_WIN)
 #include <crtdbg.h>
@@ -33,7 +34,9 @@ int main(int argc, char *argv[])
     // read in the Preferences file
     Preferences::Read();
 
-    QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL); // AA_UseOpenGLES not currently supported
+//    QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL); // AA_UseOpenGLES not currently supported
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
     fmt.setRenderableType(QSurfaceFormat::OpenGL);
@@ -49,10 +52,12 @@ int main(int argc, char *argv[])
     fmt.setColorSpace(QSurfaceFormat::sRGBColorSpace);
     fmt.setVersion(3, 3); // OpenGL 3.3
     fmt.setProfile(QSurfaceFormat::CoreProfile); // only use the core functions
+#ifdef QT_DEBUG
     fmt.setOption(QSurfaceFormat::DebugContext, true);
+#endif
     QSurfaceFormat::setDefaultFormat(fmt);
 
-    QApplication a(argc, argv);
+    QApplication application(argc, argv);
 
     try
     {
@@ -87,45 +92,45 @@ int main(int argc, char *argv[])
     qDebug() << styles;
     if (styleCode == 0 && styles.contains("Fusion", Qt::CaseInsensitive))
     {
-        a.setStyle(QStyleFactory::create("Fusion"));
+        application.setStyle(QStyleFactory::create("Fusion"));
     }
     else if (styleCode == 1 && styles.contains("Windows", Qt::CaseInsensitive))
     {
-        a.setStyle(QStyleFactory::create("Windows"));
+        application.setStyle(QStyleFactory::create("Windows"));
     }
     else if (styleCode == 2 && styles.contains("windowsvista", Qt::CaseInsensitive))
     {
-        a.setStyle(QStyleFactory::create("windowsvista"));
+        application.setStyle(QStyleFactory::create("windowsvista"));
     }
     else if (styleCode == 2 && styles.contains("gtk", Qt::CaseInsensitive))
     {
-        a.setStyle(QStyleFactory::create("gtk"));
+        application.setStyle(QStyleFactory::create("gtk"));
     }
     else if (styleCode == 2 && styles.contains("macintosh", Qt::CaseInsensitive))
     {
-        a.setStyle(QStyleFactory::create("macintosh"));
+        application.setStyle(QStyleFactory::create("macintosh"));
     }
     else if (styleCode == 3)
     {
         QFile file(":/stylesheets/coffee.qss");
         file.open(QFile::ReadOnly);
         QString styleSheet = QLatin1String(file.readAll());
-        a.setStyleSheet(styleSheet);
+        application.setStyleSheet(styleSheet);
     }
     else if (styleCode == 4)
     {
         QFile file(":/stylesheets/pagefold.qss");
         file.open(QFile::ReadOnly);
         QString styleSheet = QLatin1String(file.readAll());
-        a.setStyleSheet(styleSheet);
+        application.setStyleSheet(styleSheet);
     }
-    if (styleCode == 5 && styles.contains("Fusion", Qt::CaseInsensitive))
+    else if (styleCode == 5 && styles.contains("Fusion", Qt::CaseInsensitive))
     {
-        a.setStyle(QStyleFactory::create("Fusion"));
+        application.setStyle(QStyleFactory::create("Fusion"));
         // increase font size for better reading
         QFont defaultFont = QApplication::font();
         defaultFont.setPointSize(defaultFont.pointSize()+2);
-        a.setFont(defaultFont);
+        application.setFont(defaultFont);
         // modify palette to dark
         QPalette darkPalette;
         darkPalette.setColor(QPalette::Window,QColor(53,53,53));
@@ -148,10 +153,22 @@ int main(int argc, char *argv[])
         darkPalette.setColor(QPalette::Disabled,QPalette::Highlight,QColor(80,80,80));
         darkPalette.setColor(QPalette::HighlightedText,Qt::white);
         darkPalette.setColor(QPalette::Disabled,QPalette::HighlightedText,QColor(127,127,127));
-        a.setPalette(darkPalette);
+        application.setPalette(darkPalette);
+    }
+    else if (styleCode ==6)
+    {
+        QFile file(":/stylesheets/qdarkstyle/style.qss");
+        file.open(QFile::ReadOnly);
+        QString styleSheet = QLatin1String(file.readAll());
+        application.setStyleSheet(styleSheet);
     }
 
-    MainWindow w;
-    w.show();
-    return a.exec();
+    MainWindow window;
+    QStringList arguments = QCoreApplication::arguments();
+    if (arguments.size() >= 2)
+    {
+        QTimer::singleShot(0, &window, SLOT(handleCommandLineArguments()));
+    }
+    window.show();
+    return application.exec();
 }

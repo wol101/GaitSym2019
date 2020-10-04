@@ -52,7 +52,7 @@ private:
 
     Ui::DialogGlobal *ui;
 
-    const Global *m_inputGlobal;
+    const Global *m_inputGlobal = nullptr;
     std::unique_ptr<Global> m_outputGlobal;
     const std::map<std::string, std::unique_ptr<Body>> *m_existingBodies = nullptr;
 

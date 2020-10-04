@@ -25,6 +25,8 @@
 #include <QMessageBox>
 #include <QVector>
 #include <QSpacerItem>
+#include <QFont>
+#include <QFontDialog>
 
 #include "Preferences.h"
 #include "LineEditDouble.h"
@@ -70,6 +72,7 @@ void DialogPreferences::initialise()
     QVector<SettingsItem> boolSettings;
     QVector<SettingsItem> stringSettings;
     QVector<SettingsItem> colourSettings;
+    QVector<SettingsItem> fontSettings;
     QVector<SettingsItem> vector2DSettings;
     QVector<SettingsItem> vector3DSettings;
     for (int i = 0; i < keys.size(); i++)
@@ -80,6 +83,7 @@ void DialogPreferences::initialise()
         if (item.display && item.type == QMetaType::Bool) boolSettings.push_back(item);
         if (item.display && item.type == QMetaType::QString) stringSettings.push_back(item);
         if (item.display && item.type == QMetaType::QColor) colourSettings.push_back(item);
+        if (item.display && item.type == QMetaType::QFont) fontSettings.push_back(item);
         if (item.display && item.type == QMetaType::QVector2D) vector2DSettings.push_back(item);
         if (item.display && item.type == QMetaType::QVector3D) vector3DSettings.push_back(item);
     }
@@ -89,6 +93,7 @@ void DialogPreferences::initialise()
     if (boolSettings.size()) initialiseTab("Booleans", boolSettings);
     if (stringSettings.size()) initialiseTab("Strings", stringSettings);
     if (colourSettings.size()) initialiseTab("Colours", colourSettings);
+    if (fontSettings.size()) initialiseTab("Fonts", fontSettings);
     if (vector2DSettings.size()) initialiseTab("2D Vectors", vector2DSettings);
     if (vector3DSettings.size()) initialiseTab("3D Vectors", vector3DSettings);
 
@@ -101,6 +106,7 @@ void DialogPreferences::initialiseTab(const QString &tabName, const QVector<Sett
     ui->tabWidget->addTab(widget, tabName);
 
     const QString COLOUR_STYLE("QPushButton { background-color : %1; color : %2; border: 4px solid %3; }");
+    const QString FONT_STYLE("QPushButton { font: %1; font-size: %2; }");
 
     QVBoxLayout *verticalLayout;
     QScrollArea *scrollArea;
@@ -208,6 +214,20 @@ void DialogPreferences::initialiseTab(const QString &tabName, const QVector<Sett
             m_SettingsWidgetList.append(settingsWidget);
         }
 
+        if (type == QMetaType::QFont)
+        {
+            QPushButton *pushButton = new QPushButton();
+            pushButton->setText("Font");
+            QFont font = qvariant_cast<QFont>(item.value);
+            pushButton->setText(font.family() + QString(" %1 point").arg(font.pointSize()));
+            pushButton->setFont(font);
+            pushButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            connect(pushButton, SIGNAL(clicked()), this, SLOT(fontButtonClicked()));
+            gridLayout->addWidget(pushButton, row, 1);
+            settingsWidget.widget = pushButton;
+            m_SettingsWidgetList.append(settingsWidget);
+        }
+
         if (type == QMetaType::QVector2D)
         {
             QVector2D v = qvariant_cast<QVector2D>(item.value);
@@ -306,8 +326,7 @@ void DialogPreferences::update()
 
 void DialogPreferences::colourButtonClicked()
 {
-    const QString
-    COLOUR_STYLE("QPushButton { background-color : %1; color : %2; border: 4px solid %3; }");
+    const QString COLOUR_STYLE("QPushButton { background-color : %1; color : %2; border: 4px solid %3; }");
     int i;
     QPushButton *pushButton = dynamic_cast<QPushButton *>(QObject::sender());
     for (i = 0; i < m_SettingsWidgetList.size(); i++)
@@ -319,6 +338,26 @@ void DialogPreferences::colourButtonClicked()
     {
         pushButton->setStyleSheet(COLOUR_STYLE.arg(colour.name()).arg(getIdealTextColour(colour).name()).arg(getAlphaColourHint(colour).name()));
         m_SettingsWidgetList[i].item.value = colour;
+    }
+}
+
+void DialogPreferences::fontButtonClicked()
+{
+    int i;
+    QPushButton *pushButton = dynamic_cast<QPushButton *>(QObject::sender());
+    for (i = 0; i < m_SettingsWidgetList.size(); i++)
+        if (m_SettingsWidgetList[i].widget == pushButton) break;
+    if (i >= m_SettingsWidgetList.size()) return;
+
+    QFont oldFont;
+    oldFont.fromString(m_SettingsWidgetList[i].item.value.toString());
+    bool ok;
+    QFont newFont = QFontDialog::getFont(&ok, oldFont);
+    if (ok)
+    {
+        pushButton->setFont(newFont);
+        pushButton->setText(newFont.family() + QString(" %1 point").arg(newFont.pointSize()));
+        m_SettingsWidgetList[i].item.value = newFont;
     }
 }
 

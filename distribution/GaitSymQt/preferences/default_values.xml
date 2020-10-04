@@ -15,7 +15,7 @@
         path="0"
         type="QString"
         value="AnimalSimulationLaboratory" />
-    <SETTING defaultValue="106"
+    <SETTING defaultValue="107"
         display="0"
         key="SettingsCode"
         label="SettingsCode"
@@ -28,7 +28,7 @@
         display="1"
         key="StyleCode"
         label="StyleCode"
-        maximumValue="5"
+        maximumValue="6"
         minimumValue="0"
         order="0"
         path="0"
@@ -513,8 +513,8 @@
         value="1000" />
     <SETTING defaultValue=""
         display="1"
-        key="TrackBodyID"
-        label="TrackBodyID"
+        key="TrackMarkerID"
+        label="TrackMarkerID"
         order="3"
         path="0"
         type="QString"
@@ -570,6 +570,15 @@
         type="double"
         value="1" />
 
+    <SETTING defaultValue="1000.0"
+        display="1"
+        key="BodyDensity"
+        label="Body default density"
+        minimumValue="0"
+        order="4"
+        path="0"
+        type="double"
+        value="1000.0" />
     <SETTING defaultValue="0.1"
         display="1"
         key="BodyAxesSize"
@@ -1114,5 +1123,48 @@
         order="5"
         type="QString"
         value="." />
+
+    <SETTING defaultValue="Monospace"
+        display="1"
+        key="TextEditDialogEditorFont"
+        label="Raw XML Editor Font"
+        order="5"
+        type="QFont"
+        value="Monospace" />
+    <SETTING defaultValue="false"
+        display="1"
+        key="TextEditDialogCaseSensitiveSearch"
+        label="Raw XML Editor Search Case Sensitive"
+        order="5"
+        type="bool"
+        value="false" />
+    <SETTING defaultValue="false"
+        display="1"
+        key="TextEditDialogRegularExpressionSearch"
+        label="Raw XML Editor Search Regular Expression"
+        order="5"
+        type="bool"
+        value="false" />
+    <SETTING defaultValue=""
+        display="1"
+        key="TextEditDialogReplace"
+        label="Raw XML Editor Replace Last Value"
+        order="5"
+        type="QString"
+        value="" />
+    <SETTING defaultValue=""
+        display="1"
+        key="TextEditDialogFind"
+        label="Raw XML Editor Find Last Value"
+        order="5"
+        type="QString"
+        value="" />
+    <SETTING defaultValue=""
+        display="1"
+        key="TextEditDialogAttributeMachineCode"
+        label="Raw XML Editor Search Attribute Machine Last Values"
+        order="5"
+        type="QString"
+        value="" />
 
 </PREFERENCES>

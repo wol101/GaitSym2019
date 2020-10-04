@@ -12,7 +12,7 @@ class Marker;
 class Simulation;
 
 namespace pgd {
-class Vector;
+class Vector3;
 }
 
 namespace Ui {
@@ -28,7 +28,7 @@ public:
     virtual ~DialogMarkers() Q_DECL_OVERRIDE;
 
     void lateInitialise();
-    void overrideStartPosition(const pgd::Vector &position);
+    void overrideStartPosition(const pgd::Vector3 &position);
 
     void setCursor3DPosition(const QVector3D &cursor3DPosition);
 

@@ -10,11 +10,6 @@
     <height>884</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>Lucida Grande</family>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>GaitSym2019</string>
   </property>
@@ -52,9 +47,7 @@
           </property>
           <widget class="QScrollArea" name="scrollAreaLeft">
            <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
+            <font/>
            </property>
            <property name="widgetResizable">
             <bool>true</bool>
@@ -64,17 +57,15 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>198</width>
-              <height>703</height>
+              <width>171</width>
+              <height>675</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_10">
              <item row="0" column="0">
               <widget class="QGroupBox" name="groupBoxCamera">
                <property name="font">
-                <font>
-                 <pointsize>11</pointsize>
-                </font>
+                <font/>
                </property>
                <property name="mouseTracking">
                 <bool>true</bool>
@@ -120,9 +111,7 @@
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_5">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>Dist</string>
@@ -132,9 +121,7 @@
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_6">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>FoV</string>
@@ -178,9 +165,7 @@
                 <item row="4" column="0">
                  <widget class="QLabel" name="label_7">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>COI X</string>
@@ -221,9 +206,7 @@
                 <item row="5" column="0">
                  <widget class="QLabel" name="label_8">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>COI Y</string>
@@ -264,9 +247,7 @@
                 <item row="6" column="0">
                  <widget class="QLabel" name="label_9">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>COI Z</string>
@@ -326,9 +307,7 @@
                 <item row="2" column="0">
                  <widget class="QLabel" name="label_14">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>Near</string>
@@ -357,9 +336,7 @@
                 <item row="3" column="0">
                  <widget class="QLabel" name="label_15">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>Far</string>
@@ -400,9 +377,7 @@
                 <item row="7" column="0">
                  <widget class="QLabel" name="label_17">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>Offset</string>
@@ -415,9 +390,7 @@
              <item row="1" column="0">
               <widget class="QGroupBox" name="groupBoxDisplay">
                <property name="font">
-                <font>
-                 <pointsize>11</pointsize>
-                </font>
+                <font/>
                </property>
                <property name="title">
                 <string>Display</string>
@@ -432,9 +405,7 @@
                    </sizepolicy>
                   </property>
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="toolTip">
                    <string>Display contact forces on the simulation</string>
@@ -487,7 +458,7 @@
                  </widget>
                 </item>
                 <item row="4" column="0">
-                 <widget class="QComboBox" name="comboBoxTrackingBody"/>
+                 <widget class="QComboBox" name="comboBoxTrackingMarker"/>
                 </item>
                 <item row="3" column="0">
                  <widget class="QRadioButton" name="radioButtonTrackingZ">
@@ -498,9 +469,7 @@
                    </sizepolicy>
                   </property>
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="toolTip">
                    <string>Display muscle forces on the simulation</string>
@@ -522,9 +491,7 @@
                    </sizepolicy>
                   </property>
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="toolTip">
                    <string>Move the centre of interest and camera with simulation</string>
@@ -564,7 +531,7 @@
                 <item row="0" column="0">
                  <widget class="QRadioButton" name="radioButtonTrackingNone">
                   <property name="text">
-                   <string>NoTracking</string>
+                   <string>No Tracking</string>
                   </property>
                   <property name="checked">
                    <bool>true</bool>
@@ -577,9 +544,7 @@
              <item row="3" column="0">
               <widget class="QGroupBox" name="groupBoxMovie">
                <property name="font">
-                <font>
-                 <pointsize>11</pointsize>
-                </font>
+                <font/>
                </property>
                <property name="title">
                 <string>Movie</string>
@@ -616,9 +581,7 @@
                    </sizepolicy>
                   </property>
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>Stride</string>
@@ -656,9 +619,7 @@
                 <item row="3" column="0">
                  <widget class="QLabel" name="label_13">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>Time</string>
@@ -699,9 +660,7 @@
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_16">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>FPS</string>
@@ -717,9 +676,7 @@
                    </sizepolicy>
                   </property>
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>T max</string>
@@ -767,9 +724,7 @@
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_10">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>Cursor</string>
@@ -779,9 +734,7 @@
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_18">
                   <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                   </font>
+                   <font/>
                   </property>
                   <property name="text">
                    <string>Nudge</string>
@@ -870,16 +823,12 @@
             </size>
            </property>
            <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
+            <font/>
            </property>
           </widget>
           <widget class="QScrollArea" name="scrollAreaRight">
            <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
+            <font/>
            </property>
            <property name="widgetResizable">
             <bool>true</bool>
@@ -890,16 +839,14 @@
               <x>0</x>
               <y>0</y>
               <width>358</width>
-              <height>458</height>
+              <height>433</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
              <item row="0" column="0">
               <widget class="QGroupBox" name="groupBoxView">
                <property name="font">
-                <font>
-                 <pointsize>11</pointsize>
-                </font>
+                <font/>
                </property>
                <property name="title">
                 <string>View</string>
@@ -942,9 +889,7 @@
                 </sizepolicy>
                </property>
                <property name="font">
-                <font>
-                 <pointsize>11</pointsize>
-                </font>
+                <font/>
                </property>
                <property name="title">
                 <string>Elements</string>
@@ -1001,7 +946,7 @@
           <x>0</x>
           <y>0</y>
           <width>1137</width>
-          <height>314</height>
+          <height>339</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
@@ -1014,9 +959,7 @@
             </sizepolicy>
            </property>
            <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
+            <font/>
            </property>
            <property name="title">
             <string>Log</string>
@@ -1085,6 +1028,9 @@
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
     <addaction name="actionExportMarkers"/>
+    <addaction name="actionImportMeshesAsBodies"/>
+    <addaction name="separator"/>
+    <addaction name="actionClearMeshCache"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -1122,12 +1068,14 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="actionSelectAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionRawXMLEditor"/>
    </widget>
    <widget class="QMenu" name="menuOptimise">
     <property name="title">
@@ -1142,7 +1090,7 @@
    </widget>
    <widget class="QMenu" name="menuCreate">
     <property name="title">
-     <string>Elements</string>
+     <string>E&amp;lements</string>
     </property>
     <addaction name="actionCreateBody"/>
     <addaction name="actionCreateMarker"/>
@@ -1205,7 +1153,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Load Model Icon/load_model_icon_32x32.png</normaloff>:/images/Load Model Icon/load_model_icon_32x32.png</iconset>
+     <normaloff>:/images/Load Model Icon/load_model_icon_128x128.png</normaloff>:/images/Load Model Icon/load_model_icon_128x128.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open...</string>
@@ -1220,7 +1168,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Save As Icon/save_icon_32x32.png</normaloff>:/images/Save As Icon/save_icon_32x32.png</iconset>
+     <normaloff>:/images/Save As Icon/save_icon_128x128.png</normaloff>:/images/Save As Icon/save_icon_128x128.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
@@ -1246,19 +1194,19 @@
   <action name="actionAboutGaitSymQt">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Desktop Icon/Icon.iconset/icon_32x32.png</normaloff>:/images/Desktop Icon/Icon.iconset/icon_32x32.png</iconset>
+     <normaloff>:/images/Desktop Icon/Icon.iconset/icon_128x128.png</normaloff>:/images/Desktop Icon/Icon.iconset/icon_128x128.png</iconset>
    </property>
    <property name="text">
-    <string>About GaitSym...</string>
+    <string>&amp;About GaitSym...</string>
    </property>
   </action>
   <action name="actionPreferences">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Desktop Icon/Icon.iconset/icon_32x32.png</normaloff>:/images/Desktop Icon/Icon.iconset/icon_32x32.png</iconset>
+     <normaloff>:/images/Desktop Icon/Icon.iconset/icon_128x128.png</normaloff>:/images/Desktop Icon/Icon.iconset/icon_128x128.png</iconset>
    </property>
    <property name="text">
-    <string>Preferences...</string>
+    <string>&amp;Preferences...</string>
    </property>
    <property name="toolTip">
     <string>Set persistant global defaults</string>
@@ -1270,7 +1218,7 @@
   <action name="actionRestart">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Media Control Icons/restart_icon_32x32.png</normaloff>:/images/Media Control Icons/restart_icon_32x32.png</iconset>
+     <normaloff>:/images/Media Control Icons/restart_icon_128x128.png</normaloff>:/images/Media Control Icons/restart_icon_128x128.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Reload</string>
@@ -1283,12 +1231,8 @@
    </property>
   </action>
   <action name="actionOutput">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/images/Desktop Icon/resized_icons/icon32x32.png</normaloff>:/images/Desktop Icon/resized_icons/icon32x32.png</iconset>
-   </property>
    <property name="text">
-    <string>Ou&amp;tput...</string>
+    <string>&amp;Output...</string>
    </property>
    <property name="toolTip">
     <string>Control the output settings</string>
@@ -1300,7 +1244,7 @@
   <action name="actionSaveAs">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Save As Icon/save_as_icon_32x32.png</normaloff>:/images/Save As Icon/save_as_icon_32x32.png</iconset>
+     <normaloff>:/images/Save As Icon/save_as_icon_128x128.png</normaloff>:/images/Save As Icon/save_as_icon_128x128.png</iconset>
    </property>
    <property name="text">
     <string>Save &amp;as...</string>
@@ -1368,7 +1312,7 @@
   </action>
   <action name="actionCut">
    <property name="text">
-    <string>Cut</string>
+    <string>Cu&amp;t</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -1376,7 +1320,7 @@
   </action>
   <action name="actionCopy">
    <property name="text">
-    <string>Copy</string>
+    <string>&amp;Copy</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -1384,7 +1328,7 @@
   </action>
   <action name="actionPaste">
    <property name="text">
-    <string>Paste</string>
+    <string>&amp;Paste</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -1392,7 +1336,7 @@
   </action>
   <action name="actionSelectAll">
    <property name="text">
-    <string>Select All</string>
+    <string>Select &amp;All</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -1400,23 +1344,23 @@
   </action>
   <action name="actionStartWarehouseExport">
    <property name="text">
-    <string>Start Warehouse Export...</string>
+    <string>Start &amp;Warehouse Export...</string>
    </property>
   </action>
   <action name="actionStopWarehouseExport">
    <property name="text">
-    <string>Stop Warehouse Export</string>
+    <string>Sto&amp;p Warehouse Export</string>
    </property>
   </action>
   <action name="actionImportWarehouse">
    <property name="text">
-    <string>Import Warehouse...</string>
+    <string>&amp;Import Warehouse...</string>
    </property>
   </action>
   <action name="actionViewRight">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_right32x32.png</normaloff>:/images/View Direction Icons/view_direction_right32x32.png</iconset>
+     <normaloff>:/images/View Direction Icons/view_direction_right128x128.png</normaloff>:/images/View Direction Icons/view_direction_right128x128.png</iconset>
    </property>
    <property name="text">
     <string>View Right</string>
@@ -1428,7 +1372,7 @@
   <action name="actionViewFront">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_front32x32.png</normaloff>:/images/View Direction Icons/view_direction_front32x32.png</iconset>
+     <normaloff>:/images/View Direction Icons/view_direction_front128x128.png</normaloff>:/images/View Direction Icons/view_direction_front128x128.png</iconset>
    </property>
    <property name="text">
     <string>View Front</string>
@@ -1440,7 +1384,7 @@
   <action name="actionViewTop">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_top32x32.png</normaloff>:/images/View Direction Icons/view_direction_top32x32.png</iconset>
+     <normaloff>:/images/View Direction Icons/view_direction_top128x128.png</normaloff>:/images/View Direction Icons/view_direction_top128x128.png</iconset>
    </property>
    <property name="text">
     <string>View Top</string>
@@ -1452,7 +1396,7 @@
   <action name="actionSnapshot">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Snapshot Icon/snapshot_icon_32x32.png</normaloff>:/images/Snapshot Icon/snapshot_icon_32x32.png</iconset>
+     <normaloff>:/images/Snapshot Icon/snapshot_icon_128x128.png</normaloff>:/images/Snapshot Icon/snapshot_icon_128x128.png</iconset>
    </property>
    <property name="text">
     <string>Snapshot</string>
@@ -1467,7 +1411,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Media Control Icons/run_icon_32x32.png</normaloff>:/images/Media Control Icons/run_icon_32x32.png</iconset>
+     <normaloff>:/images/Media Control Icons/run_icon_128x128.png</normaloff>:/images/Media Control Icons/run_icon_128x128.png</iconset>
    </property>
    <property name="text">
     <string>Run</string>
@@ -1479,7 +1423,7 @@
   <action name="actionStep">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Media Control Icons/step_forward_icon_32x32.png</normaloff>:/images/Media Control Icons/step_forward_icon_32x32.png</iconset>
+     <normaloff>:/images/Media Control Icons/step_forward_icon_128x128.png</normaloff>:/images/Media Control Icons/step_forward_icon_128x128.png</iconset>
    </property>
    <property name="text">
     <string>Step</string>
@@ -1494,7 +1438,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Media Control Icons/record_icon_32x32.png</normaloff>:/images/Media Control Icons/record_icon_32x32.png</iconset>
+     <normaloff>:/images/Media Control Icons/record_icon_128x128.png</normaloff>:/images/Media Control Icons/record_icon_128x128.png</iconset>
    </property>
    <property name="text">
     <string>Record Movie</string>
@@ -1505,7 +1449,7 @@
   </action>
   <action name="actionToggleFullscreen">
    <property name="text">
-    <string>Toggle Fullscreen</string>
+    <string>Toggle &amp;Fullscreen</string>
    </property>
    <property name="toolTip">
     <string>Switches between full screen display and normal display</string>
@@ -1514,7 +1458,7 @@
   <action name="actionViewLeft">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_left32x32.png</normaloff>:/images/View Direction Icons/view_direction_left32x32.png</iconset>
+     <normaloff>:/images/View Direction Icons/view_direction_left128x128.png</normaloff>:/images/View Direction Icons/view_direction_left128x128.png</iconset>
    </property>
    <property name="text">
     <string>View Left</string>
@@ -1526,7 +1470,7 @@
   <action name="actionViewBack">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_back32x32.png</normaloff>:/images/View Direction Icons/view_direction_back32x32.png</iconset>
+     <normaloff>:/images/View Direction Icons/view_direction_back128x128.png</normaloff>:/images/View Direction Icons/view_direction_back128x128.png</iconset>
    </property>
    <property name="text">
     <string>View Back</string>
@@ -1538,7 +1482,7 @@
   <action name="actionViewBottom">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_bottom32x32.png</normaloff>:/images/View Direction Icons/view_direction_bottom32x32.png</iconset>
+     <normaloff>:/images/View Direction Icons/view_direction_bottom128x128.png</normaloff>:/images/View Direction Icons/view_direction_bottom128x128.png</iconset>
    </property>
    <property name="text">
     <string>View Bottom</string>
@@ -1573,12 +1517,12 @@
   </action>
   <action name="actionNextAscentHillclimbing">
    <property name="text">
-    <string>Next Ascent Hillclimbing...</string>
+    <string>&amp;Next Ascent Hillclimbing...</string>
    </property>
   </action>
   <action name="actionRandomAscentHillclimbing">
    <property name="text">
-    <string>Random Ascent Hillclimbing...</string>
+    <string>&amp;Random Ascent Hillclimbing...</string>
    </property>
   </action>
   <action name="actionSimplexSearch">
@@ -1588,26 +1532,26 @@
   </action>
   <action name="actionSimulatedAnnealing">
    <property name="text">
-    <string>Simulated Annealing...</string>
+    <string>S&amp;imulated Annealing...</string>
    </property>
   </action>
   <action name="actionTabuSearch">
    <property name="text">
-    <string>Tabu Search...</string>
+    <string>&amp;Tabu Search...</string>
    </property>
   </action>
   <action name="actionGeneticAlgorithm">
    <property name="text">
-    <string>Genetic Algorithm...</string>
+    <string>&amp;Genetic Algorithm...</string>
    </property>
   </action>
   <action name="actionNew">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/New Model Icon/new_model_classic_icon_32x32.png</normaloff>:/images/New Model Icon/new_model_classic_icon_32x32.png</iconset>
+     <normaloff>:/images/New Model Icon/new_model_classic_icon_128x128.png</normaloff>:/images/New Model Icon/new_model_classic_icon_128x128.png</iconset>
    </property>
    <property name="text">
-    <string>New...</string>
+    <string>&amp;New...</string>
    </property>
    <property name="toolTip">
     <string>Generate a new, empty document</string>
@@ -1618,43 +1562,38 @@
   </action>
   <action name="actionCreateBody">
    <property name="text">
-    <string>Create Body...</string>
+    <string>Create &amp;Body...</string>
    </property>
   </action>
   <action name="actionCreateMarker">
    <property name="text">
-    <string>Create Marker...</string>
+    <string>Create &amp;Marker...</string>
    </property>
   </action>
   <action name="actionCreateJoint">
    <property name="text">
-    <string>Create Joint...</string>
+    <string>Create &amp;Joint...</string>
    </property>
   </action>
   <action name="actionCreateMuscle">
    <property name="text">
-    <string>Create Muscle...</string>
+    <string>Create M&amp;uscle...</string>
    </property>
   </action>
   <action name="actionCreateGeom">
    <property name="text">
-    <string>Create Geom...</string>
+    <string>Create &amp;Geom...</string>
    </property>
   </action>
   <action name="actionEditGlobal">
    <property name="text">
-    <string>Edit Global...</string>
-   </property>
-  </action>
-  <action name="actionEditEnvironment">
-   <property name="text">
-    <string>Edit Environment...</string>
+    <string>Edit G&amp;lobal...</string>
    </property>
   </action>
   <action name="actionConstructionMode">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Mode Icons/construction_mode_32x32.png</normaloff>:/images/Mode Icons/construction_mode_32x32.png</iconset>
+     <normaloff>:/images/Mode Icons/construction_mode_128x128.png</normaloff>:/images/Mode Icons/construction_mode_128x128.png</iconset>
    </property>
    <property name="text">
     <string>Construction Mode</string>
@@ -1666,7 +1605,7 @@
   <action name="actionRunMode">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Mode Icons/run_mode_32x32.png</normaloff>:/images/Mode Icons/run_mode_32x32.png</iconset>
+     <normaloff>:/images/Mode Icons/run_mode_128x128.png</normaloff>:/images/Mode Icons/run_mode_128x128.png</iconset>
    </property>
    <property name="text">
     <string>Run Mode</string>
@@ -1677,69 +1616,42 @@
   </action>
   <action name="actionCreateDriver">
    <property name="text">
-    <string>Create Driver...</string>
-   </property>
-  </action>
-  <action name="actionEditBody">
-   <property name="text">
-    <string>Edit Body...</string>
-   </property>
-  </action>
-  <action name="actionEditMarker">
-   <property name="text">
-    <string>Edit Marker...</string>
-   </property>
-  </action>
-  <action name="actionEditJoint">
-   <property name="text">
-    <string>Edit Joint...</string>
-   </property>
-  </action>
-  <action name="actionEditMuscle">
-   <property name="text">
-    <string>Edit Muscle...</string>
-   </property>
-  </action>
-  <action name="actionEditDriver">
-   <property name="text">
-    <string>Edit Driver...</string>
-   </property>
-  </action>
-  <action name="actionEditAssembly">
-   <property name="text">
-    <string>Edit Assembly...</string>
-   </property>
-  </action>
-  <action name="actionAssemblyMode">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/images/Mode Icons/assembly_mode_32x32.png</normaloff>:/images/Mode Icons/assembly_mode_32x32.png</iconset>
-   </property>
-   <property name="text">
-    <string>Assembly Mode</string>
-   </property>
-   <property name="toolTip">
-    <string>Mode for assembling the simulation</string>
+    <string>Create &amp;Driver...</string>
    </property>
   </action>
   <action name="actionCreateAssembly">
    <property name="text">
-    <string>Create/Edit Assembly...</string>
+    <string>Create/Edit &amp;Assembly...</string>
    </property>
   </action>
   <action name="actionDeleteAssembly">
    <property name="text">
-    <string>Delete Assembly...</string>
+    <string>Delete A&amp;ssembly...</string>
    </property>
   </action>
   <action name="actionResetView">
    <property name="text">
-    <string>Reset View</string>
+    <string>&amp;Reset View</string>
    </property>
   </action>
   <action name="actionExportMarkers">
    <property name="text">
-    <string>Import/Export Markers...</string>
+    <string>&amp;Import/Export Markers...</string>
+   </property>
+  </action>
+  <action name="actionImportMeshesAsBodies">
+   <property name="text">
+    <string>Import &amp;Meshes as Bodies...</string>
+   </property>
+  </action>
+  <action name="actionRawXMLEditor">
+   <property name="text">
+    <string>&amp;Raw XML Editor...</string>
+   </property>
+  </action>
+  <action name="actionClearMeshCache">
+   <property name="text">
+    <string>&amp;Clear Mesh Cache</string>
    </property>
   </action>
  </widget>
@@ -1772,18 +1684,22 @@
   <tabstop>doubleSpinBoxCOIY</tabstop>
   <tabstop>doubleSpinBoxCOIZ</tabstop>
   <tabstop>doubleSpinBoxTrackingOffset</tabstop>
+  <tabstop>radioButtonTrackingNone</tabstop>
   <tabstop>radioButtonTrackingX</tabstop>
   <tabstop>radioButtonTrackingY</tabstop>
   <tabstop>radioButtonTrackingZ</tabstop>
+  <tabstop>comboBoxTrackingMarker</tabstop>
+  <tabstop>comboBoxMeshDisplay</tabstop>
+  <tabstop>comboBoxMuscleColourMap</tabstop>
   <tabstop>doubleSpinBoxCursorSize</tabstop>
   <tabstop>doubleSpinBoxCursorNudge</tabstop>
   <tabstop>spinBoxSkip</tabstop>
   <tabstop>doubleSpinBoxFPS</tabstop>
   <tabstop>doubleSpinBoxTimeMax</tabstop>
-  <tabstop>scrollAreaRight</tabstop>
-  <tabstop>treeWidgetElements</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>textEditLog</tabstop>
+  <tabstop>scrollAreaRight</tabstop>
+  <tabstop>treeWidgetElements</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>

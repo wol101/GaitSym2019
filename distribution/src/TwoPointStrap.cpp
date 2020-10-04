@@ -29,10 +29,6 @@ TwoPointStrap::TwoPointStrap()
 {
 }
 
-TwoPointStrap::~TwoPointStrap()
-{
-}
-
 void TwoPointStrap::SetOrigin(Body *body, const dVector3 point)
 {
     m_originBody = body;
@@ -103,8 +99,16 @@ void TwoPointStrap::Calculate()
     PointForce *theInsertion = (*GetPointForceList())[1].get();
 
     // calculate the world positions
-    dBodyGetRelPointPos(m_originBody->GetBodyID(), m_origin[0], m_origin[1], m_origin[2], theOrigin->point);
-    dBodyGetRelPointPos(m_insertionBody->GetBodyID(), m_insertion[0], m_insertion[1], m_insertion[2], theInsertion->point);
+//    dBodyGetRelPointPos(m_originBody->GetBodyID(), m_origin[0], m_origin[1], m_origin[2], theOrigin->point);
+//    dBodyGetRelPointPos(m_insertionBody->GetBodyID(), m_insertion[0], m_insertion[1], m_insertion[2], theInsertion->point);
+    pgd::Vector3 origin = m_originMarker->GetWorldPosition();
+    theOrigin->point[0] = origin.x;
+    theOrigin->point[1] = origin.y;
+    theOrigin->point[2] = origin.z;
+    pgd::Vector3 insertion = m_insertionMarker->GetWorldPosition();
+    theInsertion->point[0] = insertion.x;
+    theInsertion->point[1] = insertion.y;
+    theInsertion->point[2] = insertion.z;
 
     // calculate the vector from the origin to the insertion
     dVector3 line;
@@ -114,7 +118,7 @@ void TwoPointStrap::Calculate()
 
     // calculate the length and velocity
     double length = std::sqrt(line[0]*line[0] + line[1]*line[1] + line[2]*line[2]);
-    if (Length() >= 0) setVelocity((length - Length()) / simulation()->GetTimeIncrement());
+    if (Length() >= 0 && simulation() && simulation()->GetTimeIncrement() > 0) setVelocity((length - Length()) / simulation()->GetTimeIncrement());
     else setVelocity(0);
     setLength(length);
 
@@ -123,19 +127,19 @@ void TwoPointStrap::Calculate()
     line[1] /= Length();
     line[2] /= Length();
 
-    std::copy_n(line, dV3E__MAX, theOrigin->vector);
+    theOrigin->vector[0] = line[0];
+    theOrigin->vector[1] = line[1];
+    theOrigin->vector[2] = line[2];
 
     // simply reverse the direction for the insertion
-    line[0] = -line[0];
-    line[1] = -line[1];
-    line[2] = -line[2];
-
-    std::copy_n(line, dV3E__MAX, theInsertion->vector);
+    theInsertion->vector[0] = -line[0];
+    theInsertion->vector[1] = -line[1];
+    theInsertion->vector[2] = -line[2];
 }
 
 int TwoPointStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight)
 {
-    const double epsilon = 1e-10;
+    const double epsilon = DBL_EPSILON;
 
     TwoPointStrap *other = dynamic_cast<TwoPointStrap *>(otherStrap);
     if (other == nullptr) return __LINE__;
@@ -228,6 +232,16 @@ void TwoPointStrap::appendToAttributes()
     setAttribute("Type"s, "TwoPoint"s);
     setAttribute("OriginMarkerID"s, m_originMarker->name());
     setAttribute("InsertionMarkerID"s, m_insertionMarker->name());
+}
+
+Marker *TwoPointStrap::GetOriginMarker() const
+{
+    return m_originMarker;
+}
+
+Marker *TwoPointStrap::GetInsertionMarker() const
+{
+    return m_insertionMarker;
 }
 
 

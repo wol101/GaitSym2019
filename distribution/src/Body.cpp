@@ -33,11 +33,11 @@ using namespace std::string_literals;
 
 Body::Body(dWorldID worldID)
 {
-    if (worldID)
+    m_worldID = worldID;
+    if (m_worldID)
     {
         m_bodyID = dBodyCreate(worldID);
         dBodySetData(m_bodyID, this);
-        m_worldID = worldID;
     }
 }
 
@@ -48,17 +48,19 @@ Body::~Body()
 
 void Body::SetPosition(double x, double y, double z)
 {
-    dBodySetPosition(m_bodyID, x, y, z);
+    m_currentPosition[0] = x;
+    m_currentPosition[1] = y;
+    m_currentPosition[2] = z;
+    if (m_bodyID) dBodySetPosition(m_bodyID, x, y, z);
 }
 
-void Body::SetQuaternion(double q0, double q1, double q2, double q3)
+void Body::SetQuaternion(double n, double x, double y, double z)
 {
-    dQuaternion q;
-    q[0] = q0;
-    q[1] = q1;
-    q[2] = q2;
-    q[3] = q3;
-    dBodySetQuaternion(m_bodyID, q);
+    m_currentQuaternion[0] = n;
+    m_currentQuaternion[1] = x;
+    m_currentQuaternion[2] = y;
+    m_currentQuaternion[3] = z;
+    if (m_bodyID) dBodySetQuaternion(m_bodyID, m_currentQuaternion);
 }
 
 // parses the position allowing a relative position specified by BODY ID
@@ -78,7 +80,7 @@ std::string *Body::SetPosition(const std::string &buf)
             setLastError("Body ID=\""s + name() +"\" Position=\""s + buf + "\" marker not found"s);
             return lastErrorPtr();
         }
-        pgd::Vector wp = marker->GetWorldPosition();
+        pgd::Vector3 wp = marker->GetWorldPosition();
         this->SetPosition(wp.x, wp.y, wp.z);
         return nullptr;
     }
@@ -105,9 +107,9 @@ std::string *Body::SetPosition(const std::string &buf)
             return lastErrorPtr();
         }
 
-        pgd::Vector target = marker2->GetWorldPosition();
-        pgd::Vector current = marker2->GetWorldPosition();
-        pgd::Vector difference = target - current;
+        pgd::Vector3 target = marker2->GetWorldPosition();
+        pgd::Vector3 current = marker2->GetWorldPosition();
+        pgd::Vector3 difference = target - current;
         this->SetPosition(difference.x, difference.y, difference.z);
         return nullptr;
     }
@@ -187,14 +189,14 @@ std::string *Body::SetQuaternion(const std::string &buf)
             return lastErrorPtr();
         }
         pgd::Quaternion wq = marker->GetWorldQuaternion();
-        this->SetQuaternion(wq.n, wq.v.x, wq.v.y, wq.v.z);
+        this->SetQuaternion(wq.n, wq.x, wq.y, wq.z);
         return nullptr;
     }
 
     if (tokens.size() == 4)
     {
         pgd::Quaternion wq = GSUtil::GetQuaternion(tokens, 0);
-        this->SetQuaternion(wq.n, wq.v.x, wq.v.y, wq.v.z);
+        this->SetQuaternion(wq.n, wq.x, wq.y, wq.z);
         return nullptr;
     }
 
@@ -206,7 +208,7 @@ std::string *Body::SetQuaternion(const std::string &buf)
             if (tokens[0] == "World"s)
             {
                 pgd::Quaternion wq = GSUtil::GetQuaternion(tokens, 1);
-                this->SetQuaternion(wq.n, wq.v.x, wq.v.y, wq.v.z);
+                this->SetQuaternion(wq.n, wq.x, wq.y, wq.z);
                 return nullptr;
             }
             else
@@ -219,7 +221,7 @@ std::string *Body::SetQuaternion(const std::string &buf)
         pgd::Quaternion qBody(q[0], q[1], q[2], q[3]);
         pgd::Quaternion qIn = GSUtil::GetQuaternion(tokens, 1);
         pgd::Quaternion qNew = qBody * qIn;
-        this->SetQuaternion(qNew.n, qNew.v.x, qNew.v.y, qNew.v.z);
+        this->SetQuaternion(qNew.n, qNew.x, qNew.y, qNew.z);
         return nullptr;
     }
     setLastError("Body ID=\""s + name() +"\" Position=\""s + buf + "\" wrong number of tokens"s);
@@ -274,6 +276,35 @@ std::string *Body::SetLinearVelocity(const std::string &buf)
     return lastErrorPtr();
 }
 
+void Body::SetPositionDelta(double x, double y, double z)
+{
+    m_currentPosition[0] += x;
+    m_currentPosition[1] += y;
+    m_currentPosition[2] += z;
+    if (m_bodyID)
+    {
+        const double *p = dBodyGetPosition(m_bodyID);
+        dBodySetPosition(m_bodyID, p[0] + x, p[1] + y, p[2] + z);
+    }
+}
+
+void Body::SetQuaternionDelta(double n, double x, double y, double z)
+{
+    dQuaternion qb = {n, x, y, z};
+    dQuaternion qa;
+    dQMultiply0(qa, qb, m_currentQuaternion);
+    m_currentQuaternion[0] = qa[0];
+    m_currentQuaternion[1] = qa[1];
+    m_currentQuaternion[2] = qa[2];
+    m_currentQuaternion[3] = qa[3];
+    if (m_bodyID)
+    {
+        const double *q = dBodyGetQuaternion(m_bodyID);
+        dQMultiply0(qa, qb, q);
+        dBodySetQuaternion(m_bodyID, qa);
+    }
+}
+
 double Body::GetLinearKineticEnergy()
 {
     // linear KE = 0.5 m v^2
@@ -313,7 +344,7 @@ double Body::GetRotationalKineticEnergy()
     dVector3 o;
     dBodyVectorFromWorld (m_bodyID, ow[0], ow[1], ow[2], o);
     dVector3 o1;
-    dMULTIPLY0_331(o1, mass.I, o);
+    dMultiply0_331(o1, mass.I, o);
     double rotationalKE = 0.5 * (o[0]*o1[0] + o[1]*o1[1] + o[2]*o1[2]);
 
     return rotationalKE;
@@ -394,17 +425,18 @@ void Body::SetMass(const dMass *mass)
 
 const double *Body::GetPosition()
 {
-    return dBodyGetPosition(m_bodyID);
+    if (m_bodyID)
+        return dBodyGetPosition(m_bodyID);
+    else
+        return m_currentPosition;
 }
 
 const double *Body::GetQuaternion()
 {
-    return dBodyGetQuaternion(m_bodyID);
-}
-
-const double *Body::GetRotation()
-{
-    return dBodyGetRotation (m_bodyID);
+    if (m_bodyID)
+        return dBodyGetQuaternion(m_bodyID);
+    else
+        return m_currentQuaternion;
 }
 
 const double *Body::GetLinearVelocity()
@@ -417,18 +449,30 @@ const double *Body::GetAngularVelocity()
     return dBodyGetAngularVel(m_bodyID);
 }
 
-void Body::GetRelativePosition(Body *rel, pgd::Vector *pos)
+void Body::GetPosition(pgd::Vector3 *pos)
+{
+    const double *p = GetPosition();
+    *pos = pgd::Vector3(p[0], p[1], p[2]);
+}
+
+void Body::GetQuaternion(pgd::Quaternion *quat)
+{
+    const double *qW = GetQuaternion();
+    *quat = pgd::Quaternion(qW[0], qW[1], qW[2], qW[3]);
+}
+
+void Body::GetRelativePosition(Body *rel, pgd::Vector3 *pos)
 {
     dVector3 result;
     const double *p = GetPosition();
     if (rel)
     {
         dBodyGetPosRelPoint(rel->GetBodyID(), p[0], p[1], p[2], result);
-        *pos = pgd::Vector(result[0], result[1], result[2]);
+        *pos = pgd::Vector3(result[0], result[1], result[2]);
     }
     else
     {
-        *pos = pgd::Vector(p[0], p[1], p[2]);
+        *pos = pgd::Vector3(p[0], p[1], p[2]);
     }
 }
 
@@ -448,55 +492,39 @@ void Body::GetRelativeQuaternion(Body *rel, pgd::Quaternion *quat)
     }
 }
 
-void Body::GetRelativeRotation(Body *rel, pgd::Matrix3x3 *rot)
-{
-    const double *rW = GetRotation();
-    if (rel)
-    {
-        const double *rR = rel->GetRotation();
-        pgd::Matrix3x3 rWorld(rW[0], rW[1], rW[2], rW[4], rW[5], rW[6], rW[8], rW[9], rW[10]);
-        pgd::Matrix3x3 rRelBody(rR[0], rR[1], rR[2], rR[4], rR[5], rR[6], rR[8], rR[9], rR[10]);
-        *rot = rRelBody.Inverse() * rWorld;
-    }
-    else
-    {
-        *rot = pgd::Matrix3x3(rW[0], rW[1], rW[2], rW[4], rW[5], rW[6], rW[8], rW[9], rW[10]);
-    }
-}
-
-void Body::GetRelativeLinearVelocity(Body *rel, pgd::Vector *vel)
+void Body::GetRelativeLinearVelocity(Body *rel, pgd::Vector3 *vel)
 {
     const double *v = GetLinearVelocity();
     if (rel)
     {
         const double *qR = rel->GetQuaternion();
         const double *vR = rel->GetLinearVelocity();
-        pgd::Vector worldV(v[0], v[1], v[2]);
-        pgd::Vector relV(vR[0], vR[1], vR[2]);
+        pgd::Vector3 worldV(v[0], v[1], v[2]);
+        pgd::Vector3 relV(vR[0], vR[1], vR[2]);
         pgd::Quaternion qRelBody(qR[0], qR[1], qR[2], qR[3]);
         *vel = QVRotate(~qRelBody, worldV - relV);
     }
     else
     {
-        *vel = pgd::Vector(v[0], v[1], v[2]);
+        *vel = pgd::Vector3(v[0], v[1], v[2]);
     }
 }
 
-void Body::GetRelativeAngularVelocity(Body *rel, pgd::Vector *rVel)
+void Body::GetRelativeAngularVelocity(Body *rel, pgd::Vector3 *rVel)
 {
     const double *vR = GetAngularVelocity();
     if (rel)
     {
         const double *qR = rel->GetQuaternion();
         const double *vRR = rel->GetAngularVelocity();
-        pgd::Vector worldVR(vR[0], vR[1], vR[2]);
-        pgd::Vector relVR(vRR[0], vRR[1], vRR[2]);
+        pgd::Vector3 worldVR(vR[0], vR[1], vR[2]);
+        pgd::Vector3 relVR(vRR[0], vRR[1], vRR[2]);
         pgd::Quaternion qRelBody(qR[0], qR[1], qR[2], qR[3]);
         *rVel = QVRotate(~qRelBody, worldVR - relVR);
     }
     else
     {
-        *rVel = pgd::Vector(vR[0], vR[1], vR[2]);
+        *rVel = pgd::Vector3(vR[0], vR[1], vR[2]);
     }
 }
 
@@ -534,12 +562,12 @@ Body::LimitTestResult Body::TestLimits()
     return WithinLimits;
 }
 
-std::string Body::dump()
+std::string Body::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tXP\tYP\tZP\tXV\tYV\tZV\tQW\tQX\tQY\tQZ\tRVX\tRVY\tRVZ\tLKEX\tLKEY\tLKEZ\tRKE\tGPE\n";

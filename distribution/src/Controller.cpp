@@ -17,12 +17,12 @@ Controller::Controller()
 {
 }
 
-std::string Controller::dump()
+std::string Controller::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tValue\tDriverSum\n";

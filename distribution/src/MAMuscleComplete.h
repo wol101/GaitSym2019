@@ -107,19 +107,64 @@ public:
     double GetSSE() { return m_Params.sse; }
     double GetSPE() { return m_Params.spe; }
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual void LateInitialisation();
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
-    double fibreLength() const;
 
-    double tendonLength() const;
 
-    double pca() const;
 
     double forcePerUnitArea() const;
+    void setForcePerUnitArea(double forcePerUnitArea);
+
+    double vMaxFactor() const;
+    void setVMaxFactor(double vMaxFactor);
+
+    double pca() const;
+    void setPca(double pca);
+
+    double fibreLength() const;
+    void setFibreLength(double fibreLength);
+
+    double activationK() const;
+    void setActivationK(double activationK);
+
+    double width() const;
+    void setWidth(double width);
+
+    double tendonLength() const;
+    void setTendonLength(double tendonLength);
+
+    double akFastTwitchProportion() const;
+    void setAkFastTwitchProportion(double akFastTwitchProportion);
+
+    double akTActivationA() const;
+    void setAkTActivationA(double akTActivationA);
+
+    double akTActivationB() const;
+    void setAkTActivationB(double akTActivationB);
+
+    double akTDeactivationA() const;
+    void setAkTDeactivationA(double akTDeactivationA);
+
+    double akTDeactivationB() const;
+    void setAkTDeactivationB(double akTDeactivationB);
+
+    double initialFibreLength() const;
+    void setInitialFibreLength(double initialFibreLength);
+
+    double startActivation() const;
+    void setStartActivation(double startActivation);
+
+    StrainModel serialStrainModel() const;
+    void setSerialStrainModel(const StrainModel &serialStrainModel);
+    void setSerialStrainModel(const std::string &serialStrainModel);
+
+    StrainModel parallelStrainModel() const;
+    void setParallelStrainModel(const StrainModel &parallelStrainModel);
+    void setParallelStrainModel(const std::string &parallelStrainModel);
 
 private:
 
@@ -131,16 +176,16 @@ private:
     double m_ActivationRate = 0;
     double m_serialStrainAtFmax = 0;
     double m_serialStrainRateAtFmax = 0;
-    StrainModel m_serialStrainModel = StrainModel::linear;
     double m_parallelStrainAtFmax = 0;
     double m_parallelStrainRateAtFmax = 0;
-    StrainModel m_parallelStrainModel = StrainModel::linear;
     double m_MinimumActivation = 0.001; // arbitrary value so that we avoid some numerical issues
 
     CalculateForceErrorParams m_Params;
     double m_Tolerance = 1e-8; // solution tolerance (m) - small because the serial tendons are quite stiff
 
     // these values are only used for loading and saving
+    StrainModel m_serialStrainModel = StrainModel::linear;
+    StrainModel m_parallelStrainModel = StrainModel::linear;
     double m_forcePerUnitArea = 0;
     double m_vMaxFactor = 0;
     double m_pca = 0;

@@ -30,10 +30,6 @@ NPointStrap::NPointStrap(): Strap()
 {
 }
 
-NPointStrap::~NPointStrap()
-{
-}
-
 void NPointStrap::SetOrigin(Body *body, const dVector3 point)
 {
     m_originBody = body;
@@ -98,7 +94,7 @@ void NPointStrap::SetInsertion(Marker *insertionMarker)
     this->SetInsertion(insertionMarker->GetBody(), insertionMarker->GetPosition().data());
 }
 
-void NPointStrap::SetViaPoints(std::vector<Body *> *bodyList, std::vector<pgd::Vector> *pointList)
+void NPointStrap::SetViaPoints(std::vector<Body *> *bodyList, std::vector<pgd::Vector3> *pointList)
 {
     if (pointList->size() != bodyList->size())
     {
@@ -138,7 +134,7 @@ void NPointStrap::SetViaPoints(std::vector<Marker *> *viaPointMarkerList)
     }
 }
 
-const std::vector<pgd::Vector> *NPointStrap::GetViaPoints() const
+const std::vector<pgd::Vector3> *NPointStrap::GetViaPoints() const
 {
     return &m_ViaPointList;
 }
@@ -148,20 +144,50 @@ const std::vector<Body *> *NPointStrap::GetViaPointBodies() const
     return &m_ViaBodyList;
 }
 
+const std::vector<Marker *> *NPointStrap::GetViaPointMarkers() const
+{
+    return &m_ViaPointMarkerList;
+}
+
+Marker *NPointStrap::GetOriginMarker() const
+{
+    return m_originMarker;
+}
+
+Marker *NPointStrap::GetInsertionMarker() const
+{
+    return m_insertionMarker;
+}
+
 void NPointStrap::Calculate()
 {
     PointForce *theOrigin = (*GetPointForceList())[0].get();
     PointForce *theInsertion = (*GetPointForceList())[1].get();
     unsigned int i;
-    pgd::Vector v;
+    pgd::Vector3 v;
 
     // calculate the world positions
-    dBodyGetRelPointPos(m_originBody->GetBodyID(), m_origin[0], m_origin[1], m_origin[2], theOrigin->point);
-    dBodyGetRelPointPos(m_insertionBody->GetBodyID(), m_insertion[0], m_insertion[1], m_insertion[2], theInsertion->point);
-    for (i = 0; i < m_ViaPointList.size(); i++)
+//    dBodyGetRelPointPos(m_originBody->GetBodyID(), m_origin[0], m_origin[1], m_origin[2], theOrigin->point);
+//    dBodyGetRelPointPos(m_insertionBody->GetBodyID(), m_insertion[0], m_insertion[1], m_insertion[2], theInsertion->point);
+    pgd::Vector3 origin = m_originMarker->GetWorldPosition();
+    theOrigin->point[0] = origin.x;
+    theOrigin->point[1] = origin.y;
+    theOrigin->point[2] = origin.z;
+    pgd::Vector3 insertion = m_insertionMarker->GetWorldPosition();
+    theInsertion->point[0] = insertion.x;
+    theInsertion->point[1] = insertion.y;
+    theInsertion->point[2] = insertion.z;
+//    for (i = 0; i < m_ViaPointList.size(); i++)
+//    {
+//        v = m_ViaPointList[i];
+//        dBodyGetRelPointPos(m_ViaBodyList[i]->GetBodyID(), v.x, v.y, v.z, (*GetPointForceList())[i + 2]->point);
+//    }
+    for (i = 0; i < m_ViaPointMarkerList.size(); i++)
     {
-        v = m_ViaPointList[i];
-        dBodyGetRelPointPos(m_ViaBodyList[i]->GetBodyID(), v.x, v.y, v.z, (*GetPointForceList())[i + 2]->point);
+        v = m_ViaPointMarkerList[i]->GetWorldPosition();
+        (*GetPointForceList())[i + 2]->point[0] = v.x;
+        (*GetPointForceList())[i + 2]->point[1] = v.y;
+        (*GetPointForceList())[i + 2]->point[2] = v.z;
     }
 
     std::unique_ptr<unsigned int[]> mapping = std::make_unique<unsigned int[]>(GetPointForceList()->size());
@@ -173,7 +199,7 @@ void NPointStrap::Calculate()
             else mapping[i] = i + 1;
     }
 
-    pgd::Vector line, line2;
+    pgd::Vector3 line, line2;
     double totalLength = 0;
     double len;
     for (i = 0; i < GetPointForceList()->size(); i++)
@@ -214,7 +240,7 @@ void NPointStrap::Calculate()
         (*GetPointForceList())[mapping[i]]->vector[2] = line.z;
     }
 
-    if (Length() >= 0) setVelocity((totalLength - Length()) / simulation()->GetTimeIncrement());
+    if (Length() >= 0 && simulation() && simulation()->GetTimeIncrement() > 0) setVelocity((totalLength - Length()) / simulation()->GetTimeIncrement());
     else setVelocity(0);
     setLength(totalLength);
 }

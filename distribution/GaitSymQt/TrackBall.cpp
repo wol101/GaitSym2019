@@ -20,7 +20,7 @@ Trackball::Trackball()
 // note: clicks outside the trackball radius have a different rotation behaviour
 // note: values given in window coordinates with raster origin at top left
 void Trackball::StartTrackball(int mouseX, int mouseY, int trackballOriginX, int trackballOriginY,
-                               int trackballRadius, const pgd::Vector &up, const pgd::Vector &out)
+                               int trackballRadius, const pgd::Vector3 &up, const pgd::Vector3 &out)
 {
     mTrackballRadius = trackballRadius;
     mStartMouseX = mouseX;
@@ -47,11 +47,11 @@ void Trackball::RollTrackballToClick(int mouseX, int mouseY, pgd::Quaternion *ro
     if (mouseX == mStartMouseX && mouseY == mStartMouseY)
     {
         rotation->n = 1;
-        rotation->v.x = rotation->v.y = rotation->v.z = 0;
+        rotation->x = rotation->y = rotation->z = 0;
         return;
     }
-    pgd::Vector v1;
-    pgd::Vector v2;
+    pgd::Vector3 v1;
+    pgd::Vector3 v2;
     if (mOutsideRadius == false)   // normal behaviour
     {
         v1 = (mStartMouseX - mTrackballOriginX) * mLeft + (mTrackballOriginY - mStartMouseY) * mUp +
@@ -67,7 +67,7 @@ void Trackball::RollTrackballToClick(int mouseX, int mouseY, pgd::Quaternion *ro
     }
 
     // cross product will get us the rotation axis
-    pgd::Vector axis = v1 ^ v2;
+    pgd::Vector3 axis = v1 ^ v2;
 
     // Use atan for a better angle.  If you use only cos or sin, you only get
     // half the possible angles, and you can end up with rotations that flip around near

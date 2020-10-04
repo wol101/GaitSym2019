@@ -105,6 +105,31 @@ void MAMuscle::SetAlpha(double alpha)
     GetStrap()->SetTension(fCE);
 }
 
+void MAMuscle::setFibreLength(double fibreLength)
+{
+    m_fibreLength = fibreLength;
+}
+
+void MAMuscle::setPca(double pca)
+{
+    m_pca = pca;
+}
+
+double MAMuscle::vMaxFactor() const
+{
+    return m_vMaxFactor;
+}
+
+void MAMuscle::setVMaxFactor(double vMaxFactor)
+{
+    m_vMaxFactor = vMaxFactor;
+}
+
+void MAMuscle::setForcePerUnitArea(double forcePerUnitArea)
+{
+    m_forcePerUnitArea = forcePerUnitArea;
+}
+
 double MAMuscle::forcePerUnitArea() const
 {
     return m_forcePerUnitArea;
@@ -172,12 +197,12 @@ void MAMuscle::appendToAttributes()
     setAttribute("ActivationK"s, *GSUtil::ToString(m_K, &buf));
 }
 
-std::string MAMuscle::dump()
+std::string MAMuscle::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tVMax\tF0\tK\tAlpha\tFCE\tLCE\tVCE\tPMECH\tPMET\n";

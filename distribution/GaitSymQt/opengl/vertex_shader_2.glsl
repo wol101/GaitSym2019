@@ -1,13 +1,13 @@
-#version 330
+#version 330 core
 
 // this is a fixed colour shader
 
-uniform mat4 mvpMatrix;
+uniform highp mat4 mvpMatrix;
 
-in vec4 vertex;
-in vec4 vertexColor;
+in highp vec4 vertex;
+in highp vec4 vertexColor;
 
-out vec4 color;
+out highp vec4 color;
 
 void main ()
 {

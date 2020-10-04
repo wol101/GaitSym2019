@@ -15,6 +15,7 @@
 #include "SmartEnum.h"
 
 #include <string>
+#include <vector>
 
 using namespace std::string_literals;
 
@@ -28,27 +29,7 @@ public:
 //    Global& operator=(const Global&);
 
     SMART_ENUM(StepType, stepTypeStrings, stepTypeCount, World, Quick);
-    SMART_ENUM(FitnessType, fitnessTypeStrings, fitnessTypeCount, DistanceTravelled, KinematicMatch, KinematicMatchMiniMax, KinematicMatchContinuous, KinematicMatchContinuousMiniMax);
-
-//    enum StepType
-//    {
-//        WorldStep = 0,
-//        QuickStep = 1,
-//        StepTypeMax = QuickStep
-//    };
-//    const char *StepTypeNames[StepType::StepTypeMax + 1] = {"World", "Quick"};
-
-//    enum FitnessType
-//    {
-//        DistanceTravelled = 0,
-//        KinematicMatch = 1,
-//        KinematicMatchMiniMax = 2,
-//        KinematicMatchContinuous = 3,
-//        KinematicMatchContinuousMiniMax = 4,
-//        ClosestWarehouse = 5,
-//        FitnessTypeMax = ClosestWarehouse
-//    };
-//    const char *FitnessTypeNames[FitnessTypeMax + 1] = {"DistanceTravelled", "KinematicMatch", "KinematicMatchMiniMax", "KinematicMatchContinuous", "KinematicMatchContinuousMiniMax", "ClosestWarehouse"};
+    SMART_ENUM(FitnessType, fitnessTypeStrings, fitnessTypeCount, KinematicMatch, KinematicMatchMiniMax);
 
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
@@ -66,8 +47,8 @@ public:
     bool AllowInternalCollisions() const;
     void setAllowInternalCollisions(bool AllowInternalCollisions);
 
-    pgd::Vector Gravity() const;
-    void setGravity(const pgd::Vector &gravity);
+    pgd::Vector3 Gravity() const;
+    void setGravity(const pgd::Vector3 &gravity);
     void setGravity(double gravityX, double gravityY, double gravityZ);
 
     double BMR() const;
@@ -118,8 +99,8 @@ public:
     double DampingConstant() const;
     void setDampingConstant(double DampingConstant);
 
-    std::string MeshSearchPath() const;
-    void setMeshSearchPath(const std::string &MeshSearchPath);
+    std::vector<std::string> *MeshSearchPath();
+    const std::vector<std::string> *ConstMeshSearchPath() const;
 
     double LinearDamping() const;
     void setLinearDamping(double LinearDamping);
@@ -127,12 +108,15 @@ public:
     double AngularDamping() const;
     void setAngularDamping(double AngularDamping);
 
+    static std::string percentEncode(const std::string &input, const std::string &encodeList);
+    static std::string percentDecode(const std::string &input);
+
 private:
     FitnessType m_FitnessType = KinematicMatch;
     StepType m_StepType = World;
     bool m_AllowConnectedCollisions = false;
     bool m_AllowInternalCollisions = false;
-    pgd::Vector m_Gravity = {0, 0, -9.81};
+    pgd::Vector3 m_Gravity = {0, 0, -9.81};
     double m_BMR = 0;
     double m_CFM = 1e-10;
     double m_ContactMaxCorrectingVel = 100;
@@ -152,7 +136,7 @@ private:
     std::string m_CurrentWarehouseFile;
     std::string m_DistanceTravelledBodyIDName;
     std::string m_OutputModelStateFile;
-    std::string m_MeshSearchPath = "."s;
+    std::vector<std::string> m_MeshSearchPath = {"."s};
 };
 
 #endif // GLOBAL_H

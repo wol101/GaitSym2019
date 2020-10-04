@@ -19,6 +19,7 @@
 class Joint;
 class FacetedObject;
 class SimulationWidget;
+class TexturedQuad;
 
 class DrawJoint : public Drawable
 {
@@ -40,6 +41,7 @@ private:
     std::unique_ptr<FacetedObject> m_facetedObject1;
     std::unique_ptr<FacetedObject> m_facetedObject2;
     std::unique_ptr<FacetedObject> m_facetedObject3;
+//    std::unique_ptr<TexturedQuad> m_texturedQuad;
 
     double m_jointAxisSize;
     QColor m_jointColor;

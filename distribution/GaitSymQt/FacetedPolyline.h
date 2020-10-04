@@ -19,7 +19,7 @@ class Line3D
 public:
 
     Line3D() {}
-    Line3D(pgd::Vector *theOrigin, pgd::Vector *theDirection)
+    Line3D(pgd::Vector3 *theOrigin, pgd::Vector3 *theDirection)
     {
         origin = *theOrigin;
         direction = *theDirection;
@@ -31,8 +31,8 @@ public:
         direction.Normalize();
     }
 
-    pgd::Vector origin;
-    pgd::Vector direction;
+    pgd::Vector3 origin;
+    pgd::Vector3 direction;
 
 };
 
@@ -55,16 +55,16 @@ public:
         d = dd;
         Normalize();
     }
-    Plane3D(pgd::Vector *theOrigin, pgd::Vector *theDirection1, pgd::Vector *theDirection2)
+    Plane3D(pgd::Vector3 *theOrigin, pgd::Vector3 *theDirection1, pgd::Vector3 *theDirection2)
     {
-        pgd::Vector normal = *theDirection1 ^ *theDirection2;
+        pgd::Vector3 normal = *theDirection1 ^ *theDirection2;
         a = normal.x;
         b = normal.y;
         c = normal.z;
         d = (-normal) * *theOrigin;
         Normalize();
     }
-    Plane3D(pgd::Vector *theOrigin, pgd::Vector *theNormal)
+    Plane3D(pgd::Vector3 *theOrigin, pgd::Vector3 *theNormal)
     {
         a = theNormal->x;
         b = theNormal->y;
@@ -72,9 +72,9 @@ public:
         d = (-(*theNormal)) * *theOrigin;
     }
 
-    pgd::Vector GetNormal()
+    pgd::Vector3 GetNormal()
     {
-        return pgd::Vector(a, b, c);
+        return pgd::Vector3(a, b, c);
     }
     void Normalize()
     {
@@ -94,10 +94,10 @@ public:
 class FacetedPolyline: public FacetedObject
 {
 public:
-    FacetedPolyline(std::vector<pgd::Vector> *polyline, double radius, size_t n, const QColor &blendColour, double blendFraction);
+    FacetedPolyline(std::vector<pgd::Vector3> *polyline, double radius, size_t n, const QColor &blendColour, double blendFraction);
 
-    void Extrude(std::vector<pgd::Vector> *polyline, std::vector<pgd::Vector> *profile);
-    static bool Intersection(Line3D *line, Plane3D *plane, pgd::Vector *intersection);
+    void Extrude(std::vector<pgd::Vector3> *polyline, std::vector<pgd::Vector3> *profile);
+    static bool Intersection(Line3D *line, Plane3D *plane, pgd::Vector3 *intersection);
 
 };
 

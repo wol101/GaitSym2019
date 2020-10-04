@@ -22,13 +22,17 @@ struct MeshStoreObject
 {
     uint64_t size() const
     {
-        return (vertexList.size() * sizeof(double) + normalList.size() * sizeof(double) +
-                colourList.size() * sizeof(double) + sizeof(MeshStoreObject));
+        return (vertexList.size() * sizeof(double) +
+                normalList.size() * sizeof(double) +
+                colourList.size() * sizeof(double) +
+                uvList.size() * sizeof(double) +
+                sizeof(MeshStoreObject));
     }
     std::string path;
     std::vector<double> vertexList;
     std::vector<double> normalList;
     std::vector<double> colourList;
+    std::vector<double> uvList;
     dVector3 lowerBound = {DBL_MAX, DBL_MAX, DBL_MAX, 0};
     dVector3 upperBound = {-DBL_MAX, -DBL_MAX, -DBL_MAX, 0};
 };
@@ -41,7 +45,9 @@ public:
     MeshStoreObject *getMesh(const std::string &path);
     void addMesh(const MeshStoreObject &meshStoreObject);
     void addMesh(const std::string &path, const std::vector<double> &vertexList, const std::vector<double> &normalList,
-                 const std::vector<double> &colourList, const dVector3 &lowerBound, const dVector3 &upperBound);
+                 const std::vector<double> &colourList, const std::vector<double> &uvList,
+                 const dVector3 &lowerBound, const dVector3 &upperBound);
+    void clear();
 
     uint64_t getCurrentMemory();
     void setTargetMemory(uint64_t targetMemory);

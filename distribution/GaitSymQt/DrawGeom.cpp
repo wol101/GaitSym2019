@@ -101,11 +101,6 @@ void DrawGeom::initialise(SimulationWidget *simulationWidget)
         size_t ny = nx;
         m_facetedObject = std::make_unique<FacetedCheckerboard>(nx, ny, checkerSize, checkerSize, m_geomColor1, m_geomColor2);
         m_facetedObject->setSimulationWidget(simulationWidget);
-        Marker *marker = planeGeom->geomMarker();
-        pgd::Quaternion q = marker->GetWorldQuaternion();
-        pgd::Vector p = marker->GetWorldPosition();
-        SetDisplayRotation(q.data());
-        SetDisplayPosition(p.x, p.y, p.z);
         m_facetedObjectList.push_back(m_facetedObject.get());
         return;
     }
@@ -115,31 +110,49 @@ void DrawGeom::initialise(SimulationWidget *simulationWidget)
 
 void DrawGeom::updateEntityPose()
 {
-    SphereGeom *sphereGeom = dynamic_cast<SphereGeom *>(m_geom);
-    if (sphereGeom)
-    {
-        Marker *marker = sphereGeom->geomMarker();
-        pgd::Quaternion q = marker->GetWorldQuaternion();
-        pgd::Vector p = marker->GetWorldPosition();
-        SetDisplayRotationFromQuaternion(q.data());
-        SetDisplayPosition(p.x, p.y, p.z);
-        return;
-    }
+    Marker *marker = m_geom->geomMarker();
+    pgd::Quaternion q = marker->GetWorldQuaternion();
+    pgd::Vector3 p = marker->GetWorldPosition();
+    SetDisplayRotationFromQuaternion(q.data());
+    SetDisplayPosition(p.x, p.y, p.z);
 
-    CappedCylinderGeom *cappedCylinderGeom = dynamic_cast<CappedCylinderGeom *>(m_geom);
-    if (cappedCylinderGeom)
-    {
-        Marker *marker = cappedCylinderGeom->geomMarker();
-        pgd::Quaternion q = marker->GetWorldQuaternion();
-        pgd::Vector p = marker->GetWorldPosition();
-        SetDisplayRotationFromQuaternion(q.data());
-        SetDisplayPosition(p.x, p.y, p.z);
-        return;
-    }
+//    SphereGeom *sphereGeom = dynamic_cast<SphereGeom *>(m_geom);
+//    if (sphereGeom)
+//    {
+//        Marker *marker = sphereGeom->geomMarker();
+//        pgd::Quaternion q = marker->GetWorldQuaternion();
+//        pgd::Vector3 p = marker->GetWorldPosition();
+//        SetDisplayRotationFromQuaternion(q.data());
+//        SetDisplayPosition(p.x, p.y, p.z);
+//        return;
+//    }
+
+//    CappedCylinderGeom *cappedCylinderGeom = dynamic_cast<CappedCylinderGeom *>(m_geom);
+//    if (cappedCylinderGeom)
+//    {
+//        Marker *marker = cappedCylinderGeom->geomMarker();
+//        pgd::Quaternion q = marker->GetWorldQuaternion();
+//        pgd::Vector3 p = marker->GetWorldPosition();
+//        SetDisplayRotationFromQuaternion(q.data());
+//        SetDisplayPosition(p.x, p.y, p.z);
+//        return;
+//    }
+
+//    PlaneGeom *planeGeom = dynamic_cast<PlaneGeom *>(m_geom);
+//    if (planeGeom)
+//    {
+//        Marker *marker = planeGeom->geomMarker();
+//        pgd::Quaternion q = marker->GetWorldQuaternion();
+//        pgd::Vector3 p = marker->GetWorldPosition();
+//        SetDisplayRotation(q.data());
+//        SetDisplayPosition(p.x, p.y, p.z);
+//        return;
+//    }
 }
 
 void DrawGeom::Draw()
 {
     m_facetedObject->Draw();
+    m_geom->setRedraw(false);
 }
 

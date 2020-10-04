@@ -83,3 +83,15 @@ void PIDErrorInController::appendToAttributes()
     setAttribute("Kd"s, *GSUtil::ToString(m_Kd, &buf));
 }
 
+std::string PIDErrorInController::dumpToString()
+{
+    std::string s;
+    if (firstDump())
+    {
+        setFirstDump(false);
+        s = dumpHelper({"Time", "Kp"s, "Ki"s, "Kd"s, "previous_error"s, "error"s, "integral"s, "derivative"s, "output"s, "dt"s, "value"s});
+    }
+    s += dumpHelper({simulation()->GetTime(), m_Kp, m_Ki, m_Kd, m_previous_error, m_error, m_integral, m_derivative, m_output, m_dt, value()});
+    return s;
+}
+

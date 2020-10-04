@@ -31,7 +31,7 @@ public:
     virtual void Update() = 0;
     virtual void SendData();
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
     virtual void appendToAttributes();

@@ -214,10 +214,10 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
         if (twoPointStrap)
         {
             std::vector<std::unique_ptr<PointForce >> *pointForceList = twoPointStrap->GetPointForceList();
-            std::vector<pgd::Vector> polyline;
+            std::vector<pgd::Vector3> polyline;
             polyline.reserve(pointForceList->size());
-            polyline.push_back(pgd::Vector(pointForceList->at(0)->point[0], pointForceList->at(0)->point[1], pointForceList->at(0)->point[2]));
-            polyline.push_back(pgd::Vector(pointForceList->at(1)->point[0], pointForceList->at(1)->point[1], pointForceList->at(1)->point[2]));
+            polyline.push_back(pgd::Vector3(pointForceList->at(0)->point[0], pointForceList->at(0)->point[1], pointForceList->at(0)->point[2]));
+            polyline.push_back(pgd::Vector3(pointForceList->at(1)->point[0], pointForceList->at(1)->point[1], pointForceList->at(1)->point[2]));
             m_facetedObject1 = std::make_unique<FacetedPolyline>(&polyline, m_strapRadius, m_strapNumSegments, m_strapColor, 1);
             m_facetedObject1->setSimulationWidget(simulationWidget);
             m_facetedObjectList.push_back(m_facetedObject1.get());
@@ -227,12 +227,12 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
         if (nPointStrap)
         {
             std::vector<std::unique_ptr<PointForce >> *pointForceList = nPointStrap->GetPointForceList();
-            std::vector<pgd::Vector> polyline;
+            std::vector<pgd::Vector3> polyline;
             polyline.reserve(pointForceList->size());
-            polyline.push_back(pgd::Vector(pointForceList->at(0)->point[0], pointForceList->at(0)->point[1], pointForceList->at(0)->point[2]));
+            polyline.push_back(pgd::Vector3(pointForceList->at(0)->point[0], pointForceList->at(0)->point[1], pointForceList->at(0)->point[2]));
             for (size_t i = 2; i < pointForceList->size(); i++)
-                polyline.push_back(pgd::Vector(pointForceList->at(i)->point[0], pointForceList->at(i)->point[1], pointForceList->at(i)->point[2]));
-            polyline.push_back(pgd::Vector(pointForceList->at(1)->point[0], pointForceList->at(1)->point[1], pointForceList->at(1)->point[2]));
+                polyline.push_back(pgd::Vector3(pointForceList->at(i)->point[0], pointForceList->at(i)->point[1], pointForceList->at(i)->point[2]));
+            polyline.push_back(pgd::Vector3(pointForceList->at(1)->point[0], pointForceList->at(1)->point[1], pointForceList->at(1)->point[2]));
             m_facetedObject1 = std::make_unique<FacetedPolyline>(&polyline, m_strapRadius, m_strapNumSegments, m_strapColor, 1);
             m_facetedObject1->setSimulationWidget(simulationWidget);
             m_facetedObjectList.push_back(m_facetedObject1.get());
@@ -241,8 +241,8 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
         CylinderWrapStrap *cylinderWrapStrap = dynamic_cast<CylinderWrapStrap *>(m_muscle->GetStrap());
         if (cylinderWrapStrap)
         {
-            std::vector<pgd::Vector> polyline;
-            const pgd::Vector *pathCoordinates = cylinderWrapStrap->GetPathCoordinates();
+            std::vector<pgd::Vector3> polyline;
+            const pgd::Vector3 *pathCoordinates = cylinderWrapStrap->GetPathCoordinates();
             int numPathCoordinates = cylinderWrapStrap->GetNumPathCoordinates();
             polyline.reserve(size_t(numPathCoordinates));
             if (numPathCoordinates)
@@ -265,14 +265,14 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
             const double *q = dBodyGetQuaternion(body->GetBodyID());
             pgd::Quaternion qBody(q[0], q[1], q[2], q[3]);
             pgd::Quaternion cylinderToWorldQuaternion =  qBody * pgd::Quaternion(qq[0], qq[1], qq[2], qq[3]);
-            pgd::Vector cylinderVecWorld = pgd::QVRotate(cylinderToWorldQuaternion, pgd::Vector(0, 0, m_strapCylinderLength / 2));
+            pgd::Vector3 cylinderVecWorld = pgd::QVRotate(cylinderToWorldQuaternion, pgd::Vector3(0, 0, m_strapCylinderLength / 2));
             // calculate the cylinder world position
             dVector3 position;
             dBodyGetRelPointPos(body->GetBodyID(), pos[0], pos[1], pos[2], position);
             // and draw it
             polyline.clear();
-            polyline.push_back(pgd::Vector(position[0] - cylinderVecWorld.x, position[1] - cylinderVecWorld.y, position[2] - cylinderVecWorld.z));
-            polyline.push_back(pgd::Vector(position[0] + cylinderVecWorld.x, position[1] + cylinderVecWorld.y, position[2] + cylinderVecWorld.z));
+            polyline.push_back(pgd::Vector3(position[0] - cylinderVecWorld.x, position[1] - cylinderVecWorld.y, position[2] - cylinderVecWorld.z));
+            polyline.push_back(pgd::Vector3(position[0] + cylinderVecWorld.x, position[1] + cylinderVecWorld.y, position[2] + cylinderVecWorld.z));
             m_facetedObject2 = std::make_unique<FacetedPolyline>(&polyline, radius, m_strapCylinderSegments, m_strapCylinderColor, 1);
             m_facetedObject2->setSimulationWidget(simulationWidget);
             m_facetedObjectList.push_back(m_facetedObject2.get());
@@ -286,12 +286,12 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
         std::vector<std::unique_ptr<PointForce >> *pointForceList = m_muscle->GetPointForceList();
         for (size_t i = 0; i < pointForceList->size(); i++)
         {
-            std::vector<pgd::Vector> polyline;
+            std::vector<pgd::Vector3> polyline;
             polyline.reserve(2);
             polyline.clear();
-            pgd::Vector f = pgd::Vector(pointForceList->at(i)->vector[0], pointForceList->at(i)->vector[1], pointForceList->at(i)->vector[2]) * m_muscle->GetTension() * m_strapForceScale;
-            polyline.push_back(pgd::Vector(pointForceList->at(i)->point[0], pointForceList->at(i)->point[1], pointForceList->at(i)->point[2]));
-            polyline.push_back(pgd::Vector(pointForceList->at(i)->point[0], pointForceList->at(i)->point[1], pointForceList->at(i)->point[2]) + f);
+            pgd::Vector3 f = pgd::Vector3(pointForceList->at(i)->vector[0], pointForceList->at(i)->vector[1], pointForceList->at(i)->vector[2]) * m_muscle->GetTension() * m_strapForceScale;
+            polyline.push_back(pgd::Vector3(pointForceList->at(i)->point[0], pointForceList->at(i)->point[1], pointForceList->at(i)->point[2]));
+            polyline.push_back(pgd::Vector3(pointForceList->at(i)->point[0], pointForceList->at(i)->point[1], pointForceList->at(i)->point[2]) + f);
             std::unique_ptr<FacetedPolyline>facetedPolyline = std::make_unique<FacetedPolyline>(&polyline, m_strapForceRadius, m_strapNumSegments, m_strapForceColor, 1);
             facetedPolyline->setSimulationWidget(simulationWidget);
             m_facetedObjectForceList.push_back(std::move(facetedPolyline));
@@ -313,6 +313,7 @@ void DrawMuscle::Draw()
     {
         m_facetedObjectForceList.at(i)->Draw();
     }
+    m_muscle->setRedraw(false);
 }
 
 

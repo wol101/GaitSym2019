@@ -349,6 +349,9 @@
             <property name="text">
              <string>OK</string>
             </property>
+            <property name="default">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
@@ -369,24 +372,24 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SimulationWidget</class>
-   <extends>QOpenGLWidget</extends>
-   <header>SimulationWidget.h</header>
-  </customwidget>
-  <customwidget>
    <class>LineEditDouble</class>
    <extends>QLineEdit</extends>
    <header>LineEditDouble.h</header>
   </customwidget>
   <customwidget>
-   <class>LineEditUniqueName</class>
-   <extends>QLineEdit</extends>
-   <header>LineEditUniqueName.h</header>
-  </customwidget>
-  <customwidget>
    <class>LineEditPath</class>
    <extends>QLineEdit</extends>
    <header>LineEditPath.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SimulationWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>SimulationWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEditUniqueName</class>
+   <extends>QLineEdit</extends>
+   <header>LineEditUniqueName.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

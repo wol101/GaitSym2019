@@ -94,13 +94,12 @@ void DialogGlobal::accept() // this catches OK and return/enter
     }
 
     int count = ui->listWidgetMeshPath->count();
-    std::vector<std::string> meshPathItems;
+    m_outputGlobal->MeshSearchPath()->clear();
     for (int i = 0; i < count; i++)
     {
         QString itemText = ui->listWidgetMeshPath->item(i)->text();
-        if (itemText.size()) meshPathItems.push_back(itemText.toStdString());
+        if (itemText.size()) m_outputGlobal->MeshSearchPath()->push_back(itemText.toStdString());
     }
-    m_outputGlobal->setMeshSearchPath(pystring::join(":"s, meshPathItems));
 
     if (m_inputGlobal)
     {
@@ -141,11 +140,14 @@ void DialogGlobal::closeEvent(QCloseEvent *event)
 
 void DialogGlobal::lateInitialise()
 {
-    Q_ASSERT_X(m_inputGlobal, "DialogGlobal::lateInitialise", "m_inputGlobal not set");
+    const Global *globalPtr;
+    Global defaultGlobal;
+    if (m_inputGlobal) globalPtr = m_inputGlobal;
+    else globalPtr = &defaultGlobal;
 
     // assign the QComboBox items
-    for (size_t i = 0; i < Global::fitnessTypeCount; i++) ui->comboBoxFitnessType->addItem(m_inputGlobal->fitnessTypeStrings(i));
-    for (size_t i = 0; i < Global::stepTypeCount; i++) ui->comboBoxStepType->addItem(m_inputGlobal->stepTypeStrings(i));
+    for (size_t i = 0; i < Global::fitnessTypeCount; i++) ui->comboBoxFitnessType->addItem(globalPtr->fitnessTypeStrings(i));
+    for (size_t i = 0; i < Global::stepTypeCount; i++) ui->comboBoxStepType->addItem(globalPtr->stepTypeStrings(i));
 
     if (m_existingBodies == nullptr || m_existingBodies->size() == 0)
     {
@@ -153,20 +155,15 @@ void DialogGlobal::lateInitialise()
         QStandardItemModel *model = qobject_cast<QStandardItemModel *>(ui->comboBoxFitnessType->model());
         Q_ASSERT_X(model != nullptr, "DialogGlobal::lateInitialise", "qobject_cast<QStandardItemModel *> failed");
         bool disabled = true;
-        QStandardItem *item = model->item(int(Global::DistanceTravelled));
+        QStandardItem *item = model->item(int(Global::KinematicMatch));
         item->setFlags(disabled ? item->flags() & ~Qt::ItemIsEnabled : item->flags() | Qt::ItemIsEnabled);
     }
     else
     {
         for (auto &&iter : *m_existingBodies) ui->comboBoxDistanceTravelledBodyIDName->addItem(QString::fromStdString(iter.first));
-        QString distanceTravelledBodyID = QString::fromStdString(m_inputGlobal->DistanceTravelledBodyIDName());
+        QString distanceTravelledBodyID = QString::fromStdString(globalPtr->DistanceTravelledBodyIDName());
         ui->comboBoxDistanceTravelledBodyIDName->setCurrentText(distanceTravelledBodyID);
     }
-
-    const Global *globalPtr;
-    Global defaultGlobal;
-    if (m_inputGlobal) globalPtr = m_inputGlobal;
-    else globalPtr = &defaultGlobal;
 
     ui->comboBoxFitnessType->setCurrentIndex(static_cast<int>(globalPtr->fitnessType()));
     ui->comboBoxStepType->setCurrentIndex(static_cast<int>(globalPtr->stepType()));
@@ -191,15 +188,13 @@ void DialogGlobal::lateInitialise()
     ui->checkBoxAllowConnectedCollisions->setChecked(globalPtr->AllowConnectedCollisions());
     ui->checkBoxAllowInternalCollisions->setChecked(globalPtr->AllowInternalCollisions());
 
-    std::vector<std::string> meshPathItems;
-    pystring::split(globalPtr->MeshSearchPath(), meshPathItems, ":"s);
-    for (size_t i = 0; i < meshPathItems.size(); i++)
+    for (size_t i = 0; i < globalPtr->ConstMeshSearchPath()->size(); i++)
     {
-        QListWidgetItem *item = new QListWidgetItem(QString::fromStdString(meshPathItems[i]));
+        QListWidgetItem *item = new QListWidgetItem(QString::fromStdString(globalPtr->ConstMeshSearchPath()->at(i)));
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         ui->listWidgetMeshPath->addItem(item);
     }
-    for (size_t i = meshPathItems.size(); i < 100; i++)
+    for (size_t i = globalPtr->ConstMeshSearchPath()->size(); i < 100; i++)
     {
         QListWidgetItem *item = new QListWidgetItem(QString());
         item->setFlags(item->flags() | Qt::ItemIsEditable);

@@ -27,13 +27,13 @@ public:
     void SetMaxForce(int anum, double maximumForce);
 
     int GetNumAxes();
-    pgd::Vector GetAxis(int anum);
+    pgd::Vector3 GetAxis(int anum);
     double GetPosition(int anum);
     double GetPositionRate(int anum);
     void GetPositions(double *x, double *y, double *z);
     double GetTargetPosition(int anum);
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual void Update();
 
     virtual std::string *createFromAttributes();

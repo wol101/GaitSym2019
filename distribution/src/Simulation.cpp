@@ -46,7 +46,7 @@
 #include "Reporter.h"
 #include "TorqueReporter.h"
 #include "UniversalJoint.h"
-#include "PIDMuscleLength.h"
+#include "PIDMuscleLengthController.h"
 #include "Controller.h"
 #include "SwingClearanceAbortReporter.h"
 #include "AMotorJoint.h"
@@ -54,11 +54,12 @@
 #include "SliderJoint.h"
 #include "BoxGeom.h"
 #include "StackedBoxCarDriver.h"
-#include "PIDTargetMatch.h"
 #include "Warehouse.h"
 #include "FixedDriver.h"
 #include "PIDErrorInController.h"
 #include "TegotaeDriver.h"
+#include "ThreeHingeJointDriver.h"
+#include "Filter.h"
 
 #ifdef USE_QT
 #include "FacetedObject.h"
@@ -162,14 +163,6 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
     for (auto &&it :  m_MuscleList) it.second->LateInitialisation();
     for (auto &&it : m_FluidSacList) it.second->LateInitialisation();
 
-    auto distanceTravelledBodyID = m_BodyList.find(m_global->DistanceTravelledBodyIDName());
-    if (distanceTravelledBodyID != m_BodyList.end()) m_DistanceTravelledBodyID = distanceTravelledBodyID->second.get();
-    if (m_global->fitnessType() == Global::DistanceTravelled && m_DistanceTravelledBodyID == nullptr)
-    {
-        setLastError("Error parsing XML file: DistanceTravelledBodyIDName not found - \""s + m_global->DistanceTravelledBodyIDName() +"\""s);
-        return lastErrorPtr();
-    }
-
     // for the time being just set the current warehouse to the first one in the list
     if (m_global->CurrentWarehouseFile().length() == 0 && m_WarehouseList.size() > 0) m_global->setCurrentWarehouseFile(m_WarehouseList.begin()->first);
 
@@ -190,44 +183,23 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
 void Simulation::UpdateSimulation()
 {
     // calculate the warehouse and position matching fitnesses before we move to a new location
-    if (m_global->fitnessType() != Global::DistanceTravelled)
+    else if (m_global->fitnessType() == Global::KinematicMatch || m_global->fitnessType() == Global::KinematicMatchMiniMax)
     {
-        if (m_global->fitnessType() == Global::KinematicMatch || m_global->fitnessType() == Global::KinematicMatchMiniMax)
+        double minScore = DBL_MAX;
+        for (auto &&it : m_DataTargetList)
         {
-
-            double minScore = DBL_MAX;
             double matchScore;
-            for (auto &&iter3 : m_DataTargetList)
+            bool matchScoreValid;
+            std::tie(matchScore, matchScoreValid) = it.second->calculateMatchValue(m_SimulationTime);
+            if (matchScoreValid)
             {
-                int lastIndex = iter3.second->GetLastMatchIndex();
-                int index = iter3.second->TargetMatch(m_SimulationTime, m_global->StepSize() * 0.50000000001);
-                // on rare occasions because of rounding we may get two matches we can check this using the lastIndex since this is the only place where a match is requested
-                if (index != -1 && index != lastIndex) // since step size is much smaller than the interval between targets (probably), this should get called exactly once per target time defintion
-                {
-                    matchScore = iter3.second->GetMatchValue(index);
-                    m_KinematicMatchFitness += matchScore;
-                    if (matchScore < minScore)
-                        minScore = matchScore;
-                }
-            }
-            if (minScore < DBL_MAX)
-                m_KinematicMatchMiniMaxFitness += minScore;
-        }
-        else if (m_global->fitnessType() == Global::KinematicMatchContinuous || m_global->fitnessType() == Global::KinematicMatchContinuousMiniMax)
-        {
-
-            double minScore = DBL_MAX;
-            double matchScore;
-            for (auto &&iter3 : m_DataTargetList)
-            {
-                matchScore = iter3.second->GetMatchValue(m_SimulationTime);
                 m_KinematicMatchFitness += matchScore;
                 if (matchScore < minScore)
                     minScore = matchScore;
             }
-            if (minScore < DBL_MAX)
-                m_KinematicMatchMiniMaxFitness += minScore;
         }
+        if (minScore < DBL_MAX)
+            m_KinematicMatchMiniMaxFitness += minScore;
     }
 
     // now start the actual simulation
@@ -281,7 +253,7 @@ void Simulation::UpdateSimulation()
         pointForceList = iter1->second->GetPointForceList();
         tension = iter1->second->GetTension();
 #ifdef DEBUG_CHECK_FORCES
-        pgd::Vector force(0, 0, 0);
+        pgd::Vector3 force(0, 0, 0);
 #endif
         for (unsigned int i = 0; i < pointForceList->size(); i++)
         {
@@ -290,7 +262,7 @@ void Simulation::UpdateSimulation()
                                pointForce->vector[0] * tension, pointForce->vector[1] * tension, pointForce->vector[2] * tension,
                                pointForce->point[0], pointForce->point[1], pointForce->point[2]);
 #ifdef DEBUG_CHECK_FORCES
-            force += pgd::Vector(pointForce->vector[0] * tension, pointForce->vector[1] * tension, pointForce->vector[2] * tension);
+            force += pgd::Vector3(pointForce->vector[0] * tension, pointForce->vector[1] * tension, pointForce->vector[2] * tension);
 #endif
         }
 #ifdef DEBUG_CHECK_FORCES
@@ -586,27 +558,12 @@ bool Simulation::TestForCatastrophy()
 //----------------------------------------------------------------------------
 double Simulation::CalculateInstantaneousFitness()
 {
-    const double *p;
     switch (m_global->fitnessType())
     {
-    case Global::DistanceTravelled:
-        p = m_DistanceTravelledBodyID->GetPosition();
-        if (std::isinf(p[0]) || std::isnan(p[0]))
-        {
-            m_SimulationError = 1;
-            return 0;
-        }
-        else
-        {
-            return p[0];
-        }
-
     case Global::KinematicMatch:
-    case Global::KinematicMatchContinuous:
         return m_KinematicMatchFitness;
 
     case Global::KinematicMatchMiniMax:
-    case Global::KinematicMatchContinuousMiniMax:
         return m_KinematicMatchMiniMaxFitness;
     }
     return 0;
@@ -937,6 +894,10 @@ std::string *Simulation::ParseDriver(const ParseXML::XMLElement *node)
     {
         driver = std::make_unique<TegotaeDriver>();
     }
+    else if (buf == "ThreeHingeJoint"s)
+    {
+        driver = std::make_unique<ThreeHingeJointDriver>();
+    }
     else
     {
         setLastError("Simulation::ParseDriver Type=\""s + buf + "\" not recognised"s);
@@ -1095,11 +1056,7 @@ std::string *Simulation::ParseController(const ParseXML::XMLElement *node)
     std::string *errorMessage = nullptr;
     if (buf == "PIDMuscleLength"s)
     {
-        controller = std::make_unique<PIDMuscleLength>();
-    }
-    else if (buf == "PIDTargetMatch"s)
-    {
-        controller = std::make_unique<PIDTargetMatch>();
+        controller = std::make_unique<PIDMuscleLengthController>();
     }
     else if (buf == "PIDErrorIn"s)
     {
@@ -1172,14 +1129,14 @@ void Simulation::OutputWarehouse()
         for (auto &&iter : m_DriverList) m_OutputWarehouseFile << "\t" << iter.second->value();
         // output the root body (m_global->DistanceTravelledBodyIDName())
         Body *rootBody = m_BodyList[m_global->DistanceTravelledBodyIDName()].get();
-        pgd::Vector pos, vel, avel;
+        pgd::Vector3 pos, vel, avel;
         pgd::Quaternion quat;
         rootBody->GetRelativePosition(nullptr, &pos);
         rootBody->GetRelativeQuaternion(nullptr, &quat);
         rootBody->GetRelativeLinearVelocity(nullptr, &vel);
         rootBody->GetRelativeAngularVelocity(nullptr, &avel);
         double angle = QGetAngle(quat);
-        pgd::Vector axis = QGetAxis(quat);
+        pgd::Vector3 axis = QGetAxis(quat);
         m_OutputWarehouseFile << "\t" << pos.x << "\t" << pos.y << "\t" << pos.z;
         m_OutputWarehouseFile << "\t" << angle << "\t" << axis.x << "\t" << axis.y << "\t" << axis.z ;
         m_OutputWarehouseFile << "\t" << vel.x << "\t" << vel.y << "\t" << vel.z;
@@ -1241,14 +1198,14 @@ void Simulation::OutputWarehouse()
         for (auto &&iter : m_DriverList) GSUtil::BinaryOutput(m_OutputWarehouseFile, iter.second->value());
         // output the root body (m_global->DistanceTravelledBodyIDName())
         Body *rootBody = m_BodyList[m_global->DistanceTravelledBodyIDName()].get();
-        pgd::Vector pos, vel, avel;
+        pgd::Vector3 pos, vel, avel;
         pgd::Quaternion quat;
         rootBody->GetRelativePosition(nullptr, &pos);
         rootBody->GetRelativeQuaternion(nullptr, &quat);
         rootBody->GetRelativeLinearVelocity(nullptr, &vel);
         rootBody->GetRelativeAngularVelocity(nullptr, &avel);
         double angle = QGetAngle(quat);
-        pgd::Vector axis = QGetAxis(quat);
+        pgd::Vector3 axis = QGetAxis(quat);
         GSUtil::BinaryOutput(m_OutputWarehouseFile, pos.x); GSUtil::BinaryOutput(m_OutputWarehouseFile, pos.y); GSUtil::BinaryOutput(m_OutputWarehouseFile, pos.z);
         GSUtil::BinaryOutput(m_OutputWarehouseFile, angle); GSUtil::BinaryOutput(m_OutputWarehouseFile, axis.x); GSUtil::BinaryOutput(m_OutputWarehouseFile, axis.y); GSUtil::BinaryOutput(m_OutputWarehouseFile, axis.z);
         GSUtil::BinaryOutput(m_OutputWarehouseFile, vel.x); GSUtil::BinaryOutput(m_OutputWarehouseFile, vel.y); GSUtil::BinaryOutput(m_OutputWarehouseFile, vel.z);
@@ -1273,9 +1230,8 @@ void Simulation::OutputWarehouse()
     }
 }
 
-// output the simulation state in an XML format that can be re-read
-
-void Simulation::OutputProgramState()
+// save the current model state to XML
+std::string Simulation::SaveToXML()
 {
     m_parseXML.elementList()->clear();
 
@@ -1293,8 +1249,13 @@ void Simulation::OutputProgramState()
     for (auto &&it : m_DriverList) { it.second->saveToAttributes(); m_parseXML.AddElement("DRIVER"s, it.second->attributeMap()); }
     for (auto &&it : m_DataTargetList) { it.second->saveToAttributes(); m_parseXML.AddElement("DATATARGET"s, it.second->attributeMap()); }
 
-    // convert to string and output
-    std::string xmlString = m_parseXML.SaveModel();
+    return m_parseXML.SaveModel();
+}
+
+// output the simulation state in an XML format that can be re-read
+void Simulation::OutputProgramState()
+{
+    std::string xmlString = SaveToXML();
     DataFile outputFile;
     outputFile.SetRawData(xmlString.c_str(), xmlString.size());
     outputFile.WriteFile(m_OutputModelStateFile);
@@ -1317,7 +1278,7 @@ void Simulation::SetOutputWarehouseFile(const std::string &filename)
     {
         if (m_OutputWarehouseFlag) m_OutputWarehouseFile.close();
         m_OutputWarehouseFlag = false;
-        m_OutputWarehouseFilename.empty();
+        m_OutputWarehouseFilename.clear();
     }
 }
 
@@ -1563,9 +1524,9 @@ void Simulation::DumpObjects()
 
 void Simulation::DumpObject(NamedObject *namedObject)
 {
-    if (namedObject->getDump())
+    if (namedObject->dump())
     {
-        if (namedObject->getFirstDump())
+        if (namedObject->firstDump())
         {
             std::ofstream output;
 #if defined _WIN32 && defined _MSC_VER // required because windows and visual studio require wstring for full filename support
@@ -1576,7 +1537,7 @@ void Simulation::DumpObject(NamedObject *namedObject)
             m_dumpFileStreams[namedObject->name()] = std::move(output);
         }
         auto fileIt = m_dumpFileStreams.find(namedObject->name());
-        if (fileIt != m_dumpFileStreams.end()) fileIt->second << namedObject->dump();
+        if (fileIt != m_dumpFileStreams.end()) fileIt->second << namedObject->dumpToString();
     }
 }
 
@@ -1652,6 +1613,15 @@ std::map<std::string, Drivable *> Simulation::GetDrivableList() const
     for (auto &&it : m_MuscleList) output[it.first] = it.second.get();
     for (auto &&it : m_ControllerList) output[it.first] = it.second.get();
     return output;
+}
+
+bool Simulation::HasAssembly()
+{
+    for (auto && it : m_JointList)
+    {
+        if (it.second->group() == "assembly"s) return true;
+    }
+    return false;
 }
 
 

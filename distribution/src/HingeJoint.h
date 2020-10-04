@@ -42,7 +42,7 @@ public:
     void SetStopTorqueWindow(int window);
 
     virtual void Update();
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 

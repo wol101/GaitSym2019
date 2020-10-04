@@ -39,8 +39,6 @@ private:
     double m_outputModelStateAtTime = -1;
     double m_outputModelStateAtCycle = -1;
     double m_outputModelStateAtWarehouseDistance = -1;
-    bool m_mungeModelStateFlag = false;
-    bool m_mungeRotationFlag = false;
     double m_simulationTimeLimit = -1;
     double m_warehouseFailDistanceAbort = 0;
 

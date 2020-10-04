@@ -18,7 +18,7 @@
 
 #include "ViewControlWidget.h"
 
-static double vertexData[114][3] =
+const static double vertexData[114][3] =
 {
     {0.00000000000000000, 0.00000000000000000, 1.00000000000000000},
     {0.38268343236508978, 0.00000000000000000, 0.92387953251128674},
@@ -136,6 +136,12 @@ static double vertexData[114][3] =
     {0.35355339059327379, -0.14644660940672652, -0.92387953251128674}
 };
 
+// note the images are scaled to these sizes to allow higher resolution images
+const int blobWidth = 10;
+const int blobHeight = 10;
+const int backgroundWidth = 310;
+const int backgroundHeight = 150;
+const int margin = 5;
 
 // This widget implements a nifty 3D view controller
 // It allows the user to select from a precise set of view directions
@@ -154,7 +160,8 @@ ViewControlWidget::ViewControlWidget(QWidget *parent)
     lastZ = 0;
 
     // this widget has a fixed size set by the the background image needs
-    int w = 320, h = 160;
+    int w = backgroundWidth + 2 * margin;
+    int h = backgroundHeight + 2 * margin;
     setMinimumSize(w, h);
     setMaximumSize(w, h);
     resize(w, h);
@@ -224,16 +231,16 @@ void ViewControlWidget::paintEvent (QPaintEvent *)
     int x = static_cast<int>((radius * lastX) + centre1X + 0.5);
     int y = static_cast<int>(centreY - (radius * lastZ) + 0.5);
 
-    qpainter.drawPixmap(5, 5, *backgroundImage);
-    qpainter.drawPixmap(x - blob->width() / 2 + 1, y - blob->height() / 2, *blob);
+    qpainter.drawPixmap(5, 5, backgroundWidth, backgroundHeight, *backgroundImage);
+    qpainter.drawPixmap(x - (blobWidth/2) + 1, y - (blobHeight/2), blobWidth, blobHeight, *blob);
 
     x = static_cast<int>((radius * lastX) + centre2X + 0.5);
     y = static_cast<int>(centreY - (radius * lastY) + 0.5);
 
-    qpainter.drawPixmap(x - blob->width() / 2 + 1, y - blob->height() / 2, *blob);
+    qpainter.drawPixmap(x - (blobWidth/2) + 1, y - (blobHeight/2), blobWidth, blobHeight, *blob);
 }
 
-int ViewControlWidget::FindClosestVertex(double data[][3], int count, double x, double y, double z)
+int ViewControlWidget::FindClosestVertex(const double data[][3], int count, double x, double y, double z)
 {
     double minSqDist = DBL_MAX;
     double sqDist, dx, dy, dz;

@@ -14,71 +14,51 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_10">
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="groupBox_6">
-     <property name="title">
-      <string>Integrator</string>
+   <item row="5" column="0" colspan="2">
+    <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="2" column="1">
-       <widget class="QLabel" name="labelCFM">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButtonProperties">
         <property name="text">
-         <string>CFM</string>
+         <string>Properties...</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QComboBox" name="comboBoxStepType">
-        <property name="minimumSize">
-         <size>
-          <width>201</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="labelERP">
-        <property name="text">
-         <string>ERP</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="LineEditDouble" name="lineEditCFM"/>
-      </item>
-      <item row="0" column="0">
-       <spacer name="horizontalSpacer_2">
+      <item>
+       <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
+          <width>518</width>
           <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
-      <item row="3" column="2">
-       <widget class="LineEditDouble" name="lineEditERP"/>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_9">
+      <item>
+       <widget class="QPushButton" name="pushButtonOK">
         <property name="text">
-         <string>Step Type</string>
+         <string>OK</string>
+        </property>
+        <property name="default">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_16">
+      <item>
+       <widget class="QPushButton" name="pushButtonCancel">
         <property name="text">
-         <string>Step Size</string>
+         <string>Cancel</string>
         </property>
        </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="LineEditDouble" name="lineEditStepSize"/>
       </item>
      </layout>
     </widget>
@@ -132,123 +112,6 @@
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string>Select</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_9">
-      <item row="1" column="2">
-       <widget class="QComboBox" name="comboBoxDistanceTravelledBodyIDName"/>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Fitness Type</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QComboBox" name="comboBoxFitnessType">
-        <property name="minimumSize">
-         <size>
-          <width>201</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>Reference Body</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QGroupBox" name="groupBox_9">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title">
-      <string>Contact Parameters</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_6">
-      <item row="0" column="0">
-       <spacer name="horizontalSpacer_7">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>16</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_18">
-        <property name="text">
-         <string>Max Correcting Velocity</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="LineEditDouble" name="lineEditContactMaxCorrectingVel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>201</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_17">
-        <property name="text">
-         <string>Surface Layer Thickness</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="LineEditDouble" name="lineEditERPContactSurfaceLayer">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
         </property>
        </widget>
       </item>
@@ -462,6 +325,140 @@
      </layout>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Select</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_9">
+      <item row="0" column="2">
+       <widget class="QComboBox" name="comboBoxFitnessType">
+        <property name="minimumSize">
+         <size>
+          <width>201</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Fitness Type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="2">
+       <widget class="QComboBox" name="comboBoxDistanceTravelledBodyIDName"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Reference Body</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="title">
+      <string>Integrator</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="2" column="1">
+       <widget class="QLabel" name="labelCFM">
+        <property name="text">
+         <string>CFM</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QComboBox" name="comboBoxStepType">
+        <property name="minimumSize">
+         <size>
+          <width>201</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="labelERP">
+        <property name="text">
+         <string>ERP</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="LineEditDouble" name="lineEditCFM"/>
+      </item>
+      <item row="0" column="0">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="3" column="2">
+       <widget class="LineEditDouble" name="lineEditERP"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Step Type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Step Size</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="LineEditDouble" name="lineEditStepSize"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Mesh Path</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QListWidget" name="listWidgetMeshPath">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="3" column="1">
     <widget class="QGroupBox" name="groupBox_8">
      <property name="title">
@@ -531,62 +528,68 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Mesh Path</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QListWidget" name="listWidgetMeshPath">
-        <property name="alternatingRowColors">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QWidget" name="widget" native="true">
+   <item row="1" column="1">
+    <widget class="QGroupBox" name="groupBox_9">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QPushButton" name="pushButtonProperties">
-        <property name="text">
-         <string>Properties...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
+     <property name="title">
+      <string>Contact Parameters</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="0">
+       <spacer name="horizontalSpacer_7">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>518</width>
+          <width>16</width>
           <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
-      <item>
-       <widget class="QPushButton" name="pushButtonOK">
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_18">
         <property name="text">
-         <string>OK</string>
+         <string>Max Correcting Velocity</string>
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="pushButtonCancel">
+      <item row="0" column="2">
+       <widget class="LineEditDouble" name="lineEditContactMaxCorrectingVel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>201</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_17">
         <property name="text">
-         <string>Cancel</string>
+         <string>Surface Layer Thickness</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="LineEditDouble" name="lineEditERPContactSurfaceLayer">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
        </widget>
       </item>

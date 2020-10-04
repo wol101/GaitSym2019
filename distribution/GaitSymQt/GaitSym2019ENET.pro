@@ -665,7 +665,6 @@ HEADERS += \
     ../src/Simulation.h \
     ../src/SliderJoint.h \
     ../src/SmartEnum.h \
-    ../src/SocketMessages.h \
     ../src/SphereGeom.h \
     ../src/StackedBoxCarDriver.h \
     ../src/StepDriver.h \

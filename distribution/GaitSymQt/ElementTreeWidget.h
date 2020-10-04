@@ -20,6 +20,8 @@ public:
 
     void clearLists();
     void fillVisibitilityLists(Simulation *simulation);
+    void setVisibleSwitchAll(const QString &elementType, bool visibility);
+    void setOutputSwitchAll(const QString &elementType, bool output);
 
     static bool BinarySearch(QTreeWidgetItem *A, const QString &value, int *index);
 
@@ -47,15 +49,15 @@ signals:
 public slots:
     void elementsItemChanged(QTreeWidgetItem *item, int column);
 
-    int insertBody(const QString &name);
-    int insertMarker(const QString &name);
-    int insertJoint(const QString &name);
-    int insertGeom(const QString &name);
-    int insertMuscle(const QString &name);
-    int insertFluidSac(const QString &name);
-    int insertDriver(const QString &name);
-    int insertDataTarget(const QString &name);
-    int insertController(const QString &name);
+    int insertBody(const QString &name, bool visible, bool output);
+    int insertMarker(const QString &name, bool visible, bool output);
+    int insertJoint(const QString &name, bool visible, bool output);
+    int insertGeom(const QString &name, bool visible, bool output);
+    int insertMuscle(const QString &name, bool visible, bool output);
+    int insertFluidSac(const QString &name, bool visible, bool output);
+    int insertDriver(const QString &name, bool visible, bool output);
+    int insertDataTarget(const QString &name, bool visible, bool output);
+    int insertController(const QString &name, bool visible, bool output);
 
     int removeBody(const QString &name);
     int removeMarker(const QString &name);

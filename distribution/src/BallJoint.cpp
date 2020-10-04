@@ -249,9 +249,9 @@ std::string *BallJoint::createFromAttributes()
 {
     if (Joint::createFromAttributes()) return lastErrorPtr();
     std::string buf;
-    pgd::Vector position = body1Marker()->GetWorldPosition();
+    pgd::Vector3 position = body1Marker()->GetWorldPosition();
     this->SetBallAnchor(position.x, position.y, position.z);
-    pgd::Vector x, y, z;
+    pgd::Vector3 x, y, z;
     body1Marker()->GetWorldBasis(&x, &y, &z);
     int axisMode = 1; // 1 relative to body 1
     this->SetAxes(x.x, x.y, x.z, y.x, y.y, y.z, z.x, z.y, z.z, axisMode);
@@ -340,12 +340,12 @@ void BallJoint::appendToAttributes()
     }
 }
 
-std::string BallJoint::dump()
+std::string BallJoint::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tXP\tYP\tZP\ttheta0\ttheta1\ttheta2\tFX1\tFY1\tFZ1\tTX1\tTY1\tTZ1\tFX2\tFY2\tFZ2\tTX2\tTY2\tTZ2\tMotorFX1\tMotorFY1\tMotorFZ1\tMotorTX1\tMotorTY1\tMotorTZ1\tMotorFX2\tMotorFY2\tMotorFZ2\tMotorTX2\tMotorTY2\tMotorTZ2\n";

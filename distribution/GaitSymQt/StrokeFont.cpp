@@ -624,7 +624,7 @@ void StrokeFont::Draw()
         m_VBO.release();
 
         m_glWidget->fixedColourObjectShader()->bind();
-        m_glWidget->fixedColourObjectShader()->setUniformValue(m_glWidget->mvpMatrixLoc2(), m_vpMatrix * model);
+        m_glWidget->fixedColourObjectShader()->setUniformValue("mvpMatrix", m_vpMatrix * model);
 
         f->glDrawArrays(GL_LINES, 0, GLsizei(n_lines * 2));
 

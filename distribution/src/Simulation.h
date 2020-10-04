@@ -94,8 +94,6 @@ public:
     void SetOutputModelStateAtWarehouseDistance(double outputModelStateAtWarehouseDistance) { m_OutputModelStateAtWarehouseDistance = outputModelStateAtWarehouseDistance; }
     void SetOutputModelStateFile(const std::string &filename);
     void SetOutputWarehouseFile(const std::string &filename);
-    void SetMungeModelStateFlag(bool f) { m_MungeModelStateFlag = f; }
-    void SetMungeRotationFlag(bool f) { m_MungeRotationFlag = f; }
     void SetWarehouseFailDistanceAbort(double warehouseFailDistanceAbort);
 
     void AddWarehouse(const std::string &filename);
@@ -120,6 +118,8 @@ public:
     NamedObject *GetNamedObject(const std::string &name) const;
     std::map<std::string, Drivable *> GetDrivableList() const;
 
+    bool HasAssembly();
+
     // fitness related values
     bool TestForCatastrophy();
     double CalculateInstantaneousFitness();
@@ -127,7 +127,7 @@ public:
     void SetContactAbort(bool contactAbort) { m_ContactAbort = contactAbort; }
     void SetDataTargetAbort(bool dataTargetAbort) { m_DataTargetAbort = dataTargetAbort; }
 
-    // these should probably only be internal
+    std::string SaveToXML();
     void OutputProgramState();
     void OutputWarehouse();
 
@@ -206,8 +206,6 @@ private:
     bool m_OutputWarehouseAsText = false;
     double m_OutputModelStateAtTime = -1;
     double m_OutputModelStateAtCycle = -1;
-    bool m_MungeModelStateFlag = false;
-    bool m_MungeRotationFlag = false;
     int m_SimulationError = false;
     bool m_StraightenBody = false;
     bool m_AbortOnODEMessage = false;
@@ -221,7 +219,6 @@ private:
 
     // for fitness calculations
     double m_KinematicMatchFitness = 0;
-    Body *m_DistanceTravelledBodyID = nullptr;
 
     // values for energy partition
     double m_PositiveMechanicalWork = 0;

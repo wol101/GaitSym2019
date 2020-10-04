@@ -76,7 +76,7 @@ public:
     std::vector<Contact *> *GetContactList() { return &m_ContactList; }
     void ClearContacts() { m_ContactList.clear(); }
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
     virtual void appendToAttributes();

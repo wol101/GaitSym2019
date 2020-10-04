@@ -43,6 +43,7 @@ DialogAssembly::DialogAssembly(QWidget *parent) :
 
     connect(ui->pushButtonOK, SIGNAL(clicked()), this, SLOT(accept()));
     connect(ui->pushButtonCancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(ui->pushButtonReset, SIGNAL(clicked()), this, SLOT(reset()));
     connect(ui->comboBoxBodyList, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(comboBoxBodyListCurrentIndexChanged(const QString &)));
 
     // make all the labels the same width as the largest
@@ -178,10 +179,10 @@ void DialogAssembly::accept() // this catches OK and return/enter
             std::unique_ptr<AMotorJoint> joint = std::make_unique<AMotorJoint>(m_simulation->GetWorldID());
             AMotorJoint *jointPtr = joint.get();
             joint->setSimulation(m_simulation);
-            joint->setName(hingeJoint->name() + m_assemblyAngularMotorSuffix);
+            joint->setName(universalJoint->name() + m_assemblyAngularMotorSuffix);
             joint->setGroup("assembly"s);
-            joint->setBody1Marker(hingeJoint->body1Marker());
-            joint->setBody2Marker(hingeJoint->body2Marker());
+            joint->setBody1Marker(universalJoint->body1Marker());
+            joint->setBody2Marker(universalJoint->body2Marker());
             joint->Attach();
             joint->SetTargetAngles(pgd::DegreesToRadians(lineEdit1->value()),
                                    pgd::DegreesToRadians(lineEdit2->value()));
@@ -203,10 +204,10 @@ void DialogAssembly::accept() // this catches OK and return/enter
             std::unique_ptr<AMotorJoint> joint = std::make_unique<AMotorJoint>(m_simulation->GetWorldID());
             AMotorJoint *jointPtr = joint.get();
             joint->setSimulation(m_simulation);
-            joint->setName(hingeJoint->name() + m_assemblyAngularMotorSuffix);
+            joint->setName(ballJoint->name() + m_assemblyAngularMotorSuffix);
             joint->setGroup("assembly"s);
-            joint->setBody1Marker(hingeJoint->body1Marker());
-            joint->setBody2Marker(hingeJoint->body2Marker());
+            joint->setBody1Marker(ballJoint->body1Marker());
+            joint->setBody2Marker(ballJoint->body2Marker());
             joint->Attach();
             joint->SetTargetAngles(pgd::DegreesToRadians(lineEdit1->value()),
                                    pgd::DegreesToRadians(lineEdit2->value()),
@@ -239,9 +240,9 @@ void DialogAssembly::comboBoxBodyListCurrentIndexChanged(const QString &text)
     Body *body = m_simulation->GetBody(text.toStdString());
     if (body)
     {
-        pgd::Vector position(body->GetPosition());
+        pgd::Vector3 position(body->GetPosition());
         pgd::Quaternion quaternion(body->GetQuaternion());
-        pgd::Vector euler = MakeEulerAnglesFromQ(quaternion);
+        pgd::Vector3 euler = MakeEulerAnglesFromQ(quaternion);
         ui->lineEditX->setValue(position.x);
         ui->lineEditY->setValue(position.y);
         ui->lineEditZ->setValue(position.z);
@@ -270,6 +271,12 @@ void DialogAssembly::initialise()
         ui->comboBoxBodyList->addItem(QString::fromStdString(iter.first));
     }
     ui->comboBoxBodyList->setCurrentIndex(-1); // -1 means that nothing is selected
+    ui->lineEditX->setValue(0);
+    ui->lineEditY->setValue(0);
+    ui->lineEditZ->setValue(0);
+    ui->lineEditXR->setValue(0);
+    ui->lineEditYR->setValue(0);
+    ui->lineEditZR->setValue(0);
 
     std::string bodyName;
     for (auto iter : assemblyJoints)
@@ -385,7 +392,7 @@ void DialogAssembly::initialise()
             label->setText(QString::fromUtf8(u8"Ball angles (\u00B0)"));
             m_gridLayout->addWidget(label, row, 1);
             pgd::Quaternion jointAngle = ballJoint->GetQuaternion();
-            pgd::Vector euler = pgd::MakeEulerAnglesFromQ(jointAngle);
+            pgd::Vector3 euler = pgd::MakeEulerAnglesFromQ(jointAngle);
             LineEditDouble *lineEdit = new LineEditDouble();
             auto jointIter = assemblyJoints.find(iter.first + m_assemblyAngularMotorSuffix);
             if (jointIter != assemblyJoints.end())
@@ -422,6 +429,55 @@ void DialogAssembly::initialise()
 
     scrollArea->setWidget(scrollAreaWidgetContents);
     verticalLayout->addWidget(scrollArea);
+}
+
+void DialogAssembly::reset()
+{
+    ui->comboBoxBodyList->setCurrentIndex(-1); // -1 means that nothing is selected
+    ui->lineEditX->setValue(0);
+    ui->lineEditY->setValue(0);
+    ui->lineEditZ->setValue(0);
+    ui->lineEditXR->setValue(0);
+    ui->lineEditYR->setValue(0);
+    ui->lineEditZR->setValue(0);
+
+    for (size_t i = 0; i < m_jointList.size(); i++)
+    {
+        HingeJoint *hingeJoint = dynamic_cast<HingeJoint *>(m_jointList[i]);
+        if (hingeJoint)
+        {
+            LineEditDouble *lineEdit = dynamic_cast<LineEditDouble *>(m_gridLayout->itemAtPosition(int(i), 2)->widget());
+            Q_ASSERT_X(lineEdit, "DialogAssembly::accept", "lineEdit not set");
+            lineEdit->setValue(pgd::RadiansToDegrees(hingeJoint->GetHingeAngle()));
+        }
+
+        UniversalJoint *universalJoint = dynamic_cast<UniversalJoint *>(m_jointList[i]);
+        if (universalJoint)
+        {
+            LineEditDouble *lineEdit1 = dynamic_cast<LineEditDouble *>(m_gridLayout->itemAtPosition(int(i), 2)->widget());
+            LineEditDouble *lineEdit2 = dynamic_cast<LineEditDouble *>(m_gridLayout->itemAtPosition(int(i), 3)->widget());
+            Q_ASSERT_X(lineEdit1, "DialogAssembly::accept", "lineEdit1 not set");
+            Q_ASSERT_X(lineEdit2, "DialogAssembly::accept", "lineEdit2 not set");
+            lineEdit1->setValue(pgd::RadiansToDegrees(universalJoint->GetUniversalAngle1()));
+            lineEdit2->setValue(pgd::RadiansToDegrees(universalJoint->GetUniversalAngle2()));
+        }
+
+        BallJoint *ballJoint = dynamic_cast<BallJoint *>(m_jointList[i]);
+        if (ballJoint)
+        {
+            LineEditDouble *lineEdit1 = dynamic_cast<LineEditDouble *>(m_gridLayout->itemAtPosition(int(i), 2)->widget());
+            LineEditDouble *lineEdit2 = dynamic_cast<LineEditDouble *>(m_gridLayout->itemAtPosition(int(i), 3)->widget());
+            LineEditDouble *lineEdit3 = dynamic_cast<LineEditDouble *>(m_gridLayout->itemAtPosition(int(i), 4)->widget());
+            Q_ASSERT_X(lineEdit1, "DialogAssembly::accept", "lineEdit1 not set");
+            Q_ASSERT_X(lineEdit2, "DialogAssembly::accept", "lineEdit2 not set");
+            Q_ASSERT_X(lineEdit3, "DialogAssembly::accept", "lineEdit3 not set");
+            pgd::Quaternion quaternion = ballJoint->GetQuaternion();
+            pgd::Vector3 euler = pgd::MakeEulerAnglesFromQ(quaternion);
+            lineEdit1->setValue(euler.x);
+            lineEdit2->setValue(euler.y);
+            lineEdit3->setValue(euler.z);
+        }
+    }
 }
 
 Simulation *DialogAssembly::simulation() const

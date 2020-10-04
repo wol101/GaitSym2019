@@ -21,6 +21,7 @@
 #include "pystring.h"
 
 #include <sstream>
+#include <algorithm>
 
 using namespace std::string_literals;
 
@@ -28,32 +29,10 @@ DataTargetVector::DataTargetVector()
 {
 }
 
-DataTargetVector::~DataTargetVector()
-{
-}
-
-// note in this case the pointer is to a list of the elements of
-// size vectors
-void DataTargetVector::SetTargetValues(int size, double *values)
-{
-    if (size != TargetTimeListLength())
-    {
-        std::cerr << "DataTargetVector::SetTargetValues error: size = " << size << "\n";
-        return;
-    }
-    m_VValueListLength = size;
-    m_VValueList.resize(size_t(m_VValueListLength));
-    for (size_t i = 0 ; i < size_t(m_VValueListLength); i++)
-    {
-        m_VValueList[i].x = values[i * 3];
-        m_VValueList[i].y = values[i * 3 + 1];
-        m_VValueList[i].z = values[i * 3 + 2];
-    }
-}
 
 // returns the degree of match to the stored values
 // in this case this is the euclidean distance between the two vectors
-double DataTargetVector::GetError(int valueListIndex)
+double DataTargetVector::calculateError(size_t valueListIndex)
 {
     const double *r;
     Body *body;
@@ -64,8 +43,7 @@ double DataTargetVector::GetError(int valueListIndex)
     Marker *marker;
     double err = 0;
     dVector3 v;
-    if (valueListIndex < 0) valueListIndex = 0;
-    if (valueListIndex >= m_VValueListLength)
+    if (valueListIndex >= m_VValueList.size())
     {
         std::cerr << "Warning: DataTargetVector::GetMatchValue valueListIndex out of range\n";
         return 0;
@@ -74,31 +52,31 @@ double DataTargetVector::GetError(int valueListIndex)
     if ((body = dynamic_cast<Body *>(GetTarget())) != nullptr)
     {
         r = body->GetPosition();
-        err = (pgd::Vector(r[0], r[1], r[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(r[0], r[1], r[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
     }
     else if ((geom = dynamic_cast<Geom *>(GetTarget())) != nullptr)
     {
         geom->GetWorldPosition(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
     }
     else if ((hingeJoint = dynamic_cast<HingeJoint *>(GetTarget())) != nullptr)
     {
         hingeJoint->GetHingeAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
    }
     else if ((ballJoint = dynamic_cast<BallJoint *>(GetTarget())) != nullptr)
     {
         ballJoint->GetBallAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
    }
     else if ((universalJoint = dynamic_cast<UniversalJoint *>(GetTarget())) != nullptr)
     {
         universalJoint->GetUniversalAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
     }
     else if ((marker = dynamic_cast<Marker *>(GetTarget())) != nullptr)
     {
-        pgd::Vector vec = marker->GetWorldPosition();
+        pgd::Vector3 vec = marker->GetWorldPosition();
         err = (vec - m_VValueList[size_t(valueListIndex)]).Magnitude();
     }
     else
@@ -110,7 +88,7 @@ double DataTargetVector::GetError(int valueListIndex)
 
 // returns the degree of match to the stored values
 // in this case this is the euclidean distance between the two vectors
-double DataTargetVector::GetError(double time)
+double DataTargetVector::calculateError(double time)
 {
     const double *r;
     Body *body;
@@ -122,48 +100,59 @@ double DataTargetVector::GetError(double time)
     double err = 0;
     dVector3 v;
 
-    int index = GSUtil::BinarySearchRange(TargetTimeList(), TargetTimeListLength(), time);
-    if (index < 0) index = 0;
-    if (index >= m_VValueListLength - 1)
+    size_t index, indexNext;
+    auto lowerBound = std::lower_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
+    auto upperBound = std::upper_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
+    // time < lowerbound
+    if (lowerBound == targetTimeList()->end())
     {
-        std::cerr << "Warning: DataTargetVector::GetMatchValue index out of range\n";
-        return 0;
+        index = 0;
+        indexNext = index;
     }
-    int indexNext = index + 1;
+    else if (upperBound == targetTimeList()->end())
+    {
+        index = targetTimeList()->size() - 1;
+        indexNext = index;
+    }
+    else
+    {
+        index = std::distance(targetTimeList()->begin(), lowerBound);
+        indexNext = std::min(index + 1, targetTimeList()->size() - 1);
+    }
 
-    double interpX = GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_VValueList[size_t(index)].x, TargetTimeList()[size_t(indexNext)], m_VValueList[size_t(indexNext)].x, time);
-    double interpY = GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_VValueList[size_t(index)].y, TargetTimeList()[size_t(indexNext)], m_VValueList[size_t(indexNext)].y, time);
-    double interpZ = GSUtil::Interpolate(TargetTimeList()[size_t(index)], m_VValueList[size_t(index)].z, TargetTimeList()[size_t(indexNext)], m_VValueList[size_t(indexNext)].z, time);
-    pgd::Vector interpolatedTarget(interpX, interpY, interpZ);
+    double interpX = GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_VValueList[size_t(index)].x, (*targetTimeList())[size_t(indexNext)], m_VValueList[size_t(indexNext)].x, time);
+    double interpY = GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_VValueList[size_t(index)].y, (*targetTimeList())[size_t(indexNext)], m_VValueList[size_t(indexNext)].y, time);
+    double interpZ = GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_VValueList[size_t(index)].z, (*targetTimeList())[size_t(indexNext)], m_VValueList[size_t(indexNext)].z, time);
+    pgd::Vector3 interpolatedTarget(interpX, interpY, interpZ);
 
     if ((body = dynamic_cast<Body *>(GetTarget())) != nullptr)
     {
         r = body->GetPosition();
-        err = (pgd::Vector(r[0], r[1], r[2]) - interpolatedTarget).Magnitude();
+        err = (pgd::Vector3(r[0], r[1], r[2]) - interpolatedTarget).Magnitude();
     }
     else if ((geom = dynamic_cast<Geom *>(GetTarget())) != nullptr)
     {
         geom->GetWorldPosition(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - interpolatedTarget).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - interpolatedTarget).Magnitude();
     }
     else if ((hingeJoint = dynamic_cast<HingeJoint *>(GetTarget())) != nullptr)
     {
         hingeJoint->GetHingeAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - interpolatedTarget).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - interpolatedTarget).Magnitude();
    }
     else if ((ballJoint = dynamic_cast<BallJoint *>(GetTarget())) != nullptr)
     {
         ballJoint->GetBallAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - interpolatedTarget).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - interpolatedTarget).Magnitude();
    }
     else if ((universalJoint = dynamic_cast<UniversalJoint *>(GetTarget())) != nullptr)
     {
         universalJoint->GetUniversalAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - interpolatedTarget).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - interpolatedTarget).Magnitude();
     }
     else if ((marker = dynamic_cast<Marker *>(GetTarget())) != nullptr)
     {
-        pgd::Vector vec = marker->GetWorldPosition();
+        pgd::Vector3 vec = marker->GetWorldPosition();
         err = (vec - interpolatedTarget).Magnitude();
     }
     else
@@ -173,12 +162,12 @@ double DataTargetVector::GetError(double time)
     return err;
 }
 
-std::string DataTargetVector::dump()
+std::string DataTargetVector::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tTargetX\tTargetY\tTargetZ\tActualX\tActualY\tActualZ\tDistance\n";
@@ -193,41 +182,44 @@ std::string DataTargetVector::dump()
     double err = 0;
     dVector3 v;
 
-    int valueListIndex = GSUtil::BinarySearchRange(TargetTimeList(), TargetTimeListLength(), simulation()->GetTime());
+    size_t valueListIndex = 0;
+    auto lowerBounds = std::lower_bound(targetTimeList()->begin(), targetTimeList()->end(), simulation()->GetTime());
+    if (lowerBounds != targetTimeList()->end()) valueListIndex = std::distance(targetTimeList()->begin(), lowerBounds);
+
     if ((body = dynamic_cast<Body *>(GetTarget())) != nullptr)
     {
         r = body->GetPosition();
-        err = (pgd::Vector(r[0], r[1], r[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(r[0], r[1], r[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
     }
     else if ((geom = dynamic_cast<Geom *>(GetTarget())) != nullptr)
     {
         geom->GetWorldPosition(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
         r = v;
     }
     else if ((hingeJoint = dynamic_cast<HingeJoint *>(GetTarget())) != nullptr)
     {
         hingeJoint->GetHingeAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
         r = v;
     }
     else if ((ballJoint = dynamic_cast<BallJoint *>(GetTarget())) != nullptr)
     {
         ballJoint->GetBallAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
         r = v;
     }
     else if ((universalJoint = dynamic_cast<UniversalJoint *>(GetTarget())) != nullptr)
     {
         universalJoint->GetUniversalAnchor(v);
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
         r = v;
     }
     else if ((marker = dynamic_cast<Marker *>(GetTarget())) != nullptr)
     {
-        pgd::Vector vec = marker->GetWorldPosition();
+        pgd::Vector3 vec = marker->GetWorldPosition();
         v[0] = vec.x; v[1] = vec.y; v[2] = vec.z;
-        err = (pgd::Vector(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
+        err = (pgd::Vector3(v[0], v[1], v[2]) - m_VValueList[size_t(valueListIndex)]).Magnitude();
         r = v;
     }
 
@@ -286,15 +278,18 @@ std::string *DataTargetVector::createFromAttributes()
         setLastError("DataTargetVector ID=\""s + name() +"\" No values found in TargetValues"s);
         return lastErrorPtr();
     }
-    if (int(targetValuesTokens.size()) != TargetTimeListLength() * 3)
+    if (targetValuesTokens.size() != targetTimeList()->size() * 3)
     {
         setLastError("DataTargetVector ID=\""s + name() +"\" Number of values in TargetValues does not match 3 * TargetTimes"s);
         return lastErrorPtr();
     }
-    std::vector<double> targetValues;
-    targetValues.reserve(targetValuesTokens.size());
-    for (auto token : targetValuesTokens) targetValues.push_back(GSUtil::Double(token));
-    SetTargetValues(int(targetValues.size()) / 3, targetValues.data());
+    m_VValueList.clear();
+    m_VValueList.reserve(targetTimeList()->size());
+    for (size_t i = 0; i < targetTimeList()->size(); i++)
+    {
+        pgd::Vector3 v(GSUtil::Double(targetValuesTokens[i * 3]), GSUtil::Double(targetValuesTokens[i * 3 + 1]), GSUtil::Double(targetValuesTokens[i * 3 + 2]));
+        m_VValueList.push_back(v);
+    }
 
     return nullptr;
 }
@@ -306,8 +301,8 @@ void DataTargetVector::appendToAttributes()
     std::string buf;
     setAttribute("Type"s, "Scalar"s);
     std::vector<double> valueList;
-    valueList.reserve(size_t(m_VValueListLength) * 3);
-    for (size_t i = 0; i < size_t(m_VValueListLength); i++)
+    valueList.reserve(m_VValueList.size() * 3);
+    for (size_t i = 0; i < m_VValueList.size(); i++)
     {
         valueList.push_back(m_VValueList[i].x);
         valueList.push_back(m_VValueList[i].y);

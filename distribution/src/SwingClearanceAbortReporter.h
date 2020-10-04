@@ -26,7 +26,7 @@ public:
     void SetDirectionAxis(const char *buf);
 
     virtual bool ShouldAbort();
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
 private:
 
@@ -34,7 +34,7 @@ private:
     double m_velocityThreshold;
     Marker::Axis m_upAxis;
     bool m_useDirectionAxis;
-    pgd::Vector m_directionAxis;
+    pgd::Vector3 m_directionAxis;
     double m_velocity;
     double m_height;
 

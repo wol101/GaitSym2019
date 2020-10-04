@@ -56,9 +56,9 @@ void TegotaeDriver::Initialise(double omega, double sigma, double A, double Apri
     else m_Y = m_Aprime * std::sin(m_phi);         // Y (pi<= m_phi < 2pi)
 
     pgd::Quaternion rimLocalQ = m_tegotaeCentre->GetQuaternion();
-    pgd::Vector rimWorldP = m_tegotaeCentre->GetWorldPosition(pgd::Vector(m_X, m_Y, 0));
+    pgd::Vector3 rimWorldP = m_tegotaeCentre->GetWorldPosition(pgd::Vector3(m_X, m_Y, 0));
     m_tegotaeRim = tegotaeRim;
-    m_tegotaeRim->SetQuaternion(rimLocalQ.n, rimLocalQ.v.x, rimLocalQ.v.y, rimLocalQ.v.z);
+    m_tegotaeRim->SetQuaternion(rimLocalQ.n, rimLocalQ.x, rimLocalQ.y, rimLocalQ.z);
     m_tegotaeRim->SetWorldPosition(rimWorldP.x ,rimWorldP.y, rimWorldP.z);
 
     m_tegotaeCentre->addDependent(this);
@@ -105,24 +105,23 @@ void TegotaeDriver::Update()
 
     // get the world position of the Tegotae target
     pgd::Quaternion rimLocalQ = m_tegotaeCentre->GetQuaternion();
-    pgd::Vector rimWorldP = m_tegotaeCentre->GetWorldPosition(pgd::Vector(m_X, m_Y, 0));
-    m_tegotaeRim->SetQuaternion(rimLocalQ.n, rimLocalQ.v.x, rimLocalQ.v.y, rimLocalQ.v.z);
+    pgd::Vector3 rimWorldP = m_tegotaeCentre->GetWorldPosition(pgd::Vector3(m_X, m_Y, 0));
+    m_tegotaeRim->SetQuaternion(rimLocalQ.n, rimLocalQ.x, rimLocalQ.y, rimLocalQ.z);
     m_tegotaeRim->SetWorldPosition(rimWorldP.x ,rimWorldP.y, rimWorldP.z);
-    pgd::Vector targetDesiredPosition = m_errorOutput->GetWorldPosition();
+    pgd::Vector3 targetDesiredPosition = m_errorOutput->GetWorldPosition();
     m_worldErrorVector = rimWorldP - targetDesiredPosition;
     m_localErrorVector = m_tegotaeCentre->GetVector(m_worldErrorVector); // this should mean that the position depends on m_errorOutput but direction depends on m_tegotaeCentre
 
     // update m_phi depending on m_phi_dot values
     m_phi = std::fmod(m_phi + m_phi_dot * deltaT, 2 * M_PI);
-    return;
 }
 
 void TegotaeDriver::UpdateReactionForce()
 {
     // N is the ground reaction force (GRF) acting on the leg
     m_N = 0;
-    pgd::Vector worldXAxis;
-    pgd::Vector worldReactionForce;
+    pgd::Vector3 worldXAxis;
+    pgd::Vector3 worldReactionForce;
     for (auto geomIt : m_contactGeomList)
     {
         std::vector<Contact *> *contactList = geomIt->GetContactList();
@@ -139,12 +138,12 @@ void TegotaeDriver::UpdateReactionForce()
     if (m_N < 0) m_N = 0;
 }
 
-std::string TegotaeDriver::dump()
+std::string TegotaeDriver::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tomega\tsigma\tA\tAprime\tB"
@@ -295,7 +294,7 @@ std::string *TegotaeDriver::createFromAttributes()
             if (controllerIter != simulation()->GetControllerList()->end())  m_targetList1[controllerIter->first] = controllerIter->second.get();
             else
             {
-                setLastError("Driver ID=\""s + name() +"\" TargetID=\""s + buf + "\" not found"s);
+                setLastError("Driver ID=\""s + name() +"\" TargetIDList1=\""s + buf + "\" not found"s);
                 return lastErrorPtr();
             }
         }
@@ -314,7 +313,7 @@ std::string *TegotaeDriver::createFromAttributes()
             if (controllerIter != simulation()->GetControllerList()->end())  m_targetList2[controllerIter->first] = controllerIter->second.get();
             else
             {
-                setLastError("Driver ID=\""s + name() +"\" TargetID=\""s + buf + "\" not found"s);
+                setLastError("Driver ID=\""s + name() +"\" TargetIDList2=\""s + buf + "\" not found"s);
                 return lastErrorPtr();
             }
         }
@@ -356,12 +355,12 @@ void TegotaeDriver::appendToAttributes()
     setAttribute("TargetIDList2"s, pystring::join(" "s, stringList));
 }
 
-pgd::Vector TegotaeDriver::worldErrorVector() const
+pgd::Vector3 TegotaeDriver::worldErrorVector() const
 {
     return m_worldErrorVector;
 }
 
-pgd::Vector TegotaeDriver::localErrorVector() const
+pgd::Vector3 TegotaeDriver::localErrorVector() const
 {
     return m_localErrorVector;
 }

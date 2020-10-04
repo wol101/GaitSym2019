@@ -16,6 +16,15 @@ MeshStore::MeshStore()
 {
 }
 
+void MeshStore::clear()
+{
+    m_meshMap.clear();
+    m_lastAccessedMapByTime.clear();
+    m_lastAccessedMapByName.clear();
+    m_timeCount = 0;
+    m_targetMemory = 0;
+}
+
 MeshStoreObject *MeshStore::getMesh(const std::string &path)
 {
     auto it = m_meshMap.find(path);
@@ -53,16 +62,20 @@ void MeshStore::addMesh(const MeshStoreObject &meshStoreObject)
 }
 
 void MeshStore::addMesh(const std::string &path, const std::vector<double> &vertexList, const std::vector<double> &normalList,
-                        const std::vector<double> &colourList, const dVector3 &lowerBound, const dVector3 &upperBound)
+                        const std::vector<double> &colourList, const std::vector<double> &uvList, const dVector3 &lowerBound, const dVector3 &upperBound)
 {
-    if ((vertexList.size() * sizeof(double) + normalList.size() * sizeof(double) +
-         colourList.size() * sizeof(double) + sizeof(MeshStoreObject)) > m_targetMemory) return;
+    if ((vertexList.size() * sizeof(double) +
+         normalList.size() * sizeof(double) +
+         colourList.size() * sizeof(double) +
+         uvList.size() * sizeof(double) +
+         sizeof(MeshStoreObject)) > m_targetMemory) return;
 
     auto mesh = std::make_unique<MeshStoreObject>();
     mesh->path = path;
     mesh->vertexList = vertexList;
     mesh->normalList = normalList;
     mesh->colourList = colourList;
+    mesh->uvList = uvList;
     mesh->lowerBound[0] = lowerBound[0];
     mesh->lowerBound[1] = lowerBound[1];
     mesh->lowerBound[2] = lowerBound[2];

@@ -41,7 +41,11 @@ public:
     void GetInsertion(const Body **body, dVector3 pos) const;
     void GetCylinder(const Body **body, dVector3 pos, double *radius, dQuaternion q) const;
 
-    const pgd::Vector *GetPathCoordinates() { return m_pathCoordinates.data(); }
+    Marker *GetOriginMarker() const;
+    Marker *GetInsertionMarker() const;
+    Marker *GetCylinderMarker() const;
+
+    const pgd::Vector3 *GetPathCoordinates() { return m_pathCoordinates.data(); }
     int GetNumPathCoordinates() { return m_numPathCoordinates; }
 
     virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
@@ -51,26 +55,28 @@ public:
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
+    double cylinderRadius() const;
+
 private:
 
-    int CylinderWrap(pgd::Vector &origin, pgd::Vector &insertion, double radius, int nWrapSegments, double maxAngle,
-                     pgd::Vector &originForce, pgd::Vector &insertionForce, pgd::Vector &cylinderForce, pgd::Vector &cylinderForcePosition,
-                     double *pathLength, pgd::Vector *pathCoordinates, int *numPathCoordinates);
+    int CylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &insertion, double radius, int nWrapSegments, double maxAngle,
+                     pgd::Vector3 &originForce, pgd::Vector3 &insertionForce, pgd::Vector3 &cylinderForce, pgd::Vector3 &cylinderForcePosition,
+                     double *pathLength, pgd::Vector3 *pathCoordinates, int *numPathCoordinates);
 
     Body *m_originBody;
-    pgd::Vector m_originPosition;
+    pgd::Vector3 m_originPosition;
     Body *m_insertionBody;
-    pgd::Vector m_insertionPosition;
+    pgd::Vector3 m_insertionPosition;
 
     Body *m_cylinderBody;
-    pgd::Vector m_cylinderPosition;
+    pgd::Vector3 m_cylinderPosition;
     pgd::Quaternion m_cylinderQuaternion;
     double m_cylinderRadius = 1;
     int m_numWrapSegments = 2;
 
     int m_wrapStatus = -1;
 
-    std::vector<pgd::Vector> m_pathCoordinates;
+    std::vector<pgd::Vector3> m_pathCoordinates;
     int m_numPathCoordinates = 0;
 
     Marker *m_originMarker = nullptr;

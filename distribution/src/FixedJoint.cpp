@@ -24,23 +24,7 @@ FixedJoint::FixedJoint(dWorldID worldID) : Joint()
 {
     setJointID(dJointCreateFixed(worldID, nullptr));
     dJointSetData(JointID(), this);
-
     dJointSetFeedback(JointID(), JointFeedback());
-
-}
-
-FixedJoint::~FixedJoint()
-{
-    if (m_stiffness) delete m_stiffness;
-    if (m_xDistances) delete [] m_xDistances;
-    if (m_yDistances) delete [] m_yDistances;
-    if (m_stress) delete [] m_stress;
-    if (m_vectorList) delete [] m_vectorList;
-    if (m_filteredStress)
-    {
-        for (int i = 0; i < m_nActivePixels; i++) delete m_filteredStress[i];
-        delete [] m_filteredStress;
-    }
 }
 
 void FixedJoint::SetFixed()
@@ -61,23 +45,21 @@ void FixedJoint::CalculateStress()
     // calculate the offset of the stress position from the CM
     dVector3 result;
     dBodyVectorToWorld (this->GetBody1()->GetBodyID(), m_StressOrigin.x, m_StressOrigin.y, m_StressOrigin.z, result);
-    pgd::Vector worldStressOffset(result[0], result[1], result[2]);
+    pgd::Vector3 worldStressOffset(result[0], result[1], result[2]);
 
     // now the linear components of JointFeedback() will generate a torque if applied at this position
     // torque = r x f
-    pgd::Vector forceCM(JointFeedback()->f1[0], JointFeedback()->f1[1], JointFeedback()->f1[2]);
-    pgd::Vector addedTorque = worldStressOffset ^ forceCM;
+    pgd::Vector3 forceCM(JointFeedback()->f1[0], JointFeedback()->f1[1], JointFeedback()->f1[2]);
+    pgd::Vector3 addedTorque = worldStressOffset ^ forceCM;
 
-    pgd::Vector torqueCM(JointFeedback()->t1[0], JointFeedback()->t1[1], JointFeedback()->t1[2]);
-    pgd::Vector torqueStressOrigin = torqueCM - addedTorque;
+    pgd::Vector3 torqueCM(JointFeedback()->t1[0], JointFeedback()->t1[1], JointFeedback()->t1[2]);
+    pgd::Vector3 torqueStressOrigin = torqueCM - addedTorque;
 
     // now rotate new values to stress based coordinates
     const double *q = dBodyGetQuaternion (this->GetBody1()->GetBodyID());
     pgd::Quaternion bodyOrientation(q[0], q[1], q[2], q[3]);
     m_torqueStressCoords = pgd::QVRotate(m_StressOrientation, pgd::QVRotate(bodyOrientation, torqueStressOrigin));
     m_forceStressCoords = pgd::QVRotate(m_StressOrientation, pgd::QVRotate(bodyOrientation, forceCM));
-
-    int i;
 
     if (m_stressCalculationType == beam)
     {
@@ -124,13 +106,13 @@ void FixedJoint::CalculateStress()
         // precalculate invariant bits of the formula
         double t1 = (My * m_Ix + Mx * m_Ixy)/(m_Ix * m_Iy - m_Ixy * m_Ixy);
         double t2 = (Mx * m_Iy + My * m_Ixy)/(m_Ix * m_Iy - m_Ixy * m_Ixy);
-        double *xDistancePtr = m_xDistances;
-        double *yDistancePtr = m_yDistances;
+        double *xDistancePtr = m_xDistances.data();
+        double *yDistancePtr = m_yDistances.data();
 
-        double *stressPtr = m_stress;
+        double *stressPtr = m_stress.data();
         m_minStress = DBL_MAX;
         m_maxStress = -DBL_MAX;
-        for (i = 0; i < m_nActivePixels; i++)
+        for (size_t i = 0; i < m_nActivePixels; i++)
         {
             *stressPtr = -t1 * (*xDistancePtr) + t2 * (*yDistancePtr) + linearStress;
             if (*stressPtr > m_maxStress) m_maxStress = *stressPtr;
@@ -146,31 +128,31 @@ void FixedJoint::CalculateStress()
         m_torqueAxis = m_torqueStressCoords / m_torqueScalar;
 
         // assuming all the springs are the same then
-        pgd::Vector forcePerSpring1 = m_forceStressCoords / m_nActivePixels;
+        pgd::Vector3 forcePerSpring1 = m_forceStressCoords / double(m_nActivePixels);
 
         // but for the torque we need to find the total torsional springiness
-        double *xDistancePtr = m_xDistances;
-        double *yDistancePtr = m_yDistances;
+        double *xDistancePtr = m_xDistances.data();
+        double *yDistancePtr = m_yDistances.data();
         double totalNominalTorque = 0;
 
-        for (i = 0; i < m_nActivePixels; i++)
+        for (size_t i = 0; i < m_nActivePixels; i++)
         {
-            pgd::Vector p(*xDistancePtr, *yDistancePtr, 0);
-            pgd::Vector closestPoint = m_torqueAxis * (m_torqueAxis * p);
-            pgd::Vector r = p - closestPoint;
+            pgd::Vector3 p(*xDistancePtr, *yDistancePtr, 0);
+            pgd::Vector3 closestPoint = m_torqueAxis * (m_torqueAxis * p);
+            pgd::Vector3 r = p - closestPoint;
             double distance2 = r.Magnitude2();
             double distance = sqrt(distance2);
             if (distance2 > 1e-10)
             {
-                pgd::Vector direction = m_torqueAxis ^ r;
+                pgd::Vector3 direction = m_torqueAxis ^ r;
                 direction.Normalize();
-                pgd::Vector forcePerSpring2 =  direction * distance; // force per spring is proportional to the perpendicular distance
+                pgd::Vector3 forcePerSpring2 =  direction * distance; // force per spring is proportional to the perpendicular distance
                 totalNominalTorque += distance2; // but the torque per spring is proportional to the perpendicular distance squared
                 m_vectorList[i] = forcePerSpring2;
             }
             else
             {
-                m_vectorList[i] = pgd::Vector(0, 0, 0);
+                m_vectorList[i] = pgd::Vector3(0, 0, 0);
             }
             xDistancePtr++;
             yDistancePtr++;
@@ -179,9 +161,9 @@ void FixedJoint::CalculateStress()
         double torqueScale = m_torqueScalar / totalNominalTorque; // this will make the total torque produced by the springs add up to the actual torque
         m_minStress = DBL_MAX;
         m_maxStress = -DBL_MAX;
-        double *stressPtr = m_stress;
+        double *stressPtr = m_stress.data();
         double dArea = m_dx * m_dy;
-        for (i = 0; i < m_nActivePixels; i++)
+        for (size_t i = 0; i < m_nActivePixels; i++)
         {
             //std::cerr << m_vectorList[i].x << " " << m_vectorList[i].y << " " << m_vectorList[i].z << "\n";
             m_vectorList[i] = (m_vectorList[i] * torqueScale) + forcePerSpring1;
@@ -194,22 +176,22 @@ void FixedJoint::CalculateStress()
 //#define SANITY_CHECK
 #ifdef SANITY_CHECK
         // check that my forces and my torqes add up
-        pgd::Vector totalForce;
-        pgd::Vector totalTorque;
-        i = 0;
-        ptr = m_stiffness;
-        for (iy = 0; iy < m_ny; iy++)
+        pgd::Vector3 totalForce;
+        pgd::Vector3 totalTorque;
+        size_t i = 0;
+        unsigned char *ptr = m_stiffness.data();
+        for (size_t iy = 0; iy < m_ny; iy++)
         {
-            for (ix = 0; ix < m_nx; ix++)
+            for (size_t ix = 0; ix < m_nx; ix++)
             {
                 if (*ptr)
                 {
                     totalForce += m_vectorList[i];
 
-                    pgd::Vector p(((ix) + 0.5) * m_dx - m_xOrigin, ((iy) + 0.5) * m_dy - m_yOrigin, 0);
-                    pgd::Vector closestPoint = torqueAxis * (torqueAxis * p);
-                    pgd::Vector r = p - closestPoint;
-                    pgd::Vector torque = r ^ m_vectorList[i];
+                    pgd::Vector3 p(((ix) + 0.5) * m_dx - m_xOrigin, ((iy) + 0.5) * m_dy - m_yOrigin, 0);
+                    pgd::Vector3 closestPoint = m_torqueAxis * (m_torqueAxis * p);
+                    pgd::Vector3 r = p - closestPoint;
+                    pgd::Vector3 torque = r ^ m_vectorList[i];
                     std::cerr << "torque " << torque.x << " " << torque.y << " " << torque.z << "\n";
                     totalTorque += torque;
                     i++;
@@ -237,7 +219,7 @@ void FixedJoint::CalculateStress()
     case Butterworth2ndOrderLowPass:
         m_lowPassMinStress = DBL_MAX;
         m_lowPassMaxStress = -DBL_MAX;
-        for (i = 0; i < m_nActivePixels; i++)
+        for (size_t i = 0; i < m_nActivePixels; i++)
         {
             m_filteredStress[i]->AddNewSample(m_stress[i]);
             if (m_filteredStress[i]->Output() > m_lowPassMaxStress)
@@ -249,16 +231,76 @@ void FixedJoint::CalculateStress()
     }
 }
 
+const std::vector<unsigned char> &FixedJoint::pixMap() const
+{
+    return m_pixMap;
+}
+
+double FixedJoint::highRange() const
+{
+    return m_highRange;
+}
+
+void FixedJoint::setHighRange(double highRange)
+{
+    m_highRange = highRange;
+}
+
+double FixedJoint::lowRange() const
+{
+    return m_lowRange;
+}
+
+void FixedJoint::setLowRange(double lowRange)
+{
+    m_lowRange = lowRange;
+}
+
+const std::vector<unsigned char> &FixedJoint::stiffness() const
+{
+    return m_stiffness;
+}
+
+size_t FixedJoint::ny() const
+{
+    return m_ny;
+}
+
+size_t FixedJoint::nx() const
+{
+    return m_nx;
+}
+
+double FixedJoint::yOrigin() const
+{
+    return m_yOrigin;
+}
+
+double FixedJoint::xOrigin() const
+{
+    return m_xOrigin;
+}
+
+double FixedJoint::height() const
+{
+    return m_height;
+}
+
+double FixedJoint::width() const
+{
+    return m_width;
+}
+
 // this is where we set the cross section and precalculate the second moment of area
 // the cross section array is a unsigned char image with origin at bottom left (standard raster origin will need to have y reversed but this matches the OpenGL standard)
 // it scans row first and then vertically
 // nx, ny are the dimensions of the array
 // dx, dy are the real world sizes of each pixel in the array
-// stiffness array ownership is taken over by FixedJoint and not copied
+// stiffness array is copied
 // the edge of the mesh corresponds to the edge of the pixel not the centre
-void FixedJoint::SetCrossSection(unsigned char *stiffness, int nx, int ny, double dx, double dy)
+void FixedJoint::SetCrossSection(const std::vector<unsigned char> &stiffness, size_t nx, size_t ny, double dx, double dy)
 {
-    int ix, iy;
+    size_t ix, iy;
     unsigned char *ptr;
     double xsum = 0;
     double ysum = 0;
@@ -267,10 +309,12 @@ void FixedJoint::SetCrossSection(unsigned char *stiffness, int nx, int ny, doubl
     m_dy = dy;
     m_nx = nx;
     m_ny = ny;
+    m_width = m_nx * m_dx;
+    m_height = m_ny * m_dy;
 
-    if (m_stiffness) delete m_stiffness;
+
     m_stiffness = stiffness;
-    ptr = m_stiffness;
+    ptr = m_stiffness.data();
 
     // calculate centre of area
     m_nActivePixels = 0;
@@ -292,15 +336,15 @@ void FixedJoint::SetCrossSection(unsigned char *stiffness, int nx, int ny, doubl
 
     // now calculate second moment of area and distances from the origin
 
-    ptr = m_stiffness;
+    ptr = m_stiffness.data();
     double dArea = m_dx * m_dy;
     m_area = m_nActivePixels * dArea;
-    if (m_xDistances) delete [] m_xDistances;
-    m_xDistances = new double[m_nActivePixels];
-    double *xDistancePtr = m_xDistances;
-    if (m_yDistances) delete [] m_yDistances;
-    m_yDistances = new double[m_nActivePixels];
-    double *yDistancePtr = m_yDistances;
+    m_xDistances.clear();
+    m_xDistances.resize(m_nActivePixels);
+    m_yDistances.clear();
+    m_yDistances.resize(m_nActivePixels);
+    double *xDistancePtr = m_xDistances.data();
+    double *yDistancePtr = m_yDistances.data();
     m_Ix = 0;
     m_Iy = 0;
     m_Ixy = 0;
@@ -328,13 +372,13 @@ void FixedJoint::SetCrossSection(unsigned char *stiffness, int nx, int ny, doubl
     }
 
     // allocate the vector list
-    if (m_vectorList) delete [] m_vectorList;
-    m_vectorList = new pgd::Vector[m_nActivePixels];
-
-    if (m_stress) delete [] m_stress;
-    m_stress = new double[m_nActivePixels];
+    m_vectorList.clear();
+    m_vectorList.resize(m_nActivePixels);
+    m_stress.clear();
+    m_stress.resize(m_nActivePixels);
 }
 
+// note: m_StressOrigin is in Body1 local coordinates
 void FixedJoint::SetStressOrigin(double x, double y, double z)
 {
     m_StressOrigin.x = x;
@@ -342,31 +386,26 @@ void FixedJoint::SetStressOrigin(double x, double y, double z)
     m_StressOrigin.z = z;
 }
 
-
+// note: m_StressOrientation is in Body1 local coordinates
 void FixedJoint::SetStressOrientation(double q0, double q1, double q2, double q3)
 {
     m_StressOrientation.n = q0;
-    m_StressOrientation.v.x = q1;
-    m_StressOrientation.v.y = q2;
-    m_StressOrientation.v.z = q3;
+    m_StressOrientation.x = q1;
+    m_StressOrientation.y = q2;
+    m_StressOrientation.z = q3;
     m_StressOrientation.Normalize(); // this is the safest option
 }
 
 
-void FixedJoint::SetWindow(int window)
+void FixedJoint::SetWindow(size_t window)
 {
 //    m_minStressMovingAverage = new MovingAverage(window);
 //    m_maxStressMovingAverage = new MovingAverage(window);
     m_window = window;
     m_lowPassType = MovingAverageLowPass;
-    if (m_filteredStress)
-    {
-        for (int i = 0; i < m_nActivePixels; i++) delete m_filteredStress[i];
-        delete [] m_filteredStress;
-    }
-    m_filteredStress = new Filter *[m_nActivePixels];
-    for (int i = 0; i < m_nActivePixels; i++)
-        m_filteredStress[i] = new MovingAverage(window);
+    m_filteredStress.clear();
+    m_filteredStress.reserve(m_nActivePixels);
+    for (size_t i = 0; i < m_nActivePixels; i++) m_filteredStress.push_back(std::make_unique<MovingAverage>(int(window)));
 }
 
 void FixedJoint::SetCutoffFrequency(double cutoffFrequency)
@@ -376,18 +415,11 @@ void FixedJoint::SetCutoffFrequency(double cutoffFrequency)
 //    m_minStressButterworth = new ButterworthFilter(cutoffFrequency, samplingFrequency);
 //    m_maxStressButterworth = new ButterworthFilter(cutoffFrequency, samplingFrequency);
     m_lowPassType = Butterworth2ndOrderLowPass;
-    if (m_filteredStress)
-    {
-        for (int i = 0; i < m_nActivePixels; i++) delete m_filteredStress[i];
-        delete [] m_filteredStress;
-    }
-    m_filteredStress = new Filter *[m_nActivePixels];
-    for (int i = 0; i < m_nActivePixels; i++)
-        m_filteredStress[i] = new SharedButterworthFilter();
+    m_filteredStress.clear();
+    m_filteredStress.reserve(m_nActivePixels);
+    for (size_t i = 0; i < m_nActivePixels; i++) m_filteredStress.push_back(std::make_unique<SharedButterworthFilter>());
     SharedButterworthFilter::CalculateCoefficients(cutoffFrequency, samplingFrequency);
 }
-
-
 
 bool FixedJoint::CheckStressAbort()
 {
@@ -408,10 +440,10 @@ std::string *FixedJoint::createFromAttributes()
     std::string buf;
     buf.reserve(1000000);
 
-    pgd::Vector position = body1Marker()->GetWorldPosition();
+    pgd::Vector3 position = body1Marker()->GetPosition();
     this->SetStressOrigin(position.x, position.y, position.z);
-    pgd::Quaternion quaternion = body1Marker()->GetWorldQuaternion();
-    this->SetStressOrientation(quaternion.n, quaternion.v.x, quaternion.v.y, quaternion.v.z);
+    pgd::Quaternion quaternion = body1Marker()->GetQuaternion();
+    this->SetStressOrientation(quaternion.n, quaternion.x, quaternion.y, quaternion.z);
 
     SetFixed();
     if (CFM() >= 0) dJointSetFixedParam (JointID(), dParamCFM, CFM());
@@ -434,6 +466,18 @@ std::string *FixedJoint::createFromAttributes()
         if (findAttribute("StressLimit"s, &buf) == nullptr) return lastErrorPtr();
         this->SetStressLimit(GSUtil::Double(buf.c_str()));
 
+        double doubleList[2];
+        if (findAttribute("StressBitmapPixelSize"s, &buf) == nullptr) return lastErrorPtr();
+        GSUtil::Double(buf.c_str(), 2, doubleList);
+        double dx = doubleList[0];
+        double dy = doubleList[1];
+        if (findAttribute("StressBitmapDimensions"s, &buf) == nullptr) return lastErrorPtr();
+        GSUtil::Double(buf.c_str(), 2, doubleList);
+        int nx = int(doubleList[0] + 0.5);
+        int ny = int(doubleList[1] + 0.5);
+        if (findAttribute("StressBitmap"s, &buf) == nullptr) return lastErrorPtr();
+        this->SetCrossSection(AsciiToBitMap(buf, nx, ny, '1', true), nx, ny, dx, dy);
+
         switch (m_lowPassType)
         {
         case FixedJoint::NoLowPass:
@@ -448,19 +492,14 @@ std::string *FixedJoint::createFromAttributes()
             break;
         }
 
-        double doubleList[2];
-        if (findAttribute("StressBitmapPixelSize"s, &buf) == nullptr) return lastErrorPtr();
-        GSUtil::Double(buf.c_str(), 2, doubleList);
-        double dx = doubleList[0];
-        double dy = doubleList[1];
-        if (findAttribute("StressBitmapDimensions"s, &buf) == nullptr) return lastErrorPtr();
-        GSUtil::Double(buf.c_str(), 2, doubleList);
-        int nx = int(doubleList[0] + 0.5);
-        int ny = int(doubleList[1] + 0.5);
-        if (findAttribute("StressBitmap"s, &buf) == nullptr) return lastErrorPtr();
-        unsigned char *stiffness = new unsigned char[size_t(nx * ny)];
-        GSUtil::AsciiToBitMap(buf.c_str(), nx, ny, '1', true, stiffness); // this reverses the format
-        this->SetCrossSection(stiffness, nx, ny, dx, dy); // takes ownership of the bitmap
+        if (findAttribute("StressBitmapDisplayRange"s, &buf))
+        {
+            GSUtil::Double(buf.c_str(), 2, doubleList);
+            setLowRange(doubleList[0]);
+            setHighRange(doubleList[1]);
+        }
+
+
     }
 
     return nullptr;
@@ -502,34 +541,35 @@ void FixedJoint::appendToAttributes()
         setAttribute("StressLimit"s, *GSUtil::ToString(m_stressLimit, &buf));
         double doubleList[2] = { m_dx, m_dy };
         setAttribute("StressBitmapPixelSize"s, *GSUtil::ToString(doubleList, 2, &buf));
-        int intList[2] = { m_nx, m_ny };
+        size_t intList[2] = { m_nx, m_ny };
         setAttribute("StressBitmapDimensions"s, *GSUtil::ToString(intList, 2, &buf));
-        size_t index = 0;
         std::string bitmap;
         bitmap.reserve(size_t((m_nx + 2) * m_ny));
-        for (int iy = m_ny - 1; iy >= 0; iy--)
+        for (size_t iy = m_ny - 1; iy < m_ny; iy--)
         {
-            bitmap[index++] = '\n';
-            for (int ix = 0; ix > m_nx; ix++)
+            bitmap.append("\n");
+            for (size_t ix = 0; ix < m_nx; ix++)
             {
-                if (m_stiffness[iy * m_nx + ix]) bitmap[index++] = '1';
-                else bitmap[index++] = '0';
+                if (m_stiffness[iy * m_nx + ix]) bitmap.append("1");
+                else  bitmap.append("0");
             }
         }
-        bitmap[index++] = '\n';
+        bitmap.append("\n");
         setAttribute("StressBitmap"s, bitmap);
+        double doubleList2[2] = { m_lowRange, m_highRange };
+        setAttribute("StressBitmapDisplayRange"s, *GSUtil::ToString(doubleList2, 2, &buf));
     }
 }
 
-std::string FixedJoint::dump()
+std::string FixedJoint::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
-        if (m_stiffness == 0)
+        if (m_stiffness.size() == 0)
         {
             ss << "Time\tXP\tYP\tZP\tFX1\tFY1\tFZ1\tTX1\tTY1\tTZ1\tFX2\tFY2\tFZ2\tTX2\tTY2\tTZ2\n";
         }
@@ -553,7 +593,7 @@ std::string FixedJoint::dump()
             }
         }
     }
-    if (m_stiffness == 0)
+    if (m_stiffness.size() == 0)
     {
         const double *p;
         if (this->GetBody1()) p = dBodyGetPosition(this->GetBody1()->GetBodyID());
@@ -598,90 +638,68 @@ std::string FixedJoint::dump()
     return ss.str();
 }
 
-#ifdef USE_QT_IRRLICHT
-void FixedJoint::Draw(SimulationWindow *window)
+void FixedJoint::CalculatePixmap()
 {
-    if (m_Visible == false) return;
-
-    if (m_stiffness == 0) return; // this means that it is just a regular fixed joint
-
-    if (m_displayRect == 0)
+    if (!m_colourMap.size())
     {
-        float xmin = -m_xOrigin;
-        float ymin = -m_yOrigin;
-        float xmax = xmin + m_nx * m_dx;
-        float ymax = ymin + m_ny * m_dy;
-
-        QString textureName = QString(m_Name.c_str()) + ".png"; // the .png is needed so the output routines behave
-        m_textureImage = window->videoDriver()->addTexture(irr::core::dimension2d<irr::u32>(m_nx, m_ny), textureName.toUtf8().constData(), irr::video::ECF_A8R8G8B8);
-
-        irr::video::SMaterial material;
-        material.setTexture(0, m_textureImage);
-        material.PolygonOffsetDirection = irr::video::EPO_FRONT; // this means that the texture will sit on top of anything else in the same plane
-        material.PolygonOffsetFactor=7;
-
-        irr::scene::IMesh *mesh = createRectMesh(xmin, ymin, xmax, ymax, &material);
-        m_displayRect = window->sceneManager()->addMeshSceneNode(mesh);
-        mesh->drop();
-        m_displayRect->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
-        m_displayRect->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-        m_displayRect->setAutomaticCulling(irr::scene::EAC_OFF); // no object based culling wanted
-
-        float r;
         Colour mappedColour;
-        m_colourMap = new unsigned char[256 * 3];
-        for ( int i = 0; i < 256; i++)
+        m_colourMap.reserve(256 * 4);
+        for (size_t i = 0; i < 256; i++)
         {
-            r = ((float)i / 255.0f);
-            GLUtils::SetColourFromMap(r, HSVColourMap, &mappedColour, false);
-            m_colourMap[i] = (int)(255.0 * mappedColour.r);
-            m_colourMap[i + 256] = (int)(255.0 * mappedColour.g);
-            m_colourMap[i + 512] = (int)(255.0 * mappedColour.b);
+            float r = ((float)i / 255.0f);
+            Colour::SetColourFromMap(r, Colour::JetColourMap, &mappedColour, false);
+            m_colourMap.push_back(static_cast<unsigned char>(255.0 * mappedColour.r()));
+            m_colourMap.push_back(static_cast<unsigned char>(255.0 * mappedColour.g()));
+            m_colourMap.push_back(static_cast<unsigned char>(255.0 * mappedColour.b()));
+            m_colourMap.push_back(static_cast<unsigned char>(255.0 * mappedColour.alpha()));
         }
     }
 
-    if (m_LastDisplayTime != simulation()->GetTime())
+    if (!m_pixMap.size())
     {
-        m_LastDisplayTime = simulation()->GetTime();
+        m_pixMap.resize(m_nx * m_ny * 4);
+    }
 
-        irr::u8 *texturePtr = static_cast<irr::u8 *>(m_textureImage->lock(irr::video::ETLM_WRITE_ONLY, 0)); // ETLM_WRITE_ONLY because I am writing to the GPU
-        int ix, iy, idx = 128;
-        unsigned char *stiffnessPtr = m_stiffness;
-        irr::video::SColor backgroundColour(255, 0, 0, 0);
+    if (m_lastDisplayTime != simulation()->GetTime())
+    {
+        m_lastDisplayTime = simulation()->GetTime();
+        size_t backgroundColourIndex4 = 0;
+        size_t foregroundColourIndex4 = 255 * 4;
+        unsigned char *stiffnessPtr = m_stiffness.data();
+        size_t i = 0;
         if (simulation()->GetTime() <= 0) // set texture from stiffness bitmap (0 or 1)
         {
-            for (iy = 0; iy < m_ny; iy++)
+            for (size_t iy = 0; iy < m_ny; iy++)
             {
-                for (ix = 0; ix < m_nx; ix++)
+                for (size_t ix = 0; ix < m_nx; ix++)
                 {
-                    if (*stiffnessPtr)
+                    if (*stiffnessPtr++)
                     {
-                        *texturePtr++ = m_colourMap[idx];
-                        *texturePtr++ = m_colourMap[idx + 256];
-                        *texturePtr++ = m_colourMap[idx + 512];
-                        *texturePtr++ = 255;
+                        m_pixMap[i++] = m_colourMap[foregroundColourIndex4];
+                        m_pixMap[i++] = m_colourMap[foregroundColourIndex4 + 1];
+                        m_pixMap[i++] = m_colourMap[foregroundColourIndex4 + 2];
+                        m_pixMap[i++] = m_colourMap[foregroundColourIndex4 + 3];
                     }
                     else
                     {
-                        *texturePtr++ = backgroundColour.getRed();
-                        *texturePtr++ = backgroundColour.getGreen();
-                        *texturePtr++ = backgroundColour.getBlue();
-                        *texturePtr++ = backgroundColour.getAlpha();
+                        m_pixMap[i++] = m_colourMap[backgroundColourIndex4];
+                        m_pixMap[i++] = m_colourMap[backgroundColourIndex4 + 1];
+                        m_pixMap[i++] = m_colourMap[backgroundColourIndex4 + 2];
+                        m_pixMap[i++] = m_colourMap[backgroundColourIndex4 + 3];
                     }
-                    stiffnessPtr++;
                 }
             }
         }
         else
         {
-            double *stressPtr = m_stress;
-            Filter **filteredStressPtr = m_filteredStress;
+            double *stressPtr = m_stress.data();
+            size_t filteredStressIndex = 0;
             double v;
-            for (iy = 0; iy < m_ny; iy++)
+            for (size_t iy = 0; iy < m_ny; iy++)
             {
-                for (ix = 0; ix < m_nx; ix++)
+                for (size_t ix = 0; ix < m_nx; ix++)
                 {
-                    if (*stiffnessPtr)
+                    if (*stiffnessPtr++)
                     {
                         switch (m_lowPassType)
                         {
@@ -704,91 +722,84 @@ void FixedJoint::Draw(SimulationWindow *window)
                         case Butterworth2ndOrderLowPass:
                             if (m_lowRange != m_highRange)
                             {
-                                v = ((*filteredStressPtr)->Output() - m_lowRange) / (m_highRange - m_lowRange);
+                                v = (m_filteredStress[filteredStressIndex]->Output() - m_lowRange) / (m_highRange - m_lowRange);
                             }
                             else
                             {
                                 if (m_minStress != m_maxStress)
-                                    v = ((*filteredStressPtr)->Output() - m_minStress) / (m_maxStress - m_minStress);
+                                    v = (m_filteredStress[filteredStressIndex]->Output() - m_minStress) / (m_maxStress - m_minStress);
                                 else
                                     v = 0;
                             }
-                            filteredStressPtr++;
+                            filteredStressIndex++;
                             break;
                         }
 
-                        idx = (int)(255.0 * v);
-                        *texturePtr++ = m_colourMap[idx];
-                        *texturePtr++ = m_colourMap[idx + 256];
-                        *texturePtr++ = m_colourMap[idx + 512];
-                        *texturePtr++ = 255;
+                        int idx = (int)(255.0 * v) * 4;
+                        m_pixMap[i++] = m_colourMap[idx++];
+                        m_pixMap[i++] = m_colourMap[idx++];
+                        m_pixMap[i++] = m_colourMap[idx++];
+                        m_pixMap[i++] = m_colourMap[idx++];
                     }
                     else
                     {
-                        texturePtr += 4;
+                        m_pixMap[i++] = m_colourMap[backgroundColourIndex4];
+                        m_pixMap[i++] = m_colourMap[backgroundColourIndex4 + 1];
+                        m_pixMap[i++] = m_colourMap[backgroundColourIndex4 + 2];
+                        m_pixMap[i++] = m_colourMap[backgroundColourIndex4 + 3];
                     }
-                    stiffnessPtr++;
                 }
             }
         }
-
-        m_textureImage->unlock();
     }
-
-    // calculate the quaternion that rotates from stress coordinates to world coordinates
-    const double *q = dBodyGetQuaternion(this->GetBody1()->GetBodyID());
-    pgd::Quaternion qBody(q[0], q[1], q[2], q[3]);
-    pgd::Quaternion stressToWorldQuaternion =  qBody * m_StressOrientation;
-    // pgd::Quaternion worldToStressQuaternion = m_StressOrientation * qBody;
-    dQuaternion stressToWorldQuaternion2 = {stressToWorldQuaternion.n, stressToWorldQuaternion.v.x, stressToWorldQuaternion.v.y, stressToWorldQuaternion.v.z};
-    dMatrix3 displayRotation;
-    dQtoR(stressToWorldQuaternion2, displayRotation);
-
-    // calculate the world corrdinates of the to stress position
-    dVector3 worldStressOrigin;
-    dBodyGetRelPointPos (this->GetBody1()->GetBodyID(), m_StressOrigin.x, m_StressOrigin.y, m_StressOrigin.z, worldStressOrigin);
-
-    irr::core::matrix4 matrix;
-    matrix[0]=displayRotation[0];   matrix[1]=displayRotation[4];  matrix[2]=displayRotation[8];    matrix[3]=0;
-    matrix[4]=displayRotation[1];   matrix[5]=displayRotation[5];  matrix[6]=displayRotation[9];    matrix[7]=0;
-    matrix[8]=displayRotation[2];   matrix[9]=displayRotation[6];  matrix[10]=displayRotation[10];  matrix[11]=0;
-    matrix[12]=worldStressOrigin[0];  matrix[13]=worldStressOrigin[1]; matrix[14]=worldStressOrigin[2];   matrix[15]=1;
-    m_displayRect->setRotation(matrix.getRotationDegrees());
-    m_displayRect->setPosition(matrix.getTranslation());
-
 }
 
-irr::scene::IMesh* FixedJoint::createRectMesh(float xmin, float ymin, float xmax, float ymax, irr::video::SMaterial *material)
+bool FixedJoint::CalculatePixmapNeeded()
 {
-    irr::scene::SMeshBuffer* buffer = new irr::scene::SMeshBuffer();
-
-    // Create indices
-    const irr::u16 u[6] = {   0,2,1,   0,3,2   };
-
-    buffer->Indices.set_used(6);
-
-    for (irr::u32 i=0; i<6; ++i)
-        buffer->Indices[i] = u[i];
-
-    // Create vertices
-    irr::video::SColor clr(255,255,255,255);
-
-    buffer->Vertices.reallocate(4);
-
-    buffer->Vertices.push_back(irr::video::S3DVertex(xmin,ymin,0,  0,0,1, clr, 0, 0));
-    buffer->Vertices.push_back(irr::video::S3DVertex(xmax,ymin,0,  0,0,1, clr, 1, 0));
-    buffer->Vertices.push_back(irr::video::S3DVertex(xmax,ymax,0,  0,0,1, clr, 1, 1));
-    buffer->Vertices.push_back(irr::video::S3DVertex(xmin,ymax,0,  0,0,1, clr, 0, 1));
-
-    if (material)
-        buffer->Material = *material;
-
-    irr::scene::SMesh* mesh = new irr::scene::SMesh();
-    mesh->addMeshBuffer(buffer);
-    buffer->drop();
-
-    mesh->recalculateBoundingBox();
-    return mesh;
+    if (m_stressCalculationType == none || !simulation() || m_lastDisplayTime == simulation()->GetTime()) return false;
+    return true;
 }
 
-#endif
+
+std::vector<unsigned char> FixedJoint::AsciiToBitMap(const std::string &buffer, size_t width, size_t height, char setChar, bool reverseY)
+{
+    std::vector<unsigned char> bitmap(width * height);
+    size_t bufferIndex = 0;
+    size_t bitmapIndex = 0;
+    if (reverseY == false)
+    {
+        while (bufferIndex < buffer.size() && bitmapIndex < bitmap.size())
+        {
+            if (buffer[bufferIndex] > 32)
+            {
+                if (buffer[bufferIndex] == setChar) bitmap[bitmapIndex] = 1;
+                bitmapIndex++;
+            }
+            bufferIndex++;
+        }
+    }
+    else
+    {
+        bitmapIndex = width * (height - 1);
+        size_t j = 0;
+        while (bufferIndex < buffer.size() && bitmapIndex < bitmap.size())
+        {
+            if (buffer[bufferIndex] > 32)
+            {
+                if (buffer[bufferIndex] == setChar) bitmap[bitmapIndex] = 1;
+                bitmapIndex++;
+                j++;
+                if (j >= width)
+                {
+                    j = 0;
+                    bitmapIndex -= (2 * width);
+                }
+            }
+            bufferIndex++;
+        }
+    }
+    return bitmap;
+}
+
+
+

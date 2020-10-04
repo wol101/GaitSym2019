@@ -30,7 +30,7 @@ protected:
     void setDataSum(double dataSum);
 
 private:
-    double m_dataSum;
+    double m_dataSum = 0;
     int64_t m_receiveDataStepCount = INT_MIN;
 };
 

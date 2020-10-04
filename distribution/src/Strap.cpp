@@ -38,7 +38,7 @@ std::string *Strap::createFromAttributes()
     if (findAttribute("Length"s, &buf) == nullptr) return lastErrorPtr();
     this->setLength(GSUtil::Double(buf));
 
-    if (findAttribute("TorqueMarkerIDList"s, &buf) == nullptr)
+    if (findAttribute("TorqueMarkerIDList"s, &buf))
     {
         std::vector<std::string> result;
         pystring::split(buf, result);
@@ -171,7 +171,7 @@ std::vector<std::unique_ptr<PointForce> > *Strap::GetPointForceList()
     return &m_pointForceList;
 }
 
-void Strap::GetTorque(const Marker &marker, pgd::Vector *worldTorque, pgd::Vector *markerTorque, pgd::Vector *worldMomentArm, pgd::Vector *markerMomentArm)
+void Strap::GetTorque(const Marker &marker, pgd::Vector3 *worldTorque, pgd::Vector3 *markerTorque, pgd::Vector3 *worldMomentArm, pgd::Vector3 *markerMomentArm)
 {
     // Theory:
     // Point = point of force effect
@@ -183,12 +183,12 @@ void Strap::GetTorque(const Marker &marker, pgd::Vector *worldTorque, pgd::Vecto
     // Torque_Scalar = dot(Point - Center, Cross(Direction, Axis)) * Force_Scalar;
 
     // sum the torques acting on body 0 of the joint
-    pgd::Vector torque, point, force, centre;
+    pgd::Vector3 torque, point, force, centre;
     double *forcePoint, *forceDirection;
-    pgd::Vector totalTorque, momentArm;
+    pgd::Vector3 totalTorque, momentArm;
 //    dVector3 result;
 //    dBodyGetRelPointPos(mBody->GetBodyID(), mPivotPoint.x, mPivotPoint.y, mPivotPoint.z, result); // needs to be in world coordinates
-//    centre = pgd::Vector(result[0], result[1], result[2]);
+//    centre = pgd::Vector3(result[0], result[1], result[2]);
     centre = marker.GetWorldPosition();
 
 // These are the same but the second option works even when tension is zero
@@ -200,9 +200,9 @@ void Strap::GetTorque(const Marker &marker, pgd::Vector *worldTorque, pgd::Vecto
 //                {
 //                    //Torque = cross(Point - Center, Force)
 //                    forcePoint = m_PointForceList[i]->point;
-//                    point = pgd::Vector(forcePoint[0], forcePoint[1], forcePoint[2]);
+//                    point = pgd::Vector3(forcePoint[0], forcePoint[1], forcePoint[2]);
 //                    forceDirection = m_PointForceList[i]->vector;
-//                    force = pgd::Vector(forceDirection[0], forceDirection[1], forceDirection[2]) * m_Tension;
+//                    force = pgd::Vector3(forceDirection[0], forceDirection[1], forceDirection[2]) * m_Tension;
 //                    torque = (point - centre) ^ force;
 //                    totalTorque += torque;
 //                }
@@ -217,9 +217,9 @@ void Strap::GetTorque(const Marker &marker, pgd::Vector *worldTorque, pgd::Vecto
             {
                 //Torque = cross(Point - Center, Force)
                 forcePoint = m_pointForceList[i]->point;
-                point = pgd::Vector(forcePoint[0], forcePoint[1], forcePoint[2]);
+                point = pgd::Vector3(forcePoint[0], forcePoint[1], forcePoint[2]);
                 forceDirection = m_pointForceList[i]->vector;
-                force = pgd::Vector(forceDirection[0], forceDirection[1], forceDirection[2]);
+                force = pgd::Vector3(forceDirection[0], forceDirection[1], forceDirection[2]);
                 torque = (point - centre) ^ force;
                 momentArm += torque;
             }
@@ -235,8 +235,8 @@ void Strap::GetTorque(const Marker &marker, pgd::Vector *worldTorque, pgd::Vecto
 //    // now find the rotation axis specific values
 //    pgd::Matrix3x3 R;
 //    CalculateRotationFromAxis(mAxis.x, mAxis.y, mAxis.z, &R);
-//    pgd::Vector axisBasedTorque = R * totalTorque;
-//    pgd::Vector axisBasedMomentArm = R * momentArm;
+//    pgd::Vector3 axisBasedTorque = R * totalTorque;
+//    pgd::Vector3 axisBasedMomentArm = R * momentArm;
 
     *worldTorque = totalTorque;
     *worldMomentArm = momentArm;
@@ -245,12 +245,12 @@ void Strap::GetTorque(const Marker &marker, pgd::Vector *worldTorque, pgd::Vecto
     *markerMomentArm = pgd::QVRotate(q, *worldMomentArm);
 }
 
-std::string Strap::dump()
+std::string Strap::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
          ss << "Time";
@@ -258,6 +258,7 @@ std::string Strap::dump()
         for (auto &&it : m_pointForceList) ss << "\tBody\tXP\tYP\tZP\tFX\tFY\tFZ";
 #pragma warning( suppress : 4189 ) // suppresses 'warning C4189: 'it': local variable is initialized but not referenced' for one line
         for (auto &&it : m_torqueMarkerList) ss << "\tMarker\tWTX\tWTY\tWTZ\tMTX\tMTY\tMTZ\tWMAX\tWMAY\tWMAZ\tMMAX\tMMAY\tMMAZ";
+        ss << "\n";
     }
     else
         ss << simulation()->GetTime();
@@ -267,7 +268,7 @@ std::string Strap::dump()
               it->point[0] << "\t" << it->point[1] << "\t" << it->point[2] << "\t" <<
               it->vector[0] * m_tension << "\t" << it->vector[1] * m_tension << "\t" << it->vector[2] * m_tension;
     }
-    pgd::Vector worldTorque,markerTorque, worldMomentArm, markerMomentArm;
+    pgd::Vector3 worldTorque,markerTorque, worldMomentArm, markerMomentArm;
     for (auto it: m_torqueMarkerList)
     {
         GetTorque(*it, &worldTorque, &markerTorque, &worldMomentArm, &markerMomentArm);

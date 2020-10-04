@@ -79,8 +79,8 @@ void DialogGeoms::accept() // this catches OK and return/enter
     else if (strapTab == "Plane")
     {
         Marker *geomMarker = markerList->at(ui->comboBoxGeomMarker->currentText().toStdString()).get();
-        pgd::Vector normal = geomMarker->GetAxis(Marker::Axis::Z);
-        pgd::Vector point = geomMarker->GetPosition();
+        pgd::Vector3 normal = geomMarker->GetAxis(Marker::Axis::Z);
+        pgd::Vector3 point = geomMarker->GetPosition();
         double a = normal.x;
         double b = normal.y;
         double c = normal.z;

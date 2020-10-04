@@ -31,22 +31,22 @@ public:
     size_t triangleIndex() const;
     void setTriangleIndex(const size_t &triangleIndex);
 
-    pgd::Vector modelLocation() const;
-    void setModelLocation(const pgd::Vector &modelLocation);
+    pgd::Vector3 modelLocation() const;
+    void setModelLocation(const pgd::Vector3 &modelLocation);
 
-    pgd::Vector worldLocation() const;
-    void setWorldLocation(const pgd::Vector &worldLocation);
+    pgd::Vector3 worldLocation() const;
+    void setWorldLocation(const pgd::Vector3 &worldLocation);
 
-    pgd::Vector screenLocation() const;
-    void setScreenLocation(const pgd::Vector &screenLocation);
+    pgd::Vector3 screenLocation() const;
+    void setScreenLocation(const pgd::Vector3 &screenLocation);
 
 private:
     Drawable *m_drawable = nullptr;
     FacetedObject *m_facetedObject = nullptr;
     size_t m_triangleIndex = SIZE_MAX;
-    pgd::Vector m_modelLocation;
-    pgd::Vector m_worldLocation;
-    pgd::Vector m_screenLocation;
+    pgd::Vector3 m_modelLocation;
+    pgd::Vector3 m_worldLocation;
+    pgd::Vector3 m_screenLocation;
 };
 
 #endif // INTERSECTIONHITS_H

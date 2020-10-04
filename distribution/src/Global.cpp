@@ -10,12 +10,12 @@
 #include "Global.h"
 #include "GSUtil.h"
 #include "Simulation.h"
-#ifdef USE_QT
-#include "Preferences.h"
-#endif
+
+#include "pystring.h"
 
 #include <string>
 #include <algorithm>
+
 using namespace std::string_literals;
 
 Global::Global()
@@ -23,11 +23,6 @@ Global::Global()
     m_SpringConstant = m_ERP / (m_CFM * m_StepSize);
     m_DampingConstant = (1.0 - m_ERP) / m_CFM;
 }
-
-//Global::Global(const Global &global)
-//{
-//    *this = global;
-//}
 
 Global::~Global()
 {
@@ -93,14 +88,14 @@ void Global::setDampingConstant(double DampingConstant)
     m_DampingConstant = DampingConstant;
 }
 
-std::string Global::MeshSearchPath() const
+std::vector<std::string> *Global::MeshSearchPath()
 {
-    return m_MeshSearchPath;
+    return &m_MeshSearchPath;
 }
 
-void Global::setMeshSearchPath(const std::string &MeshSearchPath)
+const std::vector<std::string> *Global::ConstMeshSearchPath() const
 {
-    m_MeshSearchPath = MeshSearchPath;
+    return &m_MeshSearchPath;
 }
 
 double Global::LinearDamping() const
@@ -252,20 +247,11 @@ std::string *Global::createFromAttributes()
             break;
         }
     }
-    if (i > 5)
+    if (i >= fitnessTypeCount)
     {
         setLastError("Error GLOBAL: Unrecognised FitnessType=\""s + buf + "\""s);
         return lastErrorPtr();
     }
-
-    if (m_FitnessType == DistanceTravelled && m_DistanceTravelledBodyIDName.size() == 0)
-    {
-        setLastError("Error GLOBAL: must specify DistanceTravelledBodyIDName with FitnessType=\"DistanceTravelled\""s);
-        return lastErrorPtr();
-    }
-
-    findAttribute("MeshSearchPath", &buf);
-    if (buf.size()) m_MeshSearchPath = buf;
 
     findAttribute("WarehouseFailDistanceAbort", &buf);
     if (buf.size()) m_WarehouseFailDistanceAbort = GSUtil::Double(buf);
@@ -278,6 +264,15 @@ std::string *Global::createFromAttributes()
 
     findAttribute("CurrentWarehouse", &buf);
     if (buf.size()) m_CurrentWarehouseFile = buf;
+
+    m_MeshSearchPath.clear();
+    findAttribute("MeshSearchPath", &buf);
+    std::vector<std::string> encodedMeshSearchPath;
+    if (buf.size())
+    {
+        pystring::split(buf, encodedMeshSearchPath, ":"s);
+        for (size_t i = 0; i < encodedMeshSearchPath.size(); i++) m_MeshSearchPath.push_back(percentDecode(encodedMeshSearchPath[i]));
+    }
 
     return nullptr;
 }
@@ -314,13 +309,92 @@ void Global::appendToAttributes()
     setAttribute("MetabolicEnergyLimit", *GSUtil::ToString(m_MetabolicEnergyLimit, &buf));
     setAttribute("StepType", stepTypeStrings(m_StepType));
     setAttribute("TimeLimit", *GSUtil::ToString(m_TimeLimit, &buf));
-    setAttribute("MeshSearchPath", m_MeshSearchPath);
     setAttribute("CurrentWarehouse", m_CurrentWarehouseFile);
     setAttribute("WarehouseDecreaseThresholdFactor", *GSUtil::ToString(m_WarehouseDecreaseThresholdFactor, &buf));
     setAttribute("WarehouseFailDistanceAbort", *GSUtil::ToString(m_WarehouseFailDistanceAbort, &buf));
     setAttribute("WarehouseUnitIncreaseDistanceThreshold", *GSUtil::ToString(m_WarehouseUnitIncreaseDistanceThreshold, &buf));
+
+    std::vector<std::string> encodedMeshSearchPath;
+    for (size_t i = 0; i < m_MeshSearchPath.size(); i++) encodedMeshSearchPath.push_back(percentEncode(m_MeshSearchPath[i], "%:"s));
+    setAttribute("MeshSearchPath", pystring::join(":"s, encodedMeshSearchPath));
 }
 
+std::string Global::percentEncode(const std::string &input, const std::string &encodeList)
+{
+    // this routine encodes the characters in encodeList
+
+//    UTF-8 cheat sheet
+//    Binary    Hex          Comments
+//    0xxxxxxx  0x00..0x7F   Only byte of a 1-byte character encoding
+//    10xxxxxx  0x80..0xBF   Continuation bytes (1-3 continuation bytes)
+//    110xxxxx  0xC0..0xDF   First byte of a 2-byte character encoding
+//    1110xxxx  0xE0..0xEF   First byte of a 3-byte character encoding
+//    11110xxx  0xF0..0xF4   First byte of a 4-byte character encoding
+
+    // what this means is that no UTF-8 character looks like a 1-byte colon or 1-byte percent
+    std::string output;
+    static const std::string digits = "0123456789ABCDEF"s;
+    for (size_t i = 0; i < input.size(); i++)
+    {
+        if (encodeList.find(input[i]) == std::string::npos)
+        {
+            output.push_back(input[i]);
+            continue;
+        }
+        output.push_back('%');
+        uint8_t quotient = uint8_t(input[i]) / uint8_t(16);
+        uint8_t remainder = uint8_t(input[i]) % uint8_t(16);
+        output.push_back(digits[quotient]);
+        output.push_back(digits[remainder]);
+    }
+    return output;
+}
+
+std::string Global::percentDecode(const std::string &input)
+{
+    // this routine decodes everything that is percent encoded in the string (%XX)
+    // if the encoding is poorly formed it assumes that no encoding is present
+
+//    UTF-8 cheat sheet
+//    Binary    Hex          Comments
+//    0xxxxxxx  0x00..0x7F   Only byte of a 1-byte character encoding
+//    10xxxxxx  0x80..0xBF   Continuation bytes (1-3 continuation bytes)
+//    110xxxxx  0xC0..0xDF   First byte of a 2-byte character encoding
+//    1110xxxx  0xE0..0xEF   First byte of a 3-byte character encoding
+//    11110xxx  0xF0..0xF4   First byte of a 4-byte character encoding
+
+    // what this means is that no UTF-8 character looks like a 1-byte percent
+    std::string output;
+    static const std::map<char, uint8_t> characterMap =
+    {
+        {'0', 0}, {'1', 1},
+        {'2', 2}, {'3', 3},
+        {'4', 4}, {'5', 5},
+        {'6', 6}, {'7', 7},
+        {'8', 8}, {'9', 9},
+        {'A', 10}, {'B', 11},
+        {'C', 12}, {'D', 13},
+        {'E', 14}, {'F', 15},
+        {'a', 10}, {'b', 11},
+        {'c', 12}, {'d', 13},
+        {'e', 14}, {'f', 15}
+    };
+    for (size_t i = 0; i < input.size(); i++)
+    {
+        if (input[i] != '%')
+        {
+            output.push_back(input[i]);
+            continue;
+        }
+        if (i >= input.size() - 2) { output.push_back(input[i]); continue; }
+        auto it1 = characterMap.find(input[i + 1]);
+        auto it2 = characterMap.find(input[i + 2]);
+        if (it1 == characterMap.end() || it2 == characterMap.end()) { output.push_back(input[i]); continue; }
+        uint8_t decodedChar = it1->second * uint8_t(16) + it2->second;
+        output.push_back(char(decodedChar));
+    }
+    return output;
+}
 
 Global::FitnessType Global::fitnessType() const
 {
@@ -362,12 +436,12 @@ void Global::setAllowInternalCollisions(bool AllowInternalCollisions)
     m_AllowInternalCollisions = AllowInternalCollisions;
 }
 
-pgd::Vector Global::Gravity() const
+pgd::Vector3 Global::Gravity() const
 {
     return m_Gravity;
 }
 
-void Global::setGravity(const pgd::Vector &gravity)
+void Global::setGravity(const pgd::Vector3 &gravity)
 {
     m_Gravity = gravity;
 }

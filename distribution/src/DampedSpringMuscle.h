@@ -40,7 +40,7 @@ public:
 
     bool ShouldBreak();
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();

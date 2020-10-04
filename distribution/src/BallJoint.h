@@ -39,7 +39,7 @@ public:
 
 
 //    virtual void Update();
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     // overridden method
     virtual void Attach(Body *body1, Body* body2);

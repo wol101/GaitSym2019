@@ -21,8 +21,8 @@ public:
 
     void GetAxisAngle(double *xa, double *ya, double *za, double *angle) const;
     pgd::Quaternion GetQuaternion() const;
-    pgd::Vector GetEulerAngles() const;
-    pgd::Vector GetEulerAngles(const Marker &basisMarker) const;
+    pgd::Vector3 GetEulerAngles() const;
+    pgd::Vector3 GetEulerAngles(const Marker &basisMarker) const;
 
     void SetTargetAngles(double angle0);
     void SetTargetAngles(double angle0, double angle1);
@@ -30,14 +30,14 @@ public:
     void SetTargetAngleGain(double targetAngleGain);
     void SetMaxTorque(double maxTorque);
 
-    pgd::Vector GetTargetAxis() const;
+    pgd::Vector3 GetTargetAxis() const;
     double GetTargetAngle() const;
     double GetTargetAngleGain() const;
     double GetMaxTorque() const;
 
 
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual void Update();
 
     virtual std::string *createFromAttributes();
@@ -50,12 +50,12 @@ public:
 
 private:
 
-    pgd::Vector m_targetAxis;
+    pgd::Vector3 m_targetAxis;
     double m_targetAngle = 0;
     double m_targetAngleGain = 1;
     std::vector<double> m_targetAnglesList;
-    pgd::Vector m_lastDeltaAxis;
-    pgd::Vector m_deltaAxis;
+    pgd::Vector3 m_lastDeltaAxis;
+    pgd::Vector3 m_deltaAxis;
     double m_deltaAngle = 0;
     pgd::Quaternion m_currentQuaternion;
     pgd::Quaternion m_lastQuaternion;

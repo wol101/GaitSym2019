@@ -21,21 +21,25 @@ class NPointStrap: public Strap
 public:
 
     NPointStrap();
-    virtual ~NPointStrap();
 
     void SetOrigin(Body *body, const dVector3 point);
     void SetInsertion(Body *body, const dVector3 point);
     void SetOrigin(Marker *originMarker);
     void SetInsertion(Marker *insertionMarker);
 
-    void SetViaPoints(std::vector<Body *> *bodyList, std::vector<pgd::Vector> *pointList);
+    void SetViaPoints(std::vector<Body *> *bodyList, std::vector<pgd::Vector3> *pointList);
     void SetViaPoints(std::vector<Marker *> *viaPointMarkerList);
 
     void GetOrigin(const Body **body, dVector3 origin) const;
     void GetInsertion(const Body **body, dVector3 insertion) const;
 
-    const std::vector<pgd::Vector> *GetViaPoints() const;
+    const std::vector<pgd::Vector3> *GetViaPoints() const;
     const std::vector<Body *> *GetViaPointBodies() const;
+    const std::vector<Marker *> *GetViaPointMarkers() const;
+
+    Marker *GetOriginMarker() const;
+    Marker *GetInsertionMarker() const;
+
 
     virtual void Calculate();
 
@@ -57,7 +61,7 @@ private:
     Marker *m_insertionMarker = nullptr;
 
     std::vector<Body *> m_ViaBodyList;
-    std::vector<pgd::Vector> m_ViaPointList;
+    std::vector<pgd::Vector3> m_ViaPointList;
     std::vector<Marker *> m_ViaPointMarkerList;
 };
 

@@ -117,94 +117,114 @@ void ElementTreeWidget::clearLists()
 void ElementTreeWidget::menuRequest(const QPoint &pos)
 {
     if (!m_simulation) return;
-    if (m_mainWindow->mode() != MainWindow::constructionMode) return;
-
     QTreeWidgetItem *item = this->itemAt(pos);
     QMenu menu(this);
+    switch(m_mainWindow->mode())
+    {
+    case MainWindow::constructionMode:
+        if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "BODY")
+        {
+            QAction *action = menu.addAction(tr("Create New Body..."));
+            action->setEnabled(m_simulation != nullptr);
+            menu.addSeparator();
+        }
+        if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "MARKER")
+        {
+            QAction *action = menu.addAction(tr("Create New Marker..."));
+            action->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 0);
+            menu.addSeparator();
+        }
+        if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "JOINT")
+        {
+            QAction *action = menu.addAction(tr("Create New Joint..."));
+            action->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 1
+                    && m_simulation->GetMarkerList()->size() > 0);
+            menu.addSeparator();
+        }
+        if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "GEOM")
+        {
+            QAction *action = menu.addAction(tr("Create New Geom..."));
+            action->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 0
+                    && m_simulation->GetMarkerList()->size() > 0);
+            menu.addSeparator();
+        }
+        if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "MUSCLE")
+        {
+            QAction *action = menu.addAction(tr("Create New Muscle..."));
+            action->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 1
+                    && m_simulation->GetMarkerList()->size() > 0);
+            menu.addSeparator();
+        }
+        if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "DRIVER")
+        {
+            QAction *action = menu.addAction(tr("Create New Driver..."));
+            action->setEnabled(m_simulation != nullptr && m_simulation->GetMuscleList()->size() > 0);
+            menu.addSeparator();
+        }
 
-    if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "BODY")
-    {
-        QAction *action = menu.addAction(tr("Create New Body..."));
-        action->setEnabled(m_simulation != nullptr);
-        menu.addSeparator();
-    }
-    if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "MARKER")
-    {
-        QAction *action = menu.addAction(tr("Create New Marker..."));
-        action->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 0);
-        menu.addSeparator();
-    }
-    if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "JOINT")
-    {
-        QAction *action = menu.addAction(tr("Create New Joint..."));
-        action->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 1
-                           && m_simulation->GetMarkerList()->size() > 0);
-        menu.addSeparator();
-    }
-    if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "GEOM")
-    {
-        QAction *action = menu.addAction(tr("Create New Geom..."));
-        action->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 0
-                           && m_simulation->GetMarkerList()->size() > 0);
-        menu.addSeparator();
-    }
-    if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "MUSCLE")
-    {
-        QAction *action = menu.addAction(tr("Create New Muscle..."));
-        action->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 1
-                           && m_simulation->GetMarkerList()->size() > 0);
-        menu.addSeparator();
-    }
-    if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "DRIVER")
-    {
-        QAction *action = menu.addAction(tr("Create New Driver..."));
-        action->setEnabled(m_simulation != nullptr && m_simulation->GetMuscleList()->size() > 0);
-        menu.addSeparator();
-    }
+        if (item->type() == ELEMENT_ITEM_TYPE
+                && item->parent()->data(0, Qt::DisplayRole).toString() == "BODY")
+        {
+            menu.addAction(tr("Edit Body..."));
+            menu.addAction(tr("Delete Body..."));
+            menu.addSeparator();
+        }
+        if (item->type() == ELEMENT_ITEM_TYPE
+                && item->parent()->data(0, Qt::DisplayRole).toString() == "MARKER")
+        {
+            menu.addAction(tr("Edit Marker..."));
+            menu.addAction(tr("Delete Marker..."));
+            menu.addSeparator();
+        }
+        if (item->type() == ELEMENT_ITEM_TYPE
+                && item->parent()->data(0, Qt::DisplayRole).toString() == "JOINT")
+        {
+            menu.addAction(tr("Edit Joint..."));
+            menu.addAction(tr("Delete Joint..."));
+            menu.addSeparator();
+        }
+        if (item->type() == ELEMENT_ITEM_TYPE
+                && item->parent()->data(0, Qt::DisplayRole).toString() == "GEOM")
+        {
+            menu.addAction(tr("Edit Geom..."));
+            menu.addAction(tr("Delete Geom..."));
+            menu.addSeparator();
+        }
+        if (item->type() == ELEMENT_ITEM_TYPE
+                && item->parent()->data(0, Qt::DisplayRole).toString() == "MUSCLE")
+        {
+            menu.addAction(tr("Edit Muscle..."));
+            menu.addAction(tr("Delete Muscle..."));
+            menu.addSeparator();
+        }
 
-    if (item->type() == ELEMENT_ITEM_TYPE
-            && item->parent()->data(0, Qt::DisplayRole).toString() == "BODY")
-    {
-        menu.addAction(tr("Edit Body..."));
-        menu.addAction(tr("Delete Body..."));
-        menu.addSeparator();
+        if (item->type() == ELEMENT_ITEM_TYPE
+                && item->parent()->data(0, Qt::DisplayRole).toString() == "DRIVER")
+        {
+            menu.addAction(tr("Edit Driver..."));
+            menu.addAction(tr("Delete Driver..."));
+            menu.addSeparator();
+        }
+        break;
+    case MainWindow::runMode:
+        if (item->type() == ROOT_ITEM_TYPE
+//                && (item->data(0, Qt::DisplayRole).toString() == "BODY" ||
+//                    item->data(0, Qt::DisplayRole).toString() == "MARKER" ||
+//                    item->data(0, Qt::DisplayRole).toString() == "JOINT" ||
+//                    item->data(0, Qt::DisplayRole).toString() == "GEOM" ||
+//                    item->data(0, Qt::DisplayRole).toString() == "MUSCLE" ||
+//                    item->data(0, Qt::DisplayRole).toString() == "FLUIDSAC" )
+                )
+        {
+            menu.addAction(tr("All visible"));
+            menu.addAction(tr("None visible"));
+            menu.addSeparator();
+            menu.addAction(tr("All output"));
+            menu.addAction(tr("None output"));
+            menu.addSeparator();
+        }
     }
-    if (item->type() == ELEMENT_ITEM_TYPE
-            && item->parent()->data(0, Qt::DisplayRole).toString() == "MARKER")
-    {
-        menu.addAction(tr("Edit Marker..."));
-        menu.addAction(tr("Delete Marker..."));
-        menu.addSeparator();
-    }
-    if (item->type() == ELEMENT_ITEM_TYPE
-            && item->parent()->data(0, Qt::DisplayRole).toString() == "JOINT")
-    {
-        menu.addAction(tr("Edit Joint..."));
-        menu.addAction(tr("Delete Joint..."));
-        menu.addSeparator();
-    }
-    if (item->type() == ELEMENT_ITEM_TYPE
-            && item->parent()->data(0, Qt::DisplayRole).toString() == "GEOM")
-    {
-        menu.addAction(tr("Edit Geom..."));
-        menu.addAction(tr("Delete Geom..."));
-        menu.addSeparator();
-    }
-    if (item->type() == ELEMENT_ITEM_TYPE
-            && item->parent()->data(0, Qt::DisplayRole).toString() == "MUSCLE")
-    {
-        menu.addAction(tr("Edit Muscle..."));
-        menu.addAction(tr("Delete Muscle..."));
-        menu.addSeparator();
-    }
-
-    if (item->type() == ELEMENT_ITEM_TYPE
-            && item->parent()->data(0, Qt::DisplayRole).toString() == "DRIVER")
-    {
-        menu.addAction(tr("Edit Driver..."));
-        menu.addAction(tr("Delete Driver..."));
-        menu.addSeparator();
-    }
+    if (menu.isEmpty()) return;
 
     QPoint gp = this->viewport()->mapToGlobal(pos);
     QAction *action = menu.exec(gp);
@@ -282,6 +302,22 @@ void ElementTreeWidget::menuRequest(const QPoint &pos)
         {
             emit deleteDriver(item->data(0, Qt::DisplayRole).toString());
         }
+        if (action->text() == tr("All visible"))
+        {
+            setVisibleSwitchAll(item->data(0, Qt::DisplayRole).toString(), true);
+        }
+        if (action->text() == tr("None visible"))
+        {
+            setVisibleSwitchAll(item->data(0, Qt::DisplayRole).toString(), false);
+        }
+        if (action->text() == tr("All output"))
+        {
+            setOutputSwitchAll(item->data(0, Qt::DisplayRole).toString(), true);
+        }
+        if (action->text() == tr("None output"))
+        {
+            setOutputSwitchAll(item->data(0, Qt::DisplayRole).toString(), false);
+        }
     }
 
 }
@@ -296,7 +332,7 @@ void ElementTreeWidget::setMainWindow(MainWindow *mainWindow)
     m_mainWindow = mainWindow;
 }
 
-int ElementTreeWidget::insertBody(const QString &name)
+int ElementTreeWidget::insertBody(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_bodyTree, name, &index);
@@ -304,13 +340,13 @@ int ElementTreeWidget::insertBody(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Checked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_bodyTree->insertChild(index, item);
     return index;
 }
 
-int ElementTreeWidget::insertMarker(const QString &name)
+int ElementTreeWidget::insertMarker(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_markerTree, name, &index);
@@ -318,13 +354,13 @@ int ElementTreeWidget::insertMarker(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Checked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_markerTree->insertChild(index, item);
     return index;
 }
 
-int ElementTreeWidget::insertJoint(const QString &name)
+int ElementTreeWidget::insertJoint(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_jointTree, name, &index);
@@ -332,13 +368,13 @@ int ElementTreeWidget::insertJoint(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Checked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_jointTree->insertChild(index, item);
     return index;
 }
 
-int ElementTreeWidget::insertMuscle(const QString &name)
+int ElementTreeWidget::insertMuscle(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_muscleTree, name, &index);
@@ -346,13 +382,13 @@ int ElementTreeWidget::insertMuscle(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Checked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_muscleTree->insertChild(index, item);
     return index;
 }
 
-int ElementTreeWidget::insertGeom(const QString &name)
+int ElementTreeWidget::insertGeom(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_geomTree, name, &index);
@@ -360,13 +396,13 @@ int ElementTreeWidget::insertGeom(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Checked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_geomTree->insertChild(index, item);
     return index;
 }
 
-int ElementTreeWidget::insertFluidSac(const QString &name)
+int ElementTreeWidget::insertFluidSac(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_fluidSacTree, name, &index);
@@ -374,13 +410,13 @@ int ElementTreeWidget::insertFluidSac(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Checked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_fluidSacTree->insertChild(index, item);
     return index;
 }
 
-int ElementTreeWidget::insertDriver(const QString &name)
+int ElementTreeWidget::insertDriver(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_driverTree, name, &index);
@@ -388,13 +424,13 @@ int ElementTreeWidget::insertDriver(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Unchecked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_driverTree->insertChild(index, item);
     return index;
 }
 
-int ElementTreeWidget::insertController(const QString &name)
+int ElementTreeWidget::insertController(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_controllerTree, name, &index);
@@ -402,13 +438,13 @@ int ElementTreeWidget::insertController(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Unchecked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_controllerTree->insertChild(index, item);
     return index;
 }
 
-int ElementTreeWidget::insertDataTarget(const QString &name)
+int ElementTreeWidget::insertDataTarget(const QString &name, bool visible, bool output)
 {
     int index;
     bool found = BinarySearch(m_dataTargetTree, name, &index);
@@ -416,8 +452,8 @@ int ElementTreeWidget::insertDataTarget(const QString &name)
     QStringList itemStrings;
     itemStrings << name << "" << "";
     QTreeWidgetItem *item = new QTreeWidgetItem(itemStrings, ELEMENT_ITEM_TYPE);
-    item->setData(1, Qt::CheckStateRole, Qt::Unchecked);
-    item->setData(2, Qt::CheckStateRole, Qt::Unchecked);
+    item->setData(1, Qt::CheckStateRole, visible ? Qt::Checked : Qt::Unchecked);
+    item->setData(2, Qt::CheckStateRole, output ? Qt::Checked : Qt::Unchecked);
     m_dataTargetTree->insertChild(index, item);
     return index;
 }
@@ -597,7 +633,11 @@ void ElementTreeWidget::elementsItemChanged(QTreeWidgetItem *item, int column)
         if (it != m_simulation->GetMuscleList()->end())
         {
             if (column == 1) it->second->setVisible((item->checkState(column) == Qt::Checked));
-            else if (column == 2) it->second->setDump((item->checkState(column) == Qt::Checked));
+            else if (column == 2)
+            {
+                it->second->setDump((item->checkState(column) == Qt::Checked));
+                it->second->GetStrap()->setDump((item->checkState(column) == Qt::Checked));
+            }
         }
     }
     else if (item->parent()->text(0) == QString("FLUIDSAC"))
@@ -656,23 +696,57 @@ void ElementTreeWidget::fillVisibitilityLists(Simulation *simulation)
 
     this->clearLists();
     for (auto &&iter : *bodyList)
-        this->insertBody(QString::fromStdString(iter.first));
+        this->insertBody(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
     for (auto &&iter : *markerList)
-        this->insertMarker(QString::fromStdString(iter.first));
+        this->insertMarker(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
     for (auto &&iter : *jointList)
-        this->insertJoint(QString::fromStdString(iter.first));
+        this->insertJoint(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
     for (auto &&iter : *geomList)
-        this->insertGeom(QString::fromStdString(iter.first));
+        this->insertGeom(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
     for (auto &&iter : *muscleList)
-        this->insertMuscle(QString::fromStdString(iter.first));
+        this->insertMuscle(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
     for (auto &&iter : *fluidSacList)
-        this->insertFluidSac(QString::fromStdString(iter.first));
+        this->insertFluidSac(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
     for (auto &&iter : *driverList)
-        this->insertDriver(QString::fromStdString(iter.first));
+        this->insertDriver(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
     for (auto &&iter : *dataTargetList)
-        this->insertDataTarget(QString::fromStdString(iter.first));
+        this->insertDataTarget(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
     for (auto &&iter : *controllerList)
-        this->insertController(QString::fromStdString(iter.first));
+        this->insertController(QString::fromStdString(iter.first), iter.second->visible(), iter.second->dump());
+}
+
+void ElementTreeWidget::setVisibleSwitchAll(const QString &elementType, bool visibility)
+{
+    QTreeWidgetItem *tree = nullptr;
+    if (elementType == "BODY") tree = m_bodyTree;
+    if (elementType == "MARKER") tree = m_markerTree;
+    if (elementType == "JOINT") tree = m_jointTree;
+    if (elementType == "GEOM") tree = m_geomTree;
+    if (elementType == "MUSCLE") tree = m_muscleTree;
+    if (elementType == "FLUIDSAC") tree = m_fluidSacTree;
+    if (!tree) return;
+    for (int i = 0; i < tree->childCount (); i++)
+    {
+        QTreeWidgetItem *child = tree->child(i);
+        child->setCheckState(1, visibility ? Qt::Checked : Qt::Unchecked);
+    }
+}
+
+void ElementTreeWidget::setOutputSwitchAll(const QString &elementType, bool output)
+{
+    QTreeWidgetItem *tree = nullptr;
+    if (elementType == "BODY") tree = m_bodyTree;
+    if (elementType == "MARKER") tree = m_markerTree;
+    if (elementType == "JOINT") tree = m_jointTree;
+    if (elementType == "GEOM") tree = m_geomTree;
+    if (elementType == "MUSCLE") tree = m_muscleTree;
+    if (elementType == "FLUIDSAC") tree = m_fluidSacTree;
+    if (!tree) return;
+    for (int i = 0; i < tree->childCount (); i++)
+    {
+        QTreeWidgetItem *child = tree->child(i);
+        child->setCheckState(2, output ? Qt::Checked : Qt::Unchecked);
+    }
 }
 
 void ElementTreeWidget::setSimulation(Simulation *simulation)

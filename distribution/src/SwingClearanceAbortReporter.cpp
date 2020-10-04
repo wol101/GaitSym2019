@@ -65,7 +65,7 @@ bool SwingClearanceAbortReporter::ShouldAbort()
     }
     else
     {
-        m_velocity = pgd::Vector(v[0], v[1], v[2]) * m_directionAxis;
+        m_velocity = pgd::Vector3(v[0], v[1], v[2]) * m_directionAxis;
     }
 
     if (m_height > m_heightThreshold) return false;
@@ -88,21 +88,21 @@ void SwingClearanceAbortReporter::SetDirectionAxis(double x, double y, double z)
     m_useDirectionAxis = true;
 }
 
-std::string SwingClearanceAbortReporter::dump()
+std::string SwingClearanceAbortReporter::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
 
         ss << "Time\tXP\tYP\tZP\tXV\tYV\tZV\theight\tvelocity\n";
     }
 
-    pgd::Vector p = GetWorldPosition();
+    pgd::Vector3 p = GetWorldPosition();
     // pgd::Quaternion q = GetWorldQuaternion();
-    pgd::Vector v = GetWorldVelocity();
+    pgd::Vector3 v = GetWorldVelocity();
     ShouldAbort(); // this is needed because otherwise these values are out of sync
 
     ss << simulation()->GetTime() << "\t" << p.x << "\t" << p.y << "\t" << p.z <<

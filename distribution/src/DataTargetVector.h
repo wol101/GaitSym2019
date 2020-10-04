@@ -19,25 +19,22 @@ class DataTargetVector : public DataTarget
 {
 public:
     DataTargetVector();
-    virtual ~DataTargetVector();
 
     void SetTarget(NamedObject *target);
     NamedObject *GetTarget();
 
-    virtual void SetTargetValues(int size, double *values);
-    virtual double GetError(int valueListIndex);
-    virtual double GetError(double time);
-
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
+    virtual double calculateError(size_t valueListIndex);
+    virtual double calculateError(double time);
+
 private:
 
     NamedObject *m_Target = nullptr;
-    std::vector<pgd::Vector> m_VValueList;
-    int m_VValueListLength = -1;
+    std::vector<pgd::Vector3> m_VValueList;
 
 };
 

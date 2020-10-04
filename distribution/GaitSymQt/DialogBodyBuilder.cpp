@@ -74,7 +74,8 @@ void DialogBodyBuilder::lateInitialise()
 
     ui->widget3DWindow->setSimulation(m_simulation);
     ui->widget3DWindow->update();
-    Body referenceBody(nullptr);
+    Body referenceBody(m_simulation->GetWorldID());
+    referenceBody.SetConstructionDensity(Preferences::valueDouble("BodyDensity", 1000.0));
     Body *bodyPtr;
     if (m_inputBody)
     {
@@ -110,7 +111,7 @@ void DialogBodyBuilder::lateInitialise()
     ui->lineEditI12->setValue(mass.I[0 * 4 + 1]);
     ui->lineEditI13->setValue(mass.I[0 * 4 + 2]);
     ui->lineEditI23->setValue(mass.I[1 * 4 + 2]);
-    ui->lineEditDensity->setValue(1000);
+    ui->lineEditDensity->setValue(bodyPtr->GetConstructionDensity());
     const double *constructionPosition = bodyPtr->GetConstructionPosition();
     ui->lineEditX->setValue(constructionPosition[0]);
     ui->lineEditY->setValue(constructionPosition[1]);
@@ -235,8 +236,11 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
 void DialogBodyBuilder::reject() // this catches cancel, close and escape key
 {
     qDebug() << "DialogBodyBuilder::reject()";
-    Body *body = m_simulation->GetBody(m_inputBody->name());
-    if (body) body->setVisible(true);
+    if (m_inputBody)
+    {
+        Body *body = m_simulation->GetBody(m_inputBody->name());
+        if (body) body->setVisible(true);
+    }
     Preferences::insert("DialogBodyBuilderGeometry", saveGeometry());
     Preferences::insert("DialogBodyBuilderSplitterState", ui->splitter->saveState());
     ui->widget3DWindow->DeleteExtraObjectToDraw(m_displayFileName.toStdString());
@@ -247,8 +251,11 @@ void DialogBodyBuilder::reject() // this catches cancel, close and escape key
 void DialogBodyBuilder::closeEvent(QCloseEvent *event)
 {
     qDebug() << "DialogBodyBuilder::closeEvent()";
-    Body *body = m_simulation->GetBody(m_inputBody->name());
-    if (body) body->setVisible(true);
+    if (m_inputBody)
+    {
+        Body *body = m_simulation->GetBody(m_inputBody->name());
+        if (body) body->setVisible(true);
+    }
     Preferences::insert("DialogBodyBuilderGeometry", saveGeometry());
     Preferences::insert("DialogBodyBuilderSplitterState", ui->splitter->saveState());
     ui->widget3DWindow->DeleteExtraObjectToDraw(m_displayFileName.toStdString());

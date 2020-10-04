@@ -23,41 +23,41 @@ FacetedBox::FacetedBox(double lx, double ly, double lz, const QColor &blendColou
     lz *= 0.5;
 
     AllocateMemory(12);
-    std::vector<pgd::Vector> triangleStrip;
+    std::vector<pgd::Vector3> triangleStrip;
 
     // sides
-    triangleStrip.push_back(pgd::Vector(-lx, -ly, -lz));
-    triangleStrip.push_back(pgd::Vector(-lx, -ly, lz));
-    triangleStrip.push_back(pgd::Vector(-lx, ly, -lz));
-    triangleStrip.push_back(pgd::Vector(-lx, ly, lz));
-    triangleStrip.push_back(pgd::Vector(lx, ly, -lz));
-    triangleStrip.push_back(pgd::Vector(lx, ly, lz));
-    triangleStrip.push_back(pgd::Vector(lx, -ly, -lz));
-    triangleStrip.push_back(pgd::Vector(lx, -ly, lz));
-    triangleStrip.push_back(pgd::Vector(-lx, -ly, -lz));
-    triangleStrip.push_back(pgd::Vector(-lx, -ly, lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, -ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, -ly, lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, ly, lz));
+    triangleStrip.push_back(pgd::Vector3(lx, ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(lx, ly, lz));
+    triangleStrip.push_back(pgd::Vector3(lx, -ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(lx, -ly, lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, -ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, -ly, lz));
     AddTriangleStrip(triangleStrip);
 
     // top face
     triangleStrip.clear();
-    triangleStrip.push_back(pgd::Vector(-lx, -ly, lz));
-    triangleStrip.push_back(pgd::Vector(lx, -ly, lz));
-    triangleStrip.push_back(pgd::Vector(lx, ly, lz));
-    triangleStrip.push_back(pgd::Vector(-lx, ly, lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, -ly, lz));
+    triangleStrip.push_back(pgd::Vector3(lx, -ly, lz));
+    triangleStrip.push_back(pgd::Vector3(lx, ly, lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, ly, lz));
     AddTriangleFan(triangleStrip);
 
     // bottom face
     triangleStrip.clear();
-    triangleStrip.push_back(pgd::Vector(-lx, -ly, -lz));
-    triangleStrip.push_back(pgd::Vector(-lx, ly, -lz));
-    triangleStrip.push_back(pgd::Vector(lx, ly, -lz));
-    triangleStrip.push_back(pgd::Vector(lx, -ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, -ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(-lx, ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(lx, ly, -lz));
+    triangleStrip.push_back(pgd::Vector3(lx, -ly, -lz));
     AddTriangleFan(triangleStrip);
 
 //    qDebug() << "FacetedBox " << GetNumTriangles() << " triangles created\n";
 }
 
-void FacetedBox::AddTriangleStrip(std::vector<pgd::Vector> &triangleStrip)
+void FacetedBox::AddTriangleStrip(std::vector<pgd::Vector3> &triangleStrip)
 {
     double triangle[9];
     unsigned int i;
@@ -92,7 +92,7 @@ void FacetedBox::AddTriangleStrip(std::vector<pgd::Vector> &triangleStrip)
     }
 }
 
-void FacetedBox::AddTriangleFan(std::vector<pgd::Vector> &triangleFan)
+void FacetedBox::AddTriangleFan(std::vector<pgd::Vector3> &triangleFan)
 {
     double triangle[9];
     unsigned int i;

@@ -44,6 +44,11 @@ public:
     void GetCylinder1(const Body **body, dVector3 pos, double *radius, dQuaternion q) const;
     void GetCylinder2(const Body **body, dVector3 pos, double *radius, dQuaternion q) const;
 
+    Marker *GetOriginMarker() const;
+    Marker *GetInsertionMarker() const;
+    Marker *GetCylinder1Marker() const;
+    Marker *GetCylinder2Marker() const;
+
     virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
 
     virtual std::set<Marker *> *updateDependentMarkers();
@@ -51,42 +56,45 @@ public:
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
+    double Cylinder1Radius() const;
+    double Cylinder2Radius() const;
+
 private:
 
-    void TwoCylinderWrap(pgd::Vector &origin, pgd::Vector &insertion, pgd::Vector &cylinderPosition1, double radius1,
-                         pgd::Vector &cylinderPosition2, double radius2, double tension, int nPointsPerCylinderArc, double maxAngle,
-                         pgd::Vector &originForce, pgd::Vector &insertionForce, pgd::Vector &cylinderForce1, pgd::Vector &cylinderForcePosition1,
-                         pgd::Vector &cylinderForce2, pgd::Vector &cylinderForcePosition2, double *pathLength,
-                         pgd::Vector *pathCoordinates, int *numPathCoordinates, int *wrapOK);
-    void FindCircleCircleTangents(pgd::Vector &c1, double radius1, pgd::Vector &c2, double radius2,
-                                  pgd::Vector &outer1_p1, pgd::Vector &outer1_p2, pgd::Vector &outer2_p1, pgd::Vector &outer2_p2,
-                                  pgd::Vector &inner1_p1, pgd::Vector &inner1_p2, pgd::Vector &inner2_p1, pgd::Vector &inner2_p2, int *number_of_tangents);
-    void FindTangents(pgd::Vector &center, double radius, pgd::Vector &external_point, pgd::Vector &pt1, pgd::Vector &pt2, int *number_of_tangents);
+    void TwoCylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &insertion, pgd::Vector3 &cylinderPosition1, double radius1,
+                         pgd::Vector3 &cylinderPosition2, double radius2, double tension, int nPointsPerCylinderArc, double maxAngle,
+                         pgd::Vector3 &originForce, pgd::Vector3 &insertionForce, pgd::Vector3 &cylinderForce1, pgd::Vector3 &cylinderForcePosition1,
+                         pgd::Vector3 &cylinderForce2, pgd::Vector3 &cylinderForcePosition2, double *pathLength,
+                         pgd::Vector3 *pathCoordinates, int *numPathCoordinates, int *wrapOK);
+    void FindCircleCircleTangents(pgd::Vector3 &c1, double radius1, pgd::Vector3 &c2, double radius2,
+                                  pgd::Vector3 &outer1_p1, pgd::Vector3 &outer1_p2, pgd::Vector3 &outer2_p1, pgd::Vector3 &outer2_p2,
+                                  pgd::Vector3 &inner1_p1, pgd::Vector3 &inner1_p2, pgd::Vector3 &inner2_p1, pgd::Vector3 &inner2_p2, int *number_of_tangents);
+    void FindTangents(pgd::Vector3 &center, double radius, pgd::Vector3 &external_point, pgd::Vector3 &pt1, pgd::Vector3 &pt2, int *number_of_tangents);
     void FindCircleCircleIntersections(double cx0, double cy0, double radius0, double cx1, double cy1, double radius1,
-                                       pgd::Vector &intersection1, pgd::Vector &intersection2, int *number_of_intersections);
+                                       pgd::Vector3 &intersection1, pgd::Vector3 &intersection2, int *number_of_intersections);
 
-    double vector_distance2d(pgd::Vector &v1, pgd::Vector v2);
-    double vector_distance3d(pgd::Vector &v1, pgd::Vector &v2);
-    void vector_with_magnitude(pgd::Vector &v1, pgd::Vector &v2, double magnitude, pgd::Vector &v);
+    double vector_distance2d(pgd::Vector3 &v1, pgd::Vector3 v2);
+    double vector_distance3d(pgd::Vector3 &v1, pgd::Vector3 &v2);
+    void vector_with_magnitude(pgd::Vector3 &v1, pgd::Vector3 &v2, double magnitude, pgd::Vector3 &v);
 
-    Body *m_OriginBody = nullptr;
-    pgd::Vector m_OriginPosition;
-    Body *m_InsertionBody = nullptr;
-    pgd::Vector m_InsertionPosition;
+    Body *m_originBody = nullptr;
+    pgd::Vector3 m_originPosition;
+    Body *m_insertionBody = nullptr;
+    pgd::Vector3 m_insertionPosition;
 
-    Body *m_Cylinder1Body = nullptr;
-    pgd::Vector m_Cylinder1Position;
-    pgd::Quaternion m_CylinderQuaternion;
-    double m_Cylinder1Radius = 1;
-    Body *m_Cylinder2Body = nullptr;
-    pgd::Vector m_Cylinder2Position;
-    double m_Cylinder2Radius = 1;
-    int m_NumWrapSegments = 2;
+    Body *m_cylinder1Body = nullptr;
+    pgd::Vector3 m_cylinder1Position;
+    pgd::Quaternion m_cylinderQuaternion;
+    double m_cylinder1Radius = 1;
+    Body *m_cylinder2Body = nullptr;
+    pgd::Vector3 m_cylinder2Position;
+    double m_cylinder2Radius = 1;
+    int m_numWrapSegments = 2;
 
-    int m_WrapStatus = -1;
+    int m_wrapStatus = -1;
 
-    std::vector<pgd::Vector> m_PathCoordinates;
-    int m_NumPathCoordinates = 0;
+    std::vector<pgd::Vector3> m_pathCoordinates;
+    int m_numPathCoordinates = 0;
 
     Marker *m_originMarker = nullptr;
     Marker *m_insertionMarker = nullptr;

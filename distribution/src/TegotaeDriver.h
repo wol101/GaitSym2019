@@ -35,7 +35,7 @@ public:
 
     void UpdateReactionForce();
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     double omega() const;
     double sigma() const;
@@ -50,8 +50,8 @@ public:
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
-    pgd::Vector worldErrorVector() const;
-    pgd::Vector localErrorVector() const;
+    pgd::Vector3 worldErrorVector() const;
+    pgd::Vector3 localErrorVector() const;
 
 private:
 
@@ -76,11 +76,11 @@ private:
     Marker *m_forceDirection = nullptr;               // this marker X axis defines the direction for the contact force feedback
     std::vector<Geom *> m_contactGeomList;            // these are the geoms that are used for the contact force feedback
 
-//    pgd::Vector m_localPosition;                      // tegotae target position in m_tegotaeCentre coordinates
-//    pgd::Vector m_worldPosition;                      // tegotae target position in world coordinates
-//    pgd::Vector m_targetPosition;                     // m_errorOutput position in world coordinates
-    pgd::Vector m_worldErrorVector;                   // error vector in world coordinates
-    pgd::Vector m_localErrorVector;                   // error vector in m_errorOutput coordinates
+//    pgd::Vector3 m_localPosition;                      // tegotae target position in m_tegotaeCentre coordinates
+//    pgd::Vector3 m_worldPosition;                      // tegotae target position in world coordinates
+//    pgd::Vector3 m_targetPosition;                     // m_errorOutput position in world coordinates
+    pgd::Vector3 m_worldErrorVector;                   // error vector in world coordinates
+    pgd::Vector3 m_localErrorVector;                   // error vector in m_errorOutput coordinates
 
     std::map<std::string, Drivable *> m_targetList1;  // target list for the Y component of the error
     std::map<std::string, Drivable *> m_targetList2;  // target list for the Z component of the error

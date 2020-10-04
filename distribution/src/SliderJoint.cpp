@@ -111,12 +111,12 @@ void SliderJoint::Update()
 {
 }
 
-std::string SliderJoint::dump()
+std::string SliderJoint::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tXA\tYA\tZA\tDistance\tDistanceRate\tFX1\tFY1\tFZ1\tTX1\tTY1\tTZ1\tFX2\tFY2\tFZ2\tTX2\tTY2\tTZ2\n";

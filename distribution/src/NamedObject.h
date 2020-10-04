@@ -18,6 +18,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <initializer_list>
 
 class FacetedObject;
 class Simulation;
@@ -49,9 +50,7 @@ public:
     void setObjectMessage(const std::string *message);
     std::string objectMessage() const; // return value optimisation RVO makes via reference unnecessary
 
-    virtual std::string dump();
-//    void createAttributeMap(const std::vector<const char *> &names, const std::vector<size_t> &name_sizes, const std::vector<const char *> &values, const std::vector<size_t> &value_sizes);
-//    void createAttributeMap(const std::vector<std::string> &names, const std::vector<std::string> &values);
+    virtual std::string dumpToString();
     void createAttributeMap(const std::map<std::string, std::string> &attributeMap);
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
@@ -93,19 +92,17 @@ public:
 
     const std::map<std::string, std::string> &attributeMap();
 
-    bool getDump() const;
-    void setDump(bool dump);
-    bool getFirstDump() const;
+    bool dump() const;
+    void setDump(bool dumpToString);
+    bool firstDump() const;
 
-    bool getRedraw() const;
+    bool redraw() const;
     void setRedraw(bool redraw);
 
     // utility function
     static std::string searchNames(const std::map<std::string, std::string> &attributeMap, const std::string &name);
-//    static std::string searchNames(const std::vector<const char *> &names, const std::vector<size_t> &name_sizes, const std::vector<const char *> &values, const std::vector<size_t> &value_sizes,
-//                                   const std::string &name, bool caseSensitive);
-//    static std::string searchNames(const std::vector<std::string> &names, const std::vector<std::string> &values,
-//                                   const std::string &name, bool caseSensitive);
+    static std::string dumpHelper(std::initializer_list<std::string> values);
+    static std::string dumpHelper(std::initializer_list<double> values);
 
 protected:
     std::string *findAttribute(const std::string &name, std::string *attributeValue);

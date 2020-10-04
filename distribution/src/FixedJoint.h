@@ -14,6 +14,8 @@
 #include "SmartEnum.h"
 #include "PGDMath.h"
 
+#include <memory>
+
 class ButterworthFilter;
 class MovingAverage;
 class Filter;
@@ -23,8 +25,6 @@ class FixedJoint: public Joint
     public:
 
     FixedJoint(dWorldID worldID);
-    virtual ~FixedJoint();
-
 
     SMART_ENUM(StressCalculationType, stressCalculationTypeStrings, stressCalculationTypeCount, none, beam, spring);
 //    enum StressCalculationType { none = 0, beam, spring };
@@ -35,13 +35,14 @@ class FixedJoint: public Joint
 
     void SetFixed();
 
-    void SetCrossSection(unsigned char *stiffness, int nx, int ny, double dx, double dy);
+    void SetCrossSection(const std::vector<unsigned char> &stiffness, size_t nx, size_t ny, double dx, double dy);
     void SetStressOrigin(double x, double y, double z);
     void SetStressOrientation(double q0, double q1, double q2, double q3);
 
     void SetStressCalculationType(StressCalculationType type) { m_stressCalculationType = type; }
+    StressCalculationType GetStressCalculationType() { return m_stressCalculationType; }
 
-    pgd::Vector GetStressOrigin() { return m_StressOrigin; }
+    pgd::Vector3 GetStressOrigin() { return m_StressOrigin; }
     pgd::Quaternion GetStressOrientation() { return m_StressOrientation; }
 
     double GetMaxStress() { return m_maxStress; }
@@ -52,33 +53,58 @@ class FixedJoint: public Joint
 
     void SetLowPassType(LowPassType lowPassType) { m_lowPassType = lowPassType; }
     LowPassType GetLowPassType() { return m_lowPassType; }
-    void SetWindow(int window);
+    void SetWindow(size_t window);
     void SetCutoffFrequency(double cutoffFrequency);
     double GetLowPassMinStress() { return m_lowPassMinStress; }
     double GetLowPassMaxStress() { return m_lowPassMaxStress; }
 
-    double *GetStress() { return m_stress; }
+    const std::vector<double> &GetStress() { return m_stress; }
 
     virtual void Update();
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
     double maxStress() const;
 
+    double width() const;
+
+    double height() const;
+
+    double xOrigin() const;
+
+    double yOrigin() const;
+
+    size_t nx() const;
+
+    size_t ny() const;
+
+    const std::vector<unsigned char> &stiffness() const;
+
+    double lowRange() const;
+    void setLowRange(double lowRange);
+
+    double highRange() const;
+    void setHighRange(double highRange);
+
+    void CalculatePixmap();
+    bool CalculatePixmapNeeded();
+    const std::vector<unsigned char> &pixMap() const;
+
 private:
 
     void CalculateStress();
+    static std::vector<unsigned char> AsciiToBitMap(const std::string &buffer, size_t width, size_t height, char setChar, bool reverseY);
 
     // these are used for the stress/strain calculations
-    unsigned char *m_stiffness = nullptr;
-    double *m_stress = nullptr;
-    double *m_xDistances = nullptr;
-    double *m_yDistances = nullptr;
-    int m_nx = 0;
-    int m_ny = 0;
-    int m_nActivePixels = 0;
+    std::vector<unsigned char> m_stiffness;
+    std::vector<double> m_stress;
+    std::vector<double> m_xDistances;
+    std::vector<double> m_yDistances;
+    size_t m_nx = 0;
+    size_t m_ny = 0;
+    size_t m_nActivePixels = 0;
     double m_dx = 0;
     double m_dy = 0;
     double m_Ix = 0;
@@ -89,25 +115,32 @@ private:
     double m_yOrigin = 0;
     double m_minStress = 0;
     double m_maxStress = 0;
+    double m_width = 0;
+    double m_height = 0;
     StressCalculationType m_stressCalculationType = StressCalculationType::none;
 
-    pgd::Vector m_StressOrigin;
+    pgd::Vector3 m_StressOrigin;
     pgd::Quaternion m_StressOrientation;
-    pgd::Vector m_torqueStressCoords;
-    pgd::Vector m_forceStressCoords;
-    pgd::Vector m_torqueAxis;
+    pgd::Vector3 m_torqueStressCoords;
+    pgd::Vector3 m_forceStressCoords;
+    pgd::Vector3 m_torqueAxis;
     double m_torqueScalar = 0;
 
     double m_stressLimit = -1;
-    Filter **m_filteredStress = nullptr;
+    std::vector<std::unique_ptr<Filter>> m_filteredStress;
     double m_lowPassMinStress = 0;
     double m_lowPassMaxStress = 0;
     LowPassType m_lowPassType = LowPassType::NoLowPass;
     double m_cutoffFrequency = 0;
-    int m_window = 0;
+    size_t m_window = 0;
 
-    pgd::Vector *m_vectorList = nullptr;
+    std::vector<pgd::Vector3> m_vectorList;
 
+    std::vector<unsigned char> m_colourMap;
+    std::vector<unsigned char> m_pixMap;
+    double m_lastDisplayTime = -1;
+    double m_lowRange = 0;
+    double m_highRange = 0;
 };
 
 

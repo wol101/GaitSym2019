@@ -29,7 +29,7 @@ LMotorJoint::LMotorJoint(dWorldID worldID) : Joint()
 void LMotorJoint::SetNumAxes(int numAxes)
 {
     dJointSetLMotorNumAxes(JointID(), numAxes);
-    pgd::Vector ax,ay,az;
+    pgd::Vector3 ax,ay,az;
     body1Marker()->GetWorldBasis(&ax, &ay, &az);
     // rel value controls how the axis is anchored
     // 0: The axis is anchored to the global frame.
@@ -60,17 +60,17 @@ int LMotorJoint::GetNumAxes(void)
     return dJointGetLMotorNumAxes(JointID());
 }
 
-pgd::Vector LMotorJoint::GetAxis(int anum)
+pgd::Vector3 LMotorJoint::GetAxis(int anum)
 {
     dVector3 result;
     dJointGetLMotorAxis(JointID(), anum, result);
-    return pgd::Vector(result);
+    return pgd::Vector3(result);
 }
 
 double LMotorJoint::GetPosition(int anum)
 {
-    pgd::Vector relativePositionWorld = pgd::Vector(body2Marker()->GetWorldPosition()) - pgd::Vector(body1Marker()->GetWorldPosition());
-    pgd::Vector relativePositionBody1Marker(relativePositionWorld);
+    pgd::Vector3 relativePositionWorld = pgd::Vector3(body2Marker()->GetWorldPosition()) - pgd::Vector3(body1Marker()->GetWorldPosition());
+    pgd::Vector3 relativePositionBody1Marker(relativePositionWorld);
     // not 100% sure this should be the inverse of the body rotation here
     if (body1Marker()->GetBody()) relativePositionBody1Marker = pgd::QVRotate(~pgd::Quaternion(body1Marker()->GetBody()->GetQuaternion()), relativePositionWorld);
     switch (anum)
@@ -88,8 +88,8 @@ double LMotorJoint::GetPosition(int anum)
 
 void LMotorJoint::GetPositions(double *x, double *y, double *z)
 {
-    pgd::Vector relativePositionWorld = pgd::Vector(body2Marker()->GetWorldPosition()) - pgd::Vector(body1Marker()->GetWorldPosition());
-    pgd::Vector relativePositionBody1Marker(relativePositionWorld);
+    pgd::Vector3 relativePositionWorld = pgd::Vector3(body2Marker()->GetWorldPosition()) - pgd::Vector3(body1Marker()->GetWorldPosition());
+    pgd::Vector3 relativePositionBody1Marker(relativePositionWorld);
     // not 100% sure this should be the inverse of the body rotation here
     if (body1Marker()->GetBody()) relativePositionBody1Marker = pgd::QVRotate(~pgd::Quaternion(body1Marker()->GetBody()->GetQuaternion()), relativePositionWorld);
     *x = relativePositionBody1Marker.x;
@@ -519,12 +519,12 @@ void LMotorJoint::appendToAttributes()
     }
 }
 
-std::string LMotorJoint::dump()
+std::string LMotorJoint::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tFX1\tFY1\tFZ1\tTX1\tTY1\tTZ1\tFX2\tFY2\tFZ2\tTX2\tTY2\tTZ2\n";

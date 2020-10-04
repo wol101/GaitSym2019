@@ -74,7 +74,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetBody->addItem(bodyIterator.first.c_str());
             item = m_listWidgetBody->item(count++);
-            if (bodyIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (bodyIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetBody, 1, m_columns);
@@ -95,7 +95,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetMarker->addItem(markerIterator.first.c_str());
             item = m_listWidgetMarker->item(count++);
-            if (markerIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (markerIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetMarker, 1, m_columns);
@@ -116,7 +116,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetJoint->addItem(jointIterator.first.c_str());
             item = m_listWidgetJoint->item(count++);
-            if (jointIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (jointIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetJoint, 1, m_columns);
@@ -137,7 +137,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetGeom->addItem(geomIterator.first.c_str());
             item = m_listWidgetGeom->item(count++);
-            if (geomIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (geomIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetGeom, 1, m_columns);
@@ -158,7 +158,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetMuscle->addItem(muscleIterator.first.c_str());
             item = m_listWidgetMuscle->item(count++);
-            if (muscleIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (muscleIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetMuscle, 1, m_columns);
@@ -179,7 +179,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetDriver->addItem(driverIterator.first.c_str());
             item = m_listWidgetDriver->item(count++);
-            if (driverIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (driverIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetDriver, 1, m_columns);
@@ -200,7 +200,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetDataTarget->addItem(dataTargetIterator.first.c_str());
             item = m_listWidgetDataTarget->item(count++);
-            if (dataTargetIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (dataTargetIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetDataTarget, 1, m_columns);
@@ -221,7 +221,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetReporter->addItem(reporterIterator.first.c_str());
             item = m_listWidgetReporter->item(count++);
-            if (reporterIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (reporterIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetReporter, 1, m_columns);
@@ -242,7 +242,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetController->addItem(controllerIterator.first.c_str());
             item = m_listWidgetController->item(count++);
-            if (controllerIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (controllerIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetController, 1, m_columns);
@@ -263,7 +263,7 @@ DialogOutputSelect::DialogOutputSelect(QWidget *parent) :
         {
             m_listWidgetWarehouse->addItem(warehouseIterator.first.c_str());
             item = m_listWidgetWarehouse->item(count++);
-            if (warehouseIterator.second->getDump()) item->setCheckState(Qt::Checked);
+            if (warehouseIterator.second->dump()) item->setCheckState(Qt::Checked);
             else item->setCheckState(Qt::Unchecked);
         }
         gridLayout->addWidget(m_listWidgetWarehouse, 1, m_columns);

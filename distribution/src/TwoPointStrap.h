@@ -20,7 +20,6 @@ class TwoPointStrap:public Strap
 public:
 
     TwoPointStrap();
-    virtual ~TwoPointStrap();
 
     void SetOrigin(Body *body, const dVector3 point);
     void SetInsertion(Body *body, const dVector3 point);
@@ -38,6 +37,9 @@ public:
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
+
+    Marker *GetOriginMarker() const;
+    Marker *GetInsertionMarker() const;
 
 private:
 

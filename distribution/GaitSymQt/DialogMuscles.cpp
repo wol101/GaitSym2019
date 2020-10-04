@@ -13,6 +13,7 @@
 #include "Preferences.h"
 #include "GSUtil.h"
 #include "DialogProperties.h"
+#include "Marker.h"
 
 #include "pystring.h"
 
@@ -21,6 +22,7 @@
 #include <QSpacerItem>
 
 #include <string>
+#include <map>
 using namespace std::string_literals; // enables s-suffix for std::string literals
 
 DialogMuscles::DialogMuscles(QWidget *parent) :
@@ -162,7 +164,6 @@ void DialogMuscles::accept() // this catches OK and return/enter
     Q_ASSERT_X(strap, "DialogMuscles::accept", "strap undefined");
     strap->setSimulation(m_simulation);
     strap->setLength(ui->lineEditLength->value());
-    strap->setName(ui->lineEditMuscleID->text().toStdString() + "_strap"s);
     if (ui->spinBoxNTorqueMarkers->value())
     {
         std::vector<Marker *>torqueMarkerList;
@@ -181,6 +182,10 @@ void DialogMuscles::accept() // this catches OK and return/enter
         double pca = ui->lineEditPCA->value();
         double fibreLength = ui->lineEditFibreLength->value();
         double activationK = ui->lineEditActivationK->value();
+        muscle->setForcePerUnitArea(forcePerUnitArea);
+        muscle->setVMaxFactor(vMaxFactor);
+        muscle->setPca(pca);
+        muscle->setFibreLength(fibreLength);
         muscle->SetF0(pca * forcePerUnitArea);
         muscle->SetVMax(fibreLength * vMaxFactor);
         muscle->SetK(activationK);
@@ -199,11 +204,10 @@ void DialogMuscles::accept() // this catches OK and return/enter
         double tendonLength = ui->lineEditTendonLength->value();
         double serialStrainAtFmax = ui->lineEditSerialStrainAtFMax->value();
         double serialStrainRateAtFmax = ui->lineEditSerialStrainRateAtFMax->value();
-        QMap<QString, MAMuscleComplete::StrainModel> strainModelMap{{"Linear", MAMuscleComplete::linear}, {"Square", MAMuscleComplete::square}};
-        MAMuscleComplete::StrainModel serialStrainModel = strainModelMap[ui->comboBoxSerialStrainModel->currentText()];
+        QString serialStrainModel = ui->comboBoxSerialStrainModel->currentText();
         double parallelStrainAtFmax = ui->lineEditParallelStrainAtFMax->value();
         double parallelStrainRateAtFmax = ui->lineEditParallelStrainRateAtFMax->value();
-        MAMuscleComplete::StrainModel parallelStrainModel = strainModelMap[ui->comboBoxParallelStrainModel->currentText()];
+        QString parallelStrainModel = ui->comboBoxParallelStrainModel->currentText();
         double parallelElementLength = fibreLength;
         double vMax = fibreLength * vMaxFactor;
         double fMax = pca * forcePerUnitArea;
@@ -217,9 +221,25 @@ void DialogMuscles::accept() // this catches OK and return/enter
         double activationRate = ui->lineEditActivationRate->value();
         double startActivation = ui->lineEditInitialActivation->value();
         double minimumActivation = ui->lineEditMinimumActivation->value();
+        muscle->setSerialStrainModel(serialStrainModel.toStdString());
+        muscle->setParallelStrainModel(parallelStrainModel.toStdString());
+        muscle->setActivationK(activationK);
+        muscle->setAkFastTwitchProportion(akFastTwitchProportion);
+        muscle->setAkTActivationA(akTActivationA);
+        muscle->setAkTActivationB(akTActivationB);
+        muscle->setAkTDeactivationA(akTDeactivationA);
+        muscle->setAkTDeactivationB(akTDeactivationB);
+        muscle->setFibreLength(fibreLength);
+        muscle->setForcePerUnitArea(forcePerUnitArea);
+        muscle->setInitialFibreLength(initialFibreLength);
+        muscle->setPca(pca);
+        muscle->setStartActivation(startActivation);
+        muscle->setTendonLength(tendonLength);
+        muscle->setVMaxFactor(vMaxFactor);
+        muscle->setWidth(width);
 
-        muscle->SetSerialElasticProperties(serialStrainAtFmax, serialStrainRateAtFmax, tendonLength, serialStrainModel);
-        muscle->SetParallelElasticProperties(parallelStrainAtFmax, parallelStrainRateAtFmax, parallelElementLength, parallelStrainModel);
+        muscle->SetSerialElasticProperties(serialStrainAtFmax, serialStrainRateAtFmax, tendonLength, muscle->serialStrainModel());
+        muscle->SetParallelElasticProperties(parallelStrainAtFmax, parallelStrainRateAtFmax, parallelElementLength, muscle->parallelStrainModel());
         muscle->SetMuscleProperties(vMax, fMax, activationK, width);
         muscle->SetActivationKinetics(activationKinetics, akFastTwitchProportion, akTActivationA, akTActivationB, akTDeactivationA, akTDeactivationB);
         muscle->SetInitialFibreLength(initialFibreLength);
@@ -258,6 +278,7 @@ void DialogMuscles::accept() // this catches OK and return/enter
         m_outputMuscle->GetStrap()->setSize2(m_inputMuscle->GetStrap()->size2());
         m_outputMuscle->setSize1(m_inputMuscle->size1());
         m_outputMuscle->setSize2(m_inputMuscle->size2());
+        m_outputMuscle->GetStrap()->setName(m_inputMuscle->GetStrap()->name());
     }
     else
     {
@@ -268,6 +289,7 @@ void DialogMuscles::accept() // this catches OK and return/enter
         m_outputMuscle->GetStrap()->setSize2(Preferences::valueDouble("StrapCylinderLength"));
         m_outputMuscle->setSize1(Preferences::valueDouble("StrapForceRadius"));
         m_outputMuscle->setSize2(Preferences::valueDouble("StrapForceScale"));
+        m_outputMuscle->GetStrap()->setName(m_outputMuscle->name() + "_strap"s);
     }
 
     if (m_properties.size() > 0)
@@ -563,6 +585,28 @@ void DialogMuscles::lateInitialise()
             }
         }
     }
+
+    if (m_inputMuscle->GetStrap()->torqueMarkerList().size())
+    {
+        const QSignalBlocker blocker(ui->spinBoxNTorqueMarkers);
+        ui->spinBoxNTorqueMarkers->setValue(int(m_inputMuscle->GetStrap()->torqueMarkerList().size()));
+        for (int i = 0; i < ui->spinBoxNTorqueMarkers->value(); i++)
+        {
+            QLabel *label = new QLabel();
+            label->setText(QString("Torque Marker %1").arg(i));
+            m_gridLayoutTorqueMarkers->addWidget(label, i, 0, Qt::AlignTop);
+            QComboBox *comboBoxMarker = new QComboBox();
+            comboBoxMarker->addItems(markerIDs);
+            comboBoxMarker->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+            m_gridLayoutTorqueMarkers->addWidget(comboBoxMarker, i, 2, Qt::AlignTop);
+            m_torqueMarkerLabelList.push_back(label);
+            m_torqueMarkerComboBoxList.push_back(comboBoxMarker);
+            comboBoxMarker->setCurrentText(QString::fromStdString(m_inputMuscle->GetStrap()->torqueMarkerList().at(i)->name()));
+        }
+        m_gridSpacerTorqueMarkers = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        m_gridLayoutTorqueMarkers->addItem(m_gridSpacerTorqueMarkers, ui->spinBoxNTorqueMarkers->value(), 0);
+    }
+
 }
 
 void DialogMuscles::tabChanged(int /*index*/)

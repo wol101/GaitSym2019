@@ -44,32 +44,32 @@ void IntersectionHits::setTriangleIndex(const size_t &triangleIndex)
     m_triangleIndex = triangleIndex;
 }
 
-pgd::Vector IntersectionHits::modelLocation() const
+pgd::Vector3 IntersectionHits::modelLocation() const
 {
     return m_modelLocation;
 }
 
-void IntersectionHits::setModelLocation(const pgd::Vector &modelLocation)
+void IntersectionHits::setModelLocation(const pgd::Vector3 &modelLocation)
 {
     m_modelLocation = modelLocation;
 }
 
-pgd::Vector IntersectionHits::worldLocation() const
+pgd::Vector3 IntersectionHits::worldLocation() const
 {
     return m_worldLocation;
 }
 
-void IntersectionHits::setWorldLocation(const pgd::Vector &worldLocation)
+void IntersectionHits::setWorldLocation(const pgd::Vector3 &worldLocation)
 {
     m_worldLocation = worldLocation;
 }
 
-pgd::Vector IntersectionHits::screenLocation() const
+pgd::Vector3 IntersectionHits::screenLocation() const
 {
     return m_screenLocation;
 }
 
-void IntersectionHits::setScreenLocation(const pgd::Vector &screenLocation)
+void IntersectionHits::setScreenLocation(const pgd::Vector3 &screenLocation)
 {
     m_screenLocation = screenLocation;
 }

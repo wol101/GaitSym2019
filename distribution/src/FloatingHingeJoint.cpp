@@ -66,7 +66,7 @@ void FloatingHingeJoint::SetJointStops(double loStop, double hiStop)
 std::string *FloatingHingeJoint::createFromAttributes()
 {
     if (Joint::createFromAttributes()) return lastErrorPtr();
-    pgd::Vector axis = body1Marker()->GetWorldAxis(Marker::Axis::X);
+    pgd::Vector3 axis = body1Marker()->GetWorldAxis(Marker::Axis::X);
     this->SetFloatingHingeAxis(axis.x, axis.y, axis.z);
     if (CFM() >= 0) dJointSetFloatingHingeParam(JointID(), dParamCFM, CFM());
     if (ERP() >= 0) dJointSetFloatingHingeParam(JointID(), dParamERP, ERP());

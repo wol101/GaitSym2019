@@ -38,7 +38,7 @@ void FluidSacIdealGas::calculatePressure()
 //        T is the absolute temperature of the gas.
 //
 //    In SI units, P is measured in pascals, V is measured in cubic metres, n is measured in moles, and T in kelvins.
-//    R has the value 8.314 J/(K·mol) ≈ 2 cal/(K·mol), or 0.08206 L·atm/(mol·K).
+//    R has the value 8.314 J/(K·mol) approx 2 cal/(K·mol), or 0.08206 L·atm/(mol·K).
 //
 //    The external pressure used here is commonly the normal temperature and pressure (abbreviated as NTP)
 //    which has a value of 101.325 kPa (T=20 degrees C (293.15 K, 68 degrees F).

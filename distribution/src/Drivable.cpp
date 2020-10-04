@@ -10,8 +10,6 @@
 #include "Drivable.h"
 #include "Driver.h"
 
-#include <cassert>
-
 Drivable::Drivable()
 {
 }

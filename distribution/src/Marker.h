@@ -23,7 +23,6 @@ class Marker: public NamedObject
 public:
 
     Marker(Body *body);
-    virtual ~Marker();
 
     // these functions set the geom position relative to its body
     void SetPosition (double x, double y, double z);
@@ -38,26 +37,26 @@ public:
     SMART_ENUM(Axis, axisStrings, axisCount, X, Y, Z);
 //    enum Axis { X = 0, Y = 1, Z = 2 };
 
-    pgd::Vector GetPosition() const;
+    pgd::Vector3 GetPosition() const;
     pgd::Quaternion GetQuaternion() const;
-    pgd::Vector GetAxis(Marker::Axis axis) const;
-    void GetBasis(pgd::Vector *x, pgd::Vector *y, pgd::Vector *z);
-    pgd::Vector GetWorldPosition() const;
+    pgd::Vector3 GetAxis(Marker::Axis axis) const;
+    void GetBasis(pgd::Vector3 *x, pgd::Vector3 *y, pgd::Vector3 *z);
+    pgd::Vector3 GetWorldPosition() const;
     pgd::Quaternion GetWorldQuaternion() const;
-    pgd::Vector GetWorldAxis(Marker::Axis axis) const;
-    void GetWorldBasis(pgd::Vector *x, pgd::Vector *y, pgd::Vector *z);
-    pgd::Vector GetWorldVelocity();
+    pgd::Vector3 GetWorldAxis(Marker::Axis axis) const;
+    void GetWorldBasis(pgd::Vector3 *x, pgd::Vector3 *y, pgd::Vector3 *z);
+    pgd::Vector3 GetWorldVelocity();
 
     // these functions get things into and out of marker based coordinates
-    pgd::Vector GetPosition(const pgd::Vector &worldCoordinates) const;
-    pgd::Vector GetWorldPosition(const pgd::Vector &localCoordinates) const;
-    pgd::Vector GetVector(const pgd::Vector &worldVector) const;
-    pgd::Vector GetWorldVector(const pgd::Vector &localVector) const;
+    pgd::Vector3 GetPosition(const pgd::Vector3 &worldCoordinates) const;
+    pgd::Vector3 GetWorldPosition(const pgd::Vector3 &localCoordinates) const;
+    pgd::Vector3 GetVector(const pgd::Vector3 &worldVector) const;
+    pgd::Vector3 GetWorldVector(const pgd::Vector3 &localVector) const;
     pgd::Quaternion GetWorldQuaternion(const pgd::Quaternion &localQuaternion) const;
     pgd::Quaternion GetQuaternion(const pgd::Quaternion &worldQuaternion) const;
 
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
     virtual void appendToAttributes();
@@ -71,7 +70,7 @@ public:
 private:
 
     Body *m_body = nullptr; // if nullptr then this is the World, otherwise a pre-existing body
-    pgd::Vector m_position; // this is the position with respect to m_body (which can be World)
+    pgd::Vector3 m_position; // this is the position with respect to m_body (which can be World)
     pgd::Quaternion m_quaternion = {1, 0, 0, 0}; // this is the orientation with respect to m_body (which can be World)
     std::set<NamedObject *> m_dependentList;
 };

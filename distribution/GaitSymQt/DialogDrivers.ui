@@ -292,6 +292,9 @@
         <property name="text">
          <string>OK</string>
         </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="0" column="2">
@@ -308,14 +311,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>LineEditUniqueName</class>
-   <extends>QLineEdit</extends>
-   <header>LineEditUniqueName.h</header>
-  </customwidget>
-  <customwidget>
    <class>LineEditDouble</class>
    <extends>QLineEdit</extends>
    <header>LineEditDouble.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEditUniqueName</class>
+   <extends>QLineEdit</extends>
+   <header>LineEditUniqueName.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

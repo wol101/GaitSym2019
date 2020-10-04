@@ -58,13 +58,15 @@ public:
     double GetConstructionDensity() const { return m_constructionDensity; }
 
     void SetPosition(double x, double y, double z);
-    void SetQuaternion(double q0, double q1, double q2, double q3);
+    void SetQuaternion(double n, double x, double y, double z);
     std::string *SetPosition(const std::string &buf);
     std::string *SetQuaternion(const std::string &buf);
     void SetLinearVelocity(double x, double y, double z);
     void SetAngularVelocity(double x, double y, double z);
     std::string *SetLinearVelocity(const std::string &buf);
     std::string *SetAngularVelocity(const std::string &buf);
+    void SetPositionDelta(double x, double y, double z);
+    void SetQuaternionDelta(double n, double x, double y, double z);
 
     void SetMass(const dMass *mass);
 
@@ -86,14 +88,14 @@ public:
 
     const double *GetPosition();
     const double *GetQuaternion();
-    const double *GetRotation();
     const double *GetLinearVelocity();
     const double *GetAngularVelocity();
-    void GetRelativePosition(Body *rel, pgd::Vector *pos);
+    void GetPosition(pgd::Vector3 *pos);
+    void GetQuaternion(pgd::Quaternion *quat);
+    void GetRelativePosition(Body *rel, pgd::Vector3 *pos);
     void GetRelativeQuaternion(Body *rel, pgd::Quaternion *quat);
-    void GetRelativeRotation(Body *rel, pgd::Matrix3x3 *rot);
-    void GetRelativeLinearVelocity(Body *rel, pgd::Vector *vel);
-    void GetRelativeAngularVelocity(Body *rel, pgd::Vector *rVel);
+    void GetRelativeLinearVelocity(Body *rel, pgd::Vector3 *vel);
+    void GetRelativeAngularVelocity(Body *rel, pgd::Vector3 *rVel);
     double GetMass() const;
     void GetMass(dMass *mass) const;
     double GetLinearKineticEnergy();
@@ -133,7 +135,7 @@ public:
     void SetGraphicFile3(const std::string &graphicFile) { m_graphicFile3 = graphicFile; }
     std::string GetGraphicFile3() const { return m_graphicFile3; }
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
     virtual void appendToAttributes();
@@ -153,6 +155,10 @@ private:
 
     dVector3 m_initialPosition = {0, 0, 0, 0};
     dQuaternion m_initialQuaternion = {1, 0, 0, 0};
+
+    // these are local copies that are really only used for bodies that are not attached to a simulation
+    dVector3 m_currentPosition = {0, 0, 0, 0};
+    dQuaternion m_currentQuaternion = {1, 0, 0, 0};
 
     std::string m_graphicFile1;
     std::string m_graphicFile2;

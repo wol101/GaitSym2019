@@ -50,8 +50,7 @@
 #include <numeric>
 #include <algorithm>
 #include <sstream>
-
-#define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#include <memory>
 
 SimulationWidget::SimulationWidget(QWidget *parent)
     : QOpenGLWidget(parent), m_mouseClickEvent(QEvent::Type::None, QPointF(), Qt::MouseButton::NoButton, Qt::NoButton, Qt::NoModifier)
@@ -91,6 +90,11 @@ void SimulationWidget::cleanup()
         delete m_fixedColourObjectShader;
         m_fixedColourObjectShader = nullptr;
     }
+    if (m_aviWriter)
+    {
+        delete m_aviWriter;
+        m_aviWriter = nullptr;
+    }
     doneCurrent();
 }
 
@@ -128,38 +132,28 @@ void SimulationWidget::initializeGL()
 
     glClearColor(GLclampf(m_backgroundColour.redF()), GLclampf(m_backgroundColour.greenF()), GLclampf(m_backgroundColour.blueF()), GLclampf(m_backgroundColour.alphaF()));
 
-    m_facetedObjectShader = new QOpenGLShaderProgram;
+    m_facetedObjectShader = new QOpenGLShaderProgram();
     m_facetedObjectShader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/opengl/vertex_shader.glsl");
     m_facetedObjectShader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/opengl/fragment_shader.glsl");
-    m_facetedObjectShader->bindAttributeLocation("vertex", 0);
-    m_facetedObjectShader->bindAttributeLocation("vertexNormal", 1);
-    m_facetedObjectShader->bindAttributeLocation("vertexColor", 2);
+    m_facetedObjectShader->bindAttributeLocation("vertex", 0); // instead of "layout (location = 0)" in shader
+    m_facetedObjectShader->bindAttributeLocation("vertexNormal", 1); // instead of "layout (location = 1)" in shader
+    m_facetedObjectShader->bindAttributeLocation("vertexColor", 2); // instead of "layout (location = 2)" in shader
+    m_facetedObjectShader->bindAttributeLocation("vertexUV", 3); // instead of "layout (location = 3)" in shader
     m_facetedObjectShader->link();
 
     m_facetedObjectShader->bind();
 
-    m_mvMatrixLoc = m_facetedObjectShader->uniformLocation("mvMatrix");
-    m_mvpMatrixLoc = m_facetedObjectShader->uniformLocation("mvpMatrix");
-    m_normalMatrixLoc = m_facetedObjectShader->uniformLocation("normalMatrix");
-    m_lightPosLoc = m_facetedObjectShader->uniformLocation("lightPosition");
-    m_diffuseLoc = m_facetedObjectShader->uniformLocation("diffuse");
-    m_ambientLoc = m_facetedObjectShader->uniformLocation("ambient");
-    m_specularLoc = m_facetedObjectShader->uniformLocation("specular");
-    m_shininessLoc = m_facetedObjectShader->uniformLocation("shininess");
-    m_blendColourLoc = m_facetedObjectShader->uniformLocation("blendColour");
-    m_blendFractionLoc = m_facetedObjectShader->uniformLocation("blendFraction");
-
-    m_facetedObjectShader->setUniformValue(m_lightPosLoc, QVector4D(100, 100, 100, 1) );
-    m_facetedObjectShader->setUniformValue(m_diffuseLoc, QVector4D(0.5, 0.5, 0.5, 1.0) );  // diffuse
-    m_facetedObjectShader->setUniformValue(m_ambientLoc, QVector4D(0.5, 0.5, 0.5, 1.0) );  // ambient
-    m_facetedObjectShader->setUniformValue(m_specularLoc, QVector4D(0.5, 0.5, 0.5, 1.0) );  // specular reflectivity
-    m_facetedObjectShader->setUniformValue(m_shininessLoc, 5.0f ); // specular shininess
-    m_facetedObjectShader->setUniformValue(m_blendColourLoc, QVector4D(1.0, 1.0, 1.0, 1.0) );  // blend colour
-    m_facetedObjectShader->setUniformValue(m_blendFractionLoc, 0.0f ); // blend fraction
+    m_facetedObjectShader->setUniformValue("diffuse", QVector4D(0.5, 0.5, 0.5, 1.0) );  // diffuse
+    m_facetedObjectShader->setUniformValue("ambient", QVector4D(0.5, 0.5, 0.5, 1.0) );  // ambient
+    m_facetedObjectShader->setUniformValue("specular", QVector4D(0.5, 0.5, 0.5, 1.0) );  // specular reflectivity
+    m_facetedObjectShader->setUniformValue("shininess", 5.0f ); // specular shininess
+    m_facetedObjectShader->setUniformValue("blendColour", QVector4D(1.0, 1.0, 1.0, 1.0) );  // blend colour
+    m_facetedObjectShader->setUniformValue("blendFraction", 0.0f ); // blend fraction
+    m_facetedObjectShader->setUniformValue("hasTexture", 0 ); // use texture fraction
 
     m_facetedObjectShader->release();
 
-    m_fixedColourObjectShader = new QOpenGLShaderProgram;
+    m_fixedColourObjectShader = new QOpenGLShaderProgram();
     m_fixedColourObjectShader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/opengl/vertex_shader_2.glsl");
     m_fixedColourObjectShader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/opengl/fragment_shader_2.glsl");
     m_fixedColourObjectShader->bindAttributeLocation("vertex", 0);
@@ -167,7 +161,6 @@ void SimulationWidget::initializeGL()
     m_fixedColourObjectShader->link();
 
     m_fixedColourObjectShader->bind();
-    m_mvpMatrixLoc2 = m_fixedColourObjectShader->uniformLocation("mvpMatrix");
     m_fixedColourObjectShader->release();
 
     glEnable(GL_LINE_SMOOTH);
@@ -212,7 +205,7 @@ void SimulationWidget::paintGL()
         drawModel();
     }
 
-    for (auto iter : m_extraObjectsToDrawMap)
+    for (auto &&iter : m_extraObjectsToDrawMap)
     {
         iter.second->Draw();
     }
@@ -289,8 +282,8 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             m_trackballStartCameraVec = QVector3D(m_cameraVecX, m_cameraVecY, m_cameraVecZ);
             m_trackballStartUp = QVector3D(m_upX, m_upY, m_upZ);
             m_trackball->StartTrackball(m_mouseClickEvent.pos().x(), m_mouseClickEvent.pos().y(), width() / 2, height() / 2, trackballRadius,
-                                        pgd::Vector(double(m_trackballStartUp.x()), double(m_trackballStartUp.y()), double(m_trackballStartUp.z())),
-                                        pgd::Vector(double(-m_trackballStartCameraVec.x()), double(-m_trackballStartCameraVec.y()), double(-m_trackballStartCameraVec.z())));
+                                        pgd::Vector3(double(m_trackballStartUp.x()), double(m_trackballStartUp.y()), double(m_trackballStartUp.z())),
+                                        pgd::Vector3(double(-m_trackballStartCameraVec.x()), double(-m_trackballStartCameraVec.y()), double(-m_trackballStartCameraVec.z())));
             m_trackballFlag = true;
             emit EmitStatusString(tr("Rotate"), 2);
             update();
@@ -392,7 +385,7 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
         {
             pgd::Quaternion pgdRotation;
             m_trackball->RollTrackballToClick(event->pos().x(), event->pos().y(), &pgdRotation);
-            QQuaternion rotation(float(pgdRotation.n), float(pgdRotation.v.x), float(pgdRotation.v.y), float(pgdRotation.v.z));
+            QQuaternion rotation(float(pgdRotation.n), float(pgdRotation.x), float(pgdRotation.y), float(pgdRotation.z));
             rotation = rotation.conjugated();
             QVector3D newCameraVec = rotation * m_trackballStartCameraVec;
             m_cameraVecX = newCameraVec.x();
@@ -436,7 +429,7 @@ void SimulationWidget::wheelEvent(QWheelEvent *event)
 {
     // assume each ratchet of the wheel gives a score of 120 (8 * 15 degrees)
     float sensitivity = 2400;
-    float scale = 1.0f + float(event->delta()) / sensitivity;
+    float scale = 1.0f + float(event->angleDelta().y()) / sensitivity;
     m_FOV *= scale;
     if (m_FOV > 170) m_FOV = 170;
     else if (m_FOV < 0.001f) m_FOV = 0.001f;
@@ -761,7 +754,7 @@ void SimulationWidget::drawModel()
     auto drawBodyMapIter = m_drawBodyMap.begin();
     while (drawBodyMapIter != m_drawBodyMap.end())
     {
-        if (bodyList->find(drawBodyMapIter->first) == bodyList->end())
+        if (bodyList->find(drawBodyMapIter->first) == bodyList->end() || drawBodyMapIter->second->body()->redraw() == true)
         {
             delete drawBodyMapIter->second;
             drawBodyMapIter = m_drawBodyMap.erase(drawBodyMapIter);
@@ -792,7 +785,7 @@ void SimulationWidget::drawModel()
     auto drawJointMapIter = m_drawJointMap.begin();
     while (drawJointMapIter != m_drawJointMap.end())
     {
-        if (jointList->find(drawJointMapIter->first) == jointList->end())
+        if (jointList->find(drawJointMapIter->first) == jointList->end() || drawJointMapIter->second->joint()->redraw() == true)
         {
             delete drawJointMapIter->second;
             drawJointMapIter = m_drawJointMap.erase(drawJointMapIter);
@@ -816,11 +809,11 @@ void SimulationWidget::drawModel()
         it->second->Draw();
     }
 
-     auto geomList = m_simulation->GetGeomList();
+    auto geomList = m_simulation->GetGeomList();
     auto drawGeomMapIter = m_drawGeomMap.begin();
     while (drawGeomMapIter != m_drawGeomMap.end())
     {
-        if (geomList->find(drawGeomMapIter->first) == geomList->end())
+        if (geomList->find(drawGeomMapIter->first) == geomList->end() || drawGeomMapIter->second->geom()->redraw() == true)
         {
             delete drawGeomMapIter->second;
             drawGeomMapIter = m_drawGeomMap.erase(drawGeomMapIter);
@@ -848,7 +841,7 @@ void SimulationWidget::drawModel()
     auto drawMarkerMapIter = m_drawMarkerMap.begin();
     while (drawMarkerMapIter != m_drawMarkerMap.end())
     {
-        if (markerList->find(drawMarkerMapIter->first) == markerList->end())
+        if (markerList->find(drawMarkerMapIter->first) == markerList->end() || drawMarkerMapIter->second->marker()->redraw() == true)
         {
             delete drawMarkerMapIter->second;
             drawMarkerMapIter = m_drawMarkerMap.erase(drawMarkerMapIter);
@@ -876,47 +869,63 @@ void SimulationWidget::drawModel()
     auto drawMuscleMapIter = m_drawMuscleMap.begin();
     while (drawMuscleMapIter != m_drawMuscleMap.end())
     {
-        delete drawMuscleMapIter->second;
-        drawMuscleMapIter = m_drawMuscleMap.erase(drawMuscleMapIter);
+        if (muscleList->find(drawMuscleMapIter->first) == muscleList->end() || drawMuscleMapIter->second->muscle()->redraw() == true)
+        {
+            delete drawMuscleMapIter->second;
+            drawMuscleMapIter = m_drawMuscleMap.erase(drawMuscleMapIter);
+        }
+        else drawMuscleMapIter++;
     }
     for (auto &&iter : *muscleList)
     {
-//        auto it = m_drawMuscleMap.find(iter.first);
-//        if (it != m_drawMuscleMap.end()) delete it->second;
-        DrawMuscle *drawMuscle = new DrawMuscle();
-        drawMuscle->setMuscle(iter.second.get());
-        drawMuscle->initialise(this);
-        m_drawMuscleMap[iter.first] = drawMuscle;
-        drawMuscle->setVisible(iter.second->visible());
-        drawMuscle->Draw();
+        auto it = m_drawMuscleMap.find(iter.first);
+        if (it == m_drawMuscleMap.end() || it->second->muscle() != iter.second.get())
+        {
+            if (it != m_drawMuscleMap.end()) delete it->second;
+            DrawMuscle *drawMuscle = new DrawMuscle();
+            drawMuscle->setMuscle(iter.second.get());
+            drawMuscle->initialise(this);
+            m_drawMuscleMap[iter.first] = drawMuscle;
+            it = m_drawMuscleMap.find(iter.first);
+        }
+        it->second->setVisible(iter.second->visible());
+        it->second->Draw();
     }
 
     auto fluidSacList = m_simulation->GetFluidSacList();
     auto drawFluidSacMapIter = m_drawFluidSacMap.begin();
     while (drawFluidSacMapIter != m_drawFluidSacMap.end())
     {
-        delete drawFluidSacMapIter->second;
-        drawFluidSacMapIter = m_drawFluidSacMap.erase(drawFluidSacMapIter);
+        if (fluidSacList->find(drawFluidSacMapIter->first) == fluidSacList->end() || drawFluidSacMapIter->second->fluidSac()->redraw() == true)
+        {
+            delete drawFluidSacMapIter->second;
+            drawFluidSacMapIter = m_drawFluidSacMap.erase(drawFluidSacMapIter);
+        }
+        else drawFluidSacMapIter++;
     }
     for (auto &&iter : *fluidSacList)
     {
-//        auto it = m_drawFluidSacMap.find(iter.first);
-//        if (it != m_drawFluidSacMap.end()) delete it->second;
-        DrawFluidSac *drawFluidSac = new DrawFluidSac();
-        drawFluidSac->setFluidSac(iter.second.get());
-        drawFluidSac->initialise(this);
-        m_drawFluidSacMap[iter.first] = drawFluidSac;
-        drawFluidSac->setVisible(iter.second->visible());
-        drawFluidSac->Draw();
+        auto it = m_drawFluidSacMap.find(iter.first);
+        if (it == m_drawFluidSacMap.end() || it->second->fluidSac() != iter.second.get())
+        {
+            if (it != m_drawFluidSacMap.end()) delete it->second;
+            DrawFluidSac *drawFluidSac = new DrawFluidSac();
+            drawFluidSac->setFluidSac(iter.second.get());
+            drawFluidSac->initialise(this);
+            m_drawFluidSacMap[iter.first] = drawFluidSac;
+            it = m_drawFluidSacMap.find(iter.first);
+        }
+        it->second->setVisible(iter.second->visible());
+        it->second->Draw();
     }
 
     m_drawables.clear();
-    for (auto it : m_drawBodyMap) m_drawables.push_back(it.second);
-    for (auto it : m_drawJointMap) m_drawables.push_back(it.second);
-    for (auto it : m_drawGeomMap) m_drawables.push_back(it.second);
-    for (auto it : m_drawMarkerMap) m_drawables.push_back(it.second);
-    for (auto it : m_drawMuscleMap) m_drawables.push_back(it.second);
-    for (auto it : m_drawFluidSacMap) m_drawables.push_back(it.second);
+    for (auto &&it : m_drawBodyMap) m_drawables.push_back(it.second);
+    for (auto &&it : m_drawJointMap) m_drawables.push_back(it.second);
+    for (auto &&it : m_drawGeomMap) m_drawables.push_back(it.second);
+    for (auto &&it : m_drawMarkerMap) m_drawables.push_back(it.second);
+    for (auto &&it : m_drawMuscleMap) m_drawables.push_back(it.second);
+    for (auto &&it : m_drawFluidSacMap) m_drawables.push_back(it.second);
 }
 
 const IntersectionHits *SimulationWidget::getClosestHit() const
@@ -959,7 +968,7 @@ bool SimulationWidget::intersectModel(float winX, float winY)
 {
     m_hits.clear();
     m_hitsIndexByZ.clear();
-    std::vector<pgd::Vector> intersectionCoordList;
+    std::vector<pgd::Vector3> intersectionCoordList;
     std::vector<size_t> intersectionIndexList;
     bool hit;
     for (auto drawableIter : m_drawables)
@@ -969,9 +978,12 @@ bool SimulationWidget::intersectModel(float winX, float winY)
             QMatrix4x4 mvpMatrix = m_proj * m_view * facetedObjectIter->model();
             bool invertible;
             QMatrix4x4 unprojectMatrix = mvpMatrix.inverted(&invertible);
-            if (!invertible)
+            if (!invertible) // usually because the scale is zero so not an error condition
             {
                 qDebug() << "mvpMatrix matrix not invertible: " << drawableIter->name().c_str();
+                qDebug() << "m_proj " << m_proj;
+                qDebug() << "m_view " << m_view;
+                qDebug() << "facetedObjectIter->model() " << facetedObjectIter->model();
                 break;
             }
             QVector4D screenPoint(winX, winY, -1, 1);
@@ -980,9 +992,9 @@ bool SimulationWidget::intersectModel(float winX, float winY)
             QVector4D farPoint4D = unprojectMatrix * screenPoint;
             QVector3D rayOrigin = nearPoint4D.toVector3DAffine();
             QVector3D rayVector = farPoint4D.toVector3DAffine() - rayOrigin;
-            pgd::Vector origin(double(rayOrigin.x()), double(rayOrigin.y()), double(rayOrigin.z()));
-            pgd::Vector vector(double(rayVector.x()), double(rayVector.y()), double(rayVector.z()));
-            pgd::Vector vectorNorm = vector / vector.Magnitude();
+            pgd::Vector3 origin(double(rayOrigin.x()), double(rayOrigin.y()), double(rayOrigin.z()));
+            pgd::Vector3 vector(double(rayVector.x()), double(rayVector.y()), double(rayVector.z()));
+            pgd::Vector3 vectorNorm = vector / vector.Magnitude();
 
             intersectionCoordList.clear();
             intersectionIndexList.clear();
@@ -1000,8 +1012,8 @@ bool SimulationWidget::intersectModel(float winX, float winY)
                     QVector3D screenIntersection = mvpMatrix * modelIntersection;
                     if (screenIntersection.z() < -1.0f || screenIntersection.z() > 1.0f) continue; // this means that only visible intersections are allowed
                     QVector3D worldIntersection = facetedObjectIter->model() * modelIntersection;
-                    newHits->setWorldLocation(pgd::Vector(double(worldIntersection.x()), double(worldIntersection.y()), double(worldIntersection.z())));
-                    newHits->setScreenLocation(pgd::Vector(double(screenIntersection.x()), double(screenIntersection.y()), double(screenIntersection.z())));
+                    newHits->setWorldLocation(pgd::Vector3(double(worldIntersection.x()), double(worldIntersection.y()), double(worldIntersection.z())));
+                    newHits->setScreenLocation(pgd::Vector3(double(screenIntersection.x()), double(screenIntersection.y()), double(screenIntersection.z())));
                     m_hits.push_back(std::move(newHits));
                 }
             }
@@ -1063,14 +1075,34 @@ bool SimulationWidget::intersectModel(float winX, float winY)
     return (m_hits.size() != 0);
 }
 
-int SimulationWidget::blendFractionLoc() const
+std::map<std::string, DrawMarker *> *SimulationWidget::getDrawMarkerMap()
 {
-    return m_blendFractionLoc;
+    return &m_drawMarkerMap;
 }
 
-int SimulationWidget::blendColourLoc() const
+std::map<std::string, DrawFluidSac *> *SimulationWidget::getDrawFluidSacMap()
 {
-    return m_blendColourLoc;
+    return &m_drawFluidSacMap;
+}
+
+std::map<std::string, DrawMuscle *> *SimulationWidget::getDrawMuscleMap()
+{
+    return &m_drawMuscleMap;
+}
+
+std::map<std::string, DrawGeom *> *SimulationWidget::getDrawGeomMap()
+{
+    return &m_drawGeomMap;
+}
+
+std::map<std::string, DrawJoint *> *SimulationWidget::getDrawJointMap()
+{
+    return &m_drawJointMap;
+}
+
+std::map<std::string, DrawBody *> *SimulationWidget::getDrawBodyMap()
+{
+    return &m_drawBodyMap;
 }
 
 QString SimulationWidget::getLastMenuItem() const
@@ -1324,16 +1356,6 @@ QMatrix4x4 SimulationWidget::proj() const
     return m_proj;
 }
 
-int SimulationWidget::normalMatrixLoc() const
-{
-    return m_normalMatrixLoc;
-}
-
-int SimulationWidget::mvMatrixLoc() const
-{
-    return m_mvMatrixLoc;
-}
-
 QOpenGLShaderProgram *SimulationWidget::facetedObjectShader() const
 {
     return m_facetedObjectShader;
@@ -1344,33 +1366,4 @@ QOpenGLShaderProgram *SimulationWidget::fixedColourObjectShader() const
     return m_fixedColourObjectShader;
 }
 
-int SimulationWidget::mvpMatrixLoc2() const
-{
-    return m_mvpMatrixLoc2;
-}
-
-int SimulationWidget::shininessLoc() const
-{
-    return m_shininessLoc;
-}
-
-int SimulationWidget::specularLoc() const
-{
-    return m_specularLoc;
-}
-
-int SimulationWidget::ambientLoc() const
-{
-    return m_ambientLoc;
-}
-
-int SimulationWidget::diffuseLoc() const
-{
-    return m_diffuseLoc;
-}
-
-int SimulationWidget::mvpMatrixLoc() const
-{
-    return m_mvpMatrixLoc;
-}
 

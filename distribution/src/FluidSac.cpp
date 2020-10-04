@@ -35,7 +35,7 @@ void FluidSac::calculateVolume()
 
 void FluidSac::calculateLoadsOnMarkers()
 {
-    pgd::Vector v01, v12, v20;
+    pgd::Vector3 v01, v12, v20;
     m_pointForceList.resize(m_triangleList.size() * 3);
     size_t pointListIndex = 0;
     for (size_t i = 0; i < m_triangleList.size(); i++)
@@ -45,11 +45,11 @@ void FluidSac::calculateLoadsOnMarkers()
         areaCentroidNormal(m_vertexList[it->v0], m_vertexList[it->v1], m_vertexList[it->v2], &it->area, &it->centroid, &it->normal);
 
         // now rotate the system so that the normal is aligned to the z axis
-        pgd::Quaternion r = pgd::FindRotation(it->normal, pgd::Vector(0, 0, 1));
-        pgd::Vector v0 = pgd::QVRotate(r, m_vertexList[it->v0]);
-        pgd::Vector v1 = pgd::QVRotate(r, m_vertexList[it->v1]);
-        pgd::Vector v2 = pgd::QVRotate(r, m_vertexList[it->v2]);
-        pgd::Vector centroid = pgd::QVRotate(r, it->centroid);
+        pgd::Quaternion r = pgd::FindRotation(it->normal, pgd::Vector3(0, 0, 1));
+        pgd::Vector3 v0 = pgd::QVRotate(r, m_vertexList[it->v0]);
+        pgd::Vector3 v1 = pgd::QVRotate(r, m_vertexList[it->v1]);
+        pgd::Vector3 v2 = pgd::QVRotate(r, m_vertexList[it->v2]);
+        pgd::Vector3 centroid = pgd::QVRotate(r, it->centroid);
 
         // now we can use the Z=0 triangle formulae
         // the triangle is in the z=0 plane
@@ -119,12 +119,12 @@ bool FluidSac::isGoodMesh(const std::vector<FluidSac::Triangle> &triangleList, c
     return true;
 }
 
-double FluidSac::signedVolumeOfTriangle(pgd::Vector p1, pgd::Vector p2, pgd::Vector p3)
+double FluidSac::signedVolumeOfTriangle(pgd::Vector3 p1, pgd::Vector3 p2, pgd::Vector3 p3)
 {
     return p1.Dot(p2.Cross(p3)) / 6.0;
 }
 
-double FluidSac::volumeOfMesh(const std::vector<FluidSac::Triangle> &triangleList, const std::vector<pgd::Vector> &vectorList)
+double FluidSac::volumeOfMesh(const std::vector<FluidSac::Triangle> &triangleList, const std::vector<pgd::Vector3> &vectorList)
 {
     double volumeSum = 0;
     for (auto it : triangleList)
@@ -175,28 +175,28 @@ void FluidSac::areaCentroid(std::vector<std::pair<double, double>> points, doubl
     centroid->second = cySum / (*area * 6.0);
 }
 
-void FluidSac::areaCentroidNormal(const pgd::Vector &v0, const pgd::Vector &v1, const pgd::Vector &v2, double *area, pgd::Vector *centroid, pgd::Vector *normal)
+void FluidSac::areaCentroidNormal(const pgd::Vector3 &v0, const pgd::Vector3 &v1, const pgd::Vector3 &v2, double *area, pgd::Vector3 *centroid, pgd::Vector3 *normal)
 {
     *centroid = (v0 + v1 + v2) / 3.0; // centroid is easy for triangles
-    pgd::Vector edge0 = v1 - v0;
-    pgd::Vector edge1 = v2 - v1;
-    pgd::Vector crossProduct = edge0.Cross(edge1);
+    pgd::Vector3 edge0 = v1 - v0;
+    pgd::Vector3 edge1 = v2 - v1;
+    pgd::Vector3 crossProduct = edge0.Cross(edge1);
     double crossProductMagnitude = crossProduct.Magnitude(); // cross product magnitude is the area of the parallelogram
     *area = crossProduct.Magnitude() / 2; // and the area of the triangle is half the area of the prallelogram
     *normal = crossProduct / crossProductMagnitude;
 }
 
-void FluidSac::areaCentroidNormal(const pgd::Vector &v0, const pgd::Vector &v1, const pgd::Vector &v2, const pgd::Vector &v3, double *area, pgd::Vector *centroid, pgd::Vector *normal)
+void FluidSac::areaCentroidNormal(const pgd::Vector3 &v0, const pgd::Vector3 &v1, const pgd::Vector3 &v2, const pgd::Vector3 &v3, double *area, pgd::Vector3 *centroid, pgd::Vector3 *normal)
 {
     // triangle 1
     double area1;
-    pgd::Vector centroid1;
-    pgd::Vector normal1;
+    pgd::Vector3 centroid1;
+    pgd::Vector3 normal1;
     areaCentroidNormal(v0, v1, v2, &area1, &centroid1, &normal1);
     // triangle 2
     double area2;
-    pgd::Vector centroid2;
-    pgd::Vector normal2;
+    pgd::Vector3 centroid2;
+    pgd::Vector3 normal2;
     areaCentroidNormal(v0, v2, v3, &area2, &centroid2, &normal2);
     // check normals
     assert(normal1.Dot(normal2) > 0.9999999999);
@@ -335,12 +335,12 @@ void FluidSac::appendToAttributes()
     setAttribute("TriangleIndexList"s, pystring::join(" "s, stringList));
 }
 
-std::string FluidSac::dump()
+std::string FluidSac::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tVolume\tPressure\tNForces";

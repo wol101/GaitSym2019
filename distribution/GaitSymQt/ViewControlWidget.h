@@ -22,7 +22,7 @@ public:
     ViewControlWidget(QWidget *parent = nullptr);
     virtual ~ViewControlWidget() Q_DECL_OVERRIDE;
 
-    int FindClosestVertex(double data[][3], int count, double x, double y, double z);
+    int FindClosestVertex(const double data[][3], int count, double x, double y, double z);
 
 public slots:
 

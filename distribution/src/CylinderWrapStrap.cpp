@@ -15,9 +15,6 @@
 #include "GSUtil.h"
 #include "Marker.h"
 
-#include "ode/ode.h"
-
-
 #include <cmath>
 #include <string.h>
 
@@ -133,19 +130,19 @@ void CylinderWrapStrap::GetCylinder(const Body **body, dVector3 position, double
     position[2] = m_cylinderPosition.z;
     *radius = m_cylinderRadius;
     q[0] = m_cylinderQuaternion.n;
-    q[1] = m_cylinderQuaternion.v.x;
-    q[2] = m_cylinderQuaternion.v.y;
-    q[3] = m_cylinderQuaternion.v.z;
+    q[1] = m_cylinderQuaternion.x;
+    q[2] = m_cylinderQuaternion.y;
+    q[3] = m_cylinderQuaternion.z;
 }
 
 void CylinderWrapStrap::SetCylinderAxis(double x, double y, double z)
 {
-    pgd::Vector v2(x, y, z); // this is the target direction
-    pgd::Vector v1(0, 0, 1); // and this is the Z axis we need to rotate
+    pgd::Vector3 v2(x, y, z); // this is the target direction
+    pgd::Vector3 v1(0, 0, 1); // and this is the Z axis we need to rotate
 
 //    this is easy to explain but quite slow
 //    // cross product will get us the rotation axis
-//    pgd::Vector axis = v1 ^ v2;
+//    pgd::Vector3 axis = v1 ^ v2;
 //
 //    // Use atan2 for a better angle.  If you use only cos or sin, you only get
 //    // half the possible angles, and you can end up with rotations that flip around near
@@ -174,9 +171,9 @@ void CylinderWrapStrap::SetCylinderAxis(double x, double y, double z)
 void CylinderWrapStrap::SetCylinderQuaternion(double q0, double q1, double q2, double q3)
 {
     m_cylinderQuaternion.n = q0;
-    m_cylinderQuaternion.v.x = q1;
-    m_cylinderQuaternion.v.y = q2;
-    m_cylinderQuaternion.v.z = q3;
+    m_cylinderQuaternion.x = q1;
+    m_cylinderQuaternion.y = q2;
+    m_cylinderQuaternion.z = q3;
     m_cylinderQuaternion.Normalize(); // this is the safest option
 }
 
@@ -184,9 +181,9 @@ void CylinderWrapStrap::SetCylinder(Marker *cylinderMarker)
 {
     m_cylinderMarker = cylinderMarker;
     this->SetCylinderBody(cylinderMarker->GetBody());
-    pgd::Vector pos = cylinderMarker->GetPosition(); // Cylinder Position is set in Body relative coordinates
+    pgd::Vector3 pos = cylinderMarker->GetPosition(); // Cylinder Position is set in Body relative coordinates
     this->SetCylinderPosition(pos.x, pos.y, pos.z);
-    pgd::Vector axis = cylinderMarker->GetAxis(Marker::Axis::X);  // Cylinder Axis is set in Body relative coordinates
+    pgd::Vector3 axis = cylinderMarker->GetAxis(Marker::Axis::X);  // Cylinder Axis is set in Body relative coordinates
     this->SetCylinderAxis(axis.x, axis.y, axis.z);
 }
 
@@ -200,54 +197,81 @@ void CylinderWrapStrap::SetNumWrapSegments(int num)
     m_numWrapSegments = num;
 }
 
+Marker *CylinderWrapStrap::GetOriginMarker() const
+{
+    return m_originMarker;
+}
+
+Marker *CylinderWrapStrap::GetInsertionMarker() const
+{
+    return m_insertionMarker;
+}
+
+Marker *CylinderWrapStrap::GetCylinderMarker() const
+{
+    return m_cylinderMarker;
+}
+
 void CylinderWrapStrap::Calculate()
 {
     // get the necessary body orientations and positions
-    const double *q;
-    q = dBodyGetQuaternion(m_originBody->GetBodyID());
-    pgd::Quaternion qOriginBody(q[0], q[1], q[2], q[3]);
-    q = dBodyGetPosition(m_originBody->GetBodyID());
-    pgd::Vector vOriginBody(q[0], q[1], q[2]);
-    q = dBodyGetQuaternion(m_insertionBody->GetBodyID());
-    pgd::Quaternion qInsertionBody(q[0], q[1], q[2], q[3]);
-    q = dBodyGetPosition(m_insertionBody->GetBodyID());
-    pgd::Vector vInsertionBody(q[0], q[1], q[2]);
-    q = dBodyGetQuaternion(m_cylinderBody->GetBodyID());
-    pgd::Quaternion qCylinderBody(q[0], q[1], q[2], q[3]);
-    q = dBodyGetPosition(m_cylinderBody->GetBodyID());
-    pgd::Vector vCylinderBody(q[0], q[1], q[2]);
+//    const double *q;
+//    q = dBodyGetQuaternion(m_originBody->GetBodyID());
+//    pgd::Quaternion qOriginBody(q[0], q[1], q[2], q[3]);
+//    q = dBodyGetPosition(m_originBody->GetBodyID());
+//    pgd::Vector3 vOriginBody(q[0], q[1], q[2]);
+//    q = dBodyGetQuaternion(m_insertionBody->GetBodyID());
+//    pgd::Quaternion qInsertionBody(q[0], q[1], q[2], q[3]);
+//    q = dBodyGetPosition(m_insertionBody->GetBodyID());
+//    pgd::Vector3 vInsertionBody(q[0], q[1], q[2]);
+//    q = dBodyGetQuaternion(m_cylinderBody->GetBodyID());
+//    pgd::Quaternion qCylinderBody(q[0], q[1], q[2], q[3]);
+//    q = dBodyGetPosition(m_cylinderBody->GetBodyID());
+//    pgd::Vector3 vCylinderBody(q[0], q[1], q[2]);
+    pgd::Quaternion qOriginBody;
+    pgd::Vector3 vOriginBody;
+    pgd::Quaternion qInsertionBody;
+    pgd::Vector3 vInsertionBody;
+    pgd::Quaternion qCylinderBody;
+    pgd::Vector3 vCylinderBody;
+    m_originBody->GetQuaternion(&qOriginBody);
+    m_originBody->GetPosition(&vOriginBody);
+    m_insertionBody->GetQuaternion(&qInsertionBody);
+    m_insertionBody->GetPosition(&vInsertionBody);
+    m_cylinderBody->GetQuaternion(&qCylinderBody);
+    m_cylinderBody->GetPosition(&vCylinderBody);
 
     // calculate some inverses
     pgd::Quaternion qCylinderBodyInv = ~qCylinderBody;
     pgd::Quaternion qCylinderQuaternionInv = ~m_cylinderQuaternion;
 
     // get the world coordinates of the origin and insertion
-    pgd::Vector worldOriginPosition = QVRotate(qOriginBody, m_originPosition) + vOriginBody;
-    pgd::Vector worldInsertionPosition = QVRotate(qInsertionBody, m_insertionPosition) + vInsertionBody;
+    pgd::Vector3 worldOriginPosition = QVRotate(qOriginBody, m_originPosition) + vOriginBody;
+    pgd::Vector3 worldInsertionPosition = QVRotate(qInsertionBody, m_insertionPosition) + vInsertionBody;
 
     // now calculate as cylinder coordinates
-    pgd::Vector v;
-    if (m_originBody->GetBodyID() == m_cylinderBody->GetBodyID()) v = m_originPosition;
+    pgd::Vector3 v;
+    if (m_originBody == m_cylinderBody) v = m_originPosition;
     else v = QVRotate(qCylinderBodyInv, worldOriginPosition - vCylinderBody);
-    pgd::Vector cylinderOriginPosition = QVRotate(qCylinderQuaternionInv, v - m_cylinderPosition);
+    pgd::Vector3 cylinderOriginPosition = QVRotate(qCylinderQuaternionInv, v - m_cylinderPosition);
 
-    if (m_insertionBody->GetBodyID() == m_cylinderBody->GetBodyID()) v = m_insertionPosition;
+    if (m_insertionBody == m_cylinderBody) v = m_insertionPosition;
     else v = QVRotate(qCylinderBodyInv, worldInsertionPosition - vCylinderBody);
-    pgd::Vector cylinderInsertionPosition = QVRotate(qCylinderQuaternionInv, v - m_cylinderPosition);
+    pgd::Vector3 cylinderInsertionPosition = QVRotate(qCylinderQuaternionInv, v - m_cylinderPosition);
 
     // std::cerr << "cylinderOriginPosition " << cylinderOriginPosition.x << " " << cylinderOriginPosition.y << " " << cylinderOriginPosition.z << " ";
     // std::cerr << "cylinderInsertionPosition " << cylinderInsertionPosition.x << " " << cylinderInsertionPosition.y << " " << cylinderInsertionPosition.z << "\n";
 
-    pgd::Vector theOriginForce;
-    pgd::Vector theInsertionForce;
-    pgd::Vector theCylinderForce;
-    pgd::Vector theCylinderForcePosition;
+    pgd::Vector3 theOriginForce;
+    pgd::Vector3 theInsertionForce;
+    pgd::Vector3 theCylinderForce;
+    pgd::Vector3 theCylinderForcePosition;
 
     double length;
     m_wrapStatus = CylinderWrap(cylinderOriginPosition, cylinderInsertionPosition, m_cylinderRadius, m_numWrapSegments, M_PI,
                                 theOriginForce, theInsertionForce, theCylinderForce, theCylinderForcePosition,
                                 &length, m_pathCoordinates.data(), &m_numPathCoordinates);
-    if (Length() >= 0) setVelocity((length - Length()) / simulation()->GetTimeIncrement());
+    if (Length() >= 0 && simulation() && simulation()->GetTimeIncrement() > 0) setVelocity((length - Length()) / simulation()->GetTimeIncrement());
     else setVelocity(0);
     setLength(length);
 
@@ -288,9 +312,9 @@ void CylinderWrapStrap::Calculate()
 // returns -1 if a solution is impossible
 // returns 0 if wrapping is unnecessary
 // returns 1 if wrapping occurs
-int CylinderWrapStrap::CylinderWrap(pgd::Vector &origin, pgd::Vector &insertion, double radius, int nWrapSegments, double maxAngle,
-                 pgd::Vector &originForce, pgd::Vector &insertionForce, pgd::Vector &cylinderForce, pgd::Vector &cylinderForcePosition,
-                 double *pathLength, pgd::Vector *pathCoordinates, int *numPathCoordinates)
+int CylinderWrapStrap::CylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &insertion, double radius, int nWrapSegments, double maxAngle,
+                 pgd::Vector3 &originForce, pgd::Vector3 &insertionForce, pgd::Vector3 &cylinderForce, pgd::Vector3 &cylinderForcePosition,
+                 double *pathLength, pgd::Vector3 *pathCoordinates, int *numPathCoordinates)
 {
     // first of all calculate the planar case looking down the axis of the cylinder (i.e. xy plane)
     // this is standard tangent to a circle stuff
@@ -439,7 +463,7 @@ int CylinderWrapStrap::CylinderWrap(pgd::Vector &origin, pgd::Vector &insertion,
     // that's the main calculations done.
     // Now check whether we need more points for drawing the path.
     int i;
-    pgd::Vector *p = pathCoordinates;
+    pgd::Vector3 *p = pathCoordinates;
     if (pathCoordinates)
     {
         *p = origin;
@@ -467,6 +491,11 @@ int CylinderWrapStrap::CylinderWrap(pgd::Vector &origin, pgd::Vector &insertion,
     }
 
     return 1;
+}
+
+double CylinderWrapStrap::cylinderRadius() const
+{
+    return m_cylinderRadius;
 }
 
 int CylinderWrapStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight)

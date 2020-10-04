@@ -13,6 +13,7 @@
 #include "FloatingHingeJoint.h"
 #include "GSUtil.h"
 #include "DialogProperties.h"
+#include "Filter.h"
 
 #include <QDebug>
 #include <QComboBox>
@@ -75,8 +76,8 @@ void DialogJoints::accept() // this catches OK and return/enter
         joint->setBody1Marker(markerList->at(ui->comboBoxMarker1->currentText().toStdString()).get());
         joint->setBody2Marker(markerList->at(ui->comboBoxMarker2->currentText().toStdString()).get());
         joint->Attach();
-        pgd::Vector anchor = joint->body1Marker()->GetWorldPosition();
-        pgd::Vector axis = joint->body1Marker()->GetWorldAxis(Marker::Axis::X);
+        pgd::Vector3 anchor = joint->body1Marker()->GetWorldPosition();
+        pgd::Vector3 axis = joint->body1Marker()->GetWorldAxis(Marker::Axis::X);
         joint->SetHingeAnchor(anchor.x, anchor.y, anchor.z);
         joint->SetHingeAxis(axis.x, axis.y, axis.z);
         if (ui->lineEditCFM->text().size()) joint->setCFM(ui->lineEditCFM->value());
@@ -106,8 +107,8 @@ void DialogJoints::accept() // this catches OK and return/enter
         joint->setBody1Marker(markerList->at(ui->comboBoxMarker1->currentText().toStdString()).get());
         joint->setBody2Marker(markerList->at(ui->comboBoxMarker2->currentText().toStdString()).get());
         joint->Attach();
-        pgd::Vector anchor = joint->body1Marker()->GetWorldPosition();
-        pgd::Vector x, y, z;
+        pgd::Vector3 anchor = joint->body1Marker()->GetWorldPosition();
+        pgd::Vector3 x, y, z;
         joint->body1Marker()->GetWorldBasis(&x, &y, &z);
         joint->SetBallAnchor(anchor.x, anchor.y, anchor.z);
         joint->SetAxes(x.x, x.y, x.z, y.x, y.y, y.z, z.x, z.y, z.z, static_cast<int>(iMode));
@@ -142,7 +143,7 @@ void DialogJoints::accept() // this catches OK and return/enter
         joint->setBody1Marker(markerList->at(ui->comboBoxMarker1->currentText().toStdString()).get());
         joint->setBody2Marker(markerList->at(ui->comboBoxMarker2->currentText().toStdString()).get());
         joint->Attach();
-        pgd::Vector axis = joint->body1Marker()->GetWorldAxis(Marker::Axis::X);
+        pgd::Vector3 axis = joint->body1Marker()->GetWorldAxis(Marker::Axis::X);
         joint->SetFloatingHingeAxis(axis.x, axis.y, axis.z);
         if (ui->lineEditCFM->text().size()) joint->setCFM(ui->lineEditCFM->value());
         if (ui->lineEditERP->text().size()) joint->setERP(ui->lineEditERP->value());
@@ -171,7 +172,7 @@ void DialogJoints::accept() // this catches OK and return/enter
                 QMessageBox::warning(this, tr("Create Joint"), QString("Error loading %1\nUnable to create joint.").arg(ui->lineEditFixedStressBitmap->text()));
                 return;
             }
-            unsigned char *stiffnessMap = new unsigned char[size_t(image.height()) * size_t(image.width())];
+            std::vector<unsigned char> stiffnessMap(size_t(image.height()) * size_t(image.width()));
             size_t count = 0;
             for (int iy = 0; iy < image.height(); iy++)
             {
@@ -221,8 +222,8 @@ void DialogJoints::accept() // this catches OK and return/enter
         joint->setBody1Marker(markerList->at(ui->comboBoxMarker1->currentText().toStdString()).get());
         joint->setBody2Marker(markerList->at(ui->comboBoxMarker2->currentText().toStdString()).get());
         joint->Attach();
-        pgd::Vector anchor = joint->body1Marker()->GetWorldPosition();
-        pgd::Vector x, y, z;
+        pgd::Vector3 anchor = joint->body1Marker()->GetWorldPosition();
+        pgd::Vector3 x, y, z;
         joint->body1Marker()->GetWorldBasis(&x, &y, &z);
         joint->SetUniversalAnchor(anchor.x, anchor.y, anchor.z);
         joint->SetUniversalAxis1(x.x, x.y, x.z);
@@ -449,7 +450,10 @@ void DialogJoints::updateActivation()
 
     if (tab == "Hinge")
     {
-        if (ui->lineEditHingeLowStop->value() >= ui->lineEditHingeHighStop->value()) okEnable = false;
+        if (ui->lineEditHingeLowStop->text().size() || ui->lineEditHingeHighStop->text().size())
+        {
+            if (ui->lineEditHingeLowStop->value() >= ui->lineEditHingeHighStop->value()) okEnable = false;
+        }
     }
 
     else if (tab == "Ball")

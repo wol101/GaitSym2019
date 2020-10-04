@@ -86,12 +86,12 @@ bool DampedSpringMuscle::ShouldBreak()
     return false;
 }
 
-std::string DampedSpringMuscle::dump()
+std::string DampedSpringMuscle::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tact\ttension\tlength\tvelocity\tPMECH\n";

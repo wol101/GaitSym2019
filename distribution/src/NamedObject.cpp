@@ -28,18 +28,12 @@ NamedObject::~NamedObject()
 {
 }
 
-std::string NamedObject::dump()
+std::string NamedObject::dumpToString()
 {
-    std::stringstream ss;
-    ss.precision(17);
-    ss.setf(std::ios::scientific);
-    if (getFirstDump())
-    {
-        setFirstDump(false);
-        ss << "Name\tm_Visible\n";
-    }
-    ss << name() << "\t" << visible() << "\n";
-    return ss.str();
+    std::string s;
+    if (firstDump()) { s = dumpHelper({"size1"s, "size2"s, "size3"s, "visible"s}); setFirstDump(false); }
+    s += dumpHelper({m_size1, m_size2, m_size3, double(m_visible)});
+    return s;
 }
 
 // returns the value of a named attribute
@@ -162,55 +156,6 @@ void NamedObject::appendToAttributes()
     setAttribute("Colour3"s, m_colour3.GetIntColourRGBA());
 }
 
-void NamedObject::clearAttributeMap()
-{
-    m_attributeMap.clear();
-}
-
-bool NamedObject::getFirstDump() const
-{
-    return m_firstDump;
-}
-
-void NamedObject::setFirstDump(bool firstDump)
-{
-    m_firstDump = firstDump;
-}
-
-bool NamedObject::getRedraw() const
-{
-    return m_redraw;
-}
-
-void NamedObject::setRedraw(bool redraw)
-{
-    m_redraw = redraw;
-}
-
-bool NamedObject::getDump() const
-{
-    return m_dump;
-}
-
-void NamedObject::setDump(bool dump)
-{
-    m_dump = dump;
-}
-
-//void NamedObject::createAttributeMap(const std::vector<const char *> &names, const std::vector<size_t> &name_sizes, const std::vector<const char *> &values, const std::vector<size_t> &value_sizes)
-//{
-//    m_attributeMap.clear();
-//    for (size_t i = 0; i < names.size(); i++)
-//        setAttribute(std::string(names[i], name_sizes[i]), std::string(values[i], value_sizes[i]));
-//}
-
-//void NamedObject::createAttributeMap(const std::vector<std::string> &names, const std::vector<std::string> &values)
-//{
-//    m_attributeMap.clear();
-//    for (size_t i = 0; i < names.size(); i++)
-//        setAttribute(names[i], values[i]);
-//}
-
 void NamedObject::createAttributeMap(const std::map<std::string, std::string> &attributeMap)
 {
     m_attributeMap = attributeMap;
@@ -223,27 +168,75 @@ std::string NamedObject::searchNames(const std::map<std::string, std::string> &a
     return std::string();
 }
 
-//std::string NamedObject::searchNames(const std::vector<const char *> &names, const std::vector<size_t> &name_sizes, const std::vector<const char *> &values, const std::vector<size_t> &value_sizes,
-//                                     const std::string &name, bool caseSensitive)
-//{
-//    for (size_t i = 0; i < names.size(); i++)
-//    {
-//        if (caseSensitive && strncmp(names[i], name.c_str(), name_sizes[i]) == 0) return std::string(values[i], value_sizes[i]);
-//        if (strncasecmp(names[i], name.c_str(), name_sizes[i]) == 0) return std::string(values[i], value_sizes[i]);
-//    }
-//    return std::string();
-//}
+std::string NamedObject::dumpHelper(std::initializer_list<std::string> values)
+{
+    std::stringstream ss;
+    auto &&it = values.begin();
+    if (it != values.end())
+    {
+        ss << *it++;
+        for (; it != values.end(); it++)
+        {
+            ss << "\t" << *it;
+        }
+    }
+    ss << "\n";
+    return ss.str();
+}
 
-//std::string NamedObject::searchNames(const std::vector<std::string> &names, const std::vector<std::string> &values,
-//                                     const std::string &name, bool caseSensitive)
-//{
-//    for (size_t i = 0; i < names.size(); i++)
-//    {
-//        if (caseSensitive && strncmp(names[i].c_str(), name.c_str(), names[i].size()) == 0) return values[i];
-//        if (strncasecmp(names[i].c_str(), name.c_str(), names[i].size()) == 0) return values[i];
-//    }
-//    return std::string();
-//}
+std::string NamedObject::dumpHelper(std::initializer_list<double> values)
+{
+    std::stringstream ss;
+    std::unique_ptr<char []> buffer = std::make_unique<char []>(32);
+    auto &&it = values.begin();
+    if (it != values.end())
+    {
+        sprintf(buffer.get(), "%.17g", *it++);
+        ss << buffer.get();
+        for (; it != values.end(); it++)
+        {
+            sprintf(buffer.get(), "\t%.17g", *it);
+            ss << buffer.get();
+        }
+    }
+    ss << "\n";
+    return ss.str();
+}
+
+void NamedObject::clearAttributeMap()
+{
+    m_attributeMap.clear();
+}
+
+bool NamedObject::firstDump() const
+{
+    return m_firstDump;
+}
+
+void NamedObject::setFirstDump(bool firstDump)
+{
+    m_firstDump = firstDump;
+}
+
+bool NamedObject::redraw() const
+{
+    return m_redraw;
+}
+
+void NamedObject::setRedraw(bool redraw)
+{
+    m_redraw = redraw;
+}
+
+bool NamedObject::dump() const
+{
+    return m_dump;
+}
+
+void NamedObject::setDump(bool dump)
+{
+    m_dump = dump;
+}
 
 Simulation *NamedObject::simulation() const
 {

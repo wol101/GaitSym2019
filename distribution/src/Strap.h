@@ -39,7 +39,7 @@ public:
     void SetTension(double tension);
     double GetTension() const;
 
-    void GetTorque(const Marker &marker, pgd::Vector *worldTorque, pgd::Vector *markerTorque, pgd::Vector *worldMomentArm, pgd::Vector *markerMomentArm);
+    void GetTorque(const Marker &marker, pgd::Vector3 *worldTorque, pgd::Vector3 *markerTorque, pgd::Vector3 *worldMomentArm, pgd::Vector3 *markerMomentArm);
 
     std::vector<std::unique_ptr<PointForce >> *GetPointForceList();
 
@@ -47,7 +47,7 @@ public:
 
     virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight) = 0;
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();

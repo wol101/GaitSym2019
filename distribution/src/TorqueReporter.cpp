@@ -20,13 +20,13 @@
 TorqueReporter::TorqueReporter()
 {
     mBody = nullptr;
-    mAxis = pgd::Vector(1, 0, 0);
+    mAxis = pgd::Vector3(1, 0, 0);
 }
 
 
 void TorqueReporter::SetAxis(double x, double y, double z)
 {
-    mAxis = pgd::Vector(x, y, z);
+    mAxis = pgd::Vector3(x, y, z);
     mAxis.Normalize();
 }
 
@@ -39,12 +39,12 @@ void TorqueReporter::SetAxis(double x, double y, double z)
 //Axis = normalize(cross(Point - Center, Direction));
 //Torque_Scalar = dot(Point - Center, Cross(Direction, Axis)) * Force_Scalar;
 
-std::string TorqueReporter::dump()
+std::string TorqueReporter::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tTension\tWorldTorqueX\tWorldTorqueY\tWorldTorqueZ\tBodyTorqueX\tBodyTorqueY\tBodyTorqueZ\tAxisTorqueX\tAxisTorqueY\tAxisTorqueZ\tWorldMAX\tWorldMAY\tWorldMAZ\tBodyMAX\tBodyMAY\tBodyMAZ\tAxisMAX\tAxisMAY\tAxisMAZ\n";
@@ -53,12 +53,12 @@ std::string TorqueReporter::dump()
     // sum the torques acting on body 0 of the joint
     std::vector<std::unique_ptr<PointForce >> *pointForceList = mMuscle->GetPointForceList();
     double tension = mMuscle->GetTension();
-    pgd::Vector torque, point, force, centre;
+    pgd::Vector3 torque, point, force, centre;
     double *forcePoint, *forceDirection;
-    pgd::Vector totalTorque, momentArm;
+    pgd::Vector3 totalTorque, momentArm;
     dVector3 result;
     dBodyGetRelPointPos(mBody->GetBodyID(), mPivotPoint.x, mPivotPoint.y, mPivotPoint.z, result); // needs to be in world coordinates
-    centre = pgd::Vector(result[0], result[1], result[2]);
+    centre = pgd::Vector3(result[0], result[1], result[2]);
 
 // These are the same but the second option works even when tension is zero
 //        if (tension > 0)
@@ -69,9 +69,9 @@ std::string TorqueReporter::dump()
 //                {
 //                    //Torque = cross(Point - Center, Force)
 //                    forcePoint = (*pointForceList)[i]->point;
-//                    point = pgd::Vector(forcePoint[0], forcePoint[1], forcePoint[2]);
+//                    point = pgd::Vector3(forcePoint[0], forcePoint[1], forcePoint[2]);
 //                    forceDirection = (*pointForceList)[i]->vector;
-//                    force = pgd::Vector(forceDirection[0], forceDirection[1], forceDirection[2]) * tension;
+//                    force = pgd::Vector3(forceDirection[0], forceDirection[1], forceDirection[2]) * tension;
 //                    torque = (point - centre) ^ force;
 //                    totalTorque += torque;
 //                }
@@ -86,9 +86,9 @@ std::string TorqueReporter::dump()
             {
                 //Torque = cross(Point - Center, Force)
                 forcePoint = (*pointForceList)[i]->point;
-                point = pgd::Vector(forcePoint[0], forcePoint[1], forcePoint[2]);
+                point = pgd::Vector3(forcePoint[0], forcePoint[1], forcePoint[2]);
                 forceDirection = (*pointForceList)[i]->vector;
-                force = pgd::Vector(forceDirection[0], forceDirection[1], forceDirection[2]);
+                force = pgd::Vector3(forceDirection[0], forceDirection[1], forceDirection[2]);
                 torque = (point - centre) ^ force;
                 momentArm += torque;
             }
@@ -104,8 +104,8 @@ std::string TorqueReporter::dump()
     // now find the rotation axis specific values
     pgd::Matrix3x3 R;
     CalculateRotationFromAxis(mAxis.x, mAxis.y, mAxis.z, &R);
-    pgd::Vector axisBasedTorque = R * totalTorque;
-    pgd::Vector axisBasedMomentArm = R * momentArm;
+    pgd::Vector3 axisBasedTorque = R * totalTorque;
+    pgd::Vector3 axisBasedMomentArm = R * momentArm;
 
     ss << simulation()->GetTime() << "\t" << tension << "\t"
        << totalTorque.x << "\t" << totalTorque.y << "\t" << totalTorque.z << "\t"

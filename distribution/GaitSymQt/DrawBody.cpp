@@ -88,7 +88,9 @@ void DrawBody::initialise(SimulationWidget *simulationWidget)
     m_bodyColour3.setBlueF(qreal(m_body->colour3().b()));
     m_bodyColour3.setAlphaF(qreal(m_body->colour3().alpha()));
 
-    m_meshSearchPath = QString::fromStdString(m_body->simulation()->GetGlobal()->MeshSearchPath()).split(':');
+    m_meshSearchPath.clear();
+    for (size_t i = 0; i < m_body->simulation()->GetGlobal()->MeshSearchPath()->size(); i++)
+        m_meshSearchPath.append(QString::fromStdString(m_body->simulation()->GetGlobal()->MeshSearchPath()->at(i)));
     m_bodyAxesSize = m_body->size1();
 
     // add the axes
@@ -225,6 +227,7 @@ void DrawBody::Draw()
         m_meshEntity3->setBlendColour(m_bodyColour3, m_body->size2());
         m_meshEntity3->Draw();
     }
+    m_body->setRedraw(false);
 }
 
 

@@ -32,6 +32,11 @@ Driver::~Driver()
 
 Drivable *Driver::GetTarget(const std::string &name)
 {
+    if (name.size() == 0)
+    {
+        if (m_targetList.size()) return m_targetList.begin()->second;
+        else return nullptr;
+    }
     auto it = m_targetList.find(name);
     if (it == m_targetList.end()) return nullptr;
     else return it->second;
@@ -59,12 +64,12 @@ double Driver::Clamp(double value)
   return value < m_minValue ? m_minValue : (value > m_maxValue ? m_maxValue : value);
 }
 
-std::string Driver::dump()
+std::string Driver::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tValue\n";

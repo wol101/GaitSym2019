@@ -49,7 +49,7 @@ public:
     double GetUniversalAngle2();
     double GetUniversalAngle2Rate();
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();

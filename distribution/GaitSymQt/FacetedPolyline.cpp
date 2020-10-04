@@ -15,17 +15,17 @@
 #include <cmath>
 #include <memory>
 
-FacetedPolyline::FacetedPolyline(std::vector<pgd::Vector> *polyline, double radius, size_t n, const QColor &blendColour, double blendFraction)
+FacetedPolyline::FacetedPolyline(std::vector<pgd::Vector3> *polyline, double radius, size_t n, const QColor &blendColour, double blendFraction)
 {
     setBlendColour(blendColour, blendFraction);
-    std::vector<pgd::Vector> profile;
+    std::vector<pgd::Vector3> profile;
     AllocateMemory(n * (polyline->size() * 2 + 2));
 
     // need to add extra tails to the polyline for direction padding
-    std::vector<pgd::Vector> newPolyline;
+    std::vector<pgd::Vector3> newPolyline;
     newPolyline.reserve(polyline->size() + 2);
-    pgd::Vector v0 = (*polyline)[1] - (*polyline)[0];
-    pgd::Vector v1 = (*polyline)[0] - v0;
+    pgd::Vector3 v0 = (*polyline)[1] - (*polyline)[0];
+    pgd::Vector3 v1 = (*polyline)[0] - v0;
     newPolyline.push_back(v1);
     for (size_t i = 0; i < polyline->size(); i++) newPolyline.push_back((*polyline)[i]);
     v0 = (*polyline)[polyline->size() - 1] - (*polyline)[polyline->size() - 2];
@@ -54,11 +54,11 @@ FacetedPolyline::FacetedPolyline(std::vector<pgd::Vector> *polyline, double radi
 // polyline needs to have no parallel neighbouring segements
 // anti-clockwise winding assumed (I think)
 // first and last point of polyline used for direction only!
-void FacetedPolyline::Extrude(std::vector<pgd::Vector> *polyline, std::vector<pgd::Vector> *profile)
+void FacetedPolyline::Extrude(std::vector<pgd::Vector3> *polyline, std::vector<pgd::Vector3> *profile)
 {
     unsigned int i, j;
     Line3D line;
-    pgd::Vector v1, v2, p1, p2;
+    pgd::Vector3 v1, v2, p1, p2;
     const double epsilon = 0.000001;
     const double epsilon2 = epsilon * epsilon;
     auto polygon = std::make_unique<double []>(profile->size() * 3);
@@ -90,19 +90,19 @@ void FacetedPolyline::Extrude(std::vector<pgd::Vector> *polyline, std::vector<pg
 
     // define the rotated (*profile) for the first line segment
     // note for a truly generic routine you need two rotations to allow an up vector to be defined
-    pgd::Vector zVec(0, 0, 1);
+    pgd::Vector3 zVec(0, 0, 1);
     v1 = (*polyline)[1] - (*polyline)[0];
     pgd::Quaternion q = pgd::FindRotation(zVec, v1);
-    std::vector<pgd::Vector> rotatedProfile;
+    std::vector<pgd::Vector3> rotatedProfile;
     rotatedProfile.reserve(polyline->size());
     for (i = 0; i < (*profile).size(); i++)
     {
-        pgd::Vector v = pgd::QVRotate(q, (*profile)[i]);
+        pgd::Vector3 v = pgd::QVRotate(q, (*profile)[i]);
         rotatedProfile.push_back(v);
     }
 
     // find the intersections on the join planes
-    std::vector<pgd::Vector> vertexList;
+    std::vector<pgd::Vector3> vertexList;
     vertexList.reserve(rotatedProfile.size() * joinPlanes.size());
     for (i = 0; i < rotatedProfile.size(); i++)
     {
@@ -128,7 +128,7 @@ void FacetedPolyline::Extrude(std::vector<pgd::Vector> *polyline, std::vector<pg
     }
 
     // now construct faces
-    pgd::Vector centroid1, centroid2, normal;
+    pgd::Vector3 centroid1, centroid2, normal;
     for (i = 0; i < rotatedProfile.size(); i++)
     {
         for (j = 0; j < joinPlanes.size() - 1; j++)
@@ -165,22 +165,22 @@ void FacetedPolyline::Extrude(std::vector<pgd::Vector> *polyline, std::vector<pg
                 polygon[10] = vertexList[j].y;
                 polygon[11] = vertexList[j].z;
             }
-            normal = pgd::Vector(polygon[0], polygon[1], polygon[2]) - centroid1;
+            normal = pgd::Vector3(polygon[0], polygon[1], polygon[2]) - centroid1;
             normal.Normalize();
             polygonNormal[0] = normal.x;
             polygonNormal[1] = normal.y;
             polygonNormal[2] = normal.z;
-            normal = pgd::Vector(polygon[3], polygon[4], polygon[5]) - centroid2;
+            normal = pgd::Vector3(polygon[3], polygon[4], polygon[5]) - centroid2;
             normal.Normalize();
             polygonNormal[3] = normal.x;
             polygonNormal[4] = normal.y;
             polygonNormal[5] = normal.z;
-            normal = pgd::Vector(polygon[6], polygon[7], polygon[8]) - centroid2;
+            normal = pgd::Vector3(polygon[6], polygon[7], polygon[8]) - centroid2;
             normal.Normalize();
             polygonNormal[6] = normal.x;
             polygonNormal[7] = normal.y;
             polygonNormal[8] = normal.z;
-            normal = pgd::Vector(polygon[9], polygon[10], polygon[11]) - centroid1;
+            normal = pgd::Vector3(polygon[9], polygon[10], polygon[11]) - centroid1;
             normal.Normalize();
             polygonNormal[9] = normal.x;
             polygonNormal[10] = normal.y;
@@ -208,7 +208,7 @@ void FacetedPolyline::Extrude(std::vector<pgd::Vector> *polyline, std::vector<pg
 
 // find intersection of line and plane
 // returns true on success, false if no intersection
-bool FacetedPolyline::Intersection(Line3D *line, Plane3D *plane, pgd::Vector *intersection)
+bool FacetedPolyline::Intersection(Line3D *line, Plane3D *plane, pgd::Vector3 *intersection)
 {
     double denominator = line->direction * plane->GetNormal();
     const double epsilon = 0.000001;

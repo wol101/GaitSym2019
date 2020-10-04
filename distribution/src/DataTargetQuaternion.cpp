@@ -18,6 +18,7 @@
 #include "pystring.h"
 
 #include <sstream>
+#include <algorithm>
 
 using namespace std::string_literals;
 
@@ -25,43 +26,16 @@ DataTargetQuaternion::DataTargetQuaternion()
 {
 }
 
-DataTargetQuaternion::~DataTargetQuaternion()
-{
-}
-
-// note in this case the pointer is to a list of the elements of
-// size quaternions
-// note quaternion is (qs,qx,qy,qz)
-void DataTargetQuaternion::SetTargetValues(int size, double *values)
-{
-    if (size != TargetTimeListLength())
-    {
-        std::cerr << "DataTargetQuaternion::SetTargetValues error: size = " << size << "\n";
-        return;
-    }
-    m_QValueListLength = size;
-    m_QValueList.resize(size_t(m_QValueListLength));
-    for (size_t i = 0 ; i < size_t(m_QValueListLength); i++)
-    {
-        m_QValueList[i].n = values[i * 4];
-        m_QValueList[i].v.x = values[i * 4 + 1];
-        m_QValueList[i].v.y = values[i * 4 + 2];
-        m_QValueList[i].v.z = values[i * 4 + 3];
-        m_QValueList[i].Normalize(); // always do this on input.
-    }
-}
-
 // returns the degree of match to the stored values
 // in this case this is the angle between the two quaternions
-double DataTargetQuaternion::GetError(int valueListIndex)
+double DataTargetQuaternion::calculateError(size_t valueListIndex)
 {
     const double *r;
     Body *body;
     Geom *geom;
     dQuaternion q;
     double angle = 0;
-    if (valueListIndex < 0) valueListIndex = 0;
-    if (valueListIndex >= m_QValueListLength)
+    if (valueListIndex >= m_QValueList.size())
     {
         std::cerr << "Warning: DataTargetQuaternion::GetMatchValue valueListIndex out of range\n";
         return 0;
@@ -86,7 +60,7 @@ double DataTargetQuaternion::GetError(int valueListIndex)
 
 // returns the degree of match to the stored values
 // in this case this is the angle between the two quaternions
-double DataTargetQuaternion::GetError(double time)
+double DataTargetQuaternion::calculateError(double time)
 {
     const double *r;
     Body *body;
@@ -94,17 +68,28 @@ double DataTargetQuaternion::GetError(double time)
     dQuaternion q;
     double angle = 0;
 
-    int index = GSUtil::BinarySearchRange(TargetTimeList(), TargetTimeListLength(), time);
-    if (index < 0) index = 0;
-    if (index >= m_QValueListLength - 1)
+    size_t index, indexNext;
+    auto lowerBound = std::lower_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
+    auto upperBound = std::upper_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
+    // time < lowerbound
+    if (lowerBound == targetTimeList()->end())
     {
-        std::cerr << "Warning: DataTargetVector::GetMatchValue index out of range\n";
-        return 0;
+        index = 0;
+        indexNext = index;
     }
-    int indexNext = index + 1;
+    else if (upperBound == targetTimeList()->end())
+    {
+        index = targetTimeList()->size() - 1;
+        indexNext = index;
+    }
+    else
+    {
+        index = std::distance(targetTimeList()->begin(), lowerBound);
+        indexNext = std::min(index + 1, targetTimeList()->size() - 1);
+    }
 
     // do a slerp interpolation between the target quaternions
-    double interpolationFraction = (time - TargetTimeList()[size_t(index)]) / (TargetTimeList()[size_t(indexNext)] - TargetTimeList()[size_t(index)]);
+    double interpolationFraction = (time - (*targetTimeList())[size_t(index)]) / ((*targetTimeList())[size_t(indexNext)] - (*targetTimeList())[size_t(index)]);
     pgd::Quaternion interpolatedTarget = pgd::slerp(m_QValueList[size_t(index)], m_QValueList[size_t(indexNext)], interpolationFraction);
 
     if ((body = dynamic_cast<Body *>(GetTarget())) != nullptr)
@@ -124,12 +109,12 @@ double DataTargetQuaternion::GetError(double time)
     return angle;
 }
 
-std::string DataTargetQuaternion::dump()
+std::string DataTargetQuaternion::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tTargetQW\tTargetQX\tTargetQY\tTargetQZ\tActualQW\tActualQX\tActualQY\tActualQZ\tAngle\n";
@@ -140,7 +125,10 @@ std::string DataTargetQuaternion::dump()
     double angle = 0;
     dQuaternion q;
 
-    int valueListIndex = GSUtil::BinarySearchRange(TargetTimeList(), TargetTimeListLength(), simulation()->GetTime());
+    size_t valueListIndex = 0;
+    auto lowerBounds = std::lower_bound(targetTimeList()->begin(), targetTimeList()->end(), simulation()->GetTime());
+    if (lowerBounds != targetTimeList()->end()) valueListIndex = std::distance(targetTimeList()->begin(), lowerBounds);
+
     if ((body = dynamic_cast<Body *>(GetTarget())) != nullptr)
     {
         r = body->GetQuaternion();
@@ -153,7 +141,7 @@ std::string DataTargetQuaternion::dump()
     }
 
     ss << simulation()->GetTime() <<
-          "\t" << m_QValueList[size_t(valueListIndex)].n << "\t" << m_QValueList[size_t(valueListIndex)].v.x << "\t" << m_QValueList[size_t(valueListIndex)].v.y << "\t" << m_QValueList[size_t(valueListIndex)].v.z <<
+          "\t" << m_QValueList[size_t(valueListIndex)].n << "\t" << m_QValueList[size_t(valueListIndex)].x << "\t" << m_QValueList[size_t(valueListIndex)].y << "\t" << m_QValueList[size_t(valueListIndex)].z <<
           "\t" << q[0] << "\t" << q[1] << "\t" << q[2] << "\t" << q[3] <<
           "\t" << angle <<
           "\n";
@@ -205,15 +193,19 @@ std::string *DataTargetQuaternion::createFromAttributes()
         setLastError("DataTargetQuaternion ID=\""s + name() +"\" No values found in TargetValues"s);
         return lastErrorPtr();
     }
-    if (int(targetValuesTokens.size()) != TargetTimeListLength() * 4)
+    if (targetValuesTokens.size() != targetTimeList()->size() * 4)
     {
         setLastError("DataTargetQuaternion ID=\""s + name() +"\" Number of values in TargetValues does not match 4 * TargetTimes"s);
         return lastErrorPtr();
     }
-    std::vector<double> targetValues;
-    targetValues.reserve(targetValuesTokens.size());
-    for (auto token : targetValuesTokens) targetValues.push_back(GSUtil::Double(token));
-    SetTargetValues(int(targetValues.size()) / 4, targetValues.data());
+    m_QValueList.clear();
+    m_QValueList.reserve(targetTimeList()->size());
+    for (size_t i = 0; i < targetTimeList()->size(); i++)
+    {
+        pgd::Quaternion q(GSUtil::Double(targetValuesTokens[i * 4]), GSUtil::Double(targetValuesTokens[i * 4 + 1]),
+                          GSUtil::Double(targetValuesTokens[i * 4 + 2]), GSUtil::Double(targetValuesTokens[i * 4 + 3]));
+        m_QValueList.push_back(q);
+    }
 
 
     return nullptr;
@@ -226,13 +218,13 @@ void DataTargetQuaternion::appendToAttributes()
     std::string buf;
     setAttribute("Type"s, "Scalar"s);
     std::vector<double> valueList;
-    valueList.reserve(size_t(m_QValueListLength) * 4);
-    for (size_t i = 0; i < size_t(m_QValueListLength); i++)
+    valueList.reserve(m_QValueList.size() * 4);
+    for (size_t i = 0; i < m_QValueList.size(); i++)
     {
         valueList.push_back(m_QValueList[i].n);
-        valueList.push_back(m_QValueList[i].v.x);
-        valueList.push_back(m_QValueList[i].v.y);
-        valueList.push_back(m_QValueList[i].v.z);
+        valueList.push_back(m_QValueList[i].x);
+        valueList.push_back(m_QValueList[i].y);
+        valueList.push_back(m_QValueList[i].z);
     }
     setAttribute("TargetValues"s, *GSUtil::ToString(valueList.data(), valueList.size(), &buf));
     setAttribute("TargetID"s, m_Target->name());

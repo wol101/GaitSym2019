@@ -32,6 +32,7 @@ public:
 
 public slots:
     void colourButtonClicked();
+    void fontButtonClicked();
     void importButtonClicked();
     void exportButtonClicked();
     void defaultsButtonClicked();

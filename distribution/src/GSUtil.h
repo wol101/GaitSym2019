@@ -41,6 +41,7 @@
 #define ODD(n) ((n) & 1)
 #define SWAP(a,b) { (a) = (a)+(b); (b) = (a)-(b); (a) = (a)-(b); }
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#define UNUSED(x) ((void)(x))
 
 class GSUtil {
 public:
@@ -399,7 +400,9 @@ inline static int CountTokens(const unsigned char *string) { return CountTokens(
 inline static double Interpolate(double x1, double y1, double x2, double y2, double x)
 {
     // y - y1 = ( (y2 - y1) / (x2 - x1) ) * (x - x1)
-    double y =  ( ( (y2 - y1) / (x2 - x1) ) * (x - x1) ) + y1;
+    double delX = x2 - x1;
+    if (std::fabs(delX) < DBL_EPSILON) return y1;
+    double y =  ( ( (y2 - y1) / (delX) ) * (x - x1) ) + y1;
     return y;
 }
 
@@ -447,7 +450,6 @@ static void EulerDecompositionYZX(const double *mRot, double& thetaX, double& th
 static void EulerDecompositionZXY(const double *mRot, double& thetaX, double& thetaY, double& thetaZ);
 static void EulerDecompositionZYX(const double *mRot, double& thetaX, double& thetaY, double& thetaZ);
 
-static void Inverse(const double *mRot, dMatrix3 invMRot);
 static void FindRotation(const double *R1, const double *R2, dMatrix3 rotMat);
 static void DumpMatrix(const double *mRot);
 
@@ -458,10 +460,10 @@ static pgd::Quaternion GetQuaternion(const std::vector<std::string> &tokens, siz
 static double GetAngle(const char *buf);
 static double GetAngle(const std::string &buf);
 
-static double DistanceBetweenTwoLines(pgd::Vector p1, pgd::Vector d1, pgd::Vector p2, pgd::Vector d2);
-static bool LineLineIntersect(pgd::Vector p1, pgd::Vector p2,
-                              pgd::Vector p3, pgd::Vector p4,
-                              pgd::Vector *pa, pgd::Vector *pb,
+static double DistanceBetweenTwoLines(pgd::Vector3 p1, pgd::Vector3 d1, pgd::Vector3 p2, pgd::Vector3 d2);
+static bool LineLineIntersect(pgd::Vector3 p1, pgd::Vector3 p2,
+                              pgd::Vector3 p3, pgd::Vector3 p4,
+                              pgd::Vector3 *pa, pgd::Vector3 *pb,
                               double *mua, double *mub);
 
 static unsigned char *AsciiToBitMap(const char *string, int width, int height, char setChar, bool reverseY, unsigned char *bitmap);
@@ -489,8 +491,10 @@ static std::string *ToString(const uint32_t *v, size_t n, std::string *output);
 static std::string *ToString(const int64_t *v, size_t n, std::string *output);
 static std::string *ToString(const uint64_t *v, size_t n, std::string *output);
 static std::string *ToString(const bool *v, size_t n, std::string *output);
+static std::string *ToString(const pgd::Matrix3x3 &m, std::string *output);
 static std::string *ToString(const pgd::Quaternion &v, std::string *output);
-static std::string *ToString(const pgd::Vector &v, std::string *output);
+static std::string *ToString(const pgd::Vector3 &v, std::string *output);
+static std::string *ToString(const pgd::Vector2 &v, std::string *output);
 static std::string *ToString(uint32_t address, uint16_t port, std::string *output);
 
 static std::string ToString(double v);
@@ -505,8 +509,9 @@ static std::string ToString(const uint32_t *v, size_t n);
 static std::string ToString(const int64_t *v, size_t n);
 static std::string ToString(const uint64_t *v, size_t n);
 static std::string ToString(const bool *v, size_t n);
+static std::string ToString(const pgd::Matrix3x3 &m);
 static std::string ToString(const pgd::Quaternion &v);
-static std::string ToString(const pgd::Vector &v);
+static std::string ToString(const pgd::Vector3 &v);
 static std::string ToString(uint32_t address, uint16_t port);
 
 #if defined(__APPLE__)
@@ -534,11 +539,12 @@ static size_t SplitGeneric(const std::string &line, std::vector<std::string> *to
 static std::wstring utf8_to_utf16(const std::string& utf8);
 
 static double ThreeAxisDecompositionScore(double x[] , void *data);
-static double ThreeAxisDecomposition(const pgd::Quaternion &target, const pgd::Vector &ax1, const pgd::Vector &ax2, const pgd::Vector &ax3, double *ang1, double *ang2, double *ang3);
-static double ThreeAxisDecompositionError(const pgd::Quaternion &target, const pgd::Vector &ax1, const pgd::Vector &ax2, const pgd::Vector &ax3, double ang1, double ang2, double ang3);
+static double ThreeAxisDecomposition(const pgd::Quaternion &target, const pgd::Vector3 &ax1, const pgd::Vector3 &ax2, const pgd::Vector3 &ax3, double *ang1, double *ang2, double *ang3);
+static double ThreeAxisDecompositionError(const pgd::Quaternion &target, const pgd::Vector3 &ax1, const pgd::Vector3 &ax2, const pgd::Vector3 &ax3, double ang1, double ang2, double ang3);
 static void nelmin ( double fn ( double x[] , void *data ), void *data, int n, double start[], double xmin[],
                      double *ynewlo, double reqmin, double step[], int konvge, int kcount,
                      int *icount, int *numres, int *ifault );
+static double zeroin(double ax, double bx, double (*f)(double x, void *info), void *info, double tol);
 
 };
 

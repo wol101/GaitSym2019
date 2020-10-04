@@ -38,16 +38,22 @@ public:
     virtual double GetActivation();
     virtual double GetElasticEnergy();
 
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
-    double fibreLength() const;
+    double forcePerUnitArea() const;
+    void setForcePerUnitArea(double forcePerUnitArea);
+
+    double vMaxFactor() const;
+    void setVMaxFactor(double vMaxFactor);
 
     double pca() const;
+    void setPca(double pca);
 
-    double forcePerUnitArea() const;
+    double fibreLength() const;
+    void setFibreLength(double fibreLength);
 
 private:
 

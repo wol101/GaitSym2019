@@ -147,24 +147,24 @@ void HingeJoint::CalculateStopTorque()
     dVector3 jointAnchor;
     dJointGetHingeAnchor(JointID(), jointAnchor);
     dBodyID bodyID = dJointGetBody(JointID(), 0);
-    pgd::Vector worldForceOffset;
+    pgd::Vector3 worldForceOffset;
     if (bodyID)
     {
         const double *bodyPosition = dBodyGetPosition(bodyID);
-        worldForceOffset = pgd::Vector(jointAnchor[0] - bodyPosition[0], jointAnchor[1] - bodyPosition[1], jointAnchor[2] - bodyPosition[2]);
+        worldForceOffset = pgd::Vector3(jointAnchor[0] - bodyPosition[0], jointAnchor[1] - bodyPosition[1], jointAnchor[2] - bodyPosition[2]);
     }
     else
     {
-        worldForceOffset = pgd::Vector(jointAnchor[0], jointAnchor[1], jointAnchor[2]);
+        worldForceOffset = pgd::Vector3(jointAnchor[0], jointAnchor[1], jointAnchor[2]);
     }
 
     // now the linear components of JointFeedback() will generate a torque if applied at this position
     // torque = r x f
-    pgd::Vector forceCM(JointFeedback()->f1[0], JointFeedback()->f1[1], JointFeedback()->f1[2]);
-    pgd::Vector addedTorque = worldForceOffset ^ forceCM;
+    pgd::Vector3 forceCM(JointFeedback()->f1[0], JointFeedback()->f1[1], JointFeedback()->f1[2]);
+    pgd::Vector3 addedTorque = worldForceOffset ^ forceCM;
 
-    pgd::Vector torqueCM(JointFeedback()->t1[0], JointFeedback()->t1[1], JointFeedback()->t1[2]);
-    pgd::Vector torqueJointAnchor = torqueCM - addedTorque;
+    pgd::Vector3 torqueCM(JointFeedback()->t1[0], JointFeedback()->t1[1], JointFeedback()->t1[2]);
+    pgd::Vector3 torqueJointAnchor = torqueCM - addedTorque;
 
     double torqueScalar = torqueJointAnchor.Magnitude();
     if (torqueScalar == 0)
@@ -173,12 +173,12 @@ void HingeJoint::CalculateStopTorque()
         return;
     }
 
-    pgd::Vector torqueAxis = torqueJointAnchor / torqueScalar;
+    pgd::Vector3 torqueAxis = torqueJointAnchor / torqueScalar;
 
     // so the torque around the hinge axis should be: torqueScalar * (hingeAxis .dot. torqueAxis)
     dVector3 result;
     dJointGetHingeAxis(JointID(), result);
-    pgd::Vector hingeAxis(result[0], result[1], result[2]);
+    pgd::Vector3 hingeAxis(result[0], result[1], result[2]);
     m_axisTorque = torqueScalar * (hingeAxis * torqueAxis);
 
     if (m_axisTorqueWindow < 2)
@@ -263,9 +263,9 @@ std::string *HingeJoint::createFromAttributes()
     if (Joint::createFromAttributes()) return lastErrorPtr();
     std::string buf;
 
-    pgd::Vector axis = body1Marker()->GetWorldAxis(Marker::Axis::X);
+    pgd::Vector3 axis = body1Marker()->GetWorldAxis(Marker::Axis::X);
     this->SetHingeAxis(axis.x, axis.y, axis.z);
-    pgd::Vector position = body1Marker()->GetWorldPosition();
+    pgd::Vector3 position = body1Marker()->GetWorldPosition();
     this->SetHingeAnchor(position.x, position.y, position.z);
     if (CFM() >= 0) dJointSetHingeParam (JointID(), dParamCFM, CFM());
     if (ERP() >= 0) dJointSetHingeParam (JointID(), dParamERP, ERP());
@@ -316,12 +316,12 @@ void HingeJoint::appendToAttributes()
     setAttribute("StopBounce"s, *GSUtil::ToString(dJointGetHingeParam(JointID(), dParamBounce), &buf));
 }
 
-std::string HingeJoint::dump()
+std::string HingeJoint::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tXP\tYP\tZP\tXP2\tYP2\tZP2\tXA\tYA\tZA\tAngle\tAngleRate\tFX1\tFY1\tFZ1\tTX1\tTY1\tTZ1\tFX2\tFY2\tFZ2\tTX2\tTY2\tTZ2\tStopTorque\n";

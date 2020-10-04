@@ -86,13 +86,13 @@ void Geom::setGeomMarker(Marker *geomMarker)
         this->SetGeomLocation(Geom::environment);
 
     }
+    m_geomMarker->addDependent(this);
     if (dynamic_cast<PlaneGeom *>(this)) return; // do not try to place non-placeable geoms
 
-    pgd::Vector p = geomMarker->GetPosition();
+    pgd::Vector3 p = geomMarker->GetPosition();
     this->SetPosition(p.x, p.y, p.z);
     pgd::Quaternion q = geomMarker->GetQuaternion();
-    this->SetQuaternion(q.n, q.v.x, q.v.y, q.v.z);
-    m_geomMarker->addDependent(this);
+    this->SetQuaternion(q.n, q.x, q.y, q.z);
 }
 
 void Geom::GetQuaternion(dQuaternion q)
@@ -157,12 +157,12 @@ void Geom::SetERPDamp(double ERP, double dampingConstant, double integrationStep
     m_CFM = 1.0/(integrationStep * m_SpringConstant + m_DampingConstant);
 }
 
-std::string Geom::dump()
+std::string Geom::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tXP\tYP\tZP\tQW\tQX\tQY\tQZ\tNContacts\tBody1\tBody2\tXC\tYC\tZC\tFX1\tFY1\tFZ1\tTX1\tTY1\tTZ1\tFX2\tFY2\tFZ2\tTX2\tTY2\tTZ2\n";

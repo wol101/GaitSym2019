@@ -182,7 +182,7 @@ void DialogMarkerImportExport::SaveUIElementsToPreferences()
 int DialogMarkerImportExport::ExportMarkers()
 {
     std::vector<std::string> lines;
-    pgd::Vector pWorld;
+    pgd::Vector3 pWorld;
     pgd::Quaternion qWorld;
     std::string bodyName;
 
@@ -237,7 +237,7 @@ int DialogMarkerImportExport::ExportMarkers()
             line.push_back(GSUtil::ToString(pWorld.y));
             line.push_back(GSUtil::ToString(pWorld.z));
             qWorld = markerIt.second->GetWorldQuaternion();
-            pgd::Vector euler;
+            pgd::Vector3 euler;
             if (ui->checkBoxAnglesInRadians->isChecked()) euler = pgd::MakeEulerAnglesFromQRadian(qWorld);
             else euler = pgd::MakeEulerAnglesFromQ(qWorld);
             line.push_back(GSUtil::ToString(euler.x));
@@ -299,9 +299,9 @@ int DialogMarkerImportExport::ExportMarkers()
             line.push_back(GSUtil::ToString(pWorld.z));
             qWorld = markerIt.second->GetWorldQuaternion();
             line.push_back(GSUtil::ToString(qWorld.n));
-            line.push_back(GSUtil::ToString(qWorld.v.x));
-            line.push_back(GSUtil::ToString(qWorld.v.y));
-            line.push_back(GSUtil::ToString(qWorld.v.z));
+            line.push_back(GSUtil::ToString(qWorld.x));
+            line.push_back(GSUtil::ToString(qWorld.y));
+            line.push_back(GSUtil::ToString(qWorld.z));
             lines.push_back(pystring::join(separator, line));
         }
     }
@@ -430,7 +430,7 @@ int DialogMarkerImportExport::ImportMarkers()
                 qWorld = pgd::MakeQFromEulerAnglesRadian(values[3], values[4], values[5]);
             else
                 qWorld = pgd::MakeQFromEulerAngles(values[3], values[4], values[5]);
-            marker->SetWorldQuaternion(qWorld.n, qWorld.v.x, qWorld.v.y, qWorld.v.z);
+            marker->SetWorldQuaternion(qWorld.n, qWorld.x, qWorld.y, qWorld.z);
         }
         else if (ui->radioButtonPositionAngleAxis->isChecked())
         {
@@ -438,7 +438,7 @@ int DialogMarkerImportExport::ImportMarkers()
             angle = values[3];
             if (!ui->checkBoxAnglesInRadians->isChecked()) angle = pgd::DegreesToRadians(angle);
             qWorld = pgd::MakeQFromAxisAngle(values[4], values[5], values[6], angle);
-            marker->SetWorldQuaternion(qWorld.n, qWorld.v.x, qWorld.v.y, qWorld.v.z);
+            marker->SetWorldQuaternion(qWorld.n, qWorld.x, qWorld.y, qWorld.z);
         }
         else if (ui->radioButtonPositionQuaternion->isChecked())
         {
@@ -451,7 +451,7 @@ int DialogMarkerImportExport::ImportMarkers()
             qWorld = pgd::MakeQfromM(pgd::Matrix3x3(values[3], values[4],  values[5],
                     values[6], values[7],  values[8],
                     values[9], values[10], values[11]));
-            marker->SetWorldQuaternion(qWorld.n, qWorld.v.x, qWorld.v.y, qWorld.v.z);
+            marker->SetWorldQuaternion(qWorld.n, qWorld.x, qWorld.y, qWorld.z);
         }
         ui->plainTextEditLog->appendPlainText(QString("Marker '%1' attached to '%2' created.\n").arg(QString::fromStdString(tokens[0])).arg(QString::fromStdString(tokens[1])));
         m_markerList->push_back(std::move(marker));

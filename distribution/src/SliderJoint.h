@@ -37,7 +37,7 @@ public:
     double GetSliderDistanceRate();
 
     virtual void Update();
-    virtual std::string dump();
+    virtual std::string dumpToString();
 
 private:
 

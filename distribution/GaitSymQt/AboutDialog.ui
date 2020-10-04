@@ -29,7 +29,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="resources.qrc">:/images/Desktop Icon/Icon.iconset/icon_256x256.png</pixmap>
+         <pixmap resource="resources.qrc">:/images/Desktop Icon/Icon.iconset/icon_512x512@2x.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -129,6 +129,9 @@ p, li { white-space: pre-wrap; }
           </property>
           <property name="text">
            <string>OK</string>
+          </property>
+          <property name="default">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

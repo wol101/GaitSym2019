@@ -150,18 +150,8 @@ public:
 
     QOpenGLShaderProgram *facetedObjectShader() const;
     QOpenGLShaderProgram *fixedColourObjectShader() const;
-    int mvMatrixLoc() const;
-    int mvpMatrixLoc() const;
-    int normalMatrixLoc() const;
     QMatrix4x4 proj() const;
     QMatrix4x4 view() const;
-    int diffuseLoc() const;
-    int ambientLoc() const;
-    int specularLoc() const;
-    int shininessLoc() const;
-    int blendColourLoc() const;
-    int blendFractionLoc() const;
-    int mvpMatrixLoc2() const;
 
     bool getDrawBodyMesh1() const;
     void setDrawBodyMesh1(bool drawBodyMesh1);
@@ -175,6 +165,18 @@ public:
     const IntersectionHits *getClosestHit() const;
 
     QString getLastMenuItem() const;
+
+    std::map<std::string, DrawBody *> *getDrawBodyMap();
+
+    std::map<std::string, DrawJoint *> *getDrawJointMap();
+
+    std::map<std::string, DrawGeom *> *getDrawGeomMap();
+
+    std::map<std::string, DrawMuscle *> *getDrawMuscleMap();
+
+    std::map<std::string, DrawFluidSac *> *getDrawFluidSacMap();
+
+    std::map<std::string, DrawMarker *> *getDrawMarkerMap();
 
 public slots:
     void cleanup();
@@ -283,17 +285,6 @@ private:
     QOpenGLVertexArrayObject m_vao;
     QOpenGLShaderProgram *m_facetedObjectShader = nullptr;
     QOpenGLShaderProgram *m_fixedColourObjectShader = nullptr;
-    int m_mvMatrixLoc = 0;
-    int m_mvpMatrixLoc = 0;
-    int m_normalMatrixLoc = 0;
-    int m_lightPosLoc = 0;
-    int m_diffuseLoc = 0;
-    int m_ambientLoc = 0;
-    int m_specularLoc = 0;
-    int m_shininessLoc = 0;
-    int m_blendColourLoc = 0;
-    int m_blendFractionLoc = 0;
-    int m_mvpMatrixLoc2 = 0;
     QMatrix4x4 m_proj;
     QMatrix4x4 m_view;
     QMatrix4x4 m_model;

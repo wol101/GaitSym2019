@@ -21,7 +21,7 @@ public:
     // note: clicks outside the trackball radius have a different rotation behaviour
     // note: values given in window coordinates with raster origin at top left
     void StartTrackball(int mouseX, int mouseY, int trackballOriginX, int trackballOriginY,
-                        int trackballRadius, const pgd::Vector &up, const pgd::Vector &out);
+                        int trackballRadius, const pgd::Vector3 &up, const pgd::Vector3 &out);
 
     // calculated rotation based on current mouse position
     void RollTrackballToClick(int mouseX, int mouseY, pgd::Quaternion *rotation);
@@ -44,9 +44,9 @@ private:
     int mTrackballOriginY;
     bool mOutsideRadius;
 
-    pgd::Vector mLeft;
-    pgd::Vector mUp;
-    pgd::Vector mOut;
+    pgd::Vector3 mLeft;
+    pgd::Vector3 mUp;
+    pgd::Vector3 mOut;
 };
 
 #endif // TRACKBALL_H

@@ -171,8 +171,7 @@ ObjectiveMainUDP.cpp\
 ParseXML.cpp\
 PCA.cpp\
 PIDErrorInController.cpp\
-PIDMuscleLength.cpp\
-PIDTargetMatch.cpp\
+PIDMuscleLengthController.cpp\
 PlaneGeom.cpp\
 RayGeom.cpp\
 Reporter.cpp\
@@ -185,6 +184,7 @@ Strap.cpp\
 SwingClearanceAbortReporter.cpp\
 TCP.cpp\
 TegotaeDriver.cpp\
+ThreeHingeJointDriver.cpp\
 TorqueReporter.cpp\
 TrimeshGeom.cpp\
 TwoCylinderWrapStrap.cpp\
@@ -473,7 +473,7 @@ superclean:
 	rm -rf obj bin
 	rm -rf distribution
 	rm -rf build*
-	rm -rf GaitSymQt/GaitSymQt.pro.user.*
+	rm -rf GaitSymQt/GaitSym*.pro.user*
 	find . -name '.DS_Store' -exec rm -f {} \;
 	find . -name '.gdb_history' -exec rm -f {} \;
 	find . -name '.#*' -exec rm -f {} \;
@@ -487,7 +487,7 @@ superclean:
 distribution: distribution_dirs gaitsym_distribution gaitsym_distribution_extras
 
 distribution_dirs:
-	rm -rf distribution
+	rm -rf distribution distribution.zip
 	-mkdir distribution
 	-mkdir distribution/src
 
@@ -514,5 +514,6 @@ gaitsym_distribution_extras:
 	cp makefile distribution/
 	find distribution -depth -type d -name CVS -print -exec rm -rf {} \;
 	rm -rf distribution/GaitSymQt/GaitSym*.pro.*
+	zip -r distribution.zip distribution
 
 

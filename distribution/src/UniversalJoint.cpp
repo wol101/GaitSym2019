@@ -206,9 +206,9 @@ std::string *UniversalJoint::createFromAttributes()
     if (Joint::createFromAttributes()) return lastErrorPtr();
     std::string buf;
 
-    pgd::Vector position = body1Marker()->GetWorldPosition();
+    pgd::Vector3 position = body1Marker()->GetWorldPosition();
     this->SetUniversalAnchor(position.x, position.y, position.z);
-    pgd::Vector x, y, z;
+    pgd::Vector3 x, y, z;
     body1Marker()->GetWorldBasis(&x, &y, &z);
     this->SetUniversalAxis1(x.x, x.y, x.z);
     this->SetUniversalAxis2(y.x, y.y, y.z);
@@ -273,12 +273,12 @@ void UniversalJoint::appendToAttributes()
     setAttribute("StopBounce2"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamBounce2), &buf));
 }
 
-std::string UniversalJoint::dump()
+std::string UniversalJoint::dumpToString()
 {
     std::stringstream ss;
     ss.precision(17);
     ss.setf(std::ios::scientific);
-    if (getFirstDump())
+    if (firstDump())
     {
         setFirstDump(false);
         ss << "Time\tXP\tYP\tZP\tXA1\tYA1\tZA1\tAngle1\tAngleRate1\tXA2\tYA2\tZA2\tAngle2\tAngleRate2\tFX1\tFY1\tFZ1\tTX1\tTY1\tTZ1\tFX2\tFY2\tFZ2\tTX2\tTY2\tTZ2\n";

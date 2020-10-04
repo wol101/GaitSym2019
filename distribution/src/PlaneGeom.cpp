@@ -66,9 +66,9 @@ PlaneGeom::PlaneGeom(dSpaceID space, double a, double b, double c, double d)
         m_colourMap[i][3] = int(0.5 + mappedColour.alpha * 255.0); // alpha
     }
 
-    m_planeOrigin = pgd::Vector(a * d, b * d, c * d); // this is in world coordinates
+    m_planeOrigin = pgd::Vector3(a * d, b * d, c * d); // this is in world coordinates
     // now find a rotation that aligns the world Z axis with the plane normal
-    m_planeOrientation = FindRotation(pgd::Vector(0, 0, 1), pgd::Vector(a, b, c));
+    m_planeOrientation = FindRotation(pgd::Vector3(0, 0, 1), pgd::Vector3(a, b, c));
     m_checkerboardLow = 0;
     m_checkerboardHigh = 0;
     m_trackDrawThreshold = 0;
@@ -106,8 +106,8 @@ std::string *PlaneGeom::createFromAttributes()
     // the normal is (a,b,c)
     // d is the dot product of the normal at the point on the plane
 
-    pgd::Vector normal = geomMarker()->GetAxis(Marker::Axis::Z);
-    pgd::Vector point = geomMarker()->GetPosition();
+    pgd::Vector3 normal = geomMarker()->GetAxis(Marker::Axis::Z);
+    pgd::Vector3 point = geomMarker()->GetPosition();
     double a = normal.x;
     double b = normal.y;
     double c = normal.z;
@@ -184,10 +184,10 @@ void PlaneGeom::SetTrackPatch(double trackPatchStartX, double trackPatchStartY, 
 void PlaneGeom::AddImpulse(double x, double y, double z, double fx, double fy, double fz, double time)
 {
     if (m_trackDepth == 0) return;
-    pgd::Vector offsetVec =  pgd::Vector(x, y, z) - m_planeOrigin;
-    pgd::Vector posOnPlane = QVRotate(m_planeOrientation, offsetVec);
-    pgd::Vector force = QVRotate(m_planeOrientation, pgd::Vector(fx, fy, fz));
-    pgd::Vector impulse = force * time;
+    pgd::Vector3 offsetVec =  pgd::Vector3(x, y, z) - m_planeOrigin;
+    pgd::Vector3 posOnPlane = QVRotate(m_planeOrientation, offsetVec);
+    pgd::Vector3 force = QVRotate(m_planeOrientation, pgd::Vector3(fx, fy, fz));
+    pgd::Vector3 impulse = force * time;
     int ix = (int)((posOnPlane.x - m_trackPatchStartX) / m_trackPatchResolutionX);
     int iy = (int)((posOnPlane.y - m_trackPatchStartY) / m_trackPatchResolutionY);
     if (ix >= 0 && x < m_nx && iy >= 0 && y < m_ny)
