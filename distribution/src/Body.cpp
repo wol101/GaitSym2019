@@ -809,9 +809,9 @@ std::string *Body::createFromAttributes()
 
     dMass mass;
     // note: inertial matrix is as follows
-    // [ I11 I12 I13 ]
-    // [ I12 I22 I23 ]
-    // [ I13 I23 I33 ]
+    // [ I11 I12 I13 ]   [ xx xy xz ]
+    // [ I12 I22 I23 ] = [ yx yy yz ]
+    // [ I13 I23 I33 ]   [ zx zy zz ]
 //    double I11, I22, I33, I12, I13, I23;
 //    I11 = doubleList[0];
 //    I22 = doubleList[1];
@@ -880,13 +880,17 @@ void Body::appendToAttributes()
     dMass mass;
     dBodyGetMass (m_bodyID, &mass);
     setAttribute("Mass"s, *GSUtil::ToString(mass.mass, &buf));
+    // note: inertial matrix is as follows
+    // [ I11 I12 I13 ]   [ xx xy xz ]
+    // [ I12 I22 I23 ] = [ yx yy yz ]
+    // [ I13 I23 I33 ]   [ zx zy zz ]
     double I11 = mass.I[(0)*4+(0)];
     double I22 = mass.I[(1)*4+(1)];
     double I33 = mass.I[(2)*4+(2)];
     double I12 = mass.I[(0)*4+(1)];
     double I13 = mass.I[(0)*4+(2)];
     double I23 = mass.I[(1)*4+(2)];
-    double MOI[6] = {I11, I22, I33, I12, I13, I23};
+    double MOI[6] = {I11, I22, I33, I12, I13, I23}; // xx, yy, zz, xy, xz, yz
     setAttribute("MOI"s, *GSUtil::ToString(MOI, 6, &buf));
     if (m_LinearDamping >= 0) setAttribute("LinearDamping"s, *GSUtil::ToString(dBodyGetLinearDamping(m_bodyID), &buf));
     if (m_AngularDamping >= 0) setAttribute("AngularDamping"s, *GSUtil::ToString(dBodyGetAngularDamping(m_bodyID), &buf));
@@ -894,10 +898,18 @@ void Body::appendToAttributes()
     if (m_AngularDampingThreshold >= 0) setAttribute("AngularDampingThreshold"s, *GSUtil::ToString(dBodyGetAngularDampingThreshold(m_bodyID), &buf));
     if (m_MaxAngularSpeed >= 0) setAttribute("MaxAngularSpeed"s, *GSUtil::ToString(dBodyGetMaxAngularSpeed(m_bodyID), &buf));
 
-    const double *q = dBodyGetQuaternion(m_bodyID);
-    setAttribute("Quaternion"s, *GSUtil::ToString(q, 4, &buf)); // note quaternion is (qs,qx,qy,qz)
-    const double *p = dBodyGetPosition(m_bodyID);
-    setAttribute("Position"s, *GSUtil::ToString(p, 3, &buf));
+    if (m_constructionMode)
+    {
+        setAttribute("Quaternion"s, *GSUtil::ToString(m_initialQuaternion, 4, &buf)); // note quaternion is (qs,qx,qy,qz)
+        setAttribute("Position"s, *GSUtil::ToString(m_initialPosition, 3, &buf)); // note quaternion is (qs,qx,qy,qz)
+    }
+    else
+    {
+        const double *q = dBodyGetQuaternion(m_bodyID);
+        setAttribute("Quaternion"s, *GSUtil::ToString(q, 4, &buf)); // note quaternion is (qs,qx,qy,qz)
+        const double *p = dBodyGetPosition(m_bodyID);
+        setAttribute("Position"s, *GSUtil::ToString(p, 3, &buf));
+    }
     const double *v = dBodyGetLinearVel(m_bodyID);
     setAttribute("LinearVelocity"s, *GSUtil::ToString(v, 3, &buf));
     const double *a = dBodyGetAngularVel(m_bodyID);
@@ -925,12 +937,14 @@ void Body::LateInitialisation()
 
 void Body::EnterConstructionMode()
 {
+    m_constructionMode = true;
     this->SetPosition(m_constructionPosition[0], m_constructionPosition[1], m_constructionPosition[2]);
     this->SetQuaternion(m_constructionQuaternion[0], m_constructionQuaternion[1], m_constructionQuaternion[2], m_constructionQuaternion[3]);
 }
 
 void Body::EnterRunMode()
 {
+    m_constructionMode = false;
     this->SetPosition(m_initialPosition[0], m_initialPosition[1], m_initialPosition[2]);
     this->SetQuaternion(m_initialQuaternion[0], m_initialQuaternion[1], m_initialQuaternion[2], m_initialQuaternion[3]);
 }

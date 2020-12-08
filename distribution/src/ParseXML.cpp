@@ -76,7 +76,7 @@ std::string *ParseXML::LoadModel(const char *buffer, size_t length, const std::s
     cur = cur->first_node();
     while (cur)
     {
-        lastError().clear();
+        lastErrorPtr()->clear();
         auto xmlElement = std::make_unique<XMLElement>();
         xmlElement->tag.assign(cur->name(), cur->name_size());
         for (rapidxml::xml_attribute<char> *attr = cur->first_attribute(); attr; attr = attr->next_attribute())
@@ -130,7 +130,7 @@ void ParseXML::AddElement(const std::string &tag, const std::map<std::string, st
 // returns a pointer to the attribute
 rapidxml::xml_attribute<char> *ParseXML::CreateXMLAttribute(rapidxml::xml_node<char> *cur, const std::string &name, const std::string &newValue, bool sorted)
 {
-    lastError().clear();
+    lastErrorPtr()->clear();
     rapidxml::xml_attribute<char> *ptr = nullptr;
     if (sorted)
     {
@@ -226,7 +226,7 @@ rapidxml::xml_attribute<char> *ParseXML::FindXMLAttribute(rapidxml::xml_node<cha
     return ptr;
 
 found:
-    lastError().clear();
+    lastErrorPtr()->clear();
     return ptr;
 }
 
@@ -248,7 +248,7 @@ rapidxml::xml_attribute<char> *ParseXML::GetXMLAttribute(rapidxml::xml_node<char
     return ptr;
 }
 
-std::vector<std::unique_ptr<ParseXML::XMLElement> > *ParseXML::elementList()
+std::vector<std::unique_ptr<ParseXML::XMLElement>> *ParseXML::elementList()
 {
     return &m_elementList;
 }

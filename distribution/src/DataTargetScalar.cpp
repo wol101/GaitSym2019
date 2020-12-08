@@ -295,12 +295,15 @@ double DataTargetScalar::calculateError(size_t index)
     }
     else if ((tegotaeDriver = dynamic_cast<TegotaeDriver *>(GetTarget())) != nullptr)
     {
+        pgd::Vector3 errorVector;
         switch (m_DataType)
         {
         case DriverError:
-            pgd::Vector3 errorVector = tegotaeDriver->localErrorVector();
+            errorVector = tegotaeDriver->localErrorVector();
             m_errorScore = errorVector.Magnitude() - m_ValueList[size_t(index)];
             break;
+        default:
+            std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
         }
     }
     else if (GetTarget() == nullptr)
@@ -346,20 +349,19 @@ double DataTargetScalar::calculateError(double time)
     size_t index, indexNext;
     auto lowerBound = std::lower_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
     auto upperBound = std::upper_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
-    // time < lowerbound
-    if (lowerBound == targetTimeList()->end())
+    if (lowerBound == targetTimeList()->begin()) // time <= lowest value in the list
     {
         index = 0;
         indexNext = index;
     }
-    else if (upperBound == targetTimeList()->end())
+    else if (upperBound == targetTimeList()->end()) // time > highest value in the list
     {
         index = targetTimeList()->size() - 1;
         indexNext = index;
     }
     else
     {
-        index = std::distance(targetTimeList()->begin(), lowerBound);
+        index = std::distance(targetTimeList()->begin(), lowerBound) - 1; // subtracting 1 because lower bound gives an index 1 higher than expected (IMO)
         indexNext = std::min(index + 1, targetTimeList()->size() - 1);
     }
 
@@ -566,11 +568,15 @@ double DataTargetScalar::calculateError(double time)
     }
     else if ((tegotaeDriver = dynamic_cast<TegotaeDriver *>(GetTarget())) != nullptr)
     {
+        pgd::Vector3 errorVector;
         switch (m_DataType)
         {
         case DriverError:
-            pgd::Vector3 errorVector = tegotaeDriver->localErrorVector();
+            errorVector = tegotaeDriver->localErrorVector();
             m_errorScore = errorVector.Magnitude() - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time);
+            break;
+        default:
+            std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
         }
     }
     else if (GetTarget() == nullptr)
@@ -770,12 +776,14 @@ std::string DataTargetScalar::dumpToString()
     }
     else if ((tegotaeDriver = dynamic_cast<TegotaeDriver *>(GetTarget())) != nullptr)
     {
+        pgd::Vector3 errorVector;
         switch (m_DataType)
         {
         case DriverError:
-            pgd::Vector3 errorVector = tegotaeDriver->localErrorVector();
+            errorVector = tegotaeDriver->localErrorVector();
             ref = errorVector.Magnitude();
-
+        default:
+            break;
         }
     }
     else if (GetTarget() == nullptr)
@@ -853,7 +861,7 @@ std::string *DataTargetScalar::createFromAttributes()
         setLastError("DataTarget ID=\""s + name() +"\" No values found in TargetValues"s);
         return lastErrorPtr();
     }
-    if (int(targetValuesTokens.size()) != targetTimeList()->size())
+    if (targetValuesTokens.size() != targetTimeList()->size())
     {
         setLastError("DataTargetScalar ID=\""s + name() +"\" Number of values in TargetValues does not match TargetTimes"s);
         return lastErrorPtr();
@@ -862,6 +870,7 @@ std::string *DataTargetScalar::createFromAttributes()
     m_ValueList.reserve(targetValuesTokens.size());
     for (auto token : targetValuesTokens) m_ValueList.push_back(GSUtil::Double(token));
 
+    if (m_Target) setUpstreamObjects({m_Target});
     return nullptr;
 }
 

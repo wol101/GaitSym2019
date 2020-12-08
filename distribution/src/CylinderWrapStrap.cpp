@@ -564,18 +564,6 @@ int CylinderWrapStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis,
     return 0;
 }
 
-std::set<Marker *> *CylinderWrapStrap::updateDependentMarkers()
-{
-    Strap::updateDependentMarkers();
-    dependentMarkers()->insert(m_originMarker);
-    dependentMarkers()->insert(m_insertionMarker);
-    dependentMarkers()->insert(m_cylinderMarker);
-    m_originMarker->addDependent(this);
-    m_insertionMarker->addDependent(this);
-    m_cylinderMarker->addDependent(this);
-    return dependentMarkers();
-}
-
 std::string *CylinderWrapStrap::createFromAttributes()
 {
     if (Strap::createFromAttributes()) return lastErrorPtr();
@@ -609,6 +597,7 @@ std::string *CylinderWrapStrap::createFromAttributes()
     if (findAttribute("CylinderRadius"s, &buf) == nullptr) return lastErrorPtr();
     this->SetCylinderRadius(GSUtil::Double(buf));
 
+    setUpstreamObjects({m_originMarker, m_insertionMarker, m_cylinderMarker});
     return nullptr;
 }
 

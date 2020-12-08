@@ -51,6 +51,7 @@ private slots:
     void attributeMachineSave();
     void attributeMachineLoad();
     void attributeMachineApply();
+    void modificationChanged(bool changed);
 
 private:
     bool replace(const QString &findString, const QString &replaceString);

@@ -203,6 +203,37 @@ std::string NamedObject::dumpHelper(std::initializer_list<double> values)
     return ss.str();
 }
 
+std::vector<NamedObject *> *NamedObject::upstreamObjects()
+{
+    return &m_upstreamObjects;
+}
+
+void NamedObject::setUpstreamObjects(const std::vector<NamedObject *> &upstreamObjects)
+{
+    m_upstreamObjects = upstreamObjects;
+}
+
+void NamedObject::allUpstreamObjects(std::vector<NamedObject *> *upstreamObjects)
+{
+    if (m_upstreamObjects.size() == 0) return;
+    for (auto &&it : m_upstreamObjects)
+    {
+        it->allUpstreamObjects(upstreamObjects);
+        upstreamObjects->push_back(it);
+    }
+}
+
+bool NamedObject::isUpstreamObject(NamedObject *findObject)
+{
+    if (m_upstreamObjects.size() == 0) return false;
+    for (auto &&it : m_upstreamObjects)
+    {
+        if (it == findObject) return true;
+        if (it->isUpstreamObject(findObject)) return true;
+    }
+    return false;
+}
+
 void NamedObject::clearAttributeMap()
 {
     m_attributeMap.clear();

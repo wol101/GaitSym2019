@@ -36,6 +36,7 @@ DialogAssembly::DialogAssembly(QWidget *parent) :
     ui(new Ui::DialogAssembly)
 {
     ui->setupUi(this);
+    setWindowTitle(tr("Assembly Builder"));
 #ifdef Q_OS_MACOS
     setWindowFlags(windowFlags() & (~Qt::Dialog) | Qt::Window); // allows the window to be resized on macs
 #endif
@@ -102,6 +103,8 @@ void DialogAssembly::accept() // this catches OK and return/enter
         bodyMarker->setName("World"s + body->name()+ "Joint_Body2"s + m_assemblyMarkerSuffix);
         bodyMarker->setGroup("assembly"s);
         bodyMarker->setSimulation(m_simulation);
+        bodyMarker->saveToAttributes();
+        bodyMarker->createFromAttributes();
         (*m_simulation->GetMarkerList())[bodyMarkerPtr->name()] = std::move(bodyMarker);
         emit markerCreated(QString::fromStdString(bodyMarkerPtr->name()));
 
@@ -124,6 +127,8 @@ void DialogAssembly::accept() // this catches OK and return/enter
         lMotorJoint->SetTargetPositionGain(0, ui->lineEditPositionGain->value());
         lMotorJoint->SetTargetPositionGain(1, ui->lineEditPositionGain->value());
         lMotorJoint->SetTargetPositionGain(2, ui->lineEditPositionGain->value());
+        lMotorJoint->saveToAttributes();
+        lMotorJoint->createFromAttributes();
         (*m_simulation->GetJointList())[lMotorJoint->name()] = std::move(lMotorJoint);
         emit jointCreated(QString::fromStdString(lMotorJointPtr->name()));
 
@@ -142,6 +147,8 @@ void DialogAssembly::accept() // this catches OK and return/enter
         aMotorJoint->SetMaxTorque(ui->lineEditMaxTorque->value());
         aMotorJoint->SetTargetAngleGain(ui->lineEditAngleGain->value());
         aMotorJoint->setReverseBodyOrderInCalculations(true);
+        aMotorJoint->saveToAttributes();
+        aMotorJoint->createFromAttributes();
         (*m_simulation->GetJointList())[aMotorJoint->name()] = std::move(aMotorJoint);
         emit jointCreated(QString::fromStdString(aMotorJointPtr->name()));
     }
@@ -165,6 +172,8 @@ void DialogAssembly::accept() // this catches OK and return/enter
             joint->SetTargetAngles(pgd::DegreesToRadians(lineEdit->value()));
             joint->SetMaxTorque(ui->lineEditMaxTorque->value());
             joint->SetTargetAngleGain(ui->lineEditAngleGain->value());
+            joint->saveToAttributes();
+            joint->createFromAttributes();
             (*jointsMap)[joint->name()] = std::move(joint);
             emit jointCreated(QString::fromStdString(jointPtr->name()));
         }
@@ -188,6 +197,8 @@ void DialogAssembly::accept() // this catches OK and return/enter
                                    pgd::DegreesToRadians(lineEdit2->value()));
             joint->SetMaxTorque(ui->lineEditMaxTorque->value());
             joint->SetTargetAngleGain(ui->lineEditAngleGain->value());
+            joint->saveToAttributes();
+            joint->createFromAttributes();
             (*jointsMap)[joint->name()] = std::move(joint);
             emit jointCreated(QString::fromStdString(jointPtr->name()));
         }
@@ -214,6 +225,8 @@ void DialogAssembly::accept() // this catches OK and return/enter
                                    pgd::DegreesToRadians(lineEdit3->value()));
             joint->SetMaxTorque(ui->lineEditMaxTorque->value());
             joint->SetTargetAngleGain(ui->lineEditAngleGain->value());
+            joint->saveToAttributes();
+            joint->createFromAttributes();
             (*jointsMap)[ joint->name()] = std::move(joint);
             emit jointCreated(QString::fromStdString(jointPtr->name()));
         }

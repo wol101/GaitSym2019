@@ -38,8 +38,7 @@ macx {
         ../pystring \
         ../rapidxml-1.13 \
         ../src \
-        ../tinyply \
-        ../GaitSymGaul ../GaitSymGaul/gaul/src ../GaitSymGaul/gaul/util
+        ../tinyply
     LIBS += \
         -framework QTKit \
         -framework Cocoa \
@@ -73,8 +72,7 @@ win32 {
         ../pystring \
         ../rapidxml-1.13 \
         ../src \
-        ../tinyply \
-        ../GaitSymGaul ../GaitSymGaul/gaul/src ../GaitSymGaul/gaul/util
+        ../tinyply
     LIBS += -lGdi32 -lUser32 -lAdvapi32 -lWs2_32 -lWinmm
     HEADERS +=
         win32-msvc {
@@ -107,8 +105,7 @@ unix:!macx {
         ../pystring \
         ../rapidxml-1.13 \
         ../src \
-        ../tinyply \
-        ../GaitSymGaul ../GaitSymGaul/gaul/src ../GaitSymGaul/gaul/util
+        ../tinyply
     LIBS += -lX11 -lXxf86vm
     HEADERS +=
     QMAKE_CXXFLAGS += -std=c++14
@@ -124,50 +121,6 @@ CONFIG(release, debug|release) {
 }
 
 SOURCES += \
-    ../GaitSymGaul/callbacks.cpp \
-    ../GaitSymGaul/do_genetic_algorithm.cpp \
-    ../GaitSymGaul/do_next_ascent_hillclimbing.cpp \
-    ../GaitSymGaul/do_random_ascent_hillclimbing.cpp \
-    ../GaitSymGaul/do_simplex_search.cpp \
-    ../GaitSymGaul/do_simulated_annealling.cpp \
-    ../GaitSymGaul/do_tabu_search.cpp \
-    ../GaitSymGaul/gaul/src/ga_bitstring.cpp \
-    ../GaitSymGaul/gaul/src/ga_chromo.cpp \
-    ../GaitSymGaul/gaul/src/ga_climbing.cpp \
-    ../GaitSymGaul/gaul/src/ga_compare.cpp \
-    ../GaitSymGaul/gaul/src/ga_core.cpp \
-    ../GaitSymGaul/gaul/src/ga_crossover.cpp \
-    ../GaitSymGaul/gaul/src/ga_de.cpp \
-    ../GaitSymGaul/gaul/src/ga_deterministiccrowding.cpp \
-    ../GaitSymGaul/gaul/src/ga_gradient.cpp \
-    ../GaitSymGaul/gaul/src/ga_intrinsics.cpp \
-    ../GaitSymGaul/gaul/src/ga_io.cpp \
-    ../GaitSymGaul/gaul/src/ga_mutate.cpp \
-    ../GaitSymGaul/gaul/src/ga_optim.cpp \
-    ../GaitSymGaul/gaul/src/ga_qsort.cpp \
-    ../GaitSymGaul/gaul/src/ga_randomsearch.cpp \
-    ../GaitSymGaul/gaul/src/ga_rank.cpp \
-    ../GaitSymGaul/gaul/src/ga_replace.cpp \
-    ../GaitSymGaul/gaul/src/ga_sa.cpp \
-    ../GaitSymGaul/gaul/src/ga_seed.cpp \
-    ../GaitSymGaul/gaul/src/ga_select.cpp \
-    ../GaitSymGaul/gaul/src/ga_similarity.cpp \
-    ../GaitSymGaul/gaul/src/ga_simplex.cpp \
-    ../GaitSymGaul/gaul/src/ga_stats.cpp \
-    ../GaitSymGaul/gaul/src/ga_systematicsearch.cpp \
-    ../GaitSymGaul/gaul/src/ga_tabu.cpp \
-    ../GaitSymGaul/gaul/src/ga_utility.cpp \
-    ../GaitSymGaul/gaul/util/avltree.cpp \
-    ../GaitSymGaul/gaul/util/compatibility.cpp \
-    ../GaitSymGaul/gaul/util/linkedlist.cpp \
-    ../GaitSymGaul/gaul/util/log_util.cpp \
-    ../GaitSymGaul/gaul/util/memory_chunks.cpp \
-    ../GaitSymGaul/gaul/util/memory_util.cpp \
-    ../GaitSymGaul/gaul/util/nn_util.cpp \
-    ../GaitSymGaul/gaul/util/random_util.cpp \
-    ../GaitSymGaul/gaul/util/table_util.cpp \
-    ../GaitSymGaul/gaul/util/timer_util.cpp \
-    ../GaitSymGaul/utilities.cpp \
     ../ann_1.1.2/src/ANN.cpp \
     ../ann_1.1.2/src/bd_fix_rad_search.cpp \
     ../ann_1.1.2/src/bd_pr_search.cpp \
@@ -388,44 +341,6 @@ SOURCES += \
     ../src/XMLConverter.cpp
 
 HEADERS += \
-    ../GaitSymGaul/callbacks.h \
-    ../GaitSymGaul/do_genetic_algorithm.h \
-    ../GaitSymGaul/do_next_ascent_hillclimbing.h \
-    ../GaitSymGaul/do_random_ascent_hillclimbing.h \
-    ../GaitSymGaul/do_simplex_search.h \
-    ../GaitSymGaul/do_simulated_annealling.h \
-    ../GaitSymGaul/do_tabu_search.h \
-    ../GaitSymGaul/gaul/src/gaul.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_bitstring.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_chromo.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_climbing.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_core.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_de.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_deterministiccrowding.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_gradient.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_intrinsics.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_optim.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_qsort.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_randomsearch.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_sa.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_similarity.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_simplex.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_systematicsearch.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_tabu.h \
-    ../GaitSymGaul/gaul/util/gaul/avltree.h \
-    ../GaitSymGaul/gaul/util/gaul/compatibility.h \
-    ../GaitSymGaul/gaul/util/gaul/gaul_config.h \
-    ../GaitSymGaul/gaul/util/gaul/gaul_config_win.h \
-    ../GaitSymGaul/gaul/util/gaul/gaul_util.h \
-    ../GaitSymGaul/gaul/util/gaul/linkedlist.h \
-    ../GaitSymGaul/gaul/util/gaul/log_util.h \
-    ../GaitSymGaul/gaul/util/gaul/memory_chunks.h \
-    ../GaitSymGaul/gaul/util/gaul/memory_util.h \
-    ../GaitSymGaul/gaul/util/gaul/nn_util.h \
-    ../GaitSymGaul/gaul/util/gaul/random_util.h \
-    ../GaitSymGaul/gaul/util/gaul/table_util.h \
-    ../GaitSymGaul/gaul/util/gaul/timer_util.h \
-    ../GaitSymGaul/utilities.h \
     ../ann_1.1.2/include/ANN/ANN.h \
     ../ann_1.1.2/include/ANN/ANNperf.h \
     ../ann_1.1.2/include/ANN/ANNx.h \
@@ -682,7 +597,7 @@ HEADERS += \
     ../src/UDP.h \
     ../src/UniversalJoint.h \
     ../src/Warehouse.h \
-    ../src/XMLConverter.h \
+    ../src/XMLConverter.h
 
 
 DISTFILES += \

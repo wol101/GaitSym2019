@@ -68,6 +68,7 @@ public slots:
     int removeDriver(const QString &name);
     int removeDataTarget(const QString &name);
     int removeController(const QString &name);
+    bool removeName(const QString &name);
 
 signals:
 

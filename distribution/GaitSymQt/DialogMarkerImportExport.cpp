@@ -454,6 +454,8 @@ int DialogMarkerImportExport::ImportMarkers()
             marker->SetWorldQuaternion(qWorld.n, qWorld.x, qWorld.y, qWorld.z);
         }
         ui->plainTextEditLog->appendPlainText(QString("Marker '%1' attached to '%2' created.\n").arg(QString::fromStdString(tokens[0])).arg(QString::fromStdString(tokens[1])));
+        marker->saveToAttributes();
+        marker->createFromAttributes();
         m_markerList->push_back(std::move(marker));
     }
     if (errorCount == 0)

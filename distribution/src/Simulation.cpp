@@ -135,33 +135,53 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
     std::string *ptr = m_parseXML.LoadModel(buffer, length, "GAITSYM2019"s);
     if (ptr) return ptr;
 
-    auto elementList = m_parseXML.elementList();
-    for (auto it = elementList->begin(); it != elementList->end(); it++)
+    // this logic allows forward references at the expense of slightly less obvious error messages
+    std::list<ParseXML::XMLElement *> unprocessedList;
+    for (auto &&it : *m_parseXML.elementList()) unprocessedList.push_back(it.get());
+    size_t lastSize = 0;
+    size_t cycles = 0;
+    while (unprocessedList.size() > 0 && unprocessedList.size() != lastSize)
     {
-        lastError().clear();
-        if (it->get()->tag == "GLOBAL"s) ParseGlobal(it->get());
-        else if (it->get()->tag == "BODY"s) ParseBody(it->get());
-        else if (it->get()->tag == "JOINT"s) ParseJoint(it->get());
-        else if (it->get()->tag == "GEOM"s) ParseGeom(it->get());
-        else if (it->get()->tag == "STRAP"s) ParseStrap(it->get());
-        else if (it->get()->tag == "MUSCLE"s) ParseMuscle(it->get());
-        else if (it->get()->tag == "DRIVER"s) ParseDriver(it->get());
-        else if (it->get()->tag == "DATATARGET"s) ParseDataTarget(it->get());
-        else if (it->get()->tag == "MARKER"s) ParseMarker(it->get());
-        else if (it->get()->tag == "REPORTER"s) ParseReporter(it->get());
-        else if (it->get()->tag == "CONTROLLER"s) ParseController(it->get());
-        else if (it->get()->tag == "WAREHOUSE"s) ParseWarehouse(it->get());
-        else if (it->get()->tag == "FLUIDSAC"s) ParseFluidSac(it->get());
-        if (lastError().size()) return lastErrorPtr();
+        cycles++;
+        lastSize = unprocessedList.size();
+        for (auto it = unprocessedList.begin(); it != unprocessedList.end();)
+        {
+            lastErrorPtr()->clear();
+            if ((*it)->tag == "GLOBAL"s) ParseGlobal(*it);
+            else if ((*it)->tag == "BODY"s) ParseBody(*it);
+            else if ((*it)->tag == "JOINT"s) ParseJoint(*it);
+            else if ((*it)->tag == "GEOM"s) ParseGeom(*it);
+            else if ((*it)->tag == "STRAP"s) ParseStrap(*it);
+            else if ((*it)->tag == "MUSCLE"s) ParseMuscle(*it);
+            else if ((*it)->tag == "DRIVER"s) ParseDriver(*it);
+            else if ((*it)->tag == "DATATARGET"s) ParseDataTarget(*it);
+            else if ((*it)->tag == "MARKER"s) ParseMarker(*it);
+            else if ((*it)->tag == "REPORTER"s) ParseReporter(*it);
+            else if ((*it)->tag == "CONTROLLER"s) ParseController(*it);
+            else if ((*it)->tag == "WAREHOUSE"s) ParseWarehouse(*it);
+            else if ((*it)->tag == "FLUIDSAC"s) ParseFluidSac(*it);
+            if (lastErrorPtr()->size())
+            {
+                it++;
+            }
+            else
+            {
+                it = unprocessedList.erase(it);
+            }
+        }
     }
+    if (lastErrorPtr()->size()) return lastErrorPtr();
+    if (cycles > 1)
+        std::cerr << "Warning: file took " << cycles << " to parse. Consider reordering for speed.\n";
 
-    // joints are set with the bodies in construction poses
-    for (auto &&it :  m_JointList) it.second->LateInitialisation();
+    // joints are created with the bodies in construction poses
     // then the bodies are moved to their starting poses
     for (auto &&it : m_BodyList) it.second->LateInitialisation();
     // and we recalculate the dynamic items with the new muscle positions
     for (auto &&it :  m_MuscleList) it.second->LateInitialisation();
     for (auto &&it : m_FluidSacList) it.second->LateInitialisation();
+    // and some joints require things to be done after the bodies are moved to their start positions
+    for (auto &&it :  m_JointList) it.second->LateInitialisation();
 
     // for the time being just set the current warehouse to the first one in the list
     if (m_global->CurrentWarehouseFile().length() == 0 && m_WarehouseList.size() > 0) m_global->setCurrentWarehouseFile(m_WarehouseList.begin()->first);
@@ -324,12 +344,6 @@ void Simulation::UpdateSimulation()
         break;
     }
 
-    // update the time counter
-    m_SimulationTime += m_global->StepSize();
-
-    // update the step counter
-    m_StepCount++;
-
     // calculate the energies
     for (auto &&iter1 : m_MuscleList)
     {
@@ -352,6 +366,13 @@ void Simulation::UpdateSimulation()
     // all reporting is done after a simulation step
 
     DumpObjects();
+
+    // update the time counter
+    m_SimulationTime += m_global->StepSize();
+
+    // update the step counter
+    m_StepCount++;
+
 
 #ifdef OUTPUTS_AFTER_SIMULATION_STEP
 //    if (m_OutputKinematicsFlag && m_StepCount % gDisplaySkip == 0) OutputKinematics();
@@ -595,8 +616,7 @@ std::string *Simulation::ParseBody(const ParseXML::XMLElement *node)
         setLastError(*errorMessage);
         return lastErrorPtr();
     }
-    std::string name = body->name();
-    m_BodyList[name] = std::move(body);
+    m_BodyList[body->name()] = std::move(body);
     return nullptr;
 }
 
@@ -611,8 +631,7 @@ std::string *Simulation::ParseMarker(const ParseXML::XMLElement *node)
         setLastError(*errorMessage);
         return lastErrorPtr();
     }
-    std::string name = marker->name();
-    m_MarkerList[name] = std::move(marker);
+    m_MarkerList[marker->name()] = std::move(marker);
     return nullptr;
 }
 
@@ -681,8 +700,7 @@ std::string *Simulation::ParseJoint(const ParseXML::XMLElement *node)
         setLastError(*errorMessage);
         return lastErrorPtr();
     }
-    std::string name = joint->name();
-    m_JointList[name] = std::move(joint);
+    m_JointList[joint->name()] = std::move(joint);
     return nullptr;
 }
 
@@ -735,8 +753,7 @@ std::string *Simulation::ParseGeom(const ParseXML::XMLElement *node)
         return lastErrorPtr();
     }
 
-    std::string name = geom->name();
-    m_GeomList[name] = std::move(geom);
+    m_GeomList[geom->name()] = std::move(geom);
     return nullptr;
 }
 
@@ -778,8 +795,7 @@ std::string *Simulation::ParseMuscle(const ParseXML::XMLElement *node)
         return lastErrorPtr();
     }
 
-    std::string name = muscle->name();
-    m_MuscleList[name] = std::move(muscle);
+    m_MuscleList[muscle->name()] = std::move(muscle);
     return nullptr;
 }
 
@@ -828,8 +844,7 @@ std::string *Simulation::ParseStrap(const ParseXML::XMLElement *node)
         return lastErrorPtr();
     }
 
-    std::string name = strap->name();
-    m_StrapList[name] = std::move(strap);
+    m_StrapList[strap->name()] = std::move(strap);
     return nullptr;
 }
 
@@ -864,8 +879,7 @@ std::string *Simulation::ParseFluidSac(const ParseXML::XMLElement *node)
         return lastErrorPtr();
     }
 
-    std::string name = fluidSac->name();
-    m_FluidSacList[name] = std::move(fluidSac);
+    m_FluidSacList[fluidSac->name()] = std::move(fluidSac);
     return nullptr;
 }
 
@@ -913,8 +927,7 @@ std::string *Simulation::ParseDriver(const ParseXML::XMLElement *node)
         return lastErrorPtr();
     }
 
-    std::string name = driver->name();
-    m_DriverList[name] = std::move(driver);
+    m_DriverList[driver->name()] = std::move(driver);
     return nullptr;
 }
 
@@ -951,8 +964,7 @@ std::string *Simulation::ParseDataTarget(const ParseXML::XMLElement *node)
         return lastErrorPtr();
     }
 
-    std::string name = dataTarget->name();
-    m_DataTargetList[name] = std::move(dataTarget);
+    m_DataTargetList[dataTarget->name()] = std::move(dataTarget);
     return nullptr;
 
 }
@@ -1077,8 +1089,7 @@ std::string *Simulation::ParseController(const ParseXML::XMLElement *node)
         return lastErrorPtr();
     }
 
-    std::string name = controller->name();
-    m_ControllerList[name] = std::move(controller);
+    m_ControllerList[controller->name()] = std::move(controller);
     return nullptr;
 }
 
@@ -1590,6 +1601,50 @@ std::set<std::string> Simulation::GetNameSet() const
     return output;
 }
 
+std::vector<NamedObject *> Simulation::GetObjectList() const
+{
+    std::vector<NamedObject *> output;
+    size_t size = m_BodyList.size() +
+            m_JointList.size() +
+            m_GeomList.size() +
+            m_MuscleList.size() +
+            m_StrapList.size() +
+            m_FluidSacList.size() +
+            m_DriverList.size() +
+            m_DataTargetList.size() +
+            m_MarkerList.size() +
+            m_ReporterList.size() +
+            m_ControllerList.size() +
+            m_WarehouseList.size();
+    output.reserve(size);
+    // note: the order is important for resolving dependencies
+    // bodies depend on nothing
+    // markers depend on bodies
+    // joints depend on markers
+    // geoms depend on markers
+    // straps depend on markers
+    // muscles depend on straps
+    // fluid sacs depend on markers
+    // warehouse depends on bodies (and maybe markers)
+    // controllers depend on muscles and other drivables
+    // drivers depend on controllers, muscles and other drivables
+    // data targets can depend on almost anything
+    // reporters can depend on almost anything
+    for (auto &&it : m_BodyList) output.push_back(it.second.get());
+    for (auto &&it : m_MarkerList) output.push_back(it.second.get());
+    for (auto &&it : m_JointList) output.push_back(it.second.get());
+    for (auto &&it : m_GeomList) output.push_back(it.second.get());
+    for (auto &&it : m_StrapList) output.push_back(it.second.get());
+    for (auto &&it : m_MuscleList) output.push_back(it.second.get());
+    for (auto &&it : m_FluidSacList) output.push_back(it.second.get());
+    for (auto &&it : m_WarehouseList) output.push_back(it.second.get());
+    for (auto &&it : m_ControllerList) output.push_back(it.second.get());
+    for (auto &&it : m_DriverList) output.push_back(it.second.get());
+    for (auto &&it : m_DataTargetList) output.push_back(it.second.get());
+    for (auto &&it : m_ReporterList) output.push_back(it.second.get());
+    return output;
+}
+
 NamedObject *Simulation::GetNamedObject(const std::string &name) const
 {
     auto BodyListIt = m_BodyList.find(name); if (BodyListIt != m_BodyList.end()) return BodyListIt->second.get();
@@ -1607,12 +1662,21 @@ NamedObject *Simulation::GetNamedObject(const std::string &name) const
     return nullptr;
 }
 
-std::map<std::string, Drivable *> Simulation::GetDrivableList() const
+bool Simulation::DeleteNamedObject(const std::string &name)
 {
-    std::map<std::string, Drivable *> output;
-    for (auto &&it : m_MuscleList) output[it.first] = it.second.get();
-    for (auto &&it : m_ControllerList) output[it.first] = it.second.get();
-    return output;
+    auto BodyListIt = m_BodyList.find(name); if (BodyListIt != m_BodyList.end()) { m_BodyList.erase(BodyListIt); return true; }
+    auto JointListIt = m_JointList.find(name); if (JointListIt != m_JointList.end()) { m_JointList.erase(JointListIt); return true; }
+    auto GeomListIt = m_GeomList.find(name); if (GeomListIt != m_GeomList.end()) { m_GeomList.erase(GeomListIt); return true; }
+    auto MuscleListIt = m_MuscleList.find(name); if (MuscleListIt != m_MuscleList.end()) { m_MuscleList.erase(MuscleListIt); return true; }
+    auto StrapListIt = m_StrapList.find(name); if (StrapListIt != m_StrapList.end()) { m_StrapList.erase(StrapListIt); return true; }
+    auto FluidSacListIt = m_FluidSacList.find(name); if (FluidSacListIt != m_FluidSacList.end()) { m_FluidSacList.erase(FluidSacListIt); return true; }
+    auto DriverListIt = m_DriverList.find(name); if (DriverListIt != m_DriverList.end()) { m_DriverList.erase(DriverListIt); return true; }
+    auto DataTargetListIt = m_DataTargetList.find(name); if (DataTargetListIt != m_DataTargetList.end()) { m_DataTargetList.erase(DataTargetListIt); return true; }
+    auto MarkerListIt = m_MarkerList.find(name); if (MarkerListIt != m_MarkerList.end()) { m_MarkerList.erase(MarkerListIt); return true; }
+    auto ReporterListIt = m_ReporterList.find(name); if (ReporterListIt != m_ReporterList.end()) { m_ReporterList.erase(ReporterListIt); return true; }
+    auto ControllerListIt = m_ControllerList.find(name); if (ControllerListIt != m_ControllerList.end()) { m_ControllerList.erase(ControllerListIt); return true; }
+    auto WarehouseListIt = m_WarehouseList.find(name); if (WarehouseListIt != m_WarehouseList.end()) { m_WarehouseList.erase(WarehouseListIt); return true; }
+    return false;
 }
 
 bool Simulation::HasAssembly()

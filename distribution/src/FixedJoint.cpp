@@ -32,6 +32,16 @@ void FixedJoint::SetFixed()
     dJointSetFixed(JointID());
 }
 
+void FixedJoint::LateInitialisation()
+{
+    // if one of the bodies is World (i.e. GetBody1() or GetBody2() returns zero) then reset the fix position
+    // might want to make this optional
+    if (GetBody1() == nullptr || GetBody2() == nullptr)
+    {
+        SetFixed();
+    }
+}
+
 // this is the part where we calculate the stress map
 // SetCrossSection needs to be called first
 // note for this to work the centre of the fixed joint needs to be the centroid of the cross section area

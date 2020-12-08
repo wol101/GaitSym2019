@@ -254,6 +254,9 @@ void DialogJoints::accept() // this catches OK and return/enter
         m_outputJoint->setSize1(Preferences::valueDouble("JointAxesSize"));
     }
 
+    m_outputJoint->saveToAttributes();
+    m_outputJoint->createFromAttributes();
+
     if (m_properties.size() > 0)
     {
         if (m_properties.count("JointColour"))

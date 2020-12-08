@@ -310,6 +310,11 @@ void DialogMuscles::accept() // this catches OK and return/enter
             m_outputMuscle->setSize2(m_properties["StrapForceScale"].value.toDouble());
     }
 
+    m_outputMuscle->GetStrap()->saveToAttributes();
+    m_outputMuscle->GetStrap()->createFromAttributes();
+    m_outputMuscle->saveToAttributes();
+    m_outputMuscle->createFromAttributes();
+
     Preferences::insert("DialogMusclesGeometry", saveGeometry());
     QDialog::accept();
 }
@@ -515,11 +520,12 @@ void DialogMuscles::lateInitialise()
     NPointStrap *nPointStrap = dynamic_cast<NPointStrap *>(m_inputMuscle->GetStrap());
     if (nPointStrap)
     {
-        if ((s = nPointStrap->findAttribute("ViaPointMarkerIDList"s)).size())
+        s = nPointStrap->findAttribute("ViaPointMarkerIDList"s);
+        if (s.size())
         {
             std::vector<std::string> result;
             pystring::split(s, result);
-            if (result.empty())
+            if (result.size())
             {
                 ui->spinBoxNViaPoints->setValue(int(result.size()));
                 for (int i = 0; i < ui->spinBoxNViaPoints->value(); i++)

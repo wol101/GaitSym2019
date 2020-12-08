@@ -29,10 +29,10 @@ AboutDialog::AboutDialog(QWidget *parent) :
     QString descriptor = QString("Debug");
 #endif
 #ifdef EXPERIMENTAL
-    descriptor = QString("%1 %2").arg(descriptor).arg(" Experimental");
+    descriptor = QString("%1 %2").arg(descriptor).arg("Experimental");
 #endif
 
-    ui->labelBuildDate->setText(buildDate);
+    descriptor = QString("%1 %2").arg(descriptor).arg(buildDate);
     ui->labelDescriptor->setText(descriptor);
 }
 

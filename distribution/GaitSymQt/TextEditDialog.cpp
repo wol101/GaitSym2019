@@ -11,7 +11,6 @@
 #include <QPlainTextEdit>
 #include <QMessageBox>
 #include <QCheckBox>
-#include <QRegularExpression>
 #include <QDebug>
 #include <QRegExp>
 #include <QToolButton>
@@ -47,6 +46,7 @@ TextEditDialog::TextEditDialog(QWidget *parent) :
     connect(ui->toolButtonMoveUp, SIGNAL(clicked()), this, SLOT(attributeMachineMoveUp()));
     connect(ui->toolButtonMoveDown, SIGNAL(clicked()), this, SLOT(attributeMachineMoveDown()));
     connect(ui->tableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(attributeMachineItemSelectionChanged()));
+    connect(ui->plainTextEdit, SIGNAL(modificationChanged(bool)), this, SLOT(modificationChanged(bool)));
 
     setEditorFonts();
     enableControls();
@@ -116,6 +116,8 @@ void TextEditDialog::savePreferences()
     Preferences::insert("TextEditDialogCaseSensitiveSearch", ui->checkBoxCaseSensitive->isChecked());
     Preferences::insert("TextEditDialogRegularExpressionSearch", ui->checkBoxRegularExpression->isChecked());
     Preferences::insert("TextEditDialogEditorFont", m_editorFont);
+    Preferences::insert("TextEditDialogFind", ui->lineEditFind->text());
+    Preferences::insert("TextEditDialogReplace", ui->lineEditReplace->text());
     Preferences::insert("TextEditDialogAttributeMachineCode", attributeMachineSaveToString());
     Preferences::insert("TextEditDialogGeometry", saveGeometry());
     Preferences::insert("TextEditDialogSplitterState", ui->splitter->saveState());
@@ -256,10 +258,10 @@ void TextEditDialog::saveAs()
 
 void TextEditDialog::setEditorFonts()
 {
-    QList<QLineEdit *> listQLineEdit = this->findChildren<QLineEdit *>(QRegularExpression(".*", QRegularExpression::CaseInsensitiveOption), Qt::FindChildrenRecursively);
+    QList<QLineEdit *> listQLineEdit = this->findChildren<QLineEdit *>(QString(), Qt::FindChildrenRecursively);
     for (QList<QLineEdit *>::iterator it = listQLineEdit.begin(); it != listQLineEdit.end(); it++) (*it)->setFont(m_editorFont);
 
-    QList<QPlainTextEdit *> listQPlainTextEdit = this->findChildren<QPlainTextEdit *>(QRegularExpression(".*", QRegularExpression::CaseInsensitiveOption), Qt::FindChildrenRecursively);
+    QList<QPlainTextEdit *> listQPlainTextEdit = this->findChildren<QPlainTextEdit *>(QString(), Qt::FindChildrenRecursively);
     for (QList<QPlainTextEdit *>::iterator it = listQPlainTextEdit.begin(); it != listQPlainTextEdit.end(); it++) (*it)->setFont(m_editorFont);
 }
 
@@ -269,6 +271,7 @@ void TextEditDialog::enableControls()
     ui->toolButtonInsert->setEnabled(true);
     ui->toolButtonMoveUp->setEnabled(ui->tableWidget->rowCount() > 1 && ui->tableWidget->currentRow() > 0);
     ui->toolButtonMoveDown->setEnabled(ui->tableWidget->rowCount() > 1 && ui->tableWidget->currentRow() < ui->tableWidget->rowCount() - 1);
+    ui->pushButtonOK->setEnabled(isModified());
 }
 
 void TextEditDialog::attributeMachineInsert()
@@ -405,7 +408,11 @@ void TextEditDialog::attributeMachineLoad()
 
 void TextEditDialog::attributeMachineLoadFromString(const QString &string, bool quiet)
 {
+#if QT_VERSION >= 0x050F00
     QStringList lines = string.split(QRegExp("[\r\n]"), Qt::SkipEmptyParts);
+#else
+    QStringList lines = string.split(QRegExp("[\r\n]"), QString::SkipEmptyParts);
+#endif
     QStringList tokenList;
     QString line;
     int iLine = 0;
@@ -486,7 +493,7 @@ void TextEditDialog::attributeMachineApply()
 
     std::string newXML = m_parseXML.SaveModel();
     ui->plainTextEdit->setPlainText(QString::fromStdString(newXML));
-    if (localModified || (xml != newXML)) ui->plainTextEdit->document()->setModified(true);
+    if (localModified || (xml != newXML)) setModified(true);
 }
 
 
@@ -735,6 +742,11 @@ std::string *TextEditDialog::validate()
     return nullptr;
 }
 
+void TextEditDialog::modificationChanged(bool /*changed*/)
+{
+    enableControls();
+}
+
 bool TextEditDialog::isModified() const
 {
     return ui->plainTextEdit->document()->isModified();
@@ -748,6 +760,7 @@ void TextEditDialog::setFileName(const QString &fileName)
 void TextEditDialog::setModified(bool modified)
 {
     ui->plainTextEdit->document()->setModified(modified);
+    enableControls();
 }
 
 

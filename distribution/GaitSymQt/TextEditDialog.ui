@@ -152,7 +152,7 @@
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
-              <normaloff>:/images/XMLMachine Icons/list_add64x64.png</normaloff>:/images/XMLMachine Icons/list_add64x64.png</iconset>
+              <normaloff>:/images/XMLMachine Icons/list-add.svg</normaloff>:/images/XMLMachine Icons/list-add.svg</iconset>
             </property>
            </widget>
           </item>
@@ -166,7 +166,7 @@
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
-              <normaloff>:/images/XMLMachine Icons/go_up64x64.png</normaloff>:/images/XMLMachine Icons/go_up64x64.png</iconset>
+              <normaloff>:/images/XMLMachine Icons/go-up.svg</normaloff>:/images/XMLMachine Icons/go-up.svg</iconset>
             </property>
            </widget>
           </item>
@@ -213,7 +213,7 @@
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
-              <normaloff>:/images/XMLMachine Icons/list_remove64x64.png</normaloff>:/images/XMLMachine Icons/list_remove64x64.png</iconset>
+              <normaloff>:/images/XMLMachine Icons/list-remove.svg</normaloff>:/images/XMLMachine Icons/list-remove.svg</iconset>
             </property>
            </widget>
           </item>
@@ -307,7 +307,7 @@
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
-              <normaloff>:/images/XMLMachine Icons/go_down64x64.png</normaloff>:/images/XMLMachine Icons/go_down64x64.png</iconset>
+              <normaloff>:/images/XMLMachine Icons/go-down.svg</normaloff>:/images/XMLMachine Icons/go-down.svg</iconset>
             </property>
            </widget>
           </item>

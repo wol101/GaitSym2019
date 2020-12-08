@@ -18,6 +18,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <set>
 #include <initializer_list>
 
 class FacetedObject;
@@ -58,6 +59,11 @@ public:
     std::string findAttribute(const std::string &name);
     virtual const std::map<std::string, std::string> &serialise();
     virtual std::string *unserialise(const std::map<std::string, std::string> &serialiseMap);
+
+    std::vector<NamedObject *> *upstreamObjects();
+    void setUpstreamObjects(const std::vector<NamedObject *> &upstreamObjects);
+    void allUpstreamObjects(std::vector<NamedObject *> *upstreamObjects);
+    bool isUpstreamObject(NamedObject *findObject);
 
     Simulation *simulation() const;
     void setSimulation(Simulation *simulation);
@@ -104,6 +110,7 @@ public:
     static std::string dumpHelper(std::initializer_list<std::string> values);
     static std::string dumpHelper(std::initializer_list<double> values);
 
+
 protected:
     std::string *findAttribute(const std::string &name, std::string *attributeValue);
     void setAttribute(const std::string &name, const std::string &attributeValue);
@@ -133,6 +140,7 @@ private:
 
     std::map<std::string, std::string> m_attributeMap;
     std::string m_tag;
+    std::vector<NamedObject *> m_upstreamObjects;
 };
 
 #endif

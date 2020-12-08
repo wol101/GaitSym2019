@@ -25,7 +25,7 @@ DialogProperties::DialogProperties(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setWindowTitle(tr("Object Parameters Dialog"));
+    setWindowTitle(tr("Object Parameters"));
 #ifdef Q_OS_MACOS
     // on MacOS High Sierra (and possibly others), the Qt::Dialog flag disables resizing
     // if I clear the Qt::Dialog flag and make sure the Qt::Window flag is set (it should be already)

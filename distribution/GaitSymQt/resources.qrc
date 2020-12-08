@@ -1,40 +1,32 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/Desktop Icon/Icon.iconset/icon_128x128.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_128x128@2x.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_16x16.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_16x16@2x.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_256x256.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_256x256@2x.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_32x32.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_32x32@2x.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_512x512.png</file>
-        <file>images/Desktop Icon/Icon.iconset/icon_512x512@2x.png</file>
-        <file>images/Load Model Icon/load_model_icon_128x128.png</file>
-        <file>images/Media Control Icons/record_icon_128x128.png</file>
-        <file>images/Media Control Icons/restart_icon_128x128.png</file>
-        <file>images/Media Control Icons/run_icon_128x128.png</file>
-        <file>images/Media Control Icons/step_forward_icon_128x128.png</file>
-        <file>images/Mode Icons/construction_mode_128x128.png</file>
-        <file>images/Mode Icons/assembly_mode_128x128.png</file>
-        <file>images/Mode Icons/run_mode_128x128.png</file>
-        <file>images/New Model Icon/new_model_classic_icon_128x128.png</file>
-        <file>images/New Model Icon/new_model_icon_128x128.png</file>
-        <file>images/Save As Icon/save_as_icon_128x128.png</file>
-        <file>images/Save As Icon/save_icon_128x128.png</file>
-        <file>images/Snapshot Icon/snapshot_icon_128x128.png</file>
-        <file>images/View Direction Icons/view_direction_back128x128.png</file>
-        <file>images/View Direction Icons/view_direction_bottom128x128.png</file>
-        <file>images/View Direction Icons/view_direction_front128x128.png</file>
-        <file>images/View Direction Icons/view_direction_left128x128.png</file>
-        <file>images/View Direction Icons/view_direction_right128x128.png</file>
-        <file>images/View Direction Icons/view_direction_top128x128.png</file>
-        <file>images/Floor Textures/floor_checker_1.png</file>
-        <file>images/Floor Textures/floor_checker_2.png</file>
-        <file>images/XMLMachine Icons/go_down64x64.png</file>
-        <file>images/XMLMachine Icons/go_up64x64.png</file>
-        <file>images/XMLMachine Icons/list_add64x64.png</file>
-        <file>images/XMLMachine Icons/list_remove64x64.png</file>
+        <file>images/Desktop Icon/dino_cpu.svg</file>
+        <file>images/Edit Icons/edit-copy.svg</file>
+        <file>images/Edit Icons/edit-cut.svg</file>
+        <file>images/Edit Icons/edit-paste.svg</file>
+        <file>images/Edit Icons/edit-select-all.svg</file>
+        <file>images/Load Model Icon/Load Model Icon.svg</file>
+        <file>images/Media Control Icons/Record Icon.svg</file>
+        <file>images/Media Control Icons/Restart Icon.svg</file>
+        <file>images/Media Control Icons/Run Icon.svg</file>
+        <file>images/Media Control Icons/Step Forward Icon.svg</file>
+        <file>images/Mode Icons/Construction Mode Icon.svg</file>
+        <file>images/Mode Icons/Assembly Mode Icon.svg</file>
+        <file>images/Mode Icons/Run Mode Icon.svg</file>
+        <file>images/New Model Icon/New Model Classic Icon.svg</file>
+        <file>images/Save As Icon/Save As Icon.svg</file>
+        <file>images/Save As Icon/Save Icon.svg</file>
+        <file>images/Snapshot Icon/Snapshot Icon.svg</file>
+        <file>images/View Direction Icons/View Direction Back.svg</file>
+        <file>images/View Direction Icons/View Direction Bottom.svg</file>
+        <file>images/View Direction Icons/View Direction Front.svg</file>
+        <file>images/View Direction Icons/View Direction Left.svg</file>
+        <file>images/View Direction Icons/View Direction Right.svg</file>
+        <file>images/View Direction Icons/View Direction Top.svg</file>
+        <file>images/XMLMachine Icons/go-down.svg</file>
+        <file>images/XMLMachine Icons/go-up.svg</file>
+        <file>images/XMLMachine Icons/list-add.svg</file>
+        <file>images/XMLMachine Icons/list-remove.svg</file>
         <file>ViewControlWidget Images/Blob.png</file>
         <file>ViewControlWidget Images/SideBySide.png</file>
         <file>ViewControlWidget Images/SideViewPoints.png</file>

@@ -119,6 +119,8 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
 
     std::map<std::string, OBJMaterial> materialMap;
     OBJMaterial *currentMaterial = nullptr;
+    std::string line;
+    line.reserve(1024);
     while (ptr < endPtr)
     {
         // non content (whitespace)
@@ -141,8 +143,7 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
         if (*ptr == 'm')
         {
             // first extract the line
-            std::string line;
-            line.reserve(256);
+            line.clear();
             while (*ptr != '\n' && *ptr != '\r' && ptr < endPtr)
             {
                 line.append(1, *ptr);
@@ -163,8 +164,7 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
         if (*ptr == 'u')
         {
             // first extract the line
-            std::string line;
-            line.reserve(256);
+            line.clear();
             while (*ptr != '\n' && *ptr != '\r' && ptr < endPtr)
             {
                 line.append(1, *ptr);
@@ -238,13 +238,13 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
             ptr++;
             while (faceFormat == unknown)
             {
-                std::regex vertex_only_tester("[ \t]*[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]*"s);
-                std::regex vertex_texture_tester("[ \t]*[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+[ \t]*"s);
-                std::regex vertex_normal_tester("[ \t]*[0-9]+//[0-9]+[ \t]+[0-9]+//[0-9]+[ \t]+[0-9]+//[0-9]+[ \t]*"s);
-                std::regex vertex_texture_normal_tester("[ \t]*[0-9]+/[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+/[0-9]+[ \t]*"s);
-                char *endPtr = ptr + 1;
-                while (*endPtr != '\0' && *endPtr != '\r' && *endPtr != '\n') endPtr++;
-                std::string testStr(ptr, size_t(endPtr - ptr));
+                const std::regex vertex_only_tester("[ \t]*[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]*"s);
+                const std::regex vertex_texture_tester("[ \t]*[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+[ \t]*"s);
+                const std::regex vertex_normal_tester("[ \t]*[0-9]+//[0-9]+[ \t]+[0-9]+//[0-9]+[ \t]+[0-9]+//[0-9]+[ \t]*"s);
+                const std::regex vertex_texture_normal_tester("[ \t]*[0-9]+/[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+/[0-9]+[ \t]*"s);
+                char *localEndPtr = ptr + 1;
+                while (*localEndPtr != '\0' && *localEndPtr != '\r' && *localEndPtr != '\n' && localEndPtr < endPtr) localEndPtr++;
+                std::string testStr(ptr, size_t(localEndPtr - ptr));
                 std::smatch sm;
                 if (std::regex_match(testStr, sm, vertex_only_tester)) { faceFormat = vertex_only; break; }
                 if (std::regex_match(testStr, sm, vertex_texture_tester)) { faceFormat = vertex_texture; break; }
@@ -2192,7 +2192,7 @@ bool FacetedObject::HitBoundingBox(const double minB[HITBOUNDINBOX_NUMDIM], cons
 // this routine works in model coordinates and rayVector must be unit length
 int FacetedObject::FindIntersection(const pgd::Vector3 &rayOrigin, const pgd::Vector3 &rayVector, std::vector<pgd::Vector3> *intersectionCoordList, std::vector<size_t> *intersectionIndexList) const
 {
-    if (!m_visible) return 0;
+    if (!m_visible || !m_vertexList.size()) return 0;
 
     // first check bounding box
     double coord[3];

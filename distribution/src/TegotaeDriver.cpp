@@ -61,10 +61,6 @@ void TegotaeDriver::Initialise(double omega, double sigma, double A, double Apri
     m_tegotaeRim->SetQuaternion(rimLocalQ.n, rimLocalQ.x, rimLocalQ.y, rimLocalQ.z);
     m_tegotaeRim->SetWorldPosition(rimWorldP.x ,rimWorldP.y, rimWorldP.z);
 
-    m_tegotaeCentre->addDependent(this);
-    m_errorOutput->addDependent(this);
-    m_forceDirection->addDependent(this);
-    m_tegotaeRim->addDependent(this);
 }
 
 void TegotaeDriver::SendData()
@@ -88,10 +84,16 @@ void TegotaeDriver::Update()
     assert(simulation()->GetStepCount() == lastStepCount() + 1);
     setLastStepCount(simulation()->GetStepCount());
 
-    double deltaT = simulation()->GetTimeIncrement();
+    if (m_omegaDriver) m_omega = m_omegaDriver->value();
+    if (m_sigmaDriver) m_sigma = m_sigmaDriver->value();
+    if (m_ADriver) m_A = m_ADriver->value();
+    if (m_AprimeDriver) m_Aprime = m_AprimeDriver->value();
+    if (m_BDriver) m_B = m_BDriver->value();
 
     // main control algorithm
     m_phi_dot = m_omega - m_sigma * m_N * std::cos(m_phi);
+    // lets try not letting m_phi_dot be negative
+    if (m_phi_dot < 0) m_phi_dot = 0;
 
     // leg control
     // +ve X is relative distance forward
@@ -113,6 +115,7 @@ void TegotaeDriver::Update()
     m_localErrorVector = m_tegotaeCentre->GetVector(m_worldErrorVector); // this should mean that the position depends on m_errorOutput but direction depends on m_tegotaeCentre
 
     // update m_phi depending on m_phi_dot values
+    double deltaT = simulation()->GetTimeIncrement();
     m_phi = std::fmod(m_phi + m_phi_dot * deltaT, 2 * M_PI);
 }
 
@@ -281,17 +284,26 @@ std::string *TegotaeDriver::createFromAttributes()
     }
 
     if (findAttribute("TargetIDList1"s, &buf) == nullptr) return lastErrorPtr();
+    std::vector<NamedObject *> upstreamObjects;
     std::vector<std::string> targetNames;
     pystring::split(buf, targetNames);
     m_targetList1.clear();
     for (size_t i = 0; i < targetNames.size(); i++)
     {
         auto muscleIter = simulation()->GetMuscleList()->find(targetNames[i]);
-        if (muscleIter != simulation()->GetMuscleList()->end()) { m_targetList1[muscleIter->first] = muscleIter->second.get(); }
+        if (muscleIter != simulation()->GetMuscleList()->end())
+        {
+            m_targetList1[muscleIter->first] = muscleIter->second.get();
+            upstreamObjects.push_back(muscleIter->second.get());
+        }
         else
         {
             auto controllerIter = simulation()->GetControllerList()->find(targetNames[i]);
-            if (controllerIter != simulation()->GetControllerList()->end())  m_targetList1[controllerIter->first] = controllerIter->second.get();
+            if (controllerIter != simulation()->GetControllerList()->end())
+            {
+                m_targetList1[controllerIter->first] = controllerIter->second.get();
+                upstreamObjects.push_back(controllerIter->second.get());
+            }
             else
             {
                 setLastError("Driver ID=\""s + name() +"\" TargetIDList1=\""s + buf + "\" not found"s);
@@ -306,11 +318,19 @@ std::string *TegotaeDriver::createFromAttributes()
     for (size_t i = 0; i < targetNames.size(); i++)
     {
         auto muscleIter = simulation()->GetMuscleList()->find(targetNames[i]);
-        if (muscleIter != simulation()->GetMuscleList()->end()) { m_targetList2[muscleIter->first] = muscleIter->second.get(); }
+        if (muscleIter != simulation()->GetMuscleList()->end())
+        {
+            m_targetList2[muscleIter->first] = muscleIter->second.get();
+            upstreamObjects.push_back(muscleIter->second.get());
+        }
         else
         {
             auto controllerIter = simulation()->GetControllerList()->find(targetNames[i]);
-            if (controllerIter != simulation()->GetControllerList()->end())  m_targetList2[controllerIter->first] = controllerIter->second.get();
+            if (controllerIter != simulation()->GetControllerList()->end())
+            {
+                m_targetList2[controllerIter->first] = controllerIter->second.get();
+                upstreamObjects.push_back(controllerIter->second.get());
+            }
             else
             {
                 setLastError("Driver ID=\""s + name() +"\" TargetIDList2=\""s + buf + "\" not found"s);
@@ -319,8 +339,50 @@ std::string *TegotaeDriver::createFromAttributes()
         }
     }
 
+    if (findAttribute("OmegaDriverID"s, &buf))
+    {
+        auto driver = simulation()->GetDriver(buf);
+        if (!driver) { setLastError("Driver ID=\""s + name() +"\" OmegaDriverID=\""s + buf + "\" not found"s); return lastErrorPtr(); }
+        m_omegaDriver = driver;
+    }
+    if (findAttribute("SigmaDriverID"s, &buf))
+    {
+        auto driver = simulation()->GetDriver(buf);
+        if (!driver) { setLastError("Driver ID=\""s + name() +"\" SigmaDriverID=\""s + buf + "\" not found"s); return lastErrorPtr(); }
+        m_sigmaDriver = driver;
+    }
+    if (findAttribute("ADriverID"s, &buf))
+    {
+        auto driver = simulation()->GetDriver(buf);
+        if (!driver) { setLastError("Driver ID=\""s + name() +"\" ADriverID=\""s + buf + "\" not found"s); return lastErrorPtr(); }
+        m_ADriver = driver;
+    }
+    if (findAttribute("AprimeDriverID"s, &buf))
+    {
+        auto driver = simulation()->GetDriver(buf);
+        if (!driver) { setLastError("Driver ID=\""s + name() +"\" AprimeDriverID=\""s + buf + "\" not found"s); return lastErrorPtr(); }
+        m_AprimeDriver = driver;
+    }
+    if (findAttribute("BDriverID"s, &buf))
+    {
+        auto driver = simulation()->GetDriver(buf);
+        if (!driver) { setLastError("Driver ID=\""s + name() +"\" BDriverID=\""s + buf + "\" not found"s); return lastErrorPtr(); }
+        m_BDriver = driver;
+    }
 
     Initialise(omega, sigma, A, Aprime, B, phi, tegotaeCentre, tegotaeRim, errorOutput, forceDirection, contactGeomList);
+
+    upstreamObjects.push_back(m_tegotaeCentre);
+    upstreamObjects.push_back(m_tegotaeRim);
+    upstreamObjects.push_back(m_errorOutput);
+    upstreamObjects.push_back(m_forceDirection);
+    for (auto &&it : m_contactGeomList) upstreamObjects.push_back(it);
+    if (m_omegaDriver) upstreamObjects.push_back(m_omegaDriver);
+    if (m_sigmaDriver) upstreamObjects.push_back(m_sigmaDriver);
+    if (m_ADriver) upstreamObjects.push_back(m_ADriver);
+    if (m_AprimeDriver) upstreamObjects.push_back(m_AprimeDriver);
+    if (m_BDriver) upstreamObjects.push_back(m_BDriver);
+    setUpstreamObjects(upstreamObjects);
     return nullptr;
 }
 
@@ -336,7 +398,6 @@ void TegotaeDriver::appendToAttributes()
     setAttribute("Aprime"s, *GSUtil::ToString(m_Aprime, &buf));
     setAttribute("B"s, *GSUtil::ToString(m_B, &buf));
     setAttribute("Phi"s, *GSUtil::ToString(m_phi, &buf));
-    setAttribute("Omega"s, *GSUtil::ToString(m_omega, &buf));
     setAttribute("CentreMarkerID"s, m_tegotaeCentre->name());
     setAttribute("RimMarkerID"s, m_tegotaeRim->name());
     setAttribute("ErrorOutputMarkerID"s, m_errorOutput->name());
@@ -353,6 +414,11 @@ void TegotaeDriver::appendToAttributes()
     stringList.reserve(m_targetList2.size());
     for (auto &&it : m_targetList2) stringList.push_back(it.first);
     setAttribute("TargetIDList2"s, pystring::join(" "s, stringList));
+    setAttribute("OmegaDriverID"s, m_omegaDriver ? m_omegaDriver->name() : ""s);
+    setAttribute("SigmaDriverID"s, m_sigmaDriver ? m_sigmaDriver->name() : ""s);
+    setAttribute("ADriverID"s, m_ADriver ? m_ADriver->name() : ""s);
+    setAttribute("AprimeDriverID"s, m_AprimeDriver ? m_AprimeDriver->name() : ""s);
+    setAttribute("BDriverID"s, m_BDriver ? m_BDriver->name() : ""s);
 }
 
 pgd::Vector3 TegotaeDriver::worldErrorVector() const

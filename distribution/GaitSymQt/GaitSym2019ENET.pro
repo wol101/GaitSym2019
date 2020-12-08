@@ -361,8 +361,7 @@ SOURCES += \
     ../src/ObjectiveMainUDP.cpp \
     ../src/PCA.cpp \
     ../src/PIDErrorInController.cpp \
-    ../src/PIDMuscleLength.cpp \
-    ../src/PIDTargetMatch.cpp \
+    ../src/PIDMuscleLengthController.cpp \
     ../src/ParseXML.cpp \
     ../src/PlaneGeom.cpp \
     ../src/RayGeom.cpp \
@@ -376,6 +375,7 @@ SOURCES += \
     ../src/SwingClearanceAbortReporter.cpp \
     ../src/TCP.cpp \
     ../src/TegotaeDriver.cpp \
+    ../src/ThreeHingeJointDriver.cpp \
     ../src/TorqueReporter.cpp \
     ../src/TrimeshGeom.cpp \
     ../src/TwoCylinderWrapStrap.cpp \
@@ -655,8 +655,7 @@ HEADERS += \
     ../src/PCA.h \
     ../src/PGDMath.h \
     ../src/PIDErrorInController.h \
-    ../src/PIDMuscleLength.h \
-    ../src/PIDTargetMatch.h \
+    ../src/PIDMuscleLengthController.h \
     ../src/ParseXML.h \
     ../src/PlaneGeom.h \
     ../src/RayGeom.h \
@@ -673,6 +672,7 @@ HEADERS += \
     ../src/TCP.h \
     ../src/TCPIPMessage.h \
     ../src/TegotaeDriver.h \
+    ../src/ThreeHingeJointDriver.h \
     ../src/TorqueReporter.h \
     ../src/TrimeshGeom.h \
     ../src/TwoCylinderWrapStrap.h \
@@ -680,7 +680,7 @@ HEADERS += \
     ../src/UDP.h \
     ../src/UniversalJoint.h \
     ../src/Warehouse.h \
-    ../src/XMLConverter.h \
+    ../src/XMLConverter.h
 
 
 DISTFILES += \

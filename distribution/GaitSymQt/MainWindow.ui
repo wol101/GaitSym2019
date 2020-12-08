@@ -1046,17 +1046,13 @@
     <property name="title">
      <string>Control</string>
     </property>
+    <addaction name="actionRestart"/>
+    <addaction name="actionRun"/>
+    <addaction name="actionStep"/>
+    <addaction name="actionRecordMovie"/>
+    <addaction name="actionSnapshot"/>
+    <addaction name="separator"/>
     <addaction name="actionOutput"/>
-    <addaction name="separator"/>
-    <addaction name="actionDefaultView"/>
-    <addaction name="actionSaveDefaultView"/>
-    <addaction name="actionResetView"/>
-    <addaction name="separator"/>
-    <addaction name="action640x480"/>
-    <addaction name="action800x600"/>
-    <addaction name="action1280x720"/>
-    <addaction name="action1920x1080"/>
-    <addaction name="actionToggleFullscreen"/>
     <addaction name="separator"/>
     <addaction name="actionStartWarehouseExport"/>
     <addaction name="actionStopWarehouseExport"/>
@@ -1075,18 +1071,8 @@
     <addaction name="actionPaste"/>
     <addaction name="actionSelectAll"/>
     <addaction name="separator"/>
-    <addaction name="actionRawXMLEditor"/>
-   </widget>
-   <widget class="QMenu" name="menuOptimise">
-    <property name="title">
-     <string>Optimise</string>
-    </property>
-    <addaction name="actionGeneticAlgorithm"/>
-    <addaction name="actionNextAscentHillclimbing"/>
-    <addaction name="actionRandomAscentHillclimbing"/>
-    <addaction name="actionSimplexSearch"/>
-    <addaction name="actionSimulatedAnnealing"/>
-    <addaction name="actionTabuSearch"/>
+    <addaction name="actionRunMode"/>
+    <addaction name="actionConstructionMode"/>
    </widget>
    <widget class="QMenu" name="menuCreate">
     <property name="title">
@@ -1103,12 +1089,39 @@
     <addaction name="separator"/>
     <addaction name="actionCreateAssembly"/>
     <addaction name="actionDeleteAssembly"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreateMirrorElements"/>
+    <addaction name="actionCreateTestingDrivers"/>
+    <addaction name="separator"/>
+    <addaction name="actionRawXMLEditor"/>
+    <addaction name="actionRenameElement"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionViewRight"/>
+    <addaction name="actionViewLeft"/>
+    <addaction name="actionViewFront"/>
+    <addaction name="actionViewBack"/>
+    <addaction name="actionViewTop"/>
+    <addaction name="actionViewBottom"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoadDefaultView"/>
+    <addaction name="actionSaveDefaultView"/>
+    <addaction name="actionResetView"/>
+    <addaction name="separator"/>
+    <addaction name="action640x480"/>
+    <addaction name="action800x600"/>
+    <addaction name="action1280x720"/>
+    <addaction name="action1920x1080"/>
+    <addaction name="actionToggleFullscreen"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuCreate"/>
+   <addaction name="menuView"/>
    <addaction name="menuControl"/>
-   <addaction name="menuOptimise"/>
+   <addaction name="menuCreate"/>
    <addaction name="menu_Edit"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -1153,7 +1166,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Load Model Icon/load_model_icon_128x128.png</normaloff>:/images/Load Model Icon/load_model_icon_128x128.png</iconset>
+     <normaloff>:/images/Load Model Icon/Load Model Icon.svg</normaloff>:/images/Load Model Icon/Load Model Icon.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Open...</string>
@@ -1168,7 +1181,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Save As Icon/save_icon_128x128.png</normaloff>:/images/Save As Icon/save_icon_128x128.png</iconset>
+     <normaloff>:/images/Save As Icon/Save Icon.svg</normaloff>:/images/Save As Icon/Save Icon.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
@@ -1194,7 +1207,7 @@
   <action name="actionAboutGaitSymQt">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Desktop Icon/Icon.iconset/icon_128x128.png</normaloff>:/images/Desktop Icon/Icon.iconset/icon_128x128.png</iconset>
+     <normaloff>:/images/Desktop Icon/dino_cpu.svg</normaloff>:/images/Desktop Icon/dino_cpu.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;About GaitSym...</string>
@@ -1203,7 +1216,7 @@
   <action name="actionPreferences">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Desktop Icon/Icon.iconset/icon_128x128.png</normaloff>:/images/Desktop Icon/Icon.iconset/icon_128x128.png</iconset>
+     <normaloff>:/images/Desktop Icon/dino_cpu.svg</normaloff>:/images/Desktop Icon/dino_cpu.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Preferences...</string>
@@ -1218,7 +1231,7 @@
   <action name="actionRestart">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Media Control Icons/restart_icon_128x128.png</normaloff>:/images/Media Control Icons/restart_icon_128x128.png</iconset>
+     <normaloff>:/images/Media Control Icons/Restart Icon.svg</normaloff>:/images/Media Control Icons/Restart Icon.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Reload</string>
@@ -1244,7 +1257,7 @@
   <action name="actionSaveAs">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Save As Icon/save_as_icon_128x128.png</normaloff>:/images/Save As Icon/save_as_icon_128x128.png</iconset>
+     <normaloff>:/images/Save As Icon/Save As Icon.svg</normaloff>:/images/Save As Icon/Save As Icon.svg</iconset>
    </property>
    <property name="text">
     <string>Save &amp;as...</string>
@@ -1256,7 +1269,7 @@
     <string>Ctrl+Shift+S</string>
    </property>
   </action>
-  <action name="actionDefaultView">
+  <action name="actionLoadDefaultView">
    <property name="text">
     <string>&amp;Load Default View</string>
    </property>
@@ -1311,6 +1324,10 @@
    </property>
   </action>
   <action name="actionCut">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/Edit Icons/edit-cut.svg</normaloff>:/images/Edit Icons/edit-cut.svg</iconset>
+   </property>
    <property name="text">
     <string>Cu&amp;t</string>
    </property>
@@ -1319,6 +1336,10 @@
    </property>
   </action>
   <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/Edit Icons/edit-copy.svg</normaloff>:/images/Edit Icons/edit-copy.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Copy</string>
    </property>
@@ -1327,6 +1348,10 @@
    </property>
   </action>
   <action name="actionPaste">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/Edit Icons/edit-paste.svg</normaloff>:/images/Edit Icons/edit-paste.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Paste</string>
    </property>
@@ -1335,6 +1360,10 @@
    </property>
   </action>
   <action name="actionSelectAll">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/Edit Icons/edit-select-all.svg</normaloff>:/images/Edit Icons/edit-select-all.svg</iconset>
+   </property>
    <property name="text">
     <string>Select &amp;All</string>
    </property>
@@ -1360,7 +1389,7 @@
   <action name="actionViewRight">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_right128x128.png</normaloff>:/images/View Direction Icons/view_direction_right128x128.png</iconset>
+     <normaloff>:/images/View Direction Icons/View Direction Right.svg</normaloff>:/images/View Direction Icons/View Direction Right.svg</iconset>
    </property>
    <property name="text">
     <string>View Right</string>
@@ -1372,7 +1401,7 @@
   <action name="actionViewFront">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_front128x128.png</normaloff>:/images/View Direction Icons/view_direction_front128x128.png</iconset>
+     <normaloff>:/images/View Direction Icons/View Direction Front.svg</normaloff>:/images/View Direction Icons/View Direction Front.svg</iconset>
    </property>
    <property name="text">
     <string>View Front</string>
@@ -1384,7 +1413,7 @@
   <action name="actionViewTop">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_top128x128.png</normaloff>:/images/View Direction Icons/view_direction_top128x128.png</iconset>
+     <normaloff>:/images/View Direction Icons/View Direction Top.svg</normaloff>:/images/View Direction Icons/View Direction Top.svg</iconset>
    </property>
    <property name="text">
     <string>View Top</string>
@@ -1396,7 +1425,7 @@
   <action name="actionSnapshot">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Snapshot Icon/snapshot_icon_128x128.png</normaloff>:/images/Snapshot Icon/snapshot_icon_128x128.png</iconset>
+     <normaloff>:/images/Snapshot Icon/Snapshot Icon.svg</normaloff>:/images/Snapshot Icon/Snapshot Icon.svg</iconset>
    </property>
    <property name="text">
     <string>Snapshot</string>
@@ -1411,7 +1440,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Media Control Icons/run_icon_128x128.png</normaloff>:/images/Media Control Icons/run_icon_128x128.png</iconset>
+     <normaloff>:/images/Media Control Icons/Run Icon.svg</normaloff>:/images/Media Control Icons/Run Icon.svg</iconset>
    </property>
    <property name="text">
     <string>Run</string>
@@ -1423,7 +1452,7 @@
   <action name="actionStep">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Media Control Icons/step_forward_icon_128x128.png</normaloff>:/images/Media Control Icons/step_forward_icon_128x128.png</iconset>
+     <normaloff>:/images/Media Control Icons/Step Forward Icon.svg</normaloff>:/images/Media Control Icons/Step Forward Icon.svg</iconset>
    </property>
    <property name="text">
     <string>Step</string>
@@ -1438,7 +1467,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Media Control Icons/record_icon_128x128.png</normaloff>:/images/Media Control Icons/record_icon_128x128.png</iconset>
+     <normaloff>:/images/Media Control Icons/Record Icon.svg</normaloff>:/images/Media Control Icons/Record Icon.svg</iconset>
    </property>
    <property name="text">
     <string>Record Movie</string>
@@ -1458,7 +1487,7 @@
   <action name="actionViewLeft">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_left128x128.png</normaloff>:/images/View Direction Icons/view_direction_left128x128.png</iconset>
+     <normaloff>:/images/View Direction Icons/View Direction Left.svg</normaloff>:/images/View Direction Icons/View Direction Left.svg</iconset>
    </property>
    <property name="text">
     <string>View Left</string>
@@ -1470,7 +1499,7 @@
   <action name="actionViewBack">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_back128x128.png</normaloff>:/images/View Direction Icons/view_direction_back128x128.png</iconset>
+     <normaloff>:/images/View Direction Icons/View Direction Back.svg</normaloff>:/images/View Direction Icons/View Direction Back.svg</iconset>
    </property>
    <property name="text">
     <string>View Back</string>
@@ -1482,7 +1511,7 @@
   <action name="actionViewBottom">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/View Direction Icons/view_direction_bottom128x128.png</normaloff>:/images/View Direction Icons/view_direction_bottom128x128.png</iconset>
+     <normaloff>:/images/View Direction Icons/View Direction Bottom.svg</normaloff>:/images/View Direction Icons/View Direction Bottom.svg</iconset>
    </property>
    <property name="text">
     <string>View Bottom</string>
@@ -1515,40 +1544,10 @@
     <string>Stop saving a sequence of OBJ files in a folder</string>
    </property>
   </action>
-  <action name="actionNextAscentHillclimbing">
-   <property name="text">
-    <string>&amp;Next Ascent Hillclimbing...</string>
-   </property>
-  </action>
-  <action name="actionRandomAscentHillclimbing">
-   <property name="text">
-    <string>&amp;Random Ascent Hillclimbing...</string>
-   </property>
-  </action>
-  <action name="actionSimplexSearch">
-   <property name="text">
-    <string>Simplex Search...</string>
-   </property>
-  </action>
-  <action name="actionSimulatedAnnealing">
-   <property name="text">
-    <string>S&amp;imulated Annealing...</string>
-   </property>
-  </action>
-  <action name="actionTabuSearch">
-   <property name="text">
-    <string>&amp;Tabu Search...</string>
-   </property>
-  </action>
-  <action name="actionGeneticAlgorithm">
-   <property name="text">
-    <string>&amp;Genetic Algorithm...</string>
-   </property>
-  </action>
   <action name="actionNew">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/New Model Icon/new_model_classic_icon_128x128.png</normaloff>:/images/New Model Icon/new_model_classic_icon_128x128.png</iconset>
+     <normaloff>:/images/New Model Icon/New Model Classic Icon.svg</normaloff>:/images/New Model Icon/New Model Classic Icon.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;New...</string>
@@ -1591,9 +1590,12 @@
    </property>
   </action>
   <action name="actionConstructionMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Mode Icons/construction_mode_128x128.png</normaloff>:/images/Mode Icons/construction_mode_128x128.png</iconset>
+     <normaloff>:/images/Mode Icons/Construction Mode Icon.svg</normaloff>:/images/Mode Icons/Construction Mode Icon.svg</iconset>
    </property>
    <property name="text">
     <string>Construction Mode</string>
@@ -1603,9 +1605,12 @@
    </property>
   </action>
   <action name="actionRunMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/Mode Icons/run_mode_128x128.png</normaloff>:/images/Mode Icons/run_mode_128x128.png</iconset>
+     <normaloff>:/images/Mode Icons/Run Mode Icon.svg</normaloff>:/images/Mode Icons/Run Mode Icon.svg</iconset>
    </property>
    <property name="text">
     <string>Run Mode</string>
@@ -1652,6 +1657,21 @@
   <action name="actionClearMeshCache">
    <property name="text">
     <string>&amp;Clear Mesh Cache</string>
+   </property>
+  </action>
+  <action name="actionCreateTestingDrivers">
+   <property name="text">
+    <string>Create Testing Drivers...</string>
+   </property>
+  </action>
+  <action name="actionCreateMirrorElements">
+   <property name="text">
+    <string>Create Mirror Elements...</string>
+   </property>
+  </action>
+  <action name="actionRenameElement">
+   <property name="text">
+    <string>Rename Element...</string>
    </property>
   </action>
  </widget>

@@ -51,6 +51,7 @@ std::string *Muscle::createFromAttributes()
         }
     }
 #endif
+    setUpstreamObjects({m_Strap});
     return nullptr;
 }
 
@@ -133,8 +134,6 @@ Strap *Muscle::GetStrap() const
 
 void Muscle::SetStrap(Strap *strap)
 {
-    assert(strap->muscle() == nullptr);
-    strap->setMuscle(this);
     m_Strap = strap;
 }
 
@@ -146,7 +145,6 @@ int Muscle::SanityCheck(Muscle *otherMuscle, Simulation::AxisType axis, const st
 void Muscle::LateInitialisation()
 {
     CalculateStrap();
-    m_Strap->updateDependentMarkers();
 }
 
 

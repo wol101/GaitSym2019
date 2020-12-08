@@ -49,9 +49,9 @@ void PIDErrorInController::Update()
     m_output = (m_Kp * m_error) + (m_Ki * m_integral) + (m_Kd * m_derivative);
     m_previous_error = m_error;
 
-    // now alter the output based on the PID output
+    // now set the output based on the PID output
     // note that we limit the value to the range
-    setValue(Clamp(value() - m_output));
+    setValue(Clamp(m_output));
 }
 
 // this function initialises the data in the object based on the contents

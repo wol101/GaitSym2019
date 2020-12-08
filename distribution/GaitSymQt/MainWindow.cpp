@@ -73,24 +73,24 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionCreateJoint, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuCreateJoint()));
     connect(ui->actionCreateMarker, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuCreateMarker()));
     connect(ui->actionCreateMuscle, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuCreateMuscle()));
+    connect(ui->actionCreateMirrorElements, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuCreateMirrorElements()));
+    connect(ui->actionCreateTestingDrivers, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuCreateTestingDrivers()));
     connect(ui->actionCut, SIGNAL(triggered()), m_mainWindowActions, SLOT(cut()));
-    connect(ui->actionDefaultView, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuDefaultView()));
+    connect(ui->actionLoadDefaultView, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuLoadDefaultView()));
     connect(ui->actionDeleteAssembly, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuDeleteAssembly()));
     connect(ui->actionEditGlobal, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuEditGlobal()));
     connect(ui->actionExportMarkers, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuExportMarkers()));
-    connect(ui->actionGeneticAlgorithm, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuGeneticAlgorithm()));
     connect(ui->actionImportMeshesAsBodies, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuImportMeshes()));
     connect(ui->actionImportWarehouse, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuImportWarehouse()));
     connect(ui->actionNew, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuNew()));
-    connect(ui->actionNextAscentHillclimbing, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuNextAscentHillclimbing()));
     connect(ui->actionOpen, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuOpen()));
     connect(ui->actionOutput, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuOutputs()));
     connect(ui->actionPaste, SIGNAL(triggered()), m_mainWindowActions, SLOT(paste()));
     connect(ui->actionPreferences, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuPreferences()));
     connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
-    connect(ui->actionRandomAscentHillclimbing, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuRandomAscentHillclimbing()));
     connect(ui->actionRawXMLEditor, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuRawXMLEditor()));
     connect(ui->actionRecordMovie, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuRecordMovie()));
+    connect(ui->actionRenameElement, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuRename()));
     connect(ui->actionResetView, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuResetView()));
     connect(ui->actionRestart, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuRestart()));
     connect(ui->actionRun, SIGNAL(triggered()), m_mainWindowActions, SLOT(run()));
@@ -100,15 +100,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSaveDefaultView, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuSaveDefaultView()));
     connect(ui->actionSaveOBJSnapshot, SIGNAL(triggered()), m_mainWindowActions, SLOT(objSnapshot()));
     connect(ui->actionSelectAll, SIGNAL(triggered()), m_mainWindowActions, SLOT(selectAll()));
-    connect(ui->actionSimplexSearch, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuSimplexSearch()));
-    connect(ui->actionSimulatedAnnealing, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuSimulatedAnnealing()));
     connect(ui->actionSnapshot, SIGNAL(triggered()), m_mainWindowActions, SLOT(snapshot()));
     connect(ui->actionStartOBJSequence, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStartOBJSequenceSave()));
     connect(ui->actionStartWarehouseExport, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStartWarehouseExport()));
     connect(ui->actionStep, SIGNAL(triggered()), m_mainWindowActions, SLOT(step()));
     connect(ui->actionStopOBJSequence, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStopOBJSequenceSave()));
     connect(ui->actionStopWarehouseExport, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStopWarehouseExport()));
-    connect(ui->actionTabuSearch, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuTabuSearch()));
     connect(ui->actionToggleFullscreen, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuToggleFullScreen()));
     connect(ui->actionViewBack, SIGNAL(triggered()), m_mainWindowActions, SLOT(buttonCameraBack()));
     connect(ui->actionViewBottom, SIGNAL(triggered()), m_mainWindowActions, SLOT(buttonCameraBottom()));
@@ -165,19 +162,24 @@ MainWindow::MainWindow(QWidget *parent)
     ui->widgetSimulation->setMainWindow(this);
 
     // connect the ViewControlWidget to the GLWidget
-    QObject::connect(ui->widgetViewFrame, SIGNAL(EmitCameraVec(double, double, double)), ui->widgetSimulation, SLOT(SetCameraVec(double, double, double)));
+    connect(ui->widgetViewFrame, SIGNAL(EmitCameraVec(double, double, double)), ui->widgetSimulation, SLOT(SetCameraVec(double, double, double)));
 
     // connect the SimulationWindow to the MainWindow
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitStatusString(const QString &, int)), this, SLOT(setStatusString(const QString &, int)));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitCOI(float, float, float)), this, SLOT(setUICOI(float, float, float)));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitFoV(float)), this, SLOT(setUIFoV(float)));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitCreateMarkerRequest()), m_mainWindowActions, SLOT(menuCreateMarker()));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitEditMarkerRequest(const QString &)), this, SLOT(editExistingMarker(const QString &)));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitMoveMarkerRequest(const QString &, const QVector3D &)), this, SLOT(moveExistingMarker(const QString &, const QVector3D &)));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitEditBodyRequest(const QString &)), this, SLOT(editExistingBody(const QString &)));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitEditGeomRequest(const QString &)), this, SLOT(editExistingGeom(const QString &)));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitEditJointRequest(const QString &)), this, SLOT(editExistingJoint(const QString &)));
-    QObject::connect(ui->widgetSimulation, SIGNAL(EmitEditMuscleRequest(const QString &)), this, SLOT(editExistingMuscle(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitStatusString(const QString &, int)), this, SLOT(setStatusString(const QString &, int)));
+    connect(ui->widgetSimulation, SIGNAL(EmitCOI(float, float, float)), this, SLOT(setUICOI(float, float, float)));
+    connect(ui->widgetSimulation, SIGNAL(EmitFoV(float)), this, SLOT(setUIFoV(float)));
+    connect(ui->widgetSimulation, SIGNAL(EmitCreateMarkerRequest()), m_mainWindowActions, SLOT(menuCreateMarker()));
+    connect(ui->widgetSimulation, SIGNAL(EmitEditMarkerRequest(const QString &)), this, SLOT(editExistingMarker(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitMoveMarkerRequest(const QString &, const QVector3D &)), this, SLOT(moveExistingMarker(const QString &, const QVector3D &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitEditBodyRequest(const QString &)), this, SLOT(editExistingBody(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitEditGeomRequest(const QString &)), this, SLOT(editExistingGeom(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitEditJointRequest(const QString &)), this, SLOT(editExistingJoint(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitEditMuscleRequest(const QString &)), this, SLOT(editExistingMuscle(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitDeleteBodyRequest(const QString &)), this, SLOT(deleteExistingBody(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitDeleteGeomRequest(const QString &)), this, SLOT(deleteExistingGeom(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitDeleteJointRequest(const QString &)), this, SLOT(deleteExistingJoint(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitDeleteMarkerRequest(const QString &)), this, SLOT(deleteExistingMarker(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitDeleteMuscleRequest(const QString &)), this, SLOT(deleteExistingMuscle(const QString &)));
 
     // the treeWidgetElements needs to know about this window
     ui->treeWidgetElements->setMainWindow(this);
@@ -192,7 +194,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     // intialise parts of the interface
     setInterfaceValues();
-    m_mainWindowActions->menuDefaultView();
     setStatusString(tr("Ready"), 2);
     updateEnable();
 
@@ -201,8 +202,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionStopWarehouseExport->setVisible(false);
     ui->actionImportWarehouse->setVisible(false);
 #endif
-
-    setUnifiedTitleAndToolBarOnMac(false);
 
     // finally remember the geometry etc.
     restoreGeometry(Preferences::valueQByteArray("MainWindowGeometry"));
@@ -224,7 +223,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (m_saveRequired)
+    if (isWindowModified())
     {
         QMessageBox msgBox;
         msgBox.setText("The document has been modified.");
@@ -612,21 +611,24 @@ QByteArray MainWindow::readResource(const QString &resource)
 void MainWindow::updateEnable()
 {
     ui->actionOutput->setEnabled(m_simulation != nullptr);
-    ui->actionRestart->setEnabled(m_simulation != nullptr && m_mode == runMode && m_noName == false && m_saveRequired == false);
-    ui->actionSave->setEnabled(m_simulation != nullptr && m_noName == false && m_saveRequired == true);
+    ui->actionRestart->setEnabled(m_simulation != nullptr && m_mode == runMode && m_noName == false && isWindowModified() == false);
+    ui->actionSave->setEnabled(m_simulation != nullptr && m_noName == false && isWindowModified() == true);
     ui->actionSaveAs->setEnabled(m_simulation != nullptr);
-    ui->actionRawXMLEditor->setEnabled(m_simulation != nullptr);
+    ui->actionRawXMLEditor->setEnabled(m_simulation != nullptr && m_mode == constructionMode);
+    ui->actionRenameElement->setEnabled(m_simulation != nullptr && m_mode == constructionMode);
+    ui->actionCreateMirrorElements->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0);
+    ui->actionCreateTestingDrivers->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetMuscleList()->size() > 0);
     ui->actionExportMarkers->setEnabled(m_simulation != nullptr);
-    ui->actionStartWarehouseExport->setEnabled(m_simulation != nullptr && m_mode == runMode);
-    ui->actionStopWarehouseExport->setEnabled(m_simulation != nullptr && m_mode == runMode);
+    ui->actionStartWarehouseExport->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
+    ui->actionStopWarehouseExport->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
     ui->actionImportWarehouse->setEnabled(m_simulation != nullptr && m_mode == runMode);
-    ui->actionRecordMovie->setEnabled(m_simulation != nullptr && m_mode == runMode);
-    ui->actionRun->setEnabled(m_simulation != nullptr && m_mode == runMode);
-    ui->actionStep->setEnabled(m_simulation != nullptr && m_mode == runMode);
+    ui->actionRecordMovie->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
+    ui->actionRun->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
+    ui->actionStep->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
     ui->actionSnapshot->setEnabled(m_simulation != nullptr);
     ui->actionSaveOBJSnapshot->setEnabled(m_simulation != nullptr && m_mode == runMode);
-    ui->actionStartOBJSequence->setEnabled(m_simulation != nullptr && m_mode == runMode);
-    ui->actionStopOBJSequence->setEnabled(m_simulation != nullptr && m_mode == runMode);
+    ui->actionStartOBJSequence->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
+    ui->actionStopOBJSequence->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
     ui->actionImportMeshesAsBodies->setEnabled(m_simulation != nullptr && m_mode == constructionMode);
     ui->actionCreateBody->setEnabled(m_simulation != nullptr && m_mode == constructionMode);
     ui->actionCreateMarker->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0);
@@ -651,49 +653,43 @@ MainWindow::Mode MainWindow::mode() const
 
 void MainWindow::deleteExistingBody(const QString &name, bool force)
 {
+    Body *body = m_simulation->GetBody(name.toStdString());
+    if (!body)
+    {
+        QMessageBox::warning(this, tr("Delete Body %1").arg(name), tr("Body cannot be found. Aborting delete."));
+        return;
+    }
+
+    // get a list of dependencies
+    std::string dependencyMessage;
+    std::vector<NamedObject *> dependencyList;
+    std::vector<NamedObject *> objectList = m_simulation->GetObjectList();
+    for (auto &&it : objectList)
+    {
+        if (it->isUpstreamObject(body))
+        {
+            dependencyMessage += it->name() + " "s;
+            dependencyList.push_back(it);
+        }
+    }
+    QString message;
+    if (dependencyMessage.size()) message += "The following dependencies will be deleted:\n" + QString::fromStdString(dependencyMessage) + QString("\n");
+    message += "This action cannot be undone.\nAre you sure you want to continue?";
     int ret = QMessageBox::Ok;
-    if (!force) ret = QMessageBox::warning(this, tr("Delete Body %1").arg(name), tr("This action cannot be undone.\nAre you sure you want to continue?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (!force) ret = QMessageBox::warning(this, tr("Delete Body %1").arg(name), message, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
     if (ret == QMessageBox::Ok)
     {
         // first delete dependencies
-        std::string nameStr = name.toStdString();
-        // we need to explicitly delete the joints
-        for (auto it = m_simulation->GetJointList()->begin(); it != m_simulation->GetJointList()->end();)
+        for (auto &&it : dependencyList)
         {
-            auto nextIt = it;
-            nextIt++;
-            size_t oldSize = m_simulation->GetJointList()->size();
-            if (it->second->GetBody1()->name() == nameStr || it->second->GetBody2()->name() == nameStr)
-            {
-                deleteExistingJoint(QString::fromStdString(it->second->name()));
-                if (m_simulation->GetJointList()->size() == oldSize)
-                    return; // nothing was deleted so the user cancelled
-            }
-            it = nextIt;
-        }
-        // and deleting markers will clear up everything else
-        for (auto it = m_simulation->GetMarkerList()->begin(); it != m_simulation->GetMarkerList()->end();)
-        {
-            auto nextIt = it;
-            nextIt++;
-            size_t oldSize = m_simulation->GetMarkerList()->size();
-            if (it->second->GetBody() && it->second->GetBody()->name() == nameStr) // note: world markers do not have a body
-            {
-                deleteExistingMarker(QString::fromStdString(it->second->name()));
-                if (m_simulation->GetMarkerList()->size() == oldSize)
-                    return; // nothing was deleted so the user cancelled
-            }
-            it = nextIt;
+            ui->treeWidgetElements->removeName(QString::fromStdString(it->name()));
+            m_simulation->DeleteNamedObject(it->name());
         }
         // now delete the body itself
-        auto it = m_simulation->GetBodyList()->find(nameStr);
-        if (it != m_simulation->GetBodyList()->end())
-        {
-            m_simulation->GetBodyList()->erase(it);
-            ui->treeWidgetElements->removeBody(name);
-        }
+        ui->treeWidgetElements->removeBody(QString::fromStdString(body->name()));
+        m_simulation->DeleteNamedObject(body->name());
         updateComboBoxTrackingMarker();
-        m_saveRequired = true;
+        setWindowModified(true);
         updateEnable();
         ui->widgetSimulation->update();
     }
@@ -701,88 +697,90 @@ void MainWindow::deleteExistingBody(const QString &name, bool force)
 
 void MainWindow::deleteExistingMarker(const QString &name, bool force)
 {
+    Marker *marker = m_simulation->GetMarker(name.toStdString());
+    if (!marker)
+    {
+        QMessageBox::warning(this, tr("Delete Marker %1").arg(name), tr("Marker cannot be found. Aborting delete."));
+        return;
+    }
+    // get a list of dependencies
+    std::string dependencyMessage;
+    std::vector<NamedObject *> dependencyList;
+    std::vector<NamedObject *> objectList = m_simulation->GetObjectList();
+    for (auto &&it : objectList)
+    {
+        if (it->isUpstreamObject(marker))
+        {
+            dependencyMessage += it->name() + " "s;
+            dependencyList.push_back(it);
+        }
+    }
+    QString message;
+    if (dependencyMessage.size()) message += "The following dependencies will be deleted:\n" + QString::fromStdString(dependencyMessage) + QString("\n");
+    message += "This action cannot be undone.\nAre you sure you want to continue?";
     int ret = QMessageBox::Ok;
-    if (!force) ret = QMessageBox::warning(this, tr("Delete Marker %1").arg(name), tr("This action cannot be undone.\n" "Are you sure you want to continue?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (!force) ret = QMessageBox::warning(this, tr("Delete Marker %1").arg(name), message, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
     if (ret == QMessageBox::Ok)
     {
-        // first delete dependencies (lots of things can depend on markers)
-        std::string nameStr = name.toStdString();
-        Marker *marker = m_simulation->GetMarkerList()->at(nameStr).get();
-        // we need to explicitly delete the joints
-        for (auto it = m_simulation->GetJointList()->begin(); it != m_simulation->GetJointList()->end();)
+        // first delete dependencies
+        for (auto &&it : dependencyList)
         {
-            auto nextIt = it;
-            nextIt++;
-            size_t oldSize = m_simulation->GetJointList()->size();
-            if (it->second->body1Marker() == marker || it->second->body2Marker() == marker)
-            {
-                deleteExistingJoint(QString::fromStdString( it->second->name()));
-                if (m_simulation->GetJointList()->size() == oldSize)
-                    return; // nothing was deleted so the user cancelled
-            }
-            it = nextIt;
+            ui->treeWidgetElements->removeName(QString::fromStdString(it->name()));
+            m_simulation->DeleteNamedObject(it->name());
         }
-        // we need to explicitly delete the muscles
-        for (auto it = m_simulation->GetMuscleList()->begin(); it != m_simulation->GetMuscleList()->end();)
-        {
-            auto nextIt = it;
-            nextIt++;
-            size_t oldSize = m_simulation->GetMuscleList()->size();
-            Strap *strap = it->second->GetStrap();
-            strap->updateDependentMarkers();
-            auto it2 = std::find(strap->dependentMarkers()->begin(), strap->dependentMarkers()->end(), marker);
-            if (it2 != strap->dependentMarkers()->end())
-            {
-                deleteExistingMuscle(QString::fromStdString(it->second->name()));
-                if (m_simulation->GetMuscleList()->size() == oldSize)
-                    return; // nothing was deleted so the user cancelled
-            }
-            it = nextIt;
-        }
-        // we need to explicitly delete the geoms
-        for (auto it = m_simulation->GetGeomList()->begin(); it != m_simulation->GetGeomList()->end();)
-        {
-            auto nextIt = it;
-            nextIt++;
-            size_t oldSize = m_simulation->GetGeomList()->size();
-            if (it->second->geomMarker() == marker)
-            {
-                deleteExistingGeom(QString::fromStdString(it->second->name()));
-                if (m_simulation->GetGeomList()->size() == oldSize)
-                    return; // nothing was deleted so the user cancelled
-            }
-            it = nextIt;
-        }
-        // FIX ME - check the tegotae driver
         // now delete the marker itself
-        auto it = m_simulation->GetMarkerList()->find(nameStr);
-        if (it != m_simulation->GetMarkerList()->end())
-        {
-
-            m_simulation->GetMarkerList()->erase(it);
-            ui->treeWidgetElements->removeMarker(name);
-        }
-        m_saveRequired = true;
+        ui->treeWidgetElements->removeMarker(QString::fromStdString(marker->name()));
+        m_simulation->DeleteNamedObject(marker->name());
+        updateComboBoxTrackingMarker();
+        setWindowModified(true);
+        updateEnable();
+        ui->widgetSimulation->update();
+        setWindowModified(true);
         updateEnable();
         ui->widgetSimulation->update();
     }
-
 }
 
 void MainWindow::deleteExistingJoint(const QString &name, bool force)
 {
+    Joint *joint = m_simulation->GetJoint(name.toStdString());
+    if (!joint)
+    {
+        QMessageBox::warning(this, tr("Delete Joint %1").arg(name), tr("Joint cannot be found. Aborting delete."));
+        return;
+    }
+    // get a list of dependencies
+    std::string dependencyMessage;
+    std::vector<NamedObject *> dependencyList;
+    std::vector<NamedObject *> objectList = m_simulation->GetObjectList();
+    for (auto &&it : objectList)
+    {
+        if (it->isUpstreamObject(joint))
+        {
+            dependencyMessage += it->name() + " "s;
+            dependencyList.push_back(it);
+        }
+    }
+    QString message;
+    if (dependencyMessage.size()) message += "The following dependencies will be deleted:\n" + QString::fromStdString(dependencyMessage) + QString("\n");
+    message += "This action cannot be undone.\nAre you sure you want to continue?";
     int ret = QMessageBox::Ok;
-    if (!force) ret = QMessageBox::warning(this, tr("Delete Joint %1").arg(name), tr("This action cannot be undone.\nAre you sure you want to continue?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (!force) ret = QMessageBox::warning(this, tr("Delete Joint %1").arg(name), message, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
     if (ret == QMessageBox::Ok)
     {
-        std::string nameStr = name.toStdString();
-        auto it = m_simulation->GetJointList()->find(nameStr);
-        if (it != m_simulation->GetJointList()->end())
+        // first delete dependencies
+        for (auto &&it : dependencyList)
         {
-            m_simulation->GetJointList()->erase(it);
-            ui->treeWidgetElements->removeJoint(name);
+            ui->treeWidgetElements->removeName(QString::fromStdString(it->name()));
+            m_simulation->DeleteNamedObject(it->name());
         }
-        m_saveRequired = true;
+        // now delete the marker itself
+        ui->treeWidgetElements->removeJoint(QString::fromStdString(joint->name()));
+        m_simulation->DeleteNamedObject(joint->name());
+        setWindowModified(true);
+        updateEnable();
+        ui->widgetSimulation->update();
+        setWindowModified(true);
         updateEnable();
         ui->widgetSimulation->update();
     }
@@ -790,23 +788,45 @@ void MainWindow::deleteExistingJoint(const QString &name, bool force)
 
 void MainWindow::deleteExistingMuscle(const QString &name, bool force)
 {
+    Muscle *muscle = m_simulation->GetMuscle(name.toStdString());
+    if (!muscle)
+    {
+        QMessageBox::warning(this, tr("Delete Muscle %1").arg(name), tr("Muscle cannot be found. Aborting delete."));
+        return;
+    }
+    // get a list of dependencies
+    std::string dependencyMessage;
+    std::vector<NamedObject *> dependencyList;
+    std::vector<NamedObject *> objectList = m_simulation->GetObjectList();
+    for (auto &&it : objectList)
+    {
+        if (it->isUpstreamObject(muscle))
+        {
+            dependencyMessage += it->name() + " "s;
+            dependencyList.push_back(it);
+        }
+    }
+    QString message;
+    if (dependencyMessage.size()) message += "The following dependencies will be deleted:\n" + QString::fromStdString(dependencyMessage) + QString("\n");
+    message += "This action cannot be undone.\nAre you sure you want to continue?";
     int ret = QMessageBox::Ok;
-    if (!force) ret = QMessageBox::warning(this, tr("Delete Muscle %1").arg(name), tr("This action cannot be undone.\n" "Are you sure you want to continue?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (!force) ret = QMessageBox::warning(this, tr("Delete Muscle %1").arg(name), message, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
     if (ret == QMessageBox::Ok)
     {
-        std::string nameStr = name.toStdString();
-        auto muscleIt = m_simulation->GetMuscleList()->find(nameStr);
-        if (muscleIt != m_simulation->GetMuscleList()->end())
+        // first delete dependencies
+        for (auto &&it : dependencyList)
         {
-            auto strapIt = m_simulation->GetStrapList()->find(muscleIt->second->GetStrap()->name());
-            if (strapIt != m_simulation->GetStrapList()->end())
-            {
-                m_simulation->GetStrapList()->erase(strapIt);
-            }
-            m_simulation->GetMuscleList()->erase(muscleIt);
-            ui->treeWidgetElements->removeMuscle(name);
+            ui->treeWidgetElements->removeName(QString::fromStdString(it->name()));
+            m_simulation->DeleteNamedObject(it->name());
         }
-        m_saveRequired = true;
+        // now delete the marker itself
+        ui->treeWidgetElements->removeMuscle(QString::fromStdString(muscle->name()));
+        m_simulation->DeleteNamedObject(muscle->GetStrap()->name());
+        m_simulation->DeleteNamedObject(muscle->name());
+        setWindowModified(true);
+        updateEnable();
+        ui->widgetSimulation->update();
+        setWindowModified(true);
         updateEnable();
         ui->widgetSimulation->update();
     }
@@ -814,37 +834,88 @@ void MainWindow::deleteExistingMuscle(const QString &name, bool force)
 
 void MainWindow::deleteExistingDriver(const QString &name, bool force)
 {
+    Driver *driver = m_simulation->GetDriver(name.toStdString());
+    if (!driver)
+    {
+        QMessageBox::warning(this, tr("Delete Driver %1").arg(name), tr("Driver cannot be found. Aborting delete."));
+        return;
+    }
+    // get a list of dependencies
+    std::string dependencyMessage;
+    std::vector<NamedObject *> dependencyList;
+    std::vector<NamedObject *> objectList = m_simulation->GetObjectList();
+    for (auto &&it : objectList)
+    {
+        if (it->isUpstreamObject(driver))
+        {
+            dependencyMessage += it->name() + " "s;
+            dependencyList.push_back(it);
+        }
+    }
+    QString message;
+    if (dependencyMessage.size()) message += "The following dependencies will be deleted:\n" + QString::fromStdString(dependencyMessage) + QString("\n");
+    message += "This action cannot be undone.\nAre you sure you want to continue?";
     int ret = QMessageBox::Ok;
-    if (!force) ret = QMessageBox::warning(this, tr("Delete Driver %1").arg(name), tr("This action cannot be undone.\n" "Are you sure you want to continue?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (!force) ret = QMessageBox::warning(this, tr("Delete Driver %1").arg(name), message, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
     if (ret == QMessageBox::Ok)
     {
-        std::string nameStr = name.toStdString();
-        auto it = m_simulation->GetDriverList()->find(nameStr);
-        if (it != m_simulation->GetDriverList()->end())
+        // first delete dependencies
+        for (auto &&it : dependencyList)
         {
-            m_simulation->GetDriverList()->erase(it);
-            ui->treeWidgetElements->removeDriver(name);
+            ui->treeWidgetElements->removeName(QString::fromStdString(it->name()));
+            m_simulation->DeleteNamedObject(it->name());
         }
-        m_saveRequired = true;
+        // now delete the marker itself
+        ui->treeWidgetElements->removeDriver(QString::fromStdString(driver->name()));
+        m_simulation->DeleteNamedObject(driver->name());
+        setWindowModified(true);
         updateEnable();
         ui->widgetSimulation->update();
-    }
-}
+        setWindowModified(true);
+        updateEnable();
+        ui->widgetSimulation->update();
+    }}
 
 void MainWindow::deleteExistingGeom(const QString &name, bool force)
 {
+    Geom *geom = m_simulation->GetGeom(name.toStdString());
+    if (!geom)
+    {
+        QMessageBox::warning(this, tr("Delete Geom %1").arg(name), tr("Geom cannot be found. Aborting delete."));
+        return;
+    }
+    // get a list of dependencies
+    std::string dependencyMessage;
+    std::vector<NamedObject *> dependencyList;
+    std::vector<NamedObject *> objectList = m_simulation->GetObjectList();
+    for (auto &&it : objectList)
+    {
+        if (it->isUpstreamObject(geom))
+        {
+            dependencyMessage += it->name() + " "s;
+            dependencyList.push_back(it);
+        }
+    }
+    QString message;
+    if (dependencyMessage.size()) message += "The following dependencies will be deleted:\n" + QString::fromStdString(dependencyMessage) + QString("\n");
+    message += "This action cannot be undone.\nAre you sure you want to continue?";
     int ret = QMessageBox::Ok;
-    if (!force) ret = QMessageBox::warning(this, tr("Delete Geom %1").arg(name), tr("This action cannot be undone.\n" "Are you sure you want to continue?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (!force) ret = QMessageBox::warning(this, tr("Delete Geom %1").arg(name), message, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
     if (ret == QMessageBox::Ok)
     {
-        std::string nameStr = name.toStdString();
-        auto it = m_simulation->GetGeomList()->find(nameStr);
-        if (it != m_simulation->GetGeomList()->end())
+        // first delete dependencies
+        for (auto &&it : dependencyList)
         {
-            m_simulation->GetGeomList()->erase(it);
-            ui->treeWidgetElements->removeGeom(name);
+            ui->treeWidgetElements->removeName(QString::fromStdString(it->name()));
+            m_simulation->DeleteNamedObject(it->name());
         }
-        m_saveRequired = true;
+        // now delete the marker itself
+        ui->treeWidgetElements->removeGeom(QString::fromStdString(geom->name()));
+        m_simulation->DeleteNamedObject(geom->name());
+        setWindowModified(true);
+        updateEnable();
+        ui->widgetSimulation->update();
+        setWindowModified(true);
         updateEnable();
         ui->widgetSimulation->update();
     }
@@ -953,20 +1024,23 @@ void MainWindow::handleElementTreeWidgetItemChanged(QTreeWidgetItem * /* item */
 
 void MainWindow::moveExistingMarker(const QString &s, const QVector3D &p)
 {
-    auto it = m_simulation->GetMarkerList()->find(s.toStdString());
-    if (it == m_simulation->GetMarkerList()->end()) return;
-    it->second->SetWorldPosition(double(p.x()), double(p.y()), double(p.z()));
-    it->second->setRedraw(true);
-    for (auto nb : *it->second->dependentList())
+    auto markerIt = m_simulation->GetMarkerList()->find(s.toStdString());
+    if (markerIt == m_simulation->GetMarkerList()->end()) return;
+    markerIt->second->SetWorldPosition(double(p.x()), double(p.y()), double(p.z()));
+    markerIt->second->setRedraw(true);
+    std::vector<NamedObject *> objectList = m_simulation->GetObjectList();
+    for (auto &&it : objectList)
     {
-        qDebug() << nb->name().c_str() << " dependent on " << it->second->name().c_str();
-        nb->saveToAttributes();
-        nb->createFromAttributes();
-        Strap *strap = dynamic_cast<Strap *>(nb);
-        if (strap) strap->Calculate();
-        // FIX ME - need to do something about the tegotae driver
+        if (it->isUpstreamObject(markerIt->second.get()))
+        {
+            it->saveToAttributes();
+            it->createFromAttributes();
+            it->setRedraw(true);
+            // everything needs a redraw but somethings also need extra work
+            if (dynamic_cast<Strap *>(it)) dynamic_cast<Strap *>(it)->Calculate();
+        }
     }
-    m_saveRequired = true;
+    setWindowModified(true);
     updateEnable();
     ui->widgetSimulation->update();
 }

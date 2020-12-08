@@ -112,7 +112,6 @@ private:
 
     Mode m_mode = constructionMode;
     bool m_noName = true;
-    bool m_saveRequired = false; // should probably use the Qt isWindowModified() setWindowModified() functions
 
     MainWindowActions *m_mainWindowActions = nullptr;
 };

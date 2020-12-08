@@ -24,7 +24,7 @@ class DataTarget: public NamedObject
 public:
     DataTarget();
 
-    SMART_ENUM(MatchType, matchTypeStrings, matchTypeCount, Linear, Square);
+    SMART_ENUM(MatchType, matchTypeStrings, matchTypeCount, Linear, Square, Raw);
     SMART_ENUM(InterpolationType, interpolationTypeStrings, interpolationTypeCount, Punctuated, Continuous);
 
 //    void SetTargetTimes(int size, double *targetTimes);
@@ -67,7 +67,6 @@ private:
     double m_abortAbove = DBL_MAX;
     std::vector<double> m_targetTimeList;
     size_t m_lastIndex = SIZE_MAX;
-    double m_lastTime = -DBL_MAX;
     double m_lastValue = 0;
 };
 

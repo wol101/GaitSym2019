@@ -167,15 +167,10 @@ public:
     QString getLastMenuItem() const;
 
     std::map<std::string, DrawBody *> *getDrawBodyMap();
-
     std::map<std::string, DrawJoint *> *getDrawJointMap();
-
     std::map<std::string, DrawGeom *> *getDrawGeomMap();
-
     std::map<std::string, DrawMuscle *> *getDrawMuscleMap();
-
     std::map<std::string, DrawFluidSac *> *getDrawFluidSacMap();
-
     std::map<std::string, DrawMarker *> *getDrawMarkerMap();
 
 public slots:
@@ -195,6 +190,13 @@ signals:
     void EmitEditGeomRequest(const QString &s);
     void EmitEditJointRequest(const QString &s);
     void EmitEditMuscleRequest(const QString &s);
+//    void EmitEditFluidSacRequest(const QString &s);
+    void EmitDeleteMarkerRequest(const QString &s);
+    void EmitDeleteBodyRequest(const QString &s);
+    void EmitDeleteGeomRequest(const QString &s);
+    void EmitDeleteJointRequest(const QString &s);
+    void EmitDeleteMuscleRequest(const QString &s);
+//    void EmitDeleteFluidSacRequest(const QString &s);
 
 protected:
     virtual void initializeGL() Q_DECL_OVERRIDE;

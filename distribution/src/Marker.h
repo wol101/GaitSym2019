@@ -64,15 +64,11 @@ public:
     Body *GetBody() const;
     void SetBody(Body *body);
 
-    void addDependent(NamedObject *namedObject);
-    const std::set<NamedObject *> *dependentList() const;
-
 private:
 
     Body *m_body = nullptr; // if nullptr then this is the World, otherwise a pre-existing body
     pgd::Vector3 m_position; // this is the position with respect to m_body (which can be World)
     pgd::Quaternion m_quaternion = {1, 0, 0, 0}; // this is the orientation with respect to m_body (which can be World)
-    std::set<NamedObject *> m_dependentList;
 };
 
 

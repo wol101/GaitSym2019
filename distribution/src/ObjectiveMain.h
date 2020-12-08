@@ -39,6 +39,7 @@ private:
 
     XMLConverter m_XMLConverter;
     ArgParse m_argparse;
+    bool m_debug = false;
 };
 
 #endif // OBJECTIVEMAIN_H

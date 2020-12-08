@@ -497,28 +497,66 @@ void SimulationWidget::menuRequest(const QPoint &pos)
     menu.addSeparator();
 
     Drawable *drawable = getClosestHit()->drawable();
-    if (m_mainWindow->mode() == MainWindow::constructionMode)
+    std::string name;
+    while (m_mainWindow->mode() == MainWindow::constructionMode) // use while to prevent nesting of if else statements
     {
         action = menu.addAction(tr("Create Marker..."));
         menu.addSeparator();
-
-        if (dynamic_cast<DrawBody *>(drawable)) action = menu.addAction(tr("Edit Body..."));
-        else if (dynamic_cast<DrawFluidSac *>(drawable)) action = menu.addAction(tr("Edit Fluid Sac..."));
-        else if (dynamic_cast<DrawGeom *>(drawable)) action = menu.addAction(tr("Edit Geom..."));
-        else if (dynamic_cast<DrawJoint *>(drawable)) action = menu.addAction(tr("Edit Joint..."));
-        else if (dynamic_cast<DrawMarker *>(drawable))
+        auto body = dynamic_cast<DrawBody *>(drawable);
+        if (body)
         {
-            action = menu.addAction(tr("Edit Marker..."));
-            action = menu.addAction(tr("Move Marker"));
+            name = body->body()->name();
+            action = menu.addAction(tr("Edit Body..."));
+            action = menu.addAction(tr("Delete Body..."));
+            break;
         }
-        else if (dynamic_cast<DrawMuscle *>(drawable)) action = menu.addAction(tr("Edit Muscle..."));
-
-        if (action->text() == tr("Edit Fluid Sac...")) action->setEnabled(false); // not implemented any time soon
+//        auto fluisac = dynamic_cast<DrawFluidSac *>(drawable);
+//        if (fluisac)
+//        {
+//            name = fluisac->fluidsac()->name();
+//            action = menu.addAction(tr("Edit Fluid Sac..."));
+//            action = menu.addAction(tr("Delete Fluid Sac..."));
+//            break;
+//        }
+        auto geom = dynamic_cast<DrawGeom *>(drawable);
+        if (geom)
+        {
+            name = geom->geom()->name();
+            action = menu.addAction(tr("Edit Geom..."));
+            action = menu.addAction(tr("Delete Geom..."));
+            break;
+        }
+        auto joint = dynamic_cast<DrawJoint *>(drawable);
+        if (joint)
+        {
+            name = joint->joint()->name();
+            action = menu.addAction(tr("Edit Joint..."));
+            action = menu.addAction(tr("Delete Joint..."));
+            break;
+        }
+        auto marker = dynamic_cast<DrawMarker *>(drawable);
+        if (marker)
+        {
+            name = marker->marker()->name();
+            action = menu.addAction(tr("Edit Marker..."));
+            action = menu.addAction(tr("Delete Marker..."));
+            action = menu.addAction(tr("Move Marker"));
+            break;
+        }
+        auto muscle = dynamic_cast<DrawMuscle *>(drawable);
+        if (muscle)
+        {
+            name = muscle->muscle()->name();
+            action = menu.addAction(tr("Edit Muscle..."));
+            action = menu.addAction(tr("Delete Muscle..."));
+            break;
+        }
+        break;
     }
 
     QPoint gp = this->mapToGlobal(pos);
     action = menu.exec(gp);
-    if (action)
+    while (action) // use while to prevent nesting of if else statements
     {
         m_lastMenuItem = action->text();
         if (action->text() == tr("Centre View"))
@@ -531,43 +569,78 @@ void SimulationWidget::menuRequest(const QPoint &pos)
             emit EmitStatusString(QString("Centre of Interest %1\t%2\t%3").arg(double(m_COIx)).arg(double(m_COIy)).arg(double(m_COIz)), 2);
             emit EmitCOI(m_COIx, m_COIy, m_COIz);
             update();
+            break;
         }
-        else if (action->text() == tr("Create Marker..."))
+        if (action->text() == tr("Create Marker..."))
         {
             emit EmitCreateMarkerRequest();
+            break;
         }
-        else if (action->text() == tr("Edit Marker..."))
+        if (action->text() == tr("Edit Marker..."))
         {
-            DrawMarker *drawMarker = dynamic_cast<DrawMarker *>(drawable);
-            emit EmitEditMarkerRequest(QString::fromStdString(drawMarker->marker()->name()));
+            emit EmitEditMarkerRequest(QString::fromStdString(name));
+            break;
         }
-        else if (action->text() == tr("Edit Body..."))
+        if (action->text() == tr("Edit Body..."))
         {
-            DrawBody *drawBody = dynamic_cast<DrawBody *>(drawable);
-            emit EmitEditBodyRequest(QString::fromStdString(drawBody->body()->name()));
+            emit EmitEditBodyRequest(QString::fromStdString(name));
+            break;
         }
-        else if (action->text() == tr("Edit Geom..."))
+        if (action->text() == tr("Edit Geom..."))
         {
-            DrawGeom *drawGeom = dynamic_cast<DrawGeom *>(drawable);
-            emit EmitEditGeomRequest(QString::fromStdString(drawGeom->geom()->name()));
+            emit EmitEditGeomRequest(QString::fromStdString(name));
         }
-        else if (action->text() == tr("Edit Joint..."))
+        if (action->text() == tr("Edit Joint..."))
         {
-            DrawJoint *drawJoint = dynamic_cast<DrawJoint *>(drawable);
-            emit EmitEditJointRequest(QString::fromStdString(drawJoint->joint()->name()));
+            emit EmitEditJointRequest(QString::fromStdString(name));
+            break;
         }
-        else if (action->text() == tr("Edit Muscle..."))
+        if (action->text() == tr("Edit Muscle..."))
         {
-            DrawMuscle *drawMuscle = dynamic_cast<DrawMuscle *>(drawable);
-            emit EmitEditMuscleRequest(QString::fromStdString(drawMuscle->muscle()->name()));
+            emit EmitEditMuscleRequest(QString::fromStdString(name));
+            break;
         }
-        else if (action->text() == tr("Move Marker"))
+//        if (action->text() == tr("Edit Fluid Sac..."))
+//        {
+//            emit EmitEditFluidSacRequest(QString::fromStdString(name)));
+//            break;
+//        }
+        if (action->text() == tr("Delete Marker..."))
+        {
+            emit EmitDeleteMarkerRequest(QString::fromStdString(name));
+            break;
+        }
+        if (action->text() == tr("Delete Body..."))
+        {
+            emit EmitDeleteBodyRequest(QString::fromStdString(name));
+            break;
+        }
+        if (action->text() == tr("Delete Geom..."))
+        {
+            emit EmitDeleteGeomRequest(QString::fromStdString(name));
+        }
+        if (action->text() == tr("Delete Joint..."))
+        {
+            emit EmitDeleteJointRequest(QString::fromStdString(name));
+            break;
+        }
+        if (action->text() == tr("Delete Muscle..."))
+        {
+            emit EmitDeleteMuscleRequest(QString::fromStdString(name));
+            break;
+        }
+//        if (action->text() == tr("Delete Fluid Sac..."))
+//        {
+//            emit EmitDeleteFluidSacRequest(QString::fromStdString(name));
+//            break;
+//        }
+        if (action->text() == tr("Move Marker"))
         {
             m_moveMarkerMode = true;
-            DrawMarker *drawMarker = dynamic_cast<DrawMarker *>(drawable);
-            m_moveMarkerName = drawMarker->marker()->name();
-            // focus is lost because of the menu so need to make sure it is gained again
+            m_moveMarkerName = name;
+            break;
         }
+        break;
     }
 }
 
@@ -869,7 +942,7 @@ void SimulationWidget::drawModel()
     auto drawMuscleMapIter = m_drawMuscleMap.begin();
     while (drawMuscleMapIter != m_drawMuscleMap.end())
     {
-        if (muscleList->find(drawMuscleMapIter->first) == muscleList->end() || drawMuscleMapIter->second->muscle()->redraw() == true)
+        if (muscleList->find(drawMuscleMapIter->first) == muscleList->end() || drawMuscleMapIter->second->muscle()->redraw() == true || drawMuscleMapIter->second->muscle()->GetStrap()->redraw() == true)
         {
             delete drawMuscleMapIter->second;
             drawMuscleMapIter = m_drawMuscleMap.erase(drawMuscleMapIter);

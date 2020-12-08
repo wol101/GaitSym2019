@@ -53,9 +53,6 @@ public:
     virtual void saveToAttributes();
     virtual void appendToAttributes();
 
-    std::set<Marker *> *dependentMarkers();
-    virtual std::set<Marker *> *updateDependentMarkers();
-
     double Length() const;
     void setLength(double Length);
 
@@ -64,9 +61,6 @@ public:
 
     double Tension() const;
     void setTension(double Tension);
-
-    Muscle *muscle() const;
-    void setMuscle(Muscle *muscle);
 
     std::vector<Marker *> torqueMarkerList() const;
     void setTorqueMarkerList(const std::vector<Marker *> &torqueMarkerList);
@@ -78,10 +72,8 @@ private:
     double m_length = -1;
 
     std::vector<std::unique_ptr<PointForce >> m_pointForceList;
-    std::set<Marker *> m_dependentMarkers;
     std::vector<Marker *> m_torqueMarkerList;
 
-    Muscle *m_muscle = nullptr;
 };
 
 #endif

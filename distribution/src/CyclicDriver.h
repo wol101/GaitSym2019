@@ -22,20 +22,22 @@ public:
 
     virtual void Update();
 
-    void SetValuesAndDurations(int size, double *values, double *durations);
-    void SetPhaseDelay(double phaseDelay); // 0 to 1
-    double GetCycleTime();
-
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
+    std::vector<double> valueList() const;
+    void setValueList(const std::vector<double> &valueList);
+
+    std::vector<double> durationList() const;
+    void setDurationList(const std::vector<double> &durationList);
+
 private:
 
-    std::vector<double> m_ValueList;
-    std::vector<double> m_DurationList;
-    double m_PhaseDelay = {0};
-    int m_ListLength = {-1};
-    int m_LastIndex = {0};
+    std::vector<double> m_valueList;
+    std::vector<double> m_durationList;
+    std::vector<double> m_changeTimes;
+    double m_PhaseDelay = 0;
+    size_t m_index = 0;
 };
 
 #endif

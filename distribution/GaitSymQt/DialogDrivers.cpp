@@ -133,10 +133,11 @@ void DialogDrivers::accept() // this catches OK and return/enter
         values.reserve(steps);
         for (int i = 0; i < ui->spinBoxSteps->value(); i++)
         {
-            durations.push_back(ui->tableWidgetStep->itemAt(0, i)->text().toDouble());
-            values.push_back(ui->tableWidgetStep->itemAt(1, i)->text().toDouble());
+            durations.push_back(ui->tableWidgetStep->item(i, 0)->text().toDouble());
+            values.push_back(ui->tableWidgetStep->item(i, 1)->text().toDouble());
         }
-        driver->SetValuesAndDurations(steps, values.data(), durations.data());
+        driver->setDurationList(durations);
+        driver->setValueList(values);
         m_outputDriver = std::move(driver);
     }
 
@@ -150,10 +151,11 @@ void DialogDrivers::accept() // this catches OK and return/enter
         values.reserve(steps);
         for (int i = 0; i < ui->spinBoxStepsPerCycle->value(); i++)
         {
-            durations.push_back(ui->tableWidgetCyclic->itemAt(0, i)->text().toDouble());
-            values.push_back(ui->tableWidgetCyclic->itemAt(1, i)->text().toDouble());
+            durations.push_back(ui->tableWidgetCyclic->item(i, 0)->text().toDouble());
+            values.push_back(ui->tableWidgetCyclic->item(i, 1)->text().toDouble());
         }
-        driver->SetValuesAndDurations(int(steps), values.data(), durations.data());
+        driver->setDurationList(durations);
+        driver->setValueList(values);
         m_outputDriver = std::move(driver);
     }
 
@@ -194,6 +196,9 @@ void DialogDrivers::accept() // this catches OK and return/enter
         Controller *controller = m_simulation->GetController(name);
         if (controller) { m_outputDriver->AddTarget(controller); continue; }
     }
+
+    m_outputDriver->saveToAttributes();
+    m_outputDriver->createFromAttributes();
 
     Preferences::insert("DialogDriversGeometry", saveGeometry());
     QDialog::accept();
@@ -290,6 +295,10 @@ void DialogDrivers::lateInitialise()
     m_targetGridSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     m_targetGridLayout->addItem(m_targetGridSpacer, ui->spinBoxTargets->value(), 0);
 
+    ui->lineEditMinimum->setValue(m_inputDriver->MinValue());
+    ui->lineEditMaximum->setValue(m_inputDriver->MaxValue());
+    ui->checkBoxInterpolate->setChecked(m_inputDriver->Interp());
+
     FixedDriver *fixedDriver = dynamic_cast<FixedDriver *>(m_inputDriver);
     if (fixedDriver)
     {
@@ -300,37 +309,35 @@ void DialogDrivers::lateInitialise()
     StepDriver *stepDriver = dynamic_cast<StepDriver *>(m_inputDriver);
     if (stepDriver)
     {
-        int steps = GSUtil::Int(stepDriver->findAttribute("Steps"s));
+        std::vector<double> valueList = stepDriver->valueList();
+        std::vector<double> durationList = stepDriver->durationList();
+        int steps = int(std::min(valueList.size(), durationList.size()));
         ui->spinBoxSteps->setValue(steps);
         ui->tableWidgetStep->setRowCount(steps);
         ui->tableWidgetStep->setColumnCount(2);
-        std::vector<std::string> values;
-        pystring::split(stepDriver->findAttribute("Values"s), values);
-        std::vector<std::string> durations;
-        pystring::split(stepDriver->findAttribute("Durations"s), durations);
         for (int i = 0; i < steps; i++)
         {
-            ui->tableWidgetStep->itemAt(0, i)->setText(QString::fromStdString(durations[size_t(i)]));
-            ui->tableWidgetStep->itemAt(1, i)->setText(QString::fromStdString(values[size_t(i)]));
+            ui->tableWidgetStep->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(durationList[i])));
+            ui->tableWidgetStep->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(valueList[i])));
         }
+        ui->tabWidget->setCurrentIndex(tabNames.indexOf("Step"));
     }
 
     CyclicDriver *cyclicDriver = dynamic_cast<CyclicDriver *>(m_inputDriver);
     if (cyclicDriver)
     {
-        int steps = GSUtil::Int(stepDriver->findAttribute("Steps"s));
+        std::vector<double> valueList = cyclicDriver->valueList();
+        std::vector<double> durationList = cyclicDriver->durationList();
+        int steps = int(std::min(valueList.size(), durationList.size()));
         ui->spinBoxStepsPerCycle->setValue(steps);
         ui->tableWidgetCyclic->setRowCount(steps);
         ui->tableWidgetCyclic->setColumnCount(2);
-        std::vector<std::string> values;
-        pystring::split(stepDriver->findAttribute("Values"s), values);
-        std::vector<std::string> durations;
-        pystring::split(stepDriver->findAttribute("Durations"s), durations);
         for (int i = 0; i < steps; i++)
         {
-            ui->tableWidgetCyclic->itemAt(0, i)->setText(QString::fromStdString(durations[size_t(i)]));
-            ui->tableWidgetCyclic->itemAt(1, i)->setText(QString::fromStdString(values[size_t(i)]));
+            ui->tableWidgetCyclic->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(durationList[i])));
+            ui->tableWidgetCyclic->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(valueList[i])));
         }
+        ui->tabWidget->setCurrentIndex(tabNames.indexOf("Cyclic"));
     }
 
     StackedBoxcarDriver *stackedBoxcarDriver = dynamic_cast<StackedBoxcarDriver *>(m_inputDriver);

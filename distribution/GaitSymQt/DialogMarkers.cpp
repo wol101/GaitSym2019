@@ -21,8 +21,7 @@ DialogMarkers::DialogMarkers(QWidget *parent) :
 
     setWindowTitle(tr("Marker Builder"));
 #ifdef Q_OS_MACOS
-    setWindowFlags(windowFlags() & (~Qt::Dialog) |
-                   Qt::Window); // allows the window to be resized on macs
+    setWindowFlags(windowFlags() & (~Qt::Dialog) | Qt::Window); // allows the window to be resized on macs
 #endif
     restoreGeometry(Preferences::valueQByteArray("DialogMarkersGeometry"));
 
@@ -107,10 +106,6 @@ void DialogMarkers::accept() // this catches OK and return/enter
     {
         markerPtr->setSize1(m_inputMarker->size1());
         markerPtr->setColour1(m_inputMarker->colour1());
-        for (auto it : *m_inputMarker->dependentList())
-        {
-            markerPtr->addDependent(it);
-        }
     }
     else
     {
@@ -125,6 +120,8 @@ void DialogMarkers::accept() // this catches OK and return/enter
         if (m_properties.count("MarkerColour"))
             markerPtr->setColour1(qvariant_cast<QColor>(m_properties["MarkerColour"].value).name(QColor::HexArgb).toStdString());
     }
+    markerPtr->saveToAttributes();
+    markerPtr->createFromAttributes();
 
     QString mirrorAxis;
     if (ui->radioButtonX->isChecked()) mirrorAxis = "X";

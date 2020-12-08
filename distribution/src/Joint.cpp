@@ -55,7 +55,6 @@ Marker *Joint::body1Marker() const
 void Joint::setBody1Marker(Marker *body1Marker)
 {
     m_body1Marker = body1Marker;
-    m_body1Marker->addDependent(this);
 }
 
 Marker *Joint::body2Marker() const
@@ -66,7 +65,6 @@ Marker *Joint::body2Marker() const
 void Joint::setBody2Marker(Marker *body2Marker)
 {
     m_body2Marker = body2Marker;
-    m_body2Marker->addDependent(this);
 }
 
 // this function initialises the data in the object based on the contents
@@ -109,6 +107,7 @@ std::string *Joint::createFromAttributes()
     if (findAttribute("CFM"s, &buf)) m_CFM = GSUtil::Double(buf);
     if (findAttribute("ERP"s, &buf)) m_ERP = GSUtil::Double(buf);
 
+    setUpstreamObjects({m_body1Marker, m_body2Marker});
     return nullptr;
 }
 

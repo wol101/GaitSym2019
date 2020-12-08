@@ -62,7 +62,7 @@ int XMLConverter::LoadBaseXMLString(const char *dataPtr, size_t length)
 
         ptr2 += 2;
         ptr1 = strstr(ptr2, "]]");
-        if (ptr2 == nullptr)
+        if (ptr1 == nullptr)
         {
             std::cerr << "Error: could not find matching ]]\n";
             exit(1);

@@ -287,7 +287,7 @@ void ArgParse::Usage()
     }
     if (optional.size())
     {
-        std::cerr << "Optional. Arguments\n";
+        std::cerr << "Optional Arguments\n";
         for (auto it: optional)
         {
             std::cerr << it.second.longName << ", " << it.second.shortName << "\n";

@@ -50,8 +50,6 @@ public:
 
     virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
 
-    virtual std::set<Marker *> *updateDependentMarkers();
-
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 

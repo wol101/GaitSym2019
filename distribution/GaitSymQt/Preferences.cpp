@@ -38,7 +38,7 @@ void Preferences::Write()
     Preferences::clear();
     for (QMap<QString, SettingsItem>::const_iterator i = m_settings.constBegin(); i != m_settings.constEnd(); i++)
     {
-        qDebug("%s: %s", qUtf8Printable(i.key()), qUtf8Printable(i.value().value.toString()));
+//        qDebug("%s: %s", qUtf8Printable(i.key()), qUtf8Printable(i.value().value.toString()));
         Preferences::setQtValue(i.key(), i.value().value);
     }
     Preferences::sync();
@@ -98,12 +98,16 @@ void Preferences::Export(const QString &filename)
             setting.setAttribute("value", qvariant_cast<QFont>(item.value).toString());
             break;
         case QMetaType::QVector2D:
-            setting.setAttribute("defaultValue", QString("%1 %2").arg(qvariant_cast<QVector2D>(item.defaultValue).x()).arg(qvariant_cast<QVector2D>(item.defaultValue).y()));
-            setting.setAttribute("value", QString("%1 %2").arg(qvariant_cast<QVector2D>(item.value).x()).arg(qvariant_cast<QVector2D>(item.value).y()));
+            setting.setAttribute("defaultValue", QString("%1 %2").arg(double(qvariant_cast<QVector2D>(item.defaultValue).x()))
+                                 .arg(double(qvariant_cast<QVector2D>(item.defaultValue).y())));
+            setting.setAttribute("value", QString("%1 %2").arg(double(qvariant_cast<QVector2D>(item.value).x()))
+                                 .arg(double(qvariant_cast<QVector2D>(item.value).y())));
             break;
         case QMetaType::QVector3D:
-            setting.setAttribute("defaultValue", QString("%1 %2 %3").arg(qvariant_cast<QVector3D>(item.defaultValue).x()).arg(qvariant_cast<QVector3D>(item.defaultValue).y()).arg(qvariant_cast<QVector3D>(item.defaultValue).z()));
-            setting.setAttribute("value", QString("%1 %2 %3").arg(qvariant_cast<QVector3D>(item.value).x()).arg(qvariant_cast<QVector3D>(item.value).y()).arg(qvariant_cast<QVector3D>(item.value).z()));
+            setting.setAttribute("defaultValue", QString("%1 %2 %3").arg(double(qvariant_cast<QVector3D>(item.defaultValue).x()))
+                                  .arg(double(qvariant_cast<QVector3D>(item.defaultValue).y())).arg(double(qvariant_cast<QVector3D>(item.defaultValue).z())));
+            setting.setAttribute("value", QString("%1 %2 %3").arg(double(qvariant_cast<QVector3D>(item.value).x()))
+                                 .arg(double(qvariant_cast<QVector3D>(item.value).y())).arg(double(qvariant_cast<QVector3D>(item.value).z())));
             break;
         case QMetaType::Float:
         case QMetaType::Double:
@@ -279,7 +283,7 @@ void Preferences::LoadDefaults()
 
     for (QMap<QString, SettingsItem>::const_iterator i = m_settings.constBegin(); i != m_settings.constEnd(); i++)
     {
-        qDebug() << i.key() << " " << i.value().defaultValue;
+//        qDebug() << i.key() << " " << i.value().defaultValue;
         insert(i.key(), i.value().defaultValue);
     }
 }
@@ -442,7 +446,8 @@ void Preferences::insert(const QString &key, const QVariant &value)
     }
     else
     {
-        qDebug("Preferences::value %s \"%s\" missing", value.typeName(), qUtf8Printable(key));
+        if (static_cast<QMetaType::Type>(value.type()) != QMetaType::QByteArray)
+            qDebug("Preferences::value %s \"%s\" missing", value.typeName(), qUtf8Printable(key));
         item.key = key;
         item.display = false;
         item.label = key;

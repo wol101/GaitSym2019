@@ -7,6 +7,9 @@ import argparse
 import glob
 import re
 
+# this line means that all the math functions do not require the math. prefix
+from math import *
+
 def apply_genome():
 
     parser = argparse.ArgumentParser(description='Apply a genome to a GaitSym XML config file')
@@ -103,6 +106,9 @@ def process_insert(contents, genes, args):
     insert_string = contents[next_index_start + 2: next_index_end]
     if args.verbose:
         print('insert_string "%s" found' % (insert_string))
+    # replacing g[int] with g(int) here because this causes problems later
+    # this replacement does not allow the int to be a function
+    insert_string = re.sub(r'g\[(\d+)\]', r'g(\1)', insert_string)
     value = parse_insert(insert_string, genes)
     if args.verbose:
         print('replaced with "%.17g"' % (value))
@@ -156,7 +162,7 @@ def parse_insert(insert_string, genes):
         return parse_insert('%s%s%s'% (prefix, result, suffix), genes)
 
     # we could now handle the other operators in order of precidence unaries, **^, */%, +-, booleans but there are a few gotchas (e.g. identifying unary operators) and python can now handle this
-
+    # print(insert_string)
     return eval(insert_string)
 
 def find_unmatched_close_bracket(input_string):

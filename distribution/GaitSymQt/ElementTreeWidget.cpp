@@ -119,9 +119,8 @@ void ElementTreeWidget::menuRequest(const QPoint &pos)
     if (!m_simulation) return;
     QTreeWidgetItem *item = this->itemAt(pos);
     QMenu menu(this);
-    switch(m_mainWindow->mode())
+    if (m_mainWindow->mode() == MainWindow::constructionMode)
     {
-    case MainWindow::constructionMode:
         if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "BODY")
         {
             QAction *action = menu.addAction(tr("Create New Body..."));
@@ -205,25 +204,24 @@ void ElementTreeWidget::menuRequest(const QPoint &pos)
             menu.addAction(tr("Delete Driver..."));
             menu.addSeparator();
         }
-        break;
-    case MainWindow::runMode:
-        if (item->type() == ROOT_ITEM_TYPE
-//                && (item->data(0, Qt::DisplayRole).toString() == "BODY" ||
-//                    item->data(0, Qt::DisplayRole).toString() == "MARKER" ||
-//                    item->data(0, Qt::DisplayRole).toString() == "JOINT" ||
-//                    item->data(0, Qt::DisplayRole).toString() == "GEOM" ||
-//                    item->data(0, Qt::DisplayRole).toString() == "MUSCLE" ||
-//                    item->data(0, Qt::DisplayRole).toString() == "FLUIDSAC" )
-                )
-        {
-            menu.addAction(tr("All visible"));
-            menu.addAction(tr("None visible"));
-            menu.addSeparator();
-            menu.addAction(tr("All output"));
-            menu.addAction(tr("None output"));
-            menu.addSeparator();
-        }
     }
+
+    if (item->type() == ROOT_ITEM_TYPE
+            && (item->data(0, Qt::DisplayRole).toString() == "BODY" ||
+                item->data(0, Qt::DisplayRole).toString() == "MARKER" ||
+                item->data(0, Qt::DisplayRole).toString() == "JOINT" ||
+                item->data(0, Qt::DisplayRole).toString() == "GEOM" ||
+                item->data(0, Qt::DisplayRole).toString() == "MUSCLE" ||
+                item->data(0, Qt::DisplayRole).toString() == "FLUIDSAC" ))
+    {
+        menu.addAction(tr("All visible"));
+        menu.addAction(tr("None visible"));
+        menu.addSeparator();
+        menu.addAction(tr("All output"));
+        menu.addAction(tr("None output"));
+        menu.addSeparator();
+    }
+
     if (menu.isEmpty()) return;
 
     QPoint gp = this->viewport()->mapToGlobal(pos);
@@ -560,6 +558,20 @@ int ElementTreeWidget::removeDataTarget(const QString &name)
     m_dataTargetTree->removeChild(currentChild);
     delete currentChild;
     return index;
+}
+
+bool ElementTreeWidget::removeName(const QString &name)
+{
+    if (removeBody(name) != -1) return true;
+    if (removeMarker(name) != -1) return true;
+    if (removeJoint(name) != -1) return true;
+    if (removeGeom(name) != -1) return true;
+    if (removeMuscle(name) != -1) return true;
+    if (removeFluidSac(name) != -1) return true;
+    if (removeDriver(name) != -1) return true;
+    if (removeDataTarget(name) != -1) return true;
+    if (removeController(name) != -1) return true;
+    return false;
 }
 
 bool ElementTreeWidget::BinarySearch(QTreeWidgetItem *A, const QString &value, int *index)

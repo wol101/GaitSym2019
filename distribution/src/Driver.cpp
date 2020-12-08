@@ -30,6 +30,7 @@ Driver::~Driver()
 {
 }
 
+
 Drivable *Driver::GetTarget(const std::string &name)
 {
     if (name.size() == 0)
@@ -72,9 +73,9 @@ std::string Driver::dumpToString()
     if (firstDump())
     {
         setFirstDump(false);
-        ss << "Time\tValue\n";
+        ss << "Name\tTime\tValue\n";
     }
-    ss << name() << simulation()->GetTime() << "\t" << value() << "\n";
+    ss << name() << "\t" << simulation()->GetTime() << "\t" << value() << "\n";
     return ss.str();
 }
 
@@ -93,14 +94,24 @@ std::string *Driver::createFromAttributes()
     std::vector<std::string> targetNames;
     pystring::split(buf, targetNames);
     m_targetList.clear();
+    std::vector<NamedObject *> upstreamObjects;
+    upstreamObjects.reserve(targetNames.size());
     for (size_t i = 0; i < targetNames.size(); i++)
     {
         auto muscleIter = simulation()->GetMuscleList()->find(targetNames[i]);
-        if (muscleIter != simulation()->GetMuscleList()->end()) this->AddTarget(muscleIter->second.get());
+        if (muscleIter != simulation()->GetMuscleList()->end())
+        {
+            this->AddTarget(muscleIter->second.get());
+            upstreamObjects.push_back(muscleIter->second.get());
+        }
         else
         {
             auto controllerIter = simulation()->GetControllerList()->find(targetNames[i]);
-            if (controllerIter != simulation()->GetControllerList()->end()) this->AddTarget(controllerIter->second.get());
+            if (controllerIter != simulation()->GetControllerList()->end())
+            {
+                this->AddTarget(controllerIter->second.get());
+                upstreamObjects.push_back(controllerIter->second.get());
+            }
             else
             {
                 setLastError("Driver ID=\""s + name() +"\" TargetID=\""s + buf + "\" not found"s);
@@ -121,6 +132,7 @@ std::string *Driver::createFromAttributes()
         this->setInterp(GSUtil::Bool(buf));
     }
 
+    setUpstreamObjects(upstreamObjects);
     return nullptr;
 }
 

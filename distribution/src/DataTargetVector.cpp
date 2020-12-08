@@ -103,20 +103,19 @@ double DataTargetVector::calculateError(double time)
     size_t index, indexNext;
     auto lowerBound = std::lower_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
     auto upperBound = std::upper_bound(targetTimeList()->begin(), targetTimeList()->end(), time);
-    // time < lowerbound
-    if (lowerBound == targetTimeList()->end())
+    if (lowerBound == targetTimeList()->begin()) // time <= lowest value in the list
     {
         index = 0;
         indexNext = index;
     }
-    else if (upperBound == targetTimeList()->end())
+    else if (upperBound == targetTimeList()->end()) // time > highest value in the list
     {
         index = targetTimeList()->size() - 1;
         indexNext = index;
     }
     else
     {
-        index = std::distance(targetTimeList()->begin(), lowerBound);
+        index = std::distance(targetTimeList()->begin(), lowerBound) - 1; // subtracting 1 because lower bound gives an index 1 higher than expected (IMO)
         indexNext = std::min(index + 1, targetTimeList()->size() - 1);
     }
 
@@ -291,6 +290,7 @@ std::string *DataTargetVector::createFromAttributes()
         m_VValueList.push_back(v);
     }
 
+    if (m_Target) setUpstreamObjects({m_Target});
     return nullptr;
 }
 

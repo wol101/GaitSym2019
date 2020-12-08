@@ -171,6 +171,8 @@ private:
     double m_AngularDampingThreshold = -1;
     double m_MaxAngularSpeed = -1;
 
+    bool m_constructionMode = false;
+
 
 
 };

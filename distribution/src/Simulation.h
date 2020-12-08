@@ -115,8 +115,9 @@ public:
 
     std::vector<std::string> GetNameList() const;
     std::set<std::string> GetNameSet() const;
+    std::vector<NamedObject *> GetObjectList() const;
     NamedObject *GetNamedObject(const std::string &name) const;
-    std::map<std::string, Drivable *> GetDrivableList() const;
+    bool DeleteNamedObject(const std::string &name);
 
     bool HasAssembly();
 

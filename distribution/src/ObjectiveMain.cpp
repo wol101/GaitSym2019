@@ -47,7 +47,8 @@ ObjectiveMain::ObjectiveMain(int argc, const char **argv)
     m_argparse.AddArgument("-mc"s, "--outputModelStateAtCycle"s, "Output model state at this cycle"s, ""s, 1, false, ArgParse::Double);
     m_argparse.AddArgument("-mt"s, "--outputModelStateAtTime"s, "Output model state at this cycle"s, ""s, 1, false, ArgParse::Double);
     m_argparse.AddArgument("-mw"s, "--outputModelStateAtWarehouseDistance"s, "Output model state at this warehouse distance"s, ""s, 1, false, ArgParse::Double);
-    m_argparse.AddArgument("-wd"s, "--warehouseFailDistanceAbort"s, "Abort the simulation when the warehouse distance fails"s, "0"s, 1, false, ArgParse::Bool);
+    m_argparse.AddArgument("-wd"s, "--warehouseFailDistanceAbort"s, "Abort the simulation when the warehouse distance fails"s);
+    m_argparse.AddArgument("-de"s, "--debug"s, "Turn debugging on"s);
 
     m_argparse.AddArgument("-ol"s, "-outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
 
@@ -70,7 +71,7 @@ ObjectiveMain::ObjectiveMain(int argc, const char **argv)
     m_argparse.Get("--modelState"s, &m_outputModelStateFilename);
     m_argparse.Get("--inputWarehouse"s, &m_inputWarehouseFilename);
     m_argparse.Get("--outputWarehouse"s, &m_outputWarehouseFilename);
-
+    m_argparse.Get("--debug"s, &m_debug);
 }
 
 int ObjectiveMain::Run()
@@ -120,7 +121,9 @@ int ObjectiveMain::ReadModel()
     DataFile myFile;
     myFile.SetExitOnError(true);
 
+    if (m_debug) std::cerr << "Reading file \"" << m_configFilename << "\"\n";
     myFile.ReadFile(m_configFilename);
+    if (m_debug) std::cerr << "Read " << myFile.GetSize() << " bytes\n";
 
     // create the simulation object
     m_simulation = std::make_unique<Simulation>();
@@ -131,11 +134,13 @@ int ObjectiveMain::ReadModel()
     if (m_inputWarehouseFilename.size()) m_simulation->AddWarehouse(m_inputWarehouseFilename);
     if (m_outputModelStateAtWarehouseDistance >= 0) m_simulation->SetOutputModelStateAtWarehouseDistance(m_outputModelStateAtWarehouseDistance);
 
+    if (m_debug) std::cerr << "Loading model\n";
     if (m_simulation->LoadModel(myFile.GetRawData(), myFile.GetSize()))
     {
         m_simulation.reset();
         return 1;
     }
+    if (m_debug) std::cerr << "Success\n";
 
     // late initialisation options
     if (m_simulationTimeLimit >= 0) m_simulation->SetTimeLimit(m_simulationTimeLimit);

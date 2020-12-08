@@ -26,83 +26,50 @@ CyclicDriver::~CyclicDriver()
 {
 }
 
-void CyclicDriver::SetPhaseDelay(double phaseDelay)
-{
-    m_PhaseDelay = phaseDelay;
-}
-
-// Note list is delt0, v0, delt1, v1, delt2, v2 etc
-// times are intervals not absolute simulation times
-void CyclicDriver::SetValuesAndDurations(int size, double *values, double *durations)
-{
-    if (size <= 0)
-    {
-        std::cerr << "CyclicDriver::SetValueDurationPairs error: size = " << size << "\n";
-        return;
-    }
-    m_ListLength = size;
-    m_DurationList.resize(size_t(m_ListLength + 1));
-    m_ValueList.resize(size_t(m_ListLength + 1));
-    m_DurationList[0] = 0;
-    for (int i = 0 ; i < m_ListLength; i++)
-    {
-        m_DurationList[size_t(i) + 1] = durations[size_t(i)] + m_DurationList[size_t(i)]; // fill the list with absolute times
-        m_ValueList[size_t(i)] = values[size_t(i)];
-    }
-    m_ValueList[size_t(m_ListLength)] = m_ValueList[0]; // this lets the interp version wrap properly
-}
-
 void CyclicDriver::Update()
 {
     assert(simulation()->GetStepCount() == lastStepCount() + 1);
     setLastStepCount(simulation()->GetStepCount());
 
+    if (m_index >= m_valueList.size())
+    {
+        std::cerr << "Error in StepDriver::Update(): m_index should not be >= m_valueList.size()\n";
+        return;
+    }
+
     // account for phase
     // m_PhaseDelay is a relative value (0 to 1) but the time offset needs to be positive
-    double timeOffset = m_DurationList[size_t(m_ListLength)] - m_DurationList[size_t(m_ListLength)] * m_PhaseDelay;
+    double cycleTime = m_changeTimes[m_changeTimes.size() - 2];
+    double timeOffset = cycleTime * m_PhaseDelay;
     double time = simulation()->GetTime() + timeOffset;
+    time = std::fmod(time, cycleTime);
 
-    double rem = fmod(time, m_DurationList[size_t(m_ListLength)]);
+    // this is an optimisation that assumes this routine gets called a lot of times with the same index
+    // which it usually does because the integration step size is small
+    if (time >= m_changeTimes[m_index + 1] || time < m_changeTimes[m_index])
+    {
+        // m_changeTimes starts at 0 and ends at DBL_MAX
+        // when time >= 0 and time < m_changeTimes[1] upper_bound will return 1
+        // when time >= m_changeTimes[1] and time < m_changeTimes[2] upper_bound will return 2
+        // etc.
+        auto bound = std::upper_bound(m_changeTimes.begin(), m_changeTimes.end(), time);
+        m_index = std::distance(m_changeTimes.begin(), bound) - 1;
+    }
 
     if (Interp() == false)
     {
-        // optimisation because most of the time this is called it just returns the value
-        // used previously
-        if (m_DurationList[size_t(m_LastIndex)] <= rem && m_DurationList[size_t(m_LastIndex) + 1] > rem)
-        {
-            setValue(m_ValueList[size_t(m_LastIndex)]);
-        }
+        if (m_index < m_valueList.size())
+            setValue(m_valueList[m_index]);
         else
-        {
-            m_LastIndex = GSUtil::BinarySearchRange<double>(m_DurationList.data(), m_ListLength, rem);
-
-            if (m_LastIndex == -1) m_LastIndex = 0; // fixup for not found errors
-            setValue(m_ValueList[size_t(m_LastIndex)]);
-        }
+            setValue(*m_valueList.end());
     }
     else
     {
-        // optimisation because most of the time this is called it just returns the value
-        // used previously
-        if (m_DurationList[size_t(m_LastIndex)] <= rem && m_DurationList[size_t(m_LastIndex) + 1] > rem)
-        {
-            setValue(((rem - m_DurationList[size_t(m_LastIndex)]) / (m_DurationList[size_t(m_LastIndex) + 1] - m_DurationList[size_t(m_LastIndex)])) *
-                    (m_ValueList[size_t(m_LastIndex) + 1] - m_ValueList[size_t(m_LastIndex)]) + m_ValueList[size_t(m_LastIndex)]);
-        }
+        if (m_index < m_valueList.size() - 1)
+            setValue(((time - m_changeTimes[m_index]) / (m_changeTimes[m_index + 1] - m_changeTimes[m_index])) * (m_valueList[m_index + 1] - m_valueList[m_index]) + m_valueList[m_index]);
         else
-        {
-            m_LastIndex = GSUtil::BinarySearchRange<double>(m_DurationList.data(), m_ListLength, rem);
-
-            if (m_LastIndex == -1) m_LastIndex = 0; // fixup for not found errors
-            setValue(((rem - m_DurationList[size_t(m_LastIndex)]) / (m_DurationList[size_t(m_LastIndex) + 1] - m_DurationList[size_t(m_LastIndex)])) *
-                    (m_ValueList[size_t(m_LastIndex) + 1] - m_ValueList[size_t(m_LastIndex)]) + m_ValueList[size_t(m_LastIndex)]);
-        }
+            setValue(*m_valueList.end());
     }
-}
-
-double CyclicDriver::GetCycleTime()
-{
-    return m_DurationList[size_t(m_ListLength)];
 }
 
 // this function initialises the data in the object based on the contents
@@ -114,40 +81,27 @@ std::string *CyclicDriver::createFromAttributes()
     if (Driver::createFromAttributes()) return lastErrorPtr();
 
     std::string buf;
-    if (findAttribute("Steps"s, &buf) == nullptr)
+    buf.reserve(100000);
+    if (findAttribute("Values"s, &buf) == nullptr) return lastErrorPtr();
+    std::vector<double> values;
+    GSUtil::Double(buf, &values);
+    if (findAttribute("Durations"s, &buf) == nullptr) return lastErrorPtr();
+    std::vector<double> durations;
+    GSUtil::Double(buf, &durations);
+    if (values.size() != durations.size())
     {
-        buf.reserve(100000);
-        if (findAttribute("Values"s, &buf) == nullptr) return lastErrorPtr();
-        int numValues = GSUtil::CountTokens(buf.c_str());
-        std::vector<double> values;
-        values.reserve(size_t(numValues));
-        GSUtil::Double(buf, numValues, values.data());
-        if (findAttribute("Durations"s, &buf) == nullptr) return lastErrorPtr();
-        int numDurations = GSUtil::CountTokens(buf.c_str());
-        if (numDurations != numValues)
-        {
-            setLastError("CyclicDriver ID=\""s + name() + "\" number of values ("s + std::to_string(numValues) + ") must match number of durations ("s + std::to_string(numDurations) + ")"s);
-            return lastErrorPtr();
-        }
-        std::vector<double> durations;
-        durations.reserve(size_t(numDurations));
-        GSUtil::Double(buf, numDurations, durations.data());
-        this->SetValuesAndDurations(numValues, values.data(), durations.data());
+        setLastError("StepDriver ID=\""s + name() + "\" number of values ("s + std::to_string(values.size()) + ") must match number of durations ("s + std::to_string(durations.size()) + ")"s);
+        return lastErrorPtr();
     }
-    else
-    {
-        int steps = GSUtil::Int(buf);
-        buf.reserve(size_t(steps * 32));
-        if (findAttribute("Values"s, &buf) == nullptr) return lastErrorPtr();
-        std::vector<double> values;
-        values.reserve(size_t(steps));
-        GSUtil::Double(buf, steps, values.data());
-        if (findAttribute("Durations"s, &buf) == nullptr) return lastErrorPtr();
-        std::vector<double> durations;
-        durations.reserve(size_t(steps));
-        GSUtil::Double(buf, steps, durations.data());
-        this->SetValuesAndDurations(steps, values.data(), durations.data());
-    }
+    m_valueList = values;
+    m_durationList = durations;
+    m_changeTimes.resize(m_durationList.size() + 2);
+    m_changeTimes[0] = 0;
+    for (size_t i =0; i < m_durationList.size(); i++) m_changeTimes[i + 1] = m_changeTimes[i] + m_durationList[i];
+    m_changeTimes[m_durationList.size() + 1] = DBL_MAX;
+
+    if (findAttribute("PhaseDelay"s, &buf) == nullptr) return lastErrorPtr();
+    m_PhaseDelay =  GSUtil::Double(buf);
 
     return nullptr;
 }
@@ -157,11 +111,29 @@ void CyclicDriver::appendToAttributes()
 {
     Driver::appendToAttributes();
     std::string buf;
-    buf.reserve(size_t(m_ListLength) * 32); // should be big enough but it will grow if necessary anyway
+    buf.reserve(m_durationList.size() * 32); // should be big enough but it will grow if necessary anyway
     setAttribute("Type"s, "Cyclic"s);
-    setAttribute("Steps"s, *GSUtil::ToString(m_ListLength, &buf));
+    setAttribute("Durations"s, *GSUtil::ToString(m_durationList.data(), m_durationList.size(), &buf));
+    setAttribute("Values"s, *GSUtil::ToString(m_valueList.data(), m_valueList.size(), &buf));
     setAttribute("PhaseDelay"s, *GSUtil::ToString(m_PhaseDelay, &buf));
-    setAttribute("Durations"s, *GSUtil::ToString(m_DurationList.data(), size_t(m_ListLength), &buf));
-    setAttribute("Values"s, *GSUtil::ToString(m_ValueList.data(), size_t(m_ListLength), &buf));
 }
 
+std::vector<double> CyclicDriver::valueList() const
+{
+    return m_valueList;
+}
+
+void CyclicDriver::setValueList(const std::vector<double> &valueList)
+{
+    m_valueList = valueList;
+}
+
+std::vector<double> CyclicDriver::durationList() const
+{
+    return m_durationList;
+}
+
+void CyclicDriver::setDurationList(const std::vector<double> &durationList)
+{
+    m_durationList = durationList;
+}

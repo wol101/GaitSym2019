@@ -204,6 +204,21 @@ inline static double *Double(const std::string &buf, int n, double *d)
     return Double(buf.c_str(), n, d);
 }
 
+inline static std::vector<double> *Double(const std::string &buf, std::vector<double> *d)
+{
+    const char *cptr = buf.data();
+    char *ptr = nullptr;
+    double v;
+    while (true)
+    {
+        v = strtod(cptr, &ptr);
+        if (ptr == cptr) break; // this is the no conversion condition
+        cptr = ptr;
+        d->push_back(v);
+    }
+    return d;
+}
+
 inline static int Int(const std::string &buf)
 {
     return int(strtol(buf.c_str(), nullptr, 0));

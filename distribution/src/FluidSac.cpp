@@ -304,6 +304,10 @@ std::string *FluidSac::createFromAttributes()
     m_vertexList.resize(m_markerList.size());
     m_pointForceList.resize(m_triangleList.size() * 3);
 
+    std::vector<NamedObject *> upstreamObjects;
+    upstreamObjects.reserve(m_markerList.size());
+    for (auto &&it : m_markerList) upstreamObjects.push_back(it);
+    setUpstreamObjects(upstreamObjects);
     return nullptr;
 }
 

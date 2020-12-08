@@ -505,6 +505,7 @@ std::string *Marker::createFromAttributes()
     if (findAttribute("Position"s, &buf) == nullptr) return lastErrorPtr();
     this->SetPosition(buf);
 
+    if (m_body) setUpstreamObjects({m_body});
     return nullptr;
 }
 
@@ -540,15 +541,5 @@ Body *Marker::GetBody() const
 void Marker::SetBody(Body *body)
 {
     m_body = body;
-}
-
-const std::set<NamedObject *> *Marker::dependentList() const
-{
-    return &m_dependentList;
-}
-
-void Marker::addDependent(NamedObject *namedObject)
-{
-    m_dependentList.insert(namedObject);
 }
 

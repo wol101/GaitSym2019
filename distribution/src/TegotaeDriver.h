@@ -85,6 +85,13 @@ private:
     std::map<std::string, Drivable *> m_targetList1;  // target list for the Y component of the error
     std::map<std::string, Drivable *> m_targetList2;  // target list for the Z component of the error
 
+    // these optional drivers allow me to alter the inputs
+    Driver *m_omegaDriver = nullptr;
+    Driver *m_sigmaDriver = nullptr;
+    Driver *m_ADriver = nullptr;
+    Driver *m_AprimeDriver = nullptr;
+    Driver *m_BDriver = nullptr;
+
 };
 
 #endif // QUADRUPEDALTEGOTAECONTROLLER_H

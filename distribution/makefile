@@ -502,7 +502,6 @@ $(addprefix distribution/src/, $(GAITSYMHEADER)):
 gaitsym_distribution_extras:
 	cp -rf ann_1.1.2 distribution/
 	cp -rf exprtk distribution/
-	cp -rf GaitSymGaul distribution/
 	cp -rf GaitSymQt distribution/
 	cp -rf libgwavi distribution/
 	cp -rf ode-0.15 distribution/
@@ -510,6 +509,7 @@ gaitsym_distribution_extras:
 	cp -rf rapidxml-1.13 distribution/
 	cp -rf enet-1.3.14 distribution/
 	cp -rf tinyply distribution/
+	cp -rf glextrusion distribution/
 	cp -rf scripts distribution/
 	cp makefile distribution/
 	find distribution -depth -type d -name CVS -print -exec rm -rf {} \;

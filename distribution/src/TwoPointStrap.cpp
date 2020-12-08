@@ -190,15 +190,6 @@ int TwoPointStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, con
     return 0;
 }
 
-std::set<Marker *> *TwoPointStrap::updateDependentMarkers()
-{
-    Strap::updateDependentMarkers();
-    dependentMarkers()->insert(m_originMarker);
-    dependentMarkers()->insert(m_insertionMarker);
-    for (auto it : *dependentMarkers()) it->addDependent(this);
-    return dependentMarkers();
-}
-
 std::string *TwoPointStrap::createFromAttributes()
 {
     if (Strap::createFromAttributes()) return lastErrorPtr();
@@ -222,6 +213,7 @@ std::string *TwoPointStrap::createFromAttributes()
     }
     this->SetInsertion(insertionMarker->second.get());
 
+    setUpstreamObjects({m_originMarker, m_insertionMarker});
     return nullptr;
 }
 

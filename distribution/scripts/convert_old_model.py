@@ -16,6 +16,7 @@ def convert_old_model():
     parser.add_argument("-m1", "--mesh1regex", nargs=2, help="Set mesh1 based on a regex search and replace of GraphicFile")
     parser.add_argument("-m2", "--mesh2regex", nargs=2, help="Set mesh2 based on a regex search and replace of GraphicFile")
     parser.add_argument("-m3", "--mesh3regex", nargs=2, help="Set mesh3 based on a regex search and replace of GraphicFile")
+    parser.add_argument("-t", "--tag_attribute_value", nargs=3, action="append", help="add a new attribute to a tag. Format TAG ATTRIBUTE VALUE")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")
     parser.add_argument("-v", "--verbose", action="store_true", help="write out more information whilst processing")
     args = parser.parse_args()
@@ -31,6 +32,15 @@ def convert_old_model():
     if os.path.exists(args.output_xml_file) and not args.force:
         print("Error: \"%s\" exists. Use --force to overwrite" % (args.output_xml_file))
         sys.exit(1)
+        
+    # handle the attributes to add
+    add_tags = []
+    add_attributes = []
+    add_values = []
+    for tag_attribute_value in args.tag_attribute_value:
+        add_tags.append(tag_attribute_value[0])
+        add_attributes.append(tag_attribute_value[1])
+        add_values.append(tag_attribute_value[2])
 
     # read the input XML file
     if args.verbose: print('Reading "%s"' % (args.input_xml_file))
@@ -48,6 +58,10 @@ def convert_old_model():
     driver_list = {}
     data_target_list = {}
     for child in input_root:
+        indexes = [i for i, e in enumerate(add_tags) if e == child.tag]
+        for index in indexes:
+            child.attrib[add_attributes[index]] = add_values[index]
+    
         if child.tag == "GLOBAL":
             global_element = child
             cfm = global_element.attrib['CFM']
@@ -126,7 +140,7 @@ def convert_old_model():
         new_tree.append(data_target_list[key])
     if args.verbose: print('Creating the DRIVERs')
     for key in driver_list:
-        new_tree.append(driver_list[key])
+        new_tree.append(convert_driver(driver_list[key]))
 
     # now do some generic size and colour fixes
     if args.verbose: print('Doing some fixups')
@@ -134,6 +148,8 @@ def convert_old_model():
         if child.tag == "GLOBAL":
             child.attrib["Size1"] = "1.0"
             child.attrib["Colour1"] = "Purple1"
+            if child.attrib["FitnessType"] == "DistanceTravelled":
+                child.attrib["FitnessType"] = "KinematicMatch"
 
         if child.tag == "BODY":
             child.attrib["Size1"] = "0.1"
@@ -646,6 +662,26 @@ def convert_muscle(muscle, marker_list, markers_only):
             sys.exit(1)
 
     return (new_strap, new_muscle)
+    
+def convert_driver(driver_element):
+    new_driver = xml.etree.ElementTree.Element("DRIVER")
+    new_driver.tail = "\n"
+    required_attributes = ["Type", "ID", "TargetID"]
+    test_required_attributes(driver_element, required_attributes, required_only_flag = False, quiet_flag = True)
+    for name in driver_element.attrib:
+        new_driver.attrib[name] = driver_element.attrib[name]
+    if new_driver.attrib["Type"] == "Cyclic" or new_driver.attrib["Type"] == "Cyclic":
+        if "DurationValuePairs" in new_driver.attrib:
+            tokens = new_driver.attrib["DurationValuePairs"].split()
+            durations = []
+            values = []
+            for i in range(0, len(tokens), 2):
+                durations.append(tokens[i])
+                values.append(tokens[i + 1])
+        new_driver.attrib["Durations"] = " ".join(durations)
+        new_driver.attrib["Values"] = " ".join(values)
+    new_driver.attrib["TargetIDList"] = new_driver.attrib["TargetID"]
+    return new_driver
 
 def test_required_attributes(element, required_attributes, required_only_flag, quiet_flag):
     attributes_count = [0] * len(required_attributes)

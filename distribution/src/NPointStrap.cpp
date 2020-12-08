@@ -323,19 +323,6 @@ int NPointStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const
     return 0;
 }
 
-std::set<Marker *> *NPointStrap::updateDependentMarkers()
-{
-    Strap::updateDependentMarkers();
-    dependentMarkers()->insert(m_originMarker);
-    dependentMarkers()->insert(m_insertionMarker);
-    for (size_t i = 0; i < m_ViaPointMarkerList.size(); i++)
-    {
-        dependentMarkers()->insert(m_ViaPointMarkerList[i]);
-        m_ViaPointMarkerList[i]->addDependent(this);
-    }
-    return dependentMarkers();
-}
-
 std::string *NPointStrap::createFromAttributes()
 {
     if (Strap::createFromAttributes()) return lastErrorPtr();
@@ -381,6 +368,12 @@ std::string *NPointStrap::createFromAttributes()
     }
     this->SetViaPoints(&viaPointMarkerList);
 
+    std::vector<NamedObject *> upstreamObjects;
+    upstreamObjects.reserve(viaPointMarkerList.size() + 2);
+    upstreamObjects.push_back(m_originMarker);
+    upstreamObjects.push_back(m_insertionMarker);
+    for (auto &&it : viaPointMarkerList) upstreamObjects.push_back(it);
+    setUpstreamObjects(upstreamObjects);
     return nullptr;
 }
 

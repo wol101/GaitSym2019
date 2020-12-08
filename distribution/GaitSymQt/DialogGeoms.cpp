@@ -123,6 +123,9 @@ void DialogGeoms::accept() // this catches OK and return/enter
             m_outputGeom->setSize2(m_properties["GeomSize2"].value.toDouble());
     }
 
+    m_outputGeom->saveToAttributes();
+    m_outputGeom->createFromAttributes();
+
     Preferences::insert("DialogGeomsGeometry", saveGeometry());
     QDialog::accept();
 }

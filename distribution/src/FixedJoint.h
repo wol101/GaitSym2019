@@ -31,8 +31,7 @@ class FixedJoint: public Joint
     SMART_ENUM(LowPassType, lowPassTypeStrings, lowPassTypeCount, NoLowPass, MovingAverageLowPass, Butterworth2ndOrderLowPass);
 //    enum LowPassType { NoLowPass = 0, MovingAverageLowPass, Butterworth2ndOrderLowPass };
 
-
-
+    virtual void LateInitialisation();
     void SetFixed();
 
     void SetCrossSection(const std::vector<unsigned char> &stiffness, size_t nx, size_t ny, double dx, double dy);

@@ -11,42 +11,79 @@
 
 #include "FacetedPolyline.h"
 
+#include "../glextrusion/gle.h"
+
 #include <iostream>
 #include <cmath>
 #include <memory>
 
-FacetedPolyline::FacetedPolyline(std::vector<pgd::Vector3> *polyline, double radius, size_t n, const QColor &blendColour, double blendFraction)
+FacetedPolyline::FacetedPolyline(std::vector<pgd::Vector3> *polyline, double radius, size_t n, const QColor &blendColour, double blendFraction, bool internal)
 {
     setBlendColour(blendColour, blendFraction);
-    std::vector<pgd::Vector3> profile;
-    AllocateMemory(n * (polyline->size() * 2 + 2));
-
-    // need to add extra tails to the polyline for direction padding
-    std::vector<pgd::Vector3> newPolyline;
-    newPolyline.reserve(polyline->size() + 2);
-    pgd::Vector3 v0 = (*polyline)[1] - (*polyline)[0];
-    pgd::Vector3 v1 = (*polyline)[0] - v0;
-    newPolyline.push_back(v1);
-    for (size_t i = 0; i < polyline->size(); i++) newPolyline.push_back((*polyline)[i]);
-    v0 = (*polyline)[polyline->size() - 1] - (*polyline)[polyline->size() - 2];
-    v1 = (*polyline)[polyline->size() - 1] + v0;
-    newPolyline.push_back(v1);
-
-    // create the profile
-    double delTheta = 2 * M_PI / n;
-    double theta = M_PI / 2;
-    for (size_t i = 0; i < n; i++)
+    if (internal)
     {
-        v0.x = cos(theta) * radius;
-        v0.y = sin(theta) * radius;
-        v0.z = 0;
-        theta -= delTheta;
-        profile.push_back(v0);
+        std::vector<pgd::Vector3> profile;
+        AllocateMemory(n * (polyline->size() * 2 + 2));
+
+        // need to add extra tails to the polyline for direction padding
+        std::vector<pgd::Vector3> newPolyline;
+        newPolyline.reserve(polyline->size() + 2);
+        pgd::Vector3 v0 = (*polyline)[1] - (*polyline)[0];
+        pgd::Vector3 v1 = (*polyline)[0] - v0;
+        newPolyline.push_back(v1);
+        for (size_t i = 0; i < polyline->size(); i++) newPolyline.push_back((*polyline)[i]);
+        v0 = (*polyline)[polyline->size() - 1] - (*polyline)[polyline->size() - 2];
+        v1 = (*polyline)[polyline->size() - 1] + v0;
+        newPolyline.push_back(v1);
+
+        // create the profile
+        double delTheta = 2 * M_PI / n;
+        double theta = M_PI / 2;
+        for (size_t i = 0; i < n; i++)
+        {
+            v0.x = cos(theta) * radius;
+            v0.y = sin(theta) * radius;
+            v0.z = 0;
+            theta -= delTheta;
+            profile.push_back(v0);
+        }
+
+        Extrude(&newPolyline, &profile);
+    }
+    else
+    {
+        gleSetNumSides(int(n));
+        size_t nPoints = polyline->size() + 2;
+        auto point_array = std::make_unique<gleDouble[][3]>(nPoints);
+        pgd::Vector3 v0 = (*polyline)[1] - (*polyline)[0];
+        pgd::Vector3 v1 = (*polyline)[0] - v0;
+        point_array[0][0] = v1.x; point_array[0][1] = v1.y; point_array[0][2] = v1.z;
+        for (size_t i = 1 ; i < nPoints - 1; i++) { point_array[i][0] = (*polyline)[i - 1].x; point_array[i][1] = (*polyline)[i - 1].y; point_array[i][2] = (*polyline)[i - 1].z; }
+        v0 = (*polyline)[polyline->size() - 1] - (*polyline)[polyline->size() - 2];
+        v1 = (*polyline)[polyline->size() - 1] + v0;
+        point_array[nPoints][0] = v1.x; point_array[nPoints][1] = v1.y; point_array[nPoints][2] = v1.z;
+        auto color_array = std::make_unique<gleColor[]>(nPoints);
+        float r = blendColour.redF();
+        float g = blendColour.greenF();
+        float b = blendColour.blueF();
+        for (size_t i = 0 ; i < nPoints; i++) { color_array[i][0] = r; color_array[i][1] = g; color_array[i][2] = b; }
+        glePolyCylinder(int(nPoints),           /* num points in polyline */
+                        point_array.get(),      /* polyline vertces */
+                        color_array.get(),      /* colors at polyline verts */
+                        radius);                /* radius of polycylinder */
+//        auto color_array = std::make_unique<gleColor4f[]>(nPoints);
+//        float r = blendColour.redF();
+//        float g = blendColour.greenF();
+//        float b = blendColour.blueF();
+//        float a = blendColour.alphaF();
+//        for (size_t i = 0 ; i < nPoints; i++) { color_array[i][0] = r; color_array[i][1] = g; color_array[i][2] = b; color_array[i][3] = a; }
+//        glePolyCylinder_c4f(int(nPoints),       /* num points in polyline */
+//                        point_array.get(),      /* polyline vertces */
+//                        color_array.get(),      /* colors at polyline verts */
+//                        radius);                /* radius of polycylinder */
+        exit(1);
     }
 
-    Extrude(&newPolyline, &profile);
-
-//    qDebug() << "FacetedPolyline " << GetNumTriangles() << " triangles created\n";
 }
 
 // extrude profile along a poly line using sharp corners

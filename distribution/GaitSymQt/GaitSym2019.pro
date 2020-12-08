@@ -10,7 +10,7 @@
 VERSION = 2019
 AUTHOR = "Bill Sellers 2019"
 OBJECTS_DIR = obj
-QT += opengl xml gui
+QT += opengl xml gui svg
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = GaitSym2019
 TEMPLATE = app
@@ -36,8 +36,7 @@ macx {
         ../pystring \
         ../rapidxml-1.13 \
         ../src \
-        ../tinyply \
-        ../GaitSymGaul ../GaitSymGaul/gaul/src ../GaitSymGaul/gaul/util
+        ../tinyply
     LIBS += \
         -framework QTKit \
         -framework Cocoa \
@@ -58,6 +57,8 @@ win32 {
         BYTE_ORDER_LITTLE_ENDIAN \
         HAVE_MALLOC_H USE_UNIX_ERRORS NEED_BCOPY \
         _USE_MATH_DEFINES _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS \
+        DEBUG_OUTPUT \
+#        GL_32 \
         EXPERIMENTAL
     INCLUDEPATH += \
         ../ann_1.1.2/include \
@@ -71,8 +72,7 @@ win32 {
         ../pystring \
         ../rapidxml-1.13 \
         ../src \
-        ../tinyply \
-        ../GaitSymGaul ../GaitSymGaul/gaul/src ../GaitSymGaul/gaul/util
+        ../tinyply
     LIBS += -lGdi32 -lUser32 -lAdvapi32 -lWs2_32 -lWinmm
     HEADERS +=
         win32-msvc {
@@ -86,6 +86,10 @@ win32 {
         DEFINES += exprtk_disable_enhanced_features
         QMAKE_CXXFLAGS += -Wa,-mbig-obj
     }
+
+    # this line deletes the AboutDialog object file after linking which will force compile every time
+    # this is necessary because I use __TIME__ and __DATE__ in the About Dialog to get a build time
+    QMAKE_POST_LINK = C:\Windows\System32\cmd.exe /C "del obj\AboutDialog.obj"
 }
 
 unix:!macx {
@@ -93,6 +97,7 @@ unix:!macx {
         USE_QT \
         dIDEDOUBLE dTRIMESH_ENABLED dTRIMESH_OPCODE CCD_IDEDOUBLE dLIBCCD_ENABLED dTHREADING_INTF_DISABLED \
         HAVE_ALLOCA_H BYTE_ORDER_LITTLE_ENDIAN \
+        DEBUG_OUTPUT \
         EXPERIMENTAL
     INCLUDEPATH += \
         ../ann_1.1.2/include \
@@ -106,11 +111,14 @@ unix:!macx {
         ../pystring \
         ../rapidxml-1.13 \
         ../src \
-        ../tinyply \
-        ../GaitSymGaul ../GaitSymGaul/gaul/src ../GaitSymGaul/gaul/util
+        ../tinyply
     LIBS += -lX11 # -lXxf86vm
     HEADERS +=
     QMAKE_CXXFLAGS_RELEASE += -O3 -ffast-math
+
+    # this line deletes the AboutDialog object file after linking which will force compile every time
+    # this is necessary because I use __TIME__ and __DATE__ in the About Dialog to get a build time
+    QMAKE_POST_LINK = rm -f obj\AboutDialog.obj
 }
 
 CONFIG(debug, debug|release) {
@@ -122,50 +130,6 @@ CONFIG(release, debug|release) {
 }
 
 SOURCES += \
-    ../GaitSymGaul/callbacks.cpp \
-    ../GaitSymGaul/do_genetic_algorithm.cpp \
-    ../GaitSymGaul/do_next_ascent_hillclimbing.cpp \
-    ../GaitSymGaul/do_random_ascent_hillclimbing.cpp \
-    ../GaitSymGaul/do_simplex_search.cpp \
-    ../GaitSymGaul/do_simulated_annealling.cpp \
-    ../GaitSymGaul/do_tabu_search.cpp \
-    ../GaitSymGaul/gaul/src/ga_bitstring.cpp \
-    ../GaitSymGaul/gaul/src/ga_chromo.cpp \
-    ../GaitSymGaul/gaul/src/ga_climbing.cpp \
-    ../GaitSymGaul/gaul/src/ga_compare.cpp \
-    ../GaitSymGaul/gaul/src/ga_core.cpp \
-    ../GaitSymGaul/gaul/src/ga_crossover.cpp \
-    ../GaitSymGaul/gaul/src/ga_de.cpp \
-    ../GaitSymGaul/gaul/src/ga_deterministiccrowding.cpp \
-    ../GaitSymGaul/gaul/src/ga_gradient.cpp \
-    ../GaitSymGaul/gaul/src/ga_intrinsics.cpp \
-    ../GaitSymGaul/gaul/src/ga_io.cpp \
-    ../GaitSymGaul/gaul/src/ga_mutate.cpp \
-    ../GaitSymGaul/gaul/src/ga_optim.cpp \
-    ../GaitSymGaul/gaul/src/ga_qsort.cpp \
-    ../GaitSymGaul/gaul/src/ga_randomsearch.cpp \
-    ../GaitSymGaul/gaul/src/ga_rank.cpp \
-    ../GaitSymGaul/gaul/src/ga_replace.cpp \
-    ../GaitSymGaul/gaul/src/ga_sa.cpp \
-    ../GaitSymGaul/gaul/src/ga_seed.cpp \
-    ../GaitSymGaul/gaul/src/ga_select.cpp \
-    ../GaitSymGaul/gaul/src/ga_similarity.cpp \
-    ../GaitSymGaul/gaul/src/ga_simplex.cpp \
-    ../GaitSymGaul/gaul/src/ga_stats.cpp \
-    ../GaitSymGaul/gaul/src/ga_systematicsearch.cpp \
-    ../GaitSymGaul/gaul/src/ga_tabu.cpp \
-    ../GaitSymGaul/gaul/src/ga_utility.cpp \
-    ../GaitSymGaul/gaul/util/avltree.cpp \
-    ../GaitSymGaul/gaul/util/compatibility.cpp \
-    ../GaitSymGaul/gaul/util/linkedlist.cpp \
-    ../GaitSymGaul/gaul/util/log_util.cpp \
-    ../GaitSymGaul/gaul/util/memory_chunks.cpp \
-    ../GaitSymGaul/gaul/util/memory_util.cpp \
-    ../GaitSymGaul/gaul/util/nn_util.cpp \
-    ../GaitSymGaul/gaul/util/random_util.cpp \
-    ../GaitSymGaul/gaul/util/table_util.cpp \
-    ../GaitSymGaul/gaul/util/timer_util.cpp \
-    ../GaitSymGaul/utilities.cpp \
     ../ann_1.1.2/src/ANN.cpp \
     ../ann_1.1.2/src/bd_fix_rad_search.cpp \
     ../ann_1.1.2/src/bd_pr_search.cpp \
@@ -189,6 +153,19 @@ SOURCES += \
     ../enet-1.3.14/protocol.c \
     ../enet-1.3.14/unix.c \
     ../enet-1.3.14/win32.c \
+    ../glextrusion/ex_angle.c \
+    ../glextrusion/ex_cut_round.c \
+    ../glextrusion/ex_raw.c \
+    ../glextrusion/extrude.c \
+    ../glextrusion/intersect.c \
+    ../glextrusion/qmesh.c \
+    ../glextrusion/rot_prince.c \
+    ../glextrusion/rotate.c \
+    ../glextrusion/round_cap.c \
+    ../glextrusion/segment.c \
+    ../glextrusion/texgen.c \
+    ../glextrusion/urotate.c \
+    ../glextrusion/view.c \
     ../libgwavi/avi-utils.c \
     ../libgwavi/fileio.c \
     ../libgwavi/gwavi.c \
@@ -392,6 +369,8 @@ SOURCES += \
     BasicXMLSyntaxHighlighter.cpp \
     DialogAssembly.cpp \
     DialogBodyBuilder.cpp \
+    DialogCreateMirrorElements.cpp \
+    DialogCreateTestingDrivers.cpp \
     DialogDrivers.cpp \
     DialogGeoms.cpp \
     DialogGlobal.cpp \
@@ -402,6 +381,7 @@ SOURCES += \
     DialogOutputSelect.cpp \
     DialogPreferences.cpp \
     DialogProperties.cpp \
+    DialogRename.cpp \
     DoubleValidator.cpp \
     DrawBody.cpp \
     DrawFluidSac.cpp \
@@ -438,44 +418,6 @@ SOURCES += \
     main.cpp
 
 HEADERS += \
-    ../GaitSymGaul/callbacks.h \
-    ../GaitSymGaul/do_genetic_algorithm.h \
-    ../GaitSymGaul/do_next_ascent_hillclimbing.h \
-    ../GaitSymGaul/do_random_ascent_hillclimbing.h \
-    ../GaitSymGaul/do_simplex_search.h \
-    ../GaitSymGaul/do_simulated_annealling.h \
-    ../GaitSymGaul/do_tabu_search.h \
-    ../GaitSymGaul/gaul/src/gaul.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_bitstring.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_chromo.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_climbing.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_core.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_de.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_deterministiccrowding.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_gradient.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_intrinsics.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_optim.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_qsort.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_randomsearch.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_sa.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_similarity.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_simplex.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_systematicsearch.h \
-    ../GaitSymGaul/gaul/src/gaul/ga_tabu.h \
-    ../GaitSymGaul/gaul/util/gaul/avltree.h \
-    ../GaitSymGaul/gaul/util/gaul/compatibility.h \
-    ../GaitSymGaul/gaul/util/gaul/gaul_config.h \
-    ../GaitSymGaul/gaul/util/gaul/gaul_config_win.h \
-    ../GaitSymGaul/gaul/util/gaul/gaul_util.h \
-    ../GaitSymGaul/gaul/util/gaul/linkedlist.h \
-    ../GaitSymGaul/gaul/util/gaul/log_util.h \
-    ../GaitSymGaul/gaul/util/gaul/memory_chunks.h \
-    ../GaitSymGaul/gaul/util/gaul/memory_util.h \
-    ../GaitSymGaul/gaul/util/gaul/nn_util.h \
-    ../GaitSymGaul/gaul/util/gaul/random_util.h \
-    ../GaitSymGaul/gaul/util/gaul/table_util.h \
-    ../GaitSymGaul/gaul/util/gaul/timer_util.h \
-    ../GaitSymGaul/utilities.h \
     ../ann_1.1.2/include/ANN/ANN.h \
     ../ann_1.1.2/include/ANN/ANNperf.h \
     ../ann_1.1.2/include/ANN/ANNx.h \
@@ -498,6 +440,15 @@ HEADERS += \
     ../enet-1.3.14/include/enet/utility.h \
     ../enet-1.3.14/include/enet/win32.h \
     ../exprtk/exprtk.hpp \
+    ../glextrusion/copy.h \
+    ../glextrusion/extrude.h \
+    ../glextrusion/gle.h \
+    ../glextrusion/intersect.h \
+    ../glextrusion/port.h \
+    ../glextrusion/rot.h \
+    ../glextrusion/segment.h \
+    ../glextrusion/tube_gc.h \
+    ../glextrusion/vvector.h \
     ../libgwavi/avi-utils.h \
     ../libgwavi/fileio.h \
     ../libgwavi/gwavi.h \
@@ -743,6 +694,8 @@ HEADERS += \
     BasicXMLSyntaxHighlighter.h \
     DialogAssembly.h \
     DialogBodyBuilder.h \
+    DialogCreateMirrorElements.h \
+    DialogCreateTestingDrivers.h \
     DialogDrivers.h \
     DialogGeoms.h \
     DialogGlobal.h \
@@ -753,6 +706,7 @@ HEADERS += \
     DialogOutputSelect.h \
     DialogPreferences.h \
     DialogProperties.h \
+    DialogRename.h \
     DoubleValidator.h \
     DrawBody.h \
     DrawFluidSac.h \
@@ -791,6 +745,8 @@ FORMS += \
     AboutDialog.ui \
     DialogAssembly.ui \
     DialogBodyBuilder.ui \
+    DialogCreateMirrorElements.ui \
+    DialogCreateTestingDrivers.ui \
     DialogDrivers.ui \
     DialogGeoms.ui \
     DialogGlobal.ui \
@@ -801,6 +757,7 @@ FORMS += \
     DialogOutputSelect.ui \
     DialogPreferences.ui \
     DialogProperties.ui \
+    DialogRename.ui \
     MainWindow.ui \
     TextEditDialog.ui
 

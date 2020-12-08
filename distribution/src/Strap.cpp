@@ -31,7 +31,6 @@ Strap::~Strap()
 std::string *Strap::createFromAttributes()
 {
     m_pointForceList.clear();
-    m_dependentMarkers.clear();
     m_torqueMarkerList.clear();
     if (NamedObject::createFromAttributes()) return lastErrorPtr();
     std::string buf;
@@ -80,17 +79,6 @@ void Strap::appendToAttributes()
     return;
 }
 
-std::set<Marker *> *Strap::updateDependentMarkers()
-{
-    m_dependentMarkers.clear();
-    for (auto it: m_torqueMarkerList)
-    {
-        m_dependentMarkers.insert(it);
-        it->addDependent(this);
-    }
-    return &m_dependentMarkers;
-}
-
 double Strap::Length() const
 {
     return m_length;
@@ -111,16 +99,6 @@ void Strap::setTension(double Tension)
     m_tension = Tension;
 }
 
-Muscle *Strap::muscle() const
-{
-    return m_muscle;
-}
-
-void Strap::setMuscle(Muscle *muscle)
-{
-    m_muscle = muscle;
-}
-
 std::vector<Marker *> Strap::torqueMarkerList() const
 {
     return m_torqueMarkerList;
@@ -139,11 +117,6 @@ void Strap::setLength(double Length)
 void Strap::setVelocity(double Velocity)
 {
     m_velocity = Velocity;
-}
-
-std::set<Marker *> *Strap::dependentMarkers()
-{
-    return &m_dependentMarkers;
 }
 
 double Strap::GetLength() const

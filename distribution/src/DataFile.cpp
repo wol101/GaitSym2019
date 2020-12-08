@@ -1652,44 +1652,26 @@ bool DataFile::EndsWith(const char *str, const char *suffix)
     return strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
 }
 
-//#ifdef _WIN32
-//char *DataFile::ConvertWideToUTF8(const wchar_t *input)
-//{
-//    int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, input, -1, nullptr, 0, nullptr, nullptr);
-//    char *output = new char[size_t(sizeRequired) + 1];
-//    WideCharToMultiByte(CP_UTF8, 0, input, -1, output, sizeRequired, nullptr, nullptr);
-//    return output;
-//}
-
-//wchar_t *DataFile::ConvertUTF8ToWide(const char *input)
-//{
-//    int sizeRequired = MultiByteToWideChar(CP_UTF8, 0, input, -1, nullptr, 0);
-//    wchar_t *output = new wchar_t[size_t(sizeRequired) + 1];
-//    MultiByteToWideChar(CP_UTF8, 0, input, -1, output, sizeRequired);
-//    return output;
-//}
-
-//#else
-
 #include <locale>
 #include <codecvt>
 
 std::wstring DataFile::ConvertUTF8ToWide(const std::string& str)
 {
-    using convert_typeX = std::codecvt_utf8<wchar_t>;
-    std::wstring_convert<convert_typeX, wchar_t> converterX;
-
-    return converterX.from_bytes(str);
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> conv;
+    return conv.from_bytes(str);
+//    using convert_typeX = std::codecvt_utf8<wchar_t>;
+//    std::wstring_convert<convert_typeX, wchar_t> converterX;
+//    return converterX.from_bytes(str);
 }
 
 std::string DataFile::ConvertWideToUTF8(const std::wstring& wstr)
 {
-    using convert_typeX = std::codecvt_utf8<wchar_t>;
-    std::wstring_convert<convert_typeX, wchar_t> converterX;
-
-    return converterX.to_bytes(wstr);
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> conv;
+    return conv.to_bytes(wstr);
+//    using convert_typeX = std::codecvt_utf8<wchar_t>;
+//    std::wstring_convert<convert_typeX, wchar_t> converterX;
+//    return converterX.to_bytes(wstr);
 }
 
-//#endif
 
 

@@ -22,16 +22,20 @@ public:
 
     virtual void Update();
 
-    void SetValuesAndDurations(size_t size, double *values, double *durations);
-
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
+    std::vector<double> valueList() const;
+    void setValueList(const std::vector<double> &valueList);
+
+    std::vector<double> durationList() const;
+    void setDurationList(const std::vector<double> &durationList);
+
 private:
-    std::vector<double> m_ValueList;
-    std::vector<double> m_DurationList;
-    size_t m_ListLength = 0;
-    size_t m_LastIndex = 0;
+    std::vector<double> m_valueList;
+    std::vector<double> m_durationList;
+    std::vector<double> m_changeTimes;
+    size_t m_index = 0;
 };
 
 #endif

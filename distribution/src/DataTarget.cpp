@@ -34,30 +34,39 @@ double DataTarget::positiveFunction(double v)
     switch (m_matchType)
     {
     case Linear:
-        if (v > 0) return v;
-        else return -v;
+        return std::abs(v);
 
     case Square:
         return v * v;
+
+    case Raw:
+        return v;
     }
     return 0;
 }
 
 std::tuple<double, bool> DataTarget::calculateMatchValue(double time)
 {
-    if (time == m_lastTime) return std::make_tuple(m_lastValue, true);
-    if (m_interpolationType == Punctuated)
+    switch (m_interpolationType)
     {
-        auto lowerBound = std::lower_bound(m_targetTimeList.begin(), m_targetTimeList.end(), time);
-        if (lowerBound == m_targetTimeList.end()) return std::make_tuple(m_lastValue, false);
-        size_t index = std::distance(m_targetTimeList.begin(), lowerBound);
-        if (index == m_lastIndex) return std::make_tuple(m_lastValue, false);
-        m_lastValue = m_intercept + m_slope * positiveFunction(calculateError(index));
-        if (m_lastValue < m_abortBelow) simulation()->SetDataTargetAbort(true);
-        if (m_lastValue > m_abortAbove) simulation()->SetDataTargetAbort(true);
-        return std::make_tuple(m_lastValue, true);
+    case Punctuated:
+        {
+            auto lowerBound = std::lower_bound(m_targetTimeList.begin(), m_targetTimeList.end(), time);
+            size_t index = std::distance(m_targetTimeList.begin(), lowerBound);
+            if (index == 0)
+                return std::make_tuple(m_lastValue, false); // this means that time is less than the lowest value in the list
+            if (index == m_lastIndex)
+                return std::make_tuple(m_lastValue, false);
+            m_lastIndex = index;
+            m_lastValue = m_intercept + m_slope * positiveFunction(calculateError(index - 1));
+            break;
+        }
+    case Continuous:
+        {
+            m_lastValue = m_intercept + m_slope * positiveFunction(calculateError(time));
+            break;
+        }
     }
-    m_lastValue = m_intercept + m_slope * positiveFunction(calculateError(time));
     if (m_lastValue < m_abortBelow) simulation()->SetDataTargetAbort(true);
     if (m_lastValue > m_abortAbove) simulation()->SetDataTargetAbort(true);
     return std::make_tuple(m_lastValue, true);

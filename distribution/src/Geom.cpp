@@ -86,7 +86,6 @@ void Geom::setGeomMarker(Marker *geomMarker)
         this->SetGeomLocation(Geom::environment);
 
     }
-    m_geomMarker->addDependent(this);
     if (dynamic_cast<PlaneGeom *>(this)) return; // do not try to place non-placeable geoms
 
     pgd::Vector3 p = geomMarker->GetPosition();
@@ -326,6 +325,7 @@ std::string *Geom::createFromAttributes()
     if (findAttribute("Adhesion"s, &buf) == nullptr) return lastErrorPtr();
     this->SetAdhesion(GSUtil::Bool(buf));
 
+    setUpstreamObjects({m_geomMarker});
     return nullptr;
 }
 
