@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="283.46px" height="283.46px" viewBox="0 0 283.46 283.46" enable-background="new 0 0 283.46 283.46" xml:space="preserve">
+<path stroke="#72B02E" stroke-width="22.6772" stroke-miterlimit="10" d="M269.291,255.427c0,7.657-6.207,13.864-13.863,13.864
+	H28.038c-7.657,0-13.865-6.207-13.865-13.864V28.038c0-7.657,6.208-13.865,13.865-13.865h227.39c7.656,0,13.863,6.208,13.863,13.865
+	V255.427z"/>
+<g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer">
+	
+		<linearGradient id="path3711_1_" gradientUnits="userSpaceOnUse" x1="258.7305" y1="-211.689" x2="257.6086" y2="-141.3127" gradientTransform="matrix(0 1.1282 1.1282 0 324.5156 -148.9541)">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#000000"/>
+	</linearGradient>
+	
+		<path id="path3711" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" opacity="0.15" fill="none" stroke="url(#path3711_1_)" stroke-width="3" stroke-linecap="square" stroke-linejoin="round" enable-background="new    " d="
+		M199.732,142.358l-77.019-55.635v111.268L199.732,142.358z"/>
+	
+		<radialGradient id="path2818_1_" cx="-375.9253" cy="97.3555" r="54.485" gradientTransform="matrix(0.841 7.000000e-004 0.0018 -2.0617 444.0977 343.3418)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#D3D7CF"/>
+	</radialGradient>
+	
+		<linearGradient id="path2818_2_" gradientUnits="userSpaceOnUse" x1="299.7578" y1="-105.1763" x2="299.4475" y2="-186.5004" gradientTransform="matrix(0 1 1 0 277.4082 -157.2109)">
+		<stop  offset="0" style="stop-color:#474845"/>
+		<stop  offset="1" style="stop-color:#838681"/>
+	</linearGradient>
+	
+		<path id="path2818" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" fill="url(#path2818_1_)" stroke="url(#path2818_2_)" stroke-linecap="square" stroke-linejoin="round" d="
+		M199.732,142.358l-77.019-55.635v111.268L199.732,142.358z"/>
+	<path id="path2828" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" fill="none" stroke="#FFFFFF" d="
+		M192.202,142.358l-65.549-47.211l0.387,94.428L192.202,142.358z"/>
+	
+		<linearGradient id="rect3723_1_" gradientUnits="userSpaceOnUse" x1="257.2197" y1="-218.0708" x2="259.0642" y2="-163.2891" gradientTransform="matrix(0 1.1282 1.1282 0 324.5156 -148.9541)">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#000000"/>
+	</linearGradient>
+	
+		<rect id="rect3723" x="83.732" y="85.607" inkscape:r_cy="true" inkscape:r_cx="true" opacity="0.15" fill="none" stroke="url(#rect3723_1_)" stroke-width="3" stroke-linecap="square" stroke-linejoin="round" enable-background="new    " width="21.597" height="112.35">
+	</rect>
+	
+		<radialGradient id="rect3703_1_" cx="-447.71" cy="99.6704" r="54.4808" gradientTransform="matrix(0.7861 8.000000e-004 0.0017 -2.0963 448.4736 351.082)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#D3D7CF"/>
+	</radialGradient>
+	
+		<linearGradient id="rect3703_2_" gradientUnits="userSpaceOnUse" x1="299.2539" y1="-114.645" x2="298.9715" y2="-188.6565" gradientTransform="matrix(0 1 1 0 277.4082 -157.2109)">
+		<stop  offset="0" style="stop-color:#474845"/>
+		<stop  offset="1" style="stop-color:#838681"/>
+	</linearGradient>
+	
+		<rect id="rect3703" x="83.732" y="85.607" inkscape:r_cy="true" inkscape:r_cx="true" fill="url(#rect3703_1_)" stroke="url(#rect3703_2_)" width="21.597" height="112.35">
+	</rect>
+	
+		<rect id="rect3707" x="88.056" y="89.959" inkscape:r_cy="true" inkscape:r_cx="true" fill="none" stroke="#FFFFFF" width="12.722" height="103.652">
+	</rect>
+	
+		<path id="path3709" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" opacity="0.5611" fill="#FFFFFF" enable-background="new    " d="
+		M188.642,142.356l-36.085-26.047c-0.813,21.688,0.727,29.143,3.527,49.378L188.642,142.356z"/>
+</g>
+</svg>
