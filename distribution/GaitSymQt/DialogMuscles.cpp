@@ -310,10 +310,12 @@ void DialogMuscles::accept() // this catches OK and return/enter
             m_outputMuscle->setSize2(m_properties["StrapForceScale"].value.toDouble());
     }
 
-    m_outputMuscle->GetStrap()->saveToAttributes();
-    m_outputMuscle->GetStrap()->createFromAttributes();
     m_outputMuscle->saveToAttributes();
     m_outputMuscle->createFromAttributes();
+    // createFromAttributes will have reassigned the strap so put it back to what it should be
+    m_outputStrap->saveToAttributes();
+    m_outputStrap->createFromAttributes();
+    m_outputMuscle->SetStrap(m_outputStrap.get());
 
     Preferences::insert("DialogMusclesGeometry", saveGeometry());
     QDialog::accept();
