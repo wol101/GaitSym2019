@@ -1,0 +1,7 @@
+Action	Match Tag	Match Attribute	Match Attribute Value	Change Attribute	Token Number	Search	Replace	Arithmetic
+Create	MARKER	ID	(.*)Left(.*)	ID		(.*)Left(.*)	\1Right\2	
+Edit	MARKER	ID	(.*)Right(.*)	BodyID	0	(.*)Left(.*)	\1Right\2	
+Edit	MARKER	ID	(.*)Right(.*)	Position	0	(.*)Left(.*)	\1Right\2	
+Edit	MARKER	ID	(.*)Right(.*)	Position	2			-1*v
+Edit	MARKER	ID	(.*)Right(.*)	Quaternion	0	(.*)Left(.*)	\1Right\2	
+Edit	MARKER	ID	(.*)Right(.*)	Quaternion	3			-1*v
