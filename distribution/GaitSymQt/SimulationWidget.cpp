@@ -51,6 +51,7 @@
 #include <algorithm>
 #include <sstream>
 #include <memory>
+#include <regex>
 
 SimulationWidget::SimulationWidget(QWidget *parent)
     : QOpenGLWidget(parent), m_mouseClickEvent(QEvent::Type::None, QPointF(), Qt::MouseButton::NoButton, Qt::NoButton, Qt::NoModifier)
@@ -235,7 +236,7 @@ void SimulationWidget::paintGL()
     else strokeFont.SetRGBA(1, 1, 1, 1);
     strokeFont.setGlWidget(this);
     QMatrix4x4 lineVP;
-    lineVP.ortho(0, width(), 0, height(), -1, 1);
+    lineVP.ortho(0, float(width()), 0, float(height()), -1, 1);
     strokeFont.setVpMatrix(lineVP);
     glLineWidth(2); // this doesn't seem to work on the Mac
 
@@ -250,9 +251,18 @@ void SimulationWidget::paintGL()
    strokeFont.Draw();
 }
 
-void SimulationWidget::resizeGL(int /* width */, int /* height */)
+void SimulationWidget::resizeGL(int width, int height)
 {
-    // qDebug("width=%d height=%d m_XYAspect=%f\n", width, height, m_XYAspect);
+//    qDebug() << "resizeGL";
+//    qDebug() << width << " " << height << " ";
+//    int viewport[4];
+//    glGetIntegerv(GL_VIEWPORT, viewport);
+//    qDebug() << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << " ";
+//    QImage image = grabFramebuffer();
+//    qDebug() << image.width() << " " << image.height() << " ";
+    int openGLWidth = devicePixelRatio() * width;
+    int openGLHeight = devicePixelRatio() * height;
+    EmitResize(openGLWidth, openGLHeight);
 }
 
 void SimulationWidget::mousePressEvent(QMouseEvent *event)
@@ -277,8 +287,8 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
         if (m_mouseClickEvent.modifiers() == Qt::NoModifier)
         {
             int trackballRadius;
-            if (width() < height()) trackballRadius = int(width() / 2.2f);
-            else trackballRadius = int(height() / 2.2f);
+            if (width() < height()) trackballRadius = int(float(width()) / 2.2f);
+            else trackballRadius = int(float(height()) / 2.2f);
             m_trackballStartCameraVec = QVector3D(m_cameraVecX, m_cameraVecY, m_cameraVecZ);
             m_trackballStartUp = QVector3D(m_upX, m_upY, m_upZ);
             m_trackball->StartTrackball(m_mouseClickEvent.pos().x(), m_mouseClickEvent.pos().y(), width() / 2, height() / 2, trackballRadius,
@@ -498,6 +508,16 @@ void SimulationWidget::menuRequest(const QPoint &pos)
 
     Drawable *drawable = getClosestHit()->drawable();
     std::string name;
+    if (drawable)
+    {
+        std::string className = drawable->className();
+        // I want the bit after the Draw
+        std::regex elementNameRegEx(".*Draw([A-Za-z]*)");
+        std::string elementName = std::regex_replace(className, elementNameRegEx, "$1");
+        action = menu.addAction(QString::fromStdString(elementName) + QString(" Info..."));
+        name = drawable->name();
+    }
+
     while (m_mainWindow->mode() == MainWindow::constructionMode) // use while to prevent nesting of if else statements
     {
         action = menu.addAction(tr("Create Marker..."));
@@ -505,7 +525,7 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto body = dynamic_cast<DrawBody *>(drawable);
         if (body)
         {
-            name = body->body()->name();
+//            name = body->body()->name();
             action = menu.addAction(tr("Edit Body..."));
             action = menu.addAction(tr("Delete Body..."));
             break;
@@ -521,7 +541,7 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto geom = dynamic_cast<DrawGeom *>(drawable);
         if (geom)
         {
-            name = geom->geom()->name();
+//            name = geom->geom()->name();
             action = menu.addAction(tr("Edit Geom..."));
             action = menu.addAction(tr("Delete Geom..."));
             break;
@@ -529,7 +549,7 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto joint = dynamic_cast<DrawJoint *>(drawable);
         if (joint)
         {
-            name = joint->joint()->name();
+//            name = joint->joint()->name();
             action = menu.addAction(tr("Edit Joint..."));
             action = menu.addAction(tr("Delete Joint..."));
             break;
@@ -537,7 +557,7 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto marker = dynamic_cast<DrawMarker *>(drawable);
         if (marker)
         {
-            name = marker->marker()->name();
+//            name = marker->marker()->name();
             action = menu.addAction(tr("Edit Marker..."));
             action = menu.addAction(tr("Delete Marker..."));
             action = menu.addAction(tr("Move Marker"));
@@ -546,7 +566,7 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto muscle = dynamic_cast<DrawMuscle *>(drawable);
         if (muscle)
         {
-            name = muscle->muscle()->name();
+//            name = muscle->muscle()->name();
             action = menu.addAction(tr("Edit Muscle..."));
             action = menu.addAction(tr("Delete Muscle..."));
             break;
@@ -639,6 +659,12 @@ void SimulationWidget::menuRequest(const QPoint &pos)
             m_moveMarkerMode = true;
             m_moveMarkerName = name;
             break;
+        }
+        if (action->text().contains("Info"))
+        {
+            QStringList tokens = action->text().split(" ");
+            if (tokens.size())
+                emit EmitInfoRequest(tokens[0], QString::fromStdString(name));
         }
         break;
     }

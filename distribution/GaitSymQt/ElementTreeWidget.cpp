@@ -119,6 +119,14 @@ void ElementTreeWidget::menuRequest(const QPoint &pos)
     if (!m_simulation) return;
     QTreeWidgetItem *item = this->itemAt(pos);
     QMenu menu(this);
+
+    if (item->type() == ELEMENT_ITEM_TYPE)
+    {
+        QString parent = item->parent()->data(0, Qt::DisplayRole).toString();
+        QString menuLine = parent.left(1).toUpper() + parent.mid(1).toLower() + QString(" Info...");
+        menu.addAction(menuLine);
+    }
+
     if (m_mainWindow->mode() == MainWindow::constructionMode)
     {
         if (item->type() == ROOT_ITEM_TYPE && item->data(0, Qt::DisplayRole).toString() == "BODY")
@@ -299,6 +307,12 @@ void ElementTreeWidget::menuRequest(const QPoint &pos)
         if (action->text() == tr("Delete Driver..."))
         {
             emit deleteDriver(item->data(0, Qt::DisplayRole).toString());
+        }
+        if (action->text().contains("Info"))
+        {
+            QStringList tokens = action->text().split(" ");
+            if (tokens.size())
+                emit infoRequest(tokens[0], item->data(0, Qt::DisplayRole).toString());
         }
         if (action->text() == tr("All visible"))
         {

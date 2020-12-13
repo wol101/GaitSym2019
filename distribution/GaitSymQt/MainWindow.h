@@ -60,8 +60,9 @@ public slots:
     void handleElementTreeWidgetItemChanged(QTreeWidgetItem *item, int column);
 
     void moveExistingMarker(const QString &s, const QVector3D &p);
-    void resizeAndCentre(int w, int h);
     void radioButtonTracking();
+    void reportOpenGLSize(int width, int height);
+    void resizeAndCentre(int w, int h);
     void spinboxCOIXChanged(double v);
     void spinboxCOIYChanged(double v);
     void spinboxCOIZChanged(double v);
@@ -91,7 +92,7 @@ private:
     void writeSettings();
     static QByteArray readResource(const QString &resource);
     void updateEnable();
-    void resizeSimulationWindow(int w, int h);
+    void resizeSimulationWindow(int openGLWidth, int openGLHeight);
     void updateComboBoxTrackingMarker();
     void handleTracking();
 

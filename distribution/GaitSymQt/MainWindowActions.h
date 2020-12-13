@@ -19,6 +19,7 @@ class Muscle;
 class Geom;
 class Driver;
 class MainWindow;
+class NamedObject;
 
 class MainWindowActions : public QObject
 {
@@ -82,6 +83,8 @@ public slots:
     void menuCreateEditGeom(Geom *geom);
     void menuCreateEditMuscle(Muscle *muscle);
     void menuCreateEditDriver(Driver *driver);
+
+    void elementInfo(const QString &elementType, const QString &elementName);
 
     void objSnapshot();
     void run();

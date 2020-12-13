@@ -197,6 +197,8 @@ signals:
     void EmitDeleteJointRequest(const QString &s);
     void EmitDeleteMuscleRequest(const QString &s);
 //    void EmitDeleteFluidSacRequest(const QString &s);
+    void EmitInfoRequest(const QString &elementType, const QString &elementName);
+    void EmitResize(int width, int height);
 
 protected:
     virtual void initializeGL() Q_DECL_OVERRIDE;

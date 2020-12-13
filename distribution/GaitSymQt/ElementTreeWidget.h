@@ -45,6 +45,7 @@ signals:
     void deleteMuscle(const QString &muscle);
     void deleteDriver(const QString &driver);
     void elementTreeWidgetItemChanged(QTreeWidgetItem *item, int column);
+    void infoRequest(const QString &elementType, const QString &elementName);
 
 public slots:
     void elementsItemChanged(QTreeWidgetItem *item, int column);

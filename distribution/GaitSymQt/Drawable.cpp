@@ -10,7 +10,13 @@
 #include "Drawable.h"
 #include "FacetedObject.h"
 
+#include <typeinfo>
+
+#ifdef __GNUG__
+#include <cstdlib>
 #include <memory>
+#include <cxxabi.h>
+#endif
 
 Drawable::Drawable()
 {
@@ -45,6 +51,21 @@ void Drawable::SetDisplayRotationFromQuaternion(const dQuaternion q)
 void Drawable::setVisible(bool visible)
 {
     for (auto iter : m_facetedObjectList) iter->setVisible(visible);
+}
+
+std::string Drawable::className() const
+{
+    std::string className(typeid(*this).name());
+#ifdef __GNUG__
+    int status = -4;
+    std::unique_ptr<char, void(*)(void*)> res
+    {
+        abi::__cxa_demangle(className.c_str(), NULL, NULL, &status),
+        std::free
+    };
+    if (status == 0) className.assign(res.get());
+#endif
+    return className;
 }
 
 const std::vector<FacetedObject *> &Drawable::facetedObjectList() const

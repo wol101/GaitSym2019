@@ -17,6 +17,13 @@
 
 #include <iostream>
 #include <sstream>
+#include <typeinfo>
+
+#ifdef __GNUG__
+#include <cstdlib>
+#include <memory>
+#include <cxxabi.h>
+#endif
 
 using namespace std::literals::string_literals;
 
@@ -237,6 +244,21 @@ bool NamedObject::isUpstreamObject(NamedObject *findObject)
 void NamedObject::clearAttributeMap()
 {
     m_attributeMap.clear();
+}
+
+std::string NamedObject::className() const
+{
+    std::string className(typeid(*this).name());
+#ifdef __GNUG__
+    int status = -4;
+    std::unique_ptr<char, void(*)(void*)> res
+    {
+        abi::__cxa_demangle(className.c_str(), NULL, NULL, &status),
+        std::free
+    };
+    if (status == 0) className.assign(res.get());
+#endif
+    return className;
 }
 
 bool NamedObject::firstDump() const

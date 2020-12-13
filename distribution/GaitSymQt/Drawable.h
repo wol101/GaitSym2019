@@ -9,6 +9,7 @@
 
 #ifndef DRAWABLE_H
 #define DRAWABLE_H
+
 #include "ode/ode.h"
 
 #include <vector>
@@ -26,6 +27,7 @@ public:
     virtual void initialise(SimulationWidget *simulationWidget) = 0;
     virtual void Draw() = 0;
     virtual std::string name() = 0;
+    std::string className() const;
 
     void SetDisplayPosition(double x, double y, double z);
     void SetDisplayScale(double x, double y, double z);

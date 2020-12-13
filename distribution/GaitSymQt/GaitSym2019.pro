@@ -375,6 +375,7 @@ SOURCES += \
     DialogDrivers.cpp \
     DialogGeoms.cpp \
     DialogGlobal.cpp \
+    DialogInfo.cpp \
     DialogJoints.cpp \
     DialogMarkerImportExport.cpp \
     DialogMarkers.cpp \
@@ -385,6 +386,7 @@ SOURCES += \
     DialogRename.cpp \
     DoubleValidator.cpp \
     DrawBody.cpp \
+    DrawCustom.cpp \
     DrawFluidSac.cpp \
     DrawGeom.cpp \
     DrawJoint.cpp \
@@ -700,6 +702,7 @@ HEADERS += \
     DialogDrivers.h \
     DialogGeoms.h \
     DialogGlobal.h \
+    DialogInfo.h \
     DialogJoints.h \
     DialogMarkerImportExport.h \
     DialogMarkers.h \
@@ -710,6 +713,7 @@ HEADERS += \
     DialogRename.h \
     DoubleValidator.h \
     DrawBody.h \
+    DrawCustom.h \
     DrawFluidSac.h \
     DrawGeom.h \
     DrawJoint.h \
@@ -751,6 +755,7 @@ FORMS += \
     DialogDrivers.ui \
     DialogGeoms.ui \
     DialogGlobal.ui \
+    DialogInfo.ui \
     DialogJoints.ui \
     DialogMarkerImportExport.ui \
     DialogMarkers.ui \

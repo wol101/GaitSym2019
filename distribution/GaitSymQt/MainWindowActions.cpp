@@ -42,6 +42,7 @@
 #include "DialogCreateMirrorElements.h"
 #include "DialogCreateTestingDrivers.h"
 #include "DialogRename.h"
+#include "DialogInfo.h"
 #include "Colour.h"
 #include "AMotorJoint.h"
 #include "LMotorJoint.h"
@@ -638,7 +639,7 @@ void MainWindowActions::menuNew()
     {
         QMessageBox msgBox;
         msgBox.setText("The document has been modified.");
-        msgBox.setInformativeText("Click OK to quit, and Cancel to continue working on the document");
+        msgBox.setInformativeText("Click OK to create a new document, and Cancel to continue working on the current document");
         msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Cancel);
         int ret = msgBox.exec();
@@ -1508,6 +1509,31 @@ void MainWindowActions::menuRename()
     else
     {
         m_mainWindow->ui->statusBar->showMessage(tr("Rename cancelled"));
+    }
+}
+
+void MainWindowActions::elementInfo(const QString &elementType, const QString &elementName)
+{
+    DialogInfo dialog(m_mainWindow);
+    dialog.useXMLSyntaxHighlighter();
+    NamedObject *element = m_mainWindow->m_simulation->GetNamedObject(elementName.toStdString());
+    if (!element) return;
+    element->saveToAttributes();
+    std::vector<std::string> lines;
+    lines.push_back("<"s + elementType.toUpper().toStdString());
+    for (auto &&it : element->attributeMap()) lines.push_back("    "s + it.first + "=\"" + it.second + "\"");
+    lines.push_back("/>"s);
+    std::string text = pystring::join("\n"s, lines);
+    dialog.setEditorText(QString::fromStdString(text));
+    dialog.setWindowTitle(QString("%1 ID=\"%2\" Information").arg(elementType).arg(elementName));
+    int status = dialog.exec();
+    if (status == QDialog::Accepted) // write the new settings
+    {
+        m_mainWindow->ui->statusBar->showMessage(tr("Info window OK"));
+    }
+    else
+    {
+        m_mainWindow->ui->statusBar->showMessage(tr("Info window closed"));
     }
 }
 

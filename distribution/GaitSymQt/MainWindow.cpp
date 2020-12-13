@@ -152,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->treeWidgetElements, SIGNAL(editMarker(const QString &)), this, SLOT(editExistingMarker(const QString &)));
     connect(ui->treeWidgetElements, SIGNAL(editMuscle(const QString &)), this, SLOT(editExistingMuscle(const QString &)));
     connect(ui->treeWidgetElements, SIGNAL(elementTreeWidgetItemChanged(QTreeWidgetItem *, int)), this, SLOT(handleElementTreeWidgetItemChanged(QTreeWidgetItem *, int)));
+    connect(ui->treeWidgetElements, SIGNAL(infoRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementInfo(const QString &, const QString &)));
 
     // put SimulationWindow into existing widgetGLWidget
 //    QBoxLayout *boxLayout = new QBoxLayout(QBoxLayout::LeftToRight, ui->widgetGLWidget);
@@ -180,6 +181,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widgetSimulation, SIGNAL(EmitDeleteJointRequest(const QString &)), this, SLOT(deleteExistingJoint(const QString &)));
     connect(ui->widgetSimulation, SIGNAL(EmitDeleteMarkerRequest(const QString &)), this, SLOT(deleteExistingMarker(const QString &)));
     connect(ui->widgetSimulation, SIGNAL(EmitDeleteMuscleRequest(const QString &)), this, SLOT(deleteExistingMuscle(const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitInfoRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementInfo(const QString &, const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitResize(int, int)), this, SLOT(reportOpenGLSize(int, int)));
 
     // the treeWidgetElements needs to know about this window
     ui->treeWidgetElements->setMainWindow(this);
@@ -227,7 +230,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         QMessageBox msgBox;
         msgBox.setText("The document has been modified.");
-        msgBox.setInformativeText("Click OK to quit, and Cancel to continue working on the document");
+        msgBox.setInformativeText("Click OK to quit and lose any modifications, or Cancel to return to the current document");
         msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Cancel);
         int ret = msgBox.exec();
@@ -549,12 +552,19 @@ void MainWindow::setUIFoV(float v)
     ui->doubleSpinBoxFoV->setValue(double(v));
 }
 
-void MainWindow::resizeSimulationWindow(int w, int h)
+void MainWindow::resizeSimulationWindow(int openGLWidth, int openGLHeight)
 {
-    int deltaW = w - ui->widgetSimulation->width();
-    int deltaH = h - ui->widgetSimulation->height();
-    resize(width() + deltaW, height() + deltaH);
+    int scaledWidth = openGLWidth / devicePixelRatio();
+    int scaledHeight = openGLHeight / devicePixelRatio();
+    int repeatCount = 0;
+    while ((ui->widgetSimulation->width() * devicePixelRatio() != openGLWidth || ui->widgetSimulation->height() * devicePixelRatio() != openGLHeight) && repeatCount < 16)
+    {
+        int deltaW = scaledWidth - ui->widgetSimulation->width();
+        int deltaH = scaledHeight - ui->widgetSimulation->height();
+        resize(width() + deltaW, height() + deltaH);
+    }
     ui->widgetSimulation->update();
+    setStatusString(QString("Simulation widget width = %1 height = %2").arg(ui->widgetSimulation->width() * devicePixelRatio()).arg(ui->widgetSimulation->height() * devicePixelRatio()), 1);
 }
 
 SimulationWidget *MainWindow::simulationWidget() const
@@ -592,6 +602,10 @@ void MainWindow::resizeAndCentre(int w, int h)
     ui->widgetSimulation->update();
 }
 
+void MainWindow::reportOpenGLSize(int width, int height)
+{
+    setStatusString(QString("OpenGL width = %1 height = %2").arg(width).arg(height), 2);
+}
 
 void MainWindow::log(const QString &text)
 {

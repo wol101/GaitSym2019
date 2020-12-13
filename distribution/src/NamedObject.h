@@ -51,6 +51,8 @@ public:
     void setObjectMessage(const std::string *message);
     std::string objectMessage() const; // return value optimisation RVO makes via reference unnecessary
 
+    std::string className() const; // return value optimisation RVO makes via reference unnecessary
+
     virtual std::string dumpToString();
     void createAttributeMap(const std::map<std::string, std::string> &attributeMap);
     virtual std::string *createFromAttributes();
