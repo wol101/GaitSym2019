@@ -213,6 +213,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->splitter2->restoreState(Preferences::valueQByteArray("MainWindowSplitter2State"));
     Preferences::insert("ElementTreeHeaderState", ui->treeWidgetElements->header()->saveState());
 
+    // Full screen does not work sensibly yet so remove
+    if (isFullScreen()) m_mainWindowActions->menuToggleFullScreen();
+    ui->actionToggleFullscreen->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -554,6 +557,20 @@ void MainWindow::setUIFoV(float v)
 
 void MainWindow::resizeSimulationWindow(int openGLWidth, int openGLHeight)
 {
+    showNormal();
+    if (!screen())
+    {
+        setStatusString("Error: Unable to access screen for resize", 0);
+        return;
+    }
+    QRect available = screen()->availableGeometry();
+    if (available.width() * devicePixelRatio() < openGLWidth || available.height() * devicePixelRatio() < openGLHeight)
+    {
+        setStatusString(QString("Error: max screen for resize width = %1 height = %2").arg(available.width() * devicePixelRatio()).arg(available.height() * devicePixelRatio()), 0);
+        return;
+    }
+    move(available.left(), available.top());
+
     int scaledWidth = openGLWidth / devicePixelRatio();
     int scaledHeight = openGLHeight / devicePixelRatio();
     int repeatCount = 0;
@@ -564,6 +581,11 @@ void MainWindow::resizeSimulationWindow(int openGLWidth, int openGLHeight)
         resize(width() + deltaW, height() + deltaH);
     }
     ui->widgetSimulation->update();
+    if (ui->widgetSimulation->width() * devicePixelRatio() != openGLWidth || ui->widgetSimulation->height() * devicePixelRatio() != openGLHeight)
+    {
+        setStatusString(QString("Error: unable to achieve requested size: width = %1 height = %2").arg(ui->widgetSimulation->width() * devicePixelRatio()).arg(ui->widgetSimulation->height() * devicePixelRatio()), 0);
+        return;
+    }
     setStatusString(QString("Simulation widget width = %1 height = %2").arg(ui->widgetSimulation->width() * devicePixelRatio()).arg(ui->widgetSimulation->height() * devicePixelRatio()), 1);
 }
 

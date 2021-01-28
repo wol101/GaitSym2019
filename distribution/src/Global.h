@@ -101,6 +101,9 @@ public:
 
     std::vector<std::string> *MeshSearchPath();
     const std::vector<std::string> *ConstMeshSearchPath() const;
+    void MeshSearchPathAddToFront(const std::string &meshSearchPath);
+    void MeshSearchPathAddToBack(const std::string &meshSearchPath);
+    bool MeshSearchPathRemove(const std::string &meshSearchPath);
 
     double LinearDamping() const;
     void setLinearDamping(double LinearDamping);

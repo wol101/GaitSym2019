@@ -170,7 +170,7 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
             if (fileFound == false)
             {
                 int ret = QMessageBox::warning(m_mainWindow, QString("Loading ") + canonicalFilePath,
-                                               QString("Unable to find \"") + graphicsFile + QString("\"\nDo you want to load a new file?"),
+                                               QString("Unable to find \"") + graphicsFile + QString("\"\nDo you want to load a new file?\nThis will alter the Mesh Path and the file will require saving to make this change permanent."),
                                                QMessageBox::Yes | QMessageBox::No | QMessageBox::NoToAll, QMessageBox::Yes);
                 if (ret == QMessageBox::NoToAll) noToAll = true;
                 if (ret == QMessageBox::Yes)
@@ -840,7 +840,17 @@ void MainWindowActions::menuImportWarehouse()
 
 void MainWindowActions::menuToggleFullScreen()
 {
-    m_mainWindow->setWindowState(m_mainWindow->windowState() ^ Qt::WindowFullScreen);
+    // might want to remember things like whether the screen was maximised or minimised
+    if (m_mainWindow->isFullScreen())
+    {
+        m_mainWindow->ui->menuBar->show();
+        m_mainWindow->showNormal();
+    }
+    else
+    {
+        m_mainWindow->ui->menuBar->hide();
+        m_mainWindow->showFullScreen();
+    }
 }
 
 void MainWindowActions::menuCreateJoint()
@@ -922,6 +932,15 @@ void MainWindowActions::menuCreateEditBody(Body *body)
     dialogBodyBuilder.setSimulation(m_mainWindow->m_simulation);
     dialogBodyBuilder.setInputBody(body);
     dialogBodyBuilder.lateInitialise();
+    pgd::Vector3 originalContructionPosition;
+    pgd::Vector3 originalPosition;
+    pgd::Quaternion originalOrientation;
+    if (body)
+    {
+        originalContructionPosition.Set(body->GetConstructionPosition());
+        originalPosition.Set(body->GetPosition());
+        originalOrientation.Set(body->GetQuaternion());
+    }
     int status = dialogBodyBuilder.exec();
     if (status == QDialog::Accepted)
     {
@@ -930,28 +949,44 @@ void MainWindowActions::menuCreateEditBody(Body *body)
             std::unique_ptr<Body> newBody = dialogBodyBuilder.outputBody();
             newBody->LateInitialisation();
             std::string newBodyName = newBody->name();
-            // insert the new centre of mass marker
-            std::unique_ptr<Marker> cmMarker = std::make_unique<Marker>(newBody.get());
-            std::string cmMarkerName = newBodyName + "_CM_Marker"s;
-            cmMarker->setName(cmMarkerName);
-            cmMarker->setSimulation(m_mainWindow->m_simulation);
-            cmMarker->setSize1(Preferences::valueDouble("MarkerSize", 0.01));
-            m_mainWindow->ui->treeWidgetElements->insertMarker(QString().fromStdString(cmMarkerName), cmMarker->visible(), cmMarker->dump());
-            (*m_mainWindow->m_simulation->GetMarkerList())[cmMarkerName] = std::move(cmMarker);
-            m_mainWindow->setStatusString(QString("New marker created: %1").arg(QString::fromStdString(cmMarkerName)), 1);
+//            // insert the new centre of mass marker
+//            std::unique_ptr<Marker> cmMarker = std::make_unique<Marker>(newBody.get());
+//            std::string cmMarkerName = newBodyName + "_CM_Marker"s;
+//            cmMarker->setName(cmMarkerName);
+//            cmMarker->setSimulation(m_mainWindow->m_simulation);
+//            cmMarker->setSize1(Preferences::valueDouble("MarkerSize", 0.01));
+//            m_mainWindow->ui->treeWidgetElements->insertMarker(QString().fromStdString(cmMarkerName), cmMarker->visible(), cmMarker->dump());
+//            (*m_mainWindow->m_simulation->GetMarkerList())[cmMarkerName] = std::move(cmMarker);
+//            m_mainWindow->setStatusString(QString("New marker created: %1").arg(QString::fromStdString(cmMarkerName)), 1);
             // insert the new body
             m_mainWindow->ui->treeWidgetElements->insertBody(QString().fromStdString(newBodyName), newBody->visible(), newBody->dump());
             (*m_mainWindow->m_simulation->GetBodyList())[newBodyName] = std::move(newBody);
             m_mainWindow->setStatusString(QString("New body created: %1").arg(QString::fromStdString(newBodyName)), 1);
             m_mainWindow->updateComboBoxTrackingMarker();
         }
-        else // this is an edit so all that will have happened is that things have moved
+        else // this is an edit so things may have moved and we need to deal with that
         {
+            m_mainWindow->setStatusString(QString("Body edited: %1").arg(QString::fromStdString(body->name())), 1);
+            pgd::Vector3 deltaPosition = pgd::Vector3(body->GetConstructionPosition()) - originalContructionPosition;
+            if (Preferences::valueBool("DialogBodyBuilderMoveMarkers", false) == false) // need to compensate the move in construction position
+            {
+                for (auto &&it : *m_mainWindow->m_simulation->GetMarkerList())
+                {
+                    if (it.second->GetBody() == body)
+                        it.second->OffsetPosition(-deltaPosition.x, -deltaPosition.y, -deltaPosition.z);
+                }
+            }
+//            // completely reloading everything will work but is rather slow
+//            QByteArray xmlData = QByteArray::fromStdString(m_mainWindow->m_simulation->SaveToXML());
+//            menuOpen(m_mainWindow->m_configFile.absoluteFilePath(), &xmlData);
+//            m_mainWindow->setWindowModified(true);
+//            enterConstructionMode();
+
             body->setRedraw(true);
-            body->LateInitialisation();
             std::vector<NamedObject *> objectList = m_mainWindow->m_simulation->GetObjectList();
             for (auto &&it : objectList)
             {
+
                 if (it->isUpstreamObject(body))
                 {
                     it->saveToAttributes();
@@ -960,8 +995,7 @@ void MainWindowActions::menuCreateEditBody(Body *body)
                     // everything needs a redraw but somethings also need extra work
                     if (dynamic_cast<Strap *>(it)) dynamic_cast<Strap *>(it)->Calculate();
                 }
-            }
-            m_mainWindow->setStatusString(QString("Body edited: %1").arg(QString::fromStdString(body->name())), 1);
+             }
         }
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
@@ -1523,6 +1557,14 @@ void MainWindowActions::elementInfo(const QString &elementType, const QString &e
     lines.push_back("<"s + elementType.toUpper().toStdString());
     for (auto &&it : element->attributeMap()) lines.push_back("    "s + it.first + "=\"" + it.second + "\"");
     lines.push_back("/>"s);
+    Muscle *muscle = dynamic_cast<Muscle *>(element);
+    if (muscle)
+    {
+        muscle->GetStrap()->saveToAttributes();
+        lines.push_back("<STRAP"s);
+        for (auto &&it : muscle->GetStrap()->attributeMap()) lines.push_back("    "s + it.first + "=\"" + it.second + "\"");
+        lines.push_back("/>"s);
+    }
     std::string text = pystring::join("\n"s, lines);
     dialog.setEditorText(QString::fromStdString(text));
     dialog.setWindowTitle(QString("%1 ID=\"%2\" Information").arg(elementType).arg(elementName));

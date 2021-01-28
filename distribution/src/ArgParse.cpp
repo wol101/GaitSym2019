@@ -242,7 +242,7 @@ void ArgParse::Usage()
     if (required.size())
     {
         std::cerr << "Required Arguments\n";
-        for (auto it: required)
+        for (auto &&it: required)
         {
             std::cerr << it.second.longName << ", " << it.second.shortName << "\n";
             std::cerr << it.second.helpText << "\n";
@@ -288,10 +288,11 @@ void ArgParse::Usage()
     if (optional.size())
     {
         std::cerr << "Optional Arguments\n";
-        for (auto it: optional)
+        for (auto &&it: optional)
         {
             std::cerr << it.second.longName << ", " << it.second.shortName << "\n";
             std::cerr << it.second.helpText << "\n";
+            std::cerr << "Default value is: \"" << it.second.defaultValue << "\"\n";
             if (it.second.minArgs == it.second.maxArgs)
             {
                 switch (it.second.argType)

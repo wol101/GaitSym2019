@@ -13,8 +13,6 @@
 #include "DataTarget.h"
 #include "PGDMath.h"
 
-#include <iostream>
-
 class DataTargetQuaternion : public DataTarget
 {
 public:

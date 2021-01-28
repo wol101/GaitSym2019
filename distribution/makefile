@@ -117,6 +117,20 @@ ifeq ($(HOST),l-u-roboticssuite.it.manchester.ac.uk)
 	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include
 endif
 
+# this looks for the substring csf
+ifneq (,$(findstring csf,$(HOST)))
+	# -static libraries are not available on csf
+	CXXFLAGS = -O3 -ffast-math -DEXPERIMENTAL -std=c++14 \
+	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
+	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS
+	LDFLAGS  = 
+	CXX      = g++
+	CC       = gcc
+	LIBS = -lpthread -lm
+	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE \
+	-Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include
+endif
+
 # vpath %.cpp src
 # vpath %.c src
 
@@ -136,6 +150,7 @@ CylinderWrapStrap.cpp\
 DampedSpringMuscle.cpp\
 DataFile.cpp\
 DataTarget.cpp\
+DataTargetMarkerCompare.cpp\
 DataTargetQuaternion.cpp\
 DataTargetScalar.cpp\
 DataTargetVector.cpp\
@@ -466,12 +481,12 @@ $(addprefix obj/enet/, $(ENETOBJ) )
 
 clean:
 	rm -rf obj bin
-	rm -rf distribution
+	rm -rf distribution*
 	rm -rf build*
 
 superclean:
 	rm -rf obj bin
-	rm -rf distribution
+	rm -rf distribution*
 	rm -rf build*
 	rm -rf GaitSymQt/GaitSym*.pro.user*
 	find . -name '.DS_Store' -exec rm -f {} \;

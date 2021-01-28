@@ -25,6 +25,7 @@
 #include <cmath>
 #include <algorithm>
 #include <sstream>
+#include <assert.h>
 
 using namespace std::string_literals;
 
@@ -544,22 +545,52 @@ void Body::GetMass(dMass *mass) const
 Body::LimitTestResult Body::TestLimits()
 {
     const double *p = dBodyGetPosition(m_bodyID);
-    if (!std::isfinite(p[0])) return NumericalError;
-    if (!std::isfinite(p[1])) return NumericalError;
-    if (!std::isfinite(p[2])) return NumericalError;
+    if (std::fpclassify(p[0]) != FP_NORMAL && std::fpclassify(p[0]) != FP_ZERO) return NumericalError;
+    if (std::fpclassify(p[1]) != FP_NORMAL && std::fpclassify(p[1]) != FP_ZERO) return NumericalError;
+    if (std::fpclassify(p[2]) != FP_NORMAL && std::fpclassify(p[2]) != FP_ZERO) return NumericalError;
     if (OUTSIDERANGE(p[0], m_positionLowBound[0], m_positionHighBound[0])) return XPosError;
     if (OUTSIDERANGE(p[1], m_positionLowBound[1], m_positionHighBound[1])) return YPosError;
     if (OUTSIDERANGE(p[2], m_positionLowBound[2], m_positionHighBound[2])) return ZPosError;
 
     const double *v = dBodyGetLinearVel(m_bodyID);
-    if (!std::isfinite(v[0])) return NumericalError;
-    if (!std::isfinite(v[1])) return NumericalError;
-    if (!std::isfinite(v[2])) return NumericalError;
+    if (std::fpclassify(v[0]) != FP_NORMAL && std::fpclassify(v[0]) != FP_ZERO) return NumericalError;
+    if (std::fpclassify(v[1]) != FP_NORMAL && std::fpclassify(v[1]) != FP_ZERO) return NumericalError;
+    if (std::fpclassify(v[2]) != FP_NORMAL && std::fpclassify(v[2]) != FP_ZERO) return NumericalError;
     if (OUTSIDERANGE(v[0], m_linearVelocityLowBound[0], m_linearVelocityHighBound[0])) return XVelError;
     if (OUTSIDERANGE(v[1], m_linearVelocityLowBound[1], m_linearVelocityHighBound[1])) return YVelError;
     if (OUTSIDERANGE(v[2], m_linearVelocityLowBound[2], m_linearVelocityHighBound[2])) return ZVelError;
 
     return WithinLimits;
+}
+
+double Body::GetProjectedAngle(const pgd::Vector3 &planeNormal, const pgd::Vector3 &vector1, const pgd::Vector3 &vector2)
+{
+    // calculate the projected angle from vector1 to vector2 projected onto the plane defined by a normal vector
+    // this angle gives the proper -pi to +pi value to rotate the direction for vector1 to vector2
+    // around planeNormal
+
+    // start by projecting the two vectors onto a plane defined by the first axis as a normal
+    // from https://www.euclideanspace.com/maths/geometry/elements/plane/lineOnPlane/index.htm
+    // using the formula B cross (A cross B / |B|) / |B|
+    // where A is the vector and B is the normal of the plane
+    // for completeness this distance along the normal is
+    // A dot B * B/|B|**2
+    // however we can use some optimisation because we just want the direction in the plane which is
+    // B cross (A cross B)
+    // which we then normalise anyway
+    pgd::Vector3 startDirection1 = planeNormal ^ (vector1 ^ planeNormal);
+    startDirection1.Normalize();
+    pgd::Vector3 endDirection1 = planeNormal ^ (vector2 ^ planeNormal);
+    endDirection1.Normalize();
+    // now we can find the angle in the plane using
+    // dot = x1*x2 + y1*y2 + z1*z2
+    // det = x1*y2*zn + x2*yn*z1 + xn*y1*z2 - z1*y2*xn - z2*yn*x1 - zn*y1*x2
+    // angle = atan2(det, dot)
+    // [alternative for det is det = n dot (v1 cross v2)]
+    double dot = startDirection1 * endDirection1;
+    double det = planeNormal * (startDirection1 ^ endDirection1);
+    double angle = atan2(det, dot);
+    return angle;
 }
 
 std::string Body::dumpToString()
@@ -775,6 +806,9 @@ std::string *Body::createFromAttributes()
 {
     if (NamedObject::createFromAttributes()) return lastErrorPtr();
 
+    bool constructionMode = m_constructionMode;
+    if (constructionMode) EnterRunMode();
+
     std::string buf;
     double doubleList[6];
 
@@ -860,6 +894,8 @@ std::string *Body::createFromAttributes()
     if (findAttribute("GraphicFile2"s, &buf)) this->SetGraphicFile2(buf);
     if (findAttribute("GraphicFile3"s, &buf)) this->SetGraphicFile3(buf);
 
+    if (constructionMode) EnterConstructionMode();
+
     return nullptr;
 }
 
@@ -876,6 +912,9 @@ void Body::appendToAttributes()
 {
     NamedObject::appendToAttributes();
     std::string buf;
+
+    bool constructionMode = m_constructionMode;
+    if (constructionMode) EnterRunMode();
 
     dMass mass;
     dBodyGetMass (m_bodyID, &mass);
@@ -898,18 +937,11 @@ void Body::appendToAttributes()
     if (m_AngularDampingThreshold >= 0) setAttribute("AngularDampingThreshold"s, *GSUtil::ToString(dBodyGetAngularDampingThreshold(m_bodyID), &buf));
     if (m_MaxAngularSpeed >= 0) setAttribute("MaxAngularSpeed"s, *GSUtil::ToString(dBodyGetMaxAngularSpeed(m_bodyID), &buf));
 
-    if (m_constructionMode)
-    {
-        setAttribute("Quaternion"s, *GSUtil::ToString(m_initialQuaternion, 4, &buf)); // note quaternion is (qs,qx,qy,qz)
-        setAttribute("Position"s, *GSUtil::ToString(m_initialPosition, 3, &buf)); // note quaternion is (qs,qx,qy,qz)
-    }
-    else
-    {
-        const double *q = dBodyGetQuaternion(m_bodyID);
-        setAttribute("Quaternion"s, *GSUtil::ToString(q, 4, &buf)); // note quaternion is (qs,qx,qy,qz)
-        const double *p = dBodyGetPosition(m_bodyID);
-        setAttribute("Position"s, *GSUtil::ToString(p, 3, &buf));
-    }
+    const double *q = dBodyGetQuaternion(m_bodyID);
+    setAttribute("Quaternion"s, *GSUtil::ToString(q, 4, &buf)); // note quaternion is (qs,qx,qy,qz)
+    const double *p = dBodyGetPosition(m_bodyID);
+    setAttribute("Position"s, *GSUtil::ToString(p, 3, &buf));
+
     const double *v = dBodyGetLinearVel(m_bodyID);
     setAttribute("LinearVelocity"s, *GSUtil::ToString(v, 3, &buf));
     const double *a = dBodyGetAngularVel(m_bodyID);
@@ -927,6 +959,8 @@ void Body::appendToAttributes()
     setAttribute("GraphicFile2"s, m_graphicFile2);
     setAttribute("GraphicFile3"s, m_graphicFile3);
 
+
+    if (constructionMode) EnterConstructionMode();
 }
 
 void Body::LateInitialisation()
@@ -949,3 +983,27 @@ void Body::EnterRunMode()
     this->SetQuaternion(m_initialQuaternion[0], m_initialQuaternion[1], m_initialQuaternion[2], m_initialQuaternion[3]);
 }
 
+void Body::SetInitialPosition(double x, double y, double z)
+{
+    m_initialPosition[0] = x;
+    m_initialPosition[1] = y;
+    m_initialPosition[2] = z;
+}
+
+void Body::SetInitialQuaternion(double n, double x, double y, double z)
+{
+    m_initialQuaternion[0] = n;
+    m_initialQuaternion[1] = x;
+    m_initialQuaternion[2] = y;
+    m_initialQuaternion[3] = z;
+}
+
+const double *Body::GetInitialPosition()
+{
+    return m_initialPosition;
+}
+
+const double *Body::GetInitialQuaternion()
+{
+    return m_initialQuaternion;
+}

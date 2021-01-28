@@ -9,6 +9,7 @@
 #include "DialogProperties.h"
 
 #include "ode/ode.h"
+#include "pystring.h"
 
 #include <QBoxLayout>
 #include <QFileInfo>
@@ -28,7 +29,7 @@ DialogBodyBuilder::DialogBodyBuilder(QWidget *parent) :
     setWindowFlags(windowFlags() & (~Qt::Dialog) | Qt::Window); // allows the window to be resized on macs
 #endif
     restoreGeometry(Preferences::valueQByteArray("DialogBodyBuilderGeometry"));
-    ui->splitter->restoreState(Preferences::valueQByteArray("DialogBodyBuilderSplitterState"));
+    ui->checkBoxMoveMarkers->setChecked(Preferences::valueBool("DialogBodyBuilderMoveMarkers", false));
 
     connect(ui->pushButtonOK, SIGNAL(clicked()), this, SLOT(accept()));
     connect(ui->pushButtonCancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -72,21 +73,16 @@ void DialogBodyBuilder::lateInitialise()
 {
     Q_ASSERT_X(m_simulation, "DialogBodyBuilder::lateInitialise", "m_simulation not defined");
 
-    ui->widget3DWindow->setSimulation(m_simulation);
-    ui->widget3DWindow->update();
     Body referenceBody(m_simulation->GetWorldID());
     referenceBody.SetConstructionDensity(Preferences::valueDouble("BodyDensity", 1000.0));
-    Body *bodyPtr;
     if (m_inputBody)
     {
-        bodyPtr = m_inputBody;
-        m_inputBody->setVisible(false);
+        Q_ASSERT_X(m_inputBody, "DialogBodyBuilder::lateInitialise", "m_simulation not defined");
         ui->lineEditID->setText(QString::fromStdString(m_inputBody->name()));
         ui->lineEditID->setEnabled(false);
     }
     else
     {
-        bodyPtr = &referenceBody;
         QString name("World"); // World always exists
         ui->lineEditID->addString(name);
         auto nameSet = m_simulation->GetNameSet();
@@ -102,39 +98,69 @@ void DialogBodyBuilder::lateInitialise()
         ui->lineEditID->setText(initialName);
     }
 
-    dMass mass;
-    bodyPtr->GetMass(&mass);
-    ui->lineEditMass->setValue(mass.mass);
-    ui->lineEditI11->setValue(mass.I[0 * 4 + 0]);
-    ui->lineEditI22->setValue(mass.I[1 * 4 + 1]);
-    ui->lineEditI33->setValue(mass.I[2 * 4 + 2]);
-    ui->lineEditI12->setValue(mass.I[0 * 4 + 1]);
-    ui->lineEditI13->setValue(mass.I[0 * 4 + 2]);
-    ui->lineEditI23->setValue(mass.I[1 * 4 + 2]);
-    ui->lineEditDensity->setValue(bodyPtr->GetConstructionDensity());
-    const double *constructionPosition = bodyPtr->GetConstructionPosition();
-    ui->lineEditX->setValue(constructionPosition[0]);
-    ui->lineEditY->setValue(constructionPosition[1]);
-    ui->lineEditZ->setValue(constructionPosition[2]);
-    const double *positionHighBound = bodyPtr->GetPositionHighBound();
-    ui->lineEditHighX->setValue(positionHighBound[0]);
-    ui->lineEditHighY->setValue(positionHighBound[1]);
-    ui->lineEditHighZ->setValue(positionHighBound[2]);
-    const double *positionLowBound = bodyPtr->GetPositionLowBound();
-    ui->lineEditLowX->setValue(positionLowBound[0]);
-    ui->lineEditLowY->setValue(positionLowBound[1]);
-    ui->lineEditLowZ->setValue(positionLowBound[2]);
-    const double *velocityHighBound = bodyPtr->GetLinearVelocityHighBound();
-    ui->lineEditHighVX->setValue(velocityHighBound[0]);
-    ui->lineEditHighVY->setValue(velocityHighBound[1]);
-    ui->lineEditHighVZ->setValue(velocityHighBound[2]);
-    const double *velocityLowBound = bodyPtr->GetLinearVelocityLowBound();
-    ui->lineEditLowVX->setValue(velocityLowBound[0]);
-    ui->lineEditLowVY->setValue(velocityLowBound[1]);
-    ui->lineEditLowVZ->setValue(velocityLowBound[2]);
-    ui->lineEditMesh1->setText(QString::fromStdString(bodyPtr->GetGraphicFile1()));
-    ui->lineEditMesh2->setText(QString::fromStdString(bodyPtr->GetGraphicFile2()));
-    ui->lineEditMesh3->setText(QString::fromStdString(bodyPtr->GetGraphicFile3()));
+    if (m_inputBody)
+    {
+        dMass mass;
+        m_inputBody->GetMass(&mass);
+        ui->lineEditMass->setValue(mass.mass);
+        ui->lineEditI11->setValue(mass.I[0 * 4 + 0]);
+        ui->lineEditI22->setValue(mass.I[1 * 4 + 1]);
+        ui->lineEditI33->setValue(mass.I[2 * 4 + 2]);
+        ui->lineEditI12->setValue(mass.I[0 * 4 + 1]);
+        ui->lineEditI13->setValue(mass.I[0 * 4 + 2]);
+        ui->lineEditI23->setValue(mass.I[1 * 4 + 2]);
+        ui->lineEditDensity->setValue(m_inputBody->GetConstructionDensity());
+        const double *constructionPosition = m_inputBody->GetConstructionPosition();
+        ui->lineEditX->setValue(constructionPosition[0]);
+        ui->lineEditY->setValue(constructionPosition[1]);
+        ui->lineEditZ->setValue(constructionPosition[2]);
+        const double *initialPosition = m_inputBody->GetInitialPosition();
+        ui->lineEditRunX->setValue(initialPosition[0]);
+        ui->lineEditRunY->setValue(initialPosition[1]);
+        ui->lineEditRunZ->setValue(initialPosition[2]);
+        const double *initialQuaternion = m_inputBody->GetInitialQuaternion();
+        pgd::Vector3 eulerAngles = pgd::MakeEulerAnglesFromQ(pgd::Quaternion(initialQuaternion));
+        ui->lineEditEulerX->setValue(eulerAngles.x);
+        ui->lineEditEulerY->setValue(eulerAngles.y);
+        ui->lineEditEulerZ->setValue(eulerAngles.z);
+        const double *velocity = m_inputBody->GetLinearVelocity();
+        ui->lineEditVX->setValue(velocity[0]);
+        ui->lineEditVY->setValue(velocity[1]);
+        ui->lineEditVZ->setValue(velocity[2]);
+        const double *angularV = m_inputBody->GetAngularVelocity();
+        ui->lineEditAVX->setValue(angularV[0]);
+        ui->lineEditAVY->setValue(angularV[1]);
+        ui->lineEditAVZ->setValue(angularV[2]);
+        const double *positionHighBound = m_inputBody->GetPositionHighBound();
+        ui->lineEditHighX->setValue(positionHighBound[0]);
+        ui->lineEditHighY->setValue(positionHighBound[1]);
+        ui->lineEditHighZ->setValue(positionHighBound[2]);
+        const double *positionLowBound = m_inputBody->GetPositionLowBound();
+        ui->lineEditLowX->setValue(positionLowBound[0]);
+        ui->lineEditLowY->setValue(positionLowBound[1]);
+        ui->lineEditLowZ->setValue(positionLowBound[2]);
+        const double *velocityHighBound = m_inputBody->GetLinearVelocityHighBound();
+        ui->lineEditHighVX->setValue(velocityHighBound[0]);
+        ui->lineEditHighVY->setValue(velocityHighBound[1]);
+        ui->lineEditHighVZ->setValue(velocityHighBound[2]);
+        const double *velocityLowBound = m_inputBody->GetLinearVelocityLowBound();
+        ui->lineEditLowVX->setValue(velocityLowBound[0]);
+        ui->lineEditLowVY->setValue(velocityLowBound[1]);
+        ui->lineEditLowVZ->setValue(velocityLowBound[2]);
+
+        std::string completePath = DialogBodyBuilder::findCompletePath(m_inputBody->GetGraphicFile1());
+        if (completePath.size()) ui->lineEditMesh1->setText(QString::fromStdString(completePath));
+        else ui->lineEditMesh1->setText(QString::fromStdString(m_inputBody->GetGraphicFile1()));
+
+        completePath = DialogBodyBuilder::findCompletePath(m_inputBody->GetGraphicFile2());
+        if (completePath.size()) ui->lineEditMesh2->setText(QString::fromStdString(completePath));
+        else ui->lineEditMesh2->setText(QString::fromStdString(m_inputBody->GetGraphicFile2()));
+
+        completePath = DialogBodyBuilder::findCompletePath(m_inputBody->GetGraphicFile3());
+        if (completePath.size()) ui->lineEditMesh3->setText(QString::fromStdString(completePath));
+        else ui->lineEditMesh3->setText(QString::fromStdString(m_inputBody->GetGraphicFile3()));
+    }
+
     lineEditMeshActivated(ui->lineEditMesh1);
 
 }
@@ -145,11 +171,23 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
 
     Body *bodyPtr;
     if (m_inputBody) bodyPtr = m_inputBody;
-    else { m_outputBody = std::make_unique<Body>(m_simulation->GetWorldID()); bodyPtr = m_outputBody.get(); }
+    else
+    {
+        m_outputBody = std::make_unique<Body>(m_simulation->GetWorldID());
+        bodyPtr = m_outputBody.get();
+        bodyPtr->EnterConstructionMode();
+    }
     bodyPtr->setName(ui->lineEditID->text().toStdString());
-    bodyPtr->SetGraphicFile1(ui->lineEditMesh1->text().toStdString());
-    bodyPtr->SetGraphicFile2(ui->lineEditMesh2->text().toStdString());
-    bodyPtr->SetGraphicFile3(ui->lineEditMesh3->text().toStdString());
+    std::string head, tail;
+    pystring::os::path::split(head, tail, ui->lineEditMesh1->text().toStdString());
+    bodyPtr->SetGraphicFile1(tail);
+    m_simulation->GetGlobal()->MeshSearchPathAddToFront(head);
+    pystring::os::path::split(head, tail, ui->lineEditMesh2->text().toStdString());
+    bodyPtr->SetGraphicFile2(tail);
+    m_simulation->GetGlobal()->MeshSearchPathAddToFront(head);
+    pystring::os::path::split(head, tail, ui->lineEditMesh3->text().toStdString());
+    bodyPtr->SetGraphicFile3(tail);
+    m_simulation->GetGlobal()->MeshSearchPathAddToFront(head);
     bodyPtr->setSimulation(m_simulation);
 
     dMass mass;
@@ -168,7 +206,6 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
     constructionPosition[1] = ui->lineEditY->value();
     constructionPosition[2] = ui->lineEditZ->value();
     bodyPtr->SetConstructionPosition(constructionPosition[0], constructionPosition[1], constructionPosition[2]);
-    bodyPtr->SetPosition(constructionPosition[0], constructionPosition[1], constructionPosition[2]);
     dVector3 positionHighBound;
     positionHighBound[0] = ui->lineEditHighX->value();
     positionHighBound[1] = ui->lineEditHighY->value();
@@ -189,6 +226,31 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
     velocityLowBound[1] = ui->lineEditLowVY->value();
     velocityLowBound[2] = ui->lineEditLowVZ->value();
     bodyPtr->SetLinearVelocityLowBound(velocityLowBound[0], velocityLowBound[1], velocityLowBound[2]);
+
+    // and because we are in construction mode we set the position to the construction position/quaternion
+    // and the initial position to the desired position/quaternion
+    bodyPtr->SetPosition(constructionPosition[0], constructionPosition[1], constructionPosition[2]);
+    dVector3 initialPosition;
+    initialPosition[0] = ui->lineEditRunX->value();
+    initialPosition[1] = ui->lineEditRunY->value();
+    initialPosition[2] = ui->lineEditRunZ->value();
+    bodyPtr->SetInitialPosition(initialPosition[0], initialPosition[1], initialPosition[2]);
+    double ex = ui->lineEditEulerX->value();
+    double ey = ui->lineEditEulerY->value();
+    double ez = ui->lineEditEulerZ->value();
+    pgd::Quaternion q = pgd::MakeQFromEulerAngles(ex, ey, ez);
+    bodyPtr->SetInitialQuaternion(q.n, q.x, q.y, q.z);
+    // but the velocities can just be set
+    dVector3 velocity;
+    velocity[0] = ui->lineEditVX->value();
+    velocity[1] = ui->lineEditVY->value();
+    velocity[2] = ui->lineEditVZ->value();
+    bodyPtr->SetLinearVelocity(velocity[0], velocity[1], velocity[2]);
+    dVector3 angularV;
+    angularV[0] = ui->lineEditAVX->value();
+    angularV[1] = ui->lineEditAVY->value();
+    angularV[2] = ui->lineEditAVZ->value();
+    bodyPtr->SetAngularVelocity(angularV[0], angularV[1], angularV[2]);
 
     if (m_inputBody)
     {
@@ -225,10 +287,8 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
     bodyPtr->saveToAttributes();
     bodyPtr->createFromAttributes();
 
-    bodyPtr->setVisible(true);
+    Preferences::insert("DialogBodyBuilderMoveMarkers", ui->checkBoxMoveMarkers->isChecked());
     Preferences::insert("DialogBodyBuilderGeometry", saveGeometry());
-    Preferences::insert("DialogBodyBuilderSplitterState", ui->splitter->saveState());
-    ui->widget3DWindow->DeleteExtraObjectToDraw(m_displayFileName.toStdString());
 
     QDialog::accept();
 }
@@ -236,14 +296,8 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
 void DialogBodyBuilder::reject() // this catches cancel, close and escape key
 {
     qDebug() << "DialogBodyBuilder::reject()";
-    if (m_inputBody)
-    {
-        Body *body = m_simulation->GetBody(m_inputBody->name());
-        if (body) body->setVisible(true);
-    }
+    Preferences::insert("DialogBodyBuilderMoveMarkers", ui->checkBoxMoveMarkers->isChecked());
     Preferences::insert("DialogBodyBuilderGeometry", saveGeometry());
-    Preferences::insert("DialogBodyBuilderSplitterState", ui->splitter->saveState());
-    ui->widget3DWindow->DeleteExtraObjectToDraw(m_displayFileName.toStdString());
 
     QDialog::reject();
 }
@@ -251,14 +305,8 @@ void DialogBodyBuilder::reject() // this catches cancel, close and escape key
 void DialogBodyBuilder::closeEvent(QCloseEvent *event)
 {
     qDebug() << "DialogBodyBuilder::closeEvent()";
-    if (m_inputBody)
-    {
-        Body *body = m_simulation->GetBody(m_inputBody->name());
-        if (body) body->setVisible(true);
-    }
+    Preferences::insert("DialogBodyBuilderMoveMarkers", ui->checkBoxMoveMarkers->isChecked());
     Preferences::insert("DialogBodyBuilderGeometry", saveGeometry());
-    Preferences::insert("DialogBodyBuilderSplitterState", ui->splitter->saveState());
-    ui->widget3DWindow->DeleteExtraObjectToDraw(m_displayFileName.toStdString());
 
     QDialog::closeEvent(event);
 }
@@ -302,36 +350,63 @@ void DialogBodyBuilder::lineEditMeshClicked()
 
 void DialogBodyBuilder::lineEditMeshActivated(LineEditPath *lineEdit)
 {
-    if (lineEdit->text().size() && lineEdit->text() != m_displayFileName)
+    while (true)
     {
-        QString filename = lineEdit->text();
-        qDebug() << "DialogBodyBuilder::displayMesh " << filename;
-        std::shared_ptr<FacetedObject> referenceObject = std::make_shared<FacetedObject>();
-        if (lineEdit != ui->lineEditMesh1) referenceObject->setBlendColour(Preferences::valueQColor("BodyColour1"), 1);
-        if (lineEdit != ui->lineEditMesh2) referenceObject->setBlendColour(Preferences::valueQColor("BodyColour2"), 1);
-        if (lineEdit != ui->lineEditMesh3) referenceObject->setBlendColour(Preferences::valueQColor("BodyColour3"), 1);
-        int err = 1;
-        if (filename.toLower().endsWith(".obj")) err = referenceObject->ParseOBJFile(filename.toStdString());
-        else if (filename.toLower().endsWith(".ply")) err = referenceObject->ParsePLYFile(filename.toStdString());
-        if (err) return;
-        referenceObject->setBlendColour(Preferences::valueQColor("BodyBuilderColour"), 1);
-        m_referenceObject = referenceObject;
-        m_displayFileName = filename;
-        if (lineEdit != ui->lineEditMesh1) ui->lineEditMesh1->setHighlighted(false);
-        if (lineEdit != ui->lineEditMesh2) ui->lineEditMesh2->setHighlighted(false);
-        if (lineEdit != ui->lineEditMesh3) ui->lineEditMesh3->setHighlighted(false);
-        lineEdit->setHighlighted(true);
-        ui->pushButtonCalculate->setEnabled(true);
-        ui->widget3DWindow->AddExtraObjectToDraw("Body Builder Reference Object"s, m_referenceObject);
-        m_referenceObject->setSimulationWidget(ui->widget3DWindow);
-        ui->widget3DWindow->update();
+        if (lineEdit == ui->lineEditMesh1)
+        {
+            if (lineEdit->text().toStdString() == m_mesh1.filename())
+            {
+                m_referenceObject = &m_mesh1;
+            }
+            else
+            {
+                int err = m_mesh1.ParseMeshFile(lineEdit->text().toStdString());
+                if (err) m_referenceObject = nullptr;
+                else m_referenceObject = &m_mesh1;
+            }
+            break;
+        }
+        if (lineEdit == ui->lineEditMesh2)
+        {
+            if (lineEdit->text().toStdString() == m_mesh2.filename())
+            {
+                m_referenceObject = &m_mesh2;
+            }
+            else
+            {
+                int err = m_mesh2.ParseMeshFile(lineEdit->text().toStdString());
+                if (err) m_referenceObject = nullptr;
+                else m_referenceObject = &m_mesh2;
+            }
+            break;
+        }
+        if (lineEdit == ui->lineEditMesh3)
+        {
+            if (lineEdit->text().toStdString() == m_mesh3.filename())
+            {
+                m_referenceObject = &m_mesh3;
+            }
+            else
+            {
+                int err = m_mesh3.ParseMeshFile(lineEdit->text().toStdString());
+                if (err) m_referenceObject = nullptr;
+                else m_referenceObject = &m_mesh3;
+            }
+            break;
+        }
     }
+
+    ui->pushButtonCalculate->setEnabled(m_referenceObject ? true:false);
+    ui->lineEditMesh1->setHighlighted(false);
+    ui->lineEditMesh2->setHighlighted(false);
+    ui->lineEditMesh3->setHighlighted(false);
+    lineEdit->setHighlighted(true);
 }
 
 
 void DialogBodyBuilder::lineEditIDTextChanged(const QString & /* text */)
 {
-    QLineEdit *lineEdit = qobject_cast<QLineEdit *>(sender());
+    LineEditUniqueName *lineEdit = qobject_cast<LineEditUniqueName *>(sender());
     if (lineEdit == nullptr) return;
     QString textCopy = lineEdit->text();
     int pos = lineEdit->cursorPosition();
@@ -371,6 +446,21 @@ void DialogBodyBuilder::properties()
         dialogProperties.update();
         m_properties = dialogProperties.getOutputSettingsItems();
     }
+}
+
+std::string DialogBodyBuilder::findCompletePath(const std::string &filename)
+{
+    std::string completePath;
+    if (m_simulation)
+    {
+        auto searchPath = m_simulation->GetGlobal()->MeshSearchPath();
+        for (auto &&it : *searchPath)
+        {
+            completePath = pystring::os::path::join(it, filename);
+            if (QFileInfo(QString::fromStdString(completePath)).isFile()) return completePath;
+        }
+    }
+    return std::string();
 }
 
 std::unique_ptr<Body> DialogBodyBuilder::outputBody()

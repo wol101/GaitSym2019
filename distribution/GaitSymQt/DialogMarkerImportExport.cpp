@@ -146,6 +146,7 @@ void DialogMarkerImportExport::SetUIElementsFromPreferences()
     ui->checkBoxQuotedStrings->setChecked(Preferences::valueBool("DialogMarkerImportExportQuotedStrings"));
     ui->checkBoxAnglesInRadians->setChecked(Preferences::valueBool("DialogMarkerImportAnglesInRadians"));
     ui->checkBoxAllowOverwrite->setChecked(Preferences::valueBool("DialogMarkerImportAllowOverwrite"));
+    ui->checkBoxIgnoreMissingBodies->setChecked(Preferences::valueBool("DialogMarkerIgnoreMissingBodies"));
 
     ui->lineEditFileName->setText(Preferences::valueQString("DialogMarkerImportExportFileName"));
 }
@@ -175,6 +176,7 @@ void DialogMarkerImportExport::SaveUIElementsToPreferences()
     Preferences::insert("DialogMarkerImportExportQuotedStrings", ui->checkBoxQuotedStrings->isChecked());
     Preferences::insert("DialogMarkerImportAnglesInRadians", ui->checkBoxAnglesInRadians->isChecked());
     Preferences::insert("DialogMarkerImportAllowOverwrite", ui->checkBoxAllowOverwrite->isChecked());
+    Preferences::insert("DialogMarkerIgnoreMissingBodies", ui->checkBoxIgnoreMissingBodies->isChecked());
 
     Preferences::insert("DialogMarkerImportExportFileName", ui->lineEditFileName->text());
 }
@@ -404,7 +406,7 @@ int DialogMarkerImportExport::ImportMarkers()
         if (tokens[1] != "World"s)
         {
             body = m_simulation->GetBody(tokens[1]);
-            if (!body)
+            if (!body && ui->checkBoxIgnoreMissingBodies->isChecked() == false)
             {
                 errorCount++;
                 ui->plainTextEditLog->appendPlainText(QString("Error: '%1' Body '%2' does not exist.\n").arg(QString::fromStdString(tokens[0])).arg(QString::fromStdString(tokens[1])));
@@ -413,6 +415,7 @@ int DialogMarkerImportExport::ImportMarkers()
         }
         std::unique_ptr<Marker> marker = std::make_unique<Marker>(nullptr);
         addedNames.insert(tokens[0]);
+        marker->setSimulation(m_simulation);
         marker->setName(tokens[0]);
         marker->SetBody(body);
         marker->setSize1(Preferences::valueDouble("MarkerSize"));

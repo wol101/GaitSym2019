@@ -206,10 +206,10 @@ void SimulationWidget::paintGL()
         drawModel();
     }
 
-    for (auto &&iter : m_extraObjectsToDrawMap)
-    {
-        iter.second->Draw();
-    }
+//    for (auto &&iter : m_extraObjectsToDrawMap)
+//    {
+//        iter.second->Draw();
+//    }
 
     // the 3d cursor
     // qDebug() << "Cursor " << m_cursor3DPosition.x() << " " << m_cursor3DPosition.y() << " " << m_cursor3DPosition.z();
@@ -499,7 +499,6 @@ void SimulationWidget::keyPressEvent(QKeyEvent *event)
 
 void SimulationWidget::menuRequest(const QPoint &pos)
 {
-    if (!m_simulation) return;
     if (m_hits.size() == 0) return;
 
     QMenu menu;
@@ -518,14 +517,13 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         name = drawable->name();
     }
 
-    while (m_mainWindow->mode() == MainWindow::constructionMode) // use while to prevent nesting of if else statements
+    while (m_simulation && m_mainWindow->mode() == MainWindow::constructionMode) // use while to prevent nesting of if else statements
     {
         action = menu.addAction(tr("Create Marker..."));
         menu.addSeparator();
         auto body = dynamic_cast<DrawBody *>(drawable);
         if (body)
         {
-//            name = body->body()->name();
             action = menu.addAction(tr("Edit Body..."));
             action = menu.addAction(tr("Delete Body..."));
             break;
@@ -533,7 +531,6 @@ void SimulationWidget::menuRequest(const QPoint &pos)
 //        auto fluisac = dynamic_cast<DrawFluidSac *>(drawable);
 //        if (fluisac)
 //        {
-//            name = fluisac->fluidsac()->name();
 //            action = menu.addAction(tr("Edit Fluid Sac..."));
 //            action = menu.addAction(tr("Delete Fluid Sac..."));
 //            break;
@@ -541,7 +538,6 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto geom = dynamic_cast<DrawGeom *>(drawable);
         if (geom)
         {
-//            name = geom->geom()->name();
             action = menu.addAction(tr("Edit Geom..."));
             action = menu.addAction(tr("Delete Geom..."));
             break;
@@ -549,7 +545,6 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto joint = dynamic_cast<DrawJoint *>(drawable);
         if (joint)
         {
-//            name = joint->joint()->name();
             action = menu.addAction(tr("Edit Joint..."));
             action = menu.addAction(tr("Delete Joint..."));
             break;
@@ -557,7 +552,6 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto marker = dynamic_cast<DrawMarker *>(drawable);
         if (marker)
         {
-//            name = marker->marker()->name();
             action = menu.addAction(tr("Edit Marker..."));
             action = menu.addAction(tr("Delete Marker..."));
             action = menu.addAction(tr("Move Marker"));
@@ -566,7 +560,6 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         auto muscle = dynamic_cast<DrawMuscle *>(drawable);
         if (muscle)
         {
-//            name = muscle->muscle()->name();
             action = menu.addAction(tr("Edit Muscle..."));
             action = menu.addAction(tr("Delete Muscle..."));
             break;
@@ -1070,9 +1063,9 @@ bool SimulationWidget::intersectModel(float winX, float winY)
     std::vector<pgd::Vector3> intersectionCoordList;
     std::vector<size_t> intersectionIndexList;
     bool hit;
-    for (auto drawableIter : m_drawables)
+    for (auto &&drawableIter : m_drawables)
     {
-        for (auto facetedObjectIter : drawableIter->facetedObjectList())
+        for (auto &&facetedObjectIter : drawableIter->facetedObjectList())
         {
             QMatrix4x4 mvpMatrix = m_proj * m_view * facetedObjectIter->model();
             bool invertible;
@@ -1118,6 +1111,45 @@ bool SimulationWidget::intersectModel(float winX, float winY)
             }
         }
     }
+    // now handle the non-drawables
+    std::vector<FacetedObject *> facetedObjectList = { m_cursor3D.get(), m_globalAxes.get() };
+    for (auto &&facetedObjectIter : facetedObjectList)
+    {
+        QMatrix4x4 mvpMatrix = m_proj * m_view * facetedObjectIter->model();
+        bool invertible;
+        QMatrix4x4 unprojectMatrix = mvpMatrix.inverted(&invertible);
+        if (!invertible) break; // usually because the scale is zero so not an error condition
+        QVector4D screenPoint(winX, winY, -1, 1);
+        QVector4D nearPoint4D = unprojectMatrix * screenPoint;
+        screenPoint.setZ(+1);
+        QVector4D farPoint4D = unprojectMatrix * screenPoint;
+        QVector3D rayOrigin = nearPoint4D.toVector3DAffine();
+        QVector3D rayVector = farPoint4D.toVector3DAffine() - rayOrigin;
+        pgd::Vector3 origin(double(rayOrigin.x()), double(rayOrigin.y()), double(rayOrigin.z()));
+        pgd::Vector3 vector(double(rayVector.x()), double(rayVector.y()), double(rayVector.z()));
+        pgd::Vector3 vectorNorm = vector / vector.Magnitude();
+
+        intersectionCoordList.clear();
+        intersectionIndexList.clear();
+        hit = facetedObjectIter->FindIntersection(origin, vectorNorm, &intersectionCoordList, &intersectionIndexList);
+        if (hit)
+        {
+            for (size_t i = 0; i < intersectionCoordList.size(); i++)
+            {
+                auto newHits = std::make_unique<IntersectionHits>();
+                newHits->setFacetedObject(facetedObjectIter);
+                newHits->setTriangleIndex(intersectionIndexList[i]);
+                newHits->setModelLocation(intersectionCoordList[i]);
+                QVector3D modelIntersection(float(intersectionCoordList[i].x), float(intersectionCoordList[i].y), float(intersectionCoordList[i].z));
+                QVector3D screenIntersection = mvpMatrix * modelIntersection;
+                if (screenIntersection.z() < -1.0f || screenIntersection.z() > 1.0f) continue; // this means that only visible intersections are allowed
+                QVector3D worldIntersection = facetedObjectIter->model() * modelIntersection;
+                newHits->setWorldLocation(pgd::Vector3(double(worldIntersection.x()), double(worldIntersection.y()), double(worldIntersection.z())));
+                newHits->setScreenLocation(pgd::Vector3(double(screenIntersection.x()), double(screenIntersection.y()), double(screenIntersection.z())));
+                m_hits.push_back(std::move(newHits));
+            }
+        }
+    }
 
 #ifdef QT_DEBUG
     qDebug() << "SimulationWidget::intersectModel m_hits.size() = " << m_hits.size();
@@ -1141,7 +1173,7 @@ bool SimulationWidget::intersectModel(float winX, float winY)
     }
 #endif
 
-    // I'd have though sorting this would work but it seems to cause problems
+    // I'd have thought sorting this would work but it seems to cause problems
     // std::sort(m_hits.begin(), m_hits.end(), [](const std::unique_ptr<IntersectionHits> &a, const std::unique_ptr<IntersectionHits> &b) -> bool { return *a < *b; });
     // so instead lets create a array of indices that point to the locations in order
     m_hitsIndexByZ.resize(m_hits.size());
@@ -1209,23 +1241,23 @@ QString SimulationWidget::getLastMenuItem() const
     return m_lastMenuItem;
 }
 
-void SimulationWidget::AddExtraObjectToDraw(const std::string &name, std::shared_ptr<FacetedObject> object)
-{
-    m_extraObjectsToDrawMap[name] = object;
-}
+//void SimulationWidget::AddExtraObjectToDraw(const std::string &name, std::shared_ptr<FacetedObject> object)
+//{
+//    m_extraObjectsToDrawMap[name] = object;
+//}
 
-size_t SimulationWidget::DeleteExtraObjectToDraw(const std::string &name)
-{
-    // returns the number of items removed from the map (will be 0 or 1)
-    return (m_extraObjectsToDrawMap.erase(name));
-}
+//size_t SimulationWidget::DeleteExtraObjectToDraw(const std::string &name)
+//{
+//    // returns the number of items removed from the map (will be 0 or 1)
+//    return (m_extraObjectsToDrawMap.erase(name));
+//}
 
-std::shared_ptr<FacetedObject> SimulationWidget::GetExtraObjectToDraw(const std::string &name)
-{
-    auto iter = m_extraObjectsToDrawMap.find(name);
-    if (iter != m_extraObjectsToDrawMap.end()) return iter->second;
-    return nullptr;
-}
+//std::shared_ptr<FacetedObject> SimulationWidget::GetExtraObjectToDraw(const std::string &name)
+//{
+//    auto iter = m_extraObjectsToDrawMap.find(name);
+//    if (iter != m_extraObjectsToDrawMap.end()) return iter->second;
+//    return nullptr;
+//}
 
 bool SimulationWidget::halfTransparency() const
 {

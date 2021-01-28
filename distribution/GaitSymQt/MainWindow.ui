@@ -839,7 +839,7 @@
               <x>0</x>
               <y>0</y>
               <width>358</width>
-              <height>433</height>
+              <height>437</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
@@ -946,7 +946,7 @@
           <x>0</x>
           <y>0</y>
           <width>1137</width>
-          <height>339</height>
+          <height>343</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
@@ -1044,7 +1044,7 @@
    </widget>
    <widget class="QMenu" name="menuControl">
     <property name="title">
-     <string>Control</string>
+     <string>&amp;Control</string>
     </property>
     <addaction name="actionRestart"/>
     <addaction name="actionRun"/>
@@ -1098,7 +1098,7 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <addaction name="actionViewRight"/>
     <addaction name="actionViewLeft"/>
@@ -1128,12 +1128,6 @@
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>32</width>
-     <height>32</height>
-    </size>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -1234,7 +1228,7 @@
      <normaloff>:/images/Media Control Icons/Restart Icon.svg</normaloff>:/images/Media Control Icons/Restart Icon.svg</iconset>
    </property>
    <property name="text">
-    <string>&amp;Reload</string>
+    <string>Re&amp;load</string>
    </property>
    <property name="toolTip">
     <string>Restarts the simulation</string>
@@ -1293,7 +1287,7 @@
   </action>
   <action name="action640x480">
    <property name="text">
-    <string>640x480</string>
+    <string>&amp;640x480</string>
    </property>
    <property name="toolTip">
     <string>Set main window size to 640x480</string>
@@ -1301,7 +1295,7 @@
   </action>
   <action name="action800x600">
    <property name="text">
-    <string>800x600</string>
+    <string>&amp;800x600</string>
    </property>
    <property name="toolTip">
     <string>Set main window size to 800x600</string>
@@ -1309,7 +1303,7 @@
   </action>
   <action name="action1280x720">
    <property name="text">
-    <string>1280x720</string>
+    <string>&amp;1280x720</string>
    </property>
    <property name="toolTip">
     <string>Set main window size to 1280x720</string>
@@ -1317,7 +1311,7 @@
   </action>
   <action name="action1920x1080">
    <property name="text">
-    <string>1920x1080</string>
+    <string>1&amp;920x1080</string>
    </property>
    <property name="toolTip">
     <string>Set main window size to 1920x1080</string>
@@ -1392,7 +1386,7 @@
      <normaloff>:/images/View Direction Icons/View Direction Right.svg</normaloff>:/images/View Direction Icons/View Direction Right.svg</iconset>
    </property>
    <property name="text">
-    <string>View Right</string>
+    <string>View &amp;Right</string>
    </property>
    <property name="toolTip">
     <string>View simulation from right</string>
@@ -1404,7 +1398,7 @@
      <normaloff>:/images/View Direction Icons/View Direction Front.svg</normaloff>:/images/View Direction Icons/View Direction Front.svg</iconset>
    </property>
    <property name="text">
-    <string>View Front</string>
+    <string>View &amp;Front</string>
    </property>
    <property name="toolTip">
     <string>View simulation from front</string>
@@ -1416,7 +1410,7 @@
      <normaloff>:/images/View Direction Icons/View Direction Top.svg</normaloff>:/images/View Direction Icons/View Direction Top.svg</iconset>
    </property>
    <property name="text">
-    <string>View Top</string>
+    <string>View &amp;Top</string>
    </property>
    <property name="toolTip">
     <string>View simulation from top</string>
@@ -1428,7 +1422,7 @@
      <normaloff>:/images/Snapshot Icon/Snapshot Icon.svg</normaloff>:/images/Snapshot Icon/Snapshot Icon.svg</iconset>
    </property>
    <property name="text">
-    <string>Snapshot</string>
+    <string>S&amp;napshot</string>
    </property>
    <property name="toolTip">
     <string>Take a snapshot of the screen</string>
@@ -1443,7 +1437,7 @@
      <normaloff>:/images/Media Control Icons/Run Icon.svg</normaloff>:/images/Media Control Icons/Run Icon.svg</iconset>
    </property>
    <property name="text">
-    <string>Run</string>
+    <string>&amp;Run</string>
    </property>
    <property name="toolTip">
     <string>Run the simulation</string>
@@ -1455,7 +1449,7 @@
      <normaloff>:/images/Media Control Icons/Step Forward Icon.svg</normaloff>:/images/Media Control Icons/Step Forward Icon.svg</iconset>
    </property>
    <property name="text">
-    <string>Step</string>
+    <string>&amp;Step</string>
    </property>
    <property name="toolTip">
     <string>Step the simulation</string>
@@ -1470,7 +1464,7 @@
      <normaloff>:/images/Media Control Icons/Record Icon.svg</normaloff>:/images/Media Control Icons/Record Icon.svg</iconset>
    </property>
    <property name="text">
-    <string>Record Movie</string>
+    <string>Record &amp;Movie</string>
    </property>
    <property name="toolTip">
     <string>Click to record a movie from the screen</string>
@@ -1478,7 +1472,7 @@
   </action>
   <action name="actionToggleFullscreen">
    <property name="text">
-    <string>Toggle &amp;Fullscreen</string>
+    <string>&amp;Toggle &amp;Fullscreen</string>
    </property>
    <property name="toolTip">
     <string>Switches between full screen display and normal display</string>
@@ -1490,7 +1484,7 @@
      <normaloff>:/images/View Direction Icons/View Direction Left.svg</normaloff>:/images/View Direction Icons/View Direction Left.svg</iconset>
    </property>
    <property name="text">
-    <string>View Left</string>
+    <string>View &amp;Left</string>
    </property>
    <property name="toolTip">
     <string>View simulation from left</string>
@@ -1502,7 +1496,7 @@
      <normaloff>:/images/View Direction Icons/View Direction Back.svg</normaloff>:/images/View Direction Icons/View Direction Back.svg</iconset>
    </property>
    <property name="text">
-    <string>View Back</string>
+    <string>View &amp;Back</string>
    </property>
    <property name="toolTip">
     <string>View simulation from back</string>
@@ -1514,7 +1508,7 @@
      <normaloff>:/images/View Direction Icons/View Direction Bottom.svg</normaloff>:/images/View Direction Icons/View Direction Bottom.svg</iconset>
    </property>
    <property name="text">
-    <string>View Bottom</string>
+    <string>View Botto&amp;m</string>
    </property>
    <property name="toolTip">
     <string>View simulation from bottom</string>
@@ -1522,7 +1516,7 @@
   </action>
   <action name="actionSaveOBJSnapshot">
    <property name="text">
-    <string>Save OBJ Snapshot...</string>
+    <string>Save O&amp;BJ Snapshot...</string>
    </property>
    <property name="toolTip">
     <string>Save single OBJ file as a snapshot</string>
@@ -1530,7 +1524,7 @@
   </action>
   <action name="actionStartOBJSequence">
    <property name="text">
-    <string>Start OBJ Sequence...</string>
+    <string>Start O&amp;BJ Sequence...</string>
    </property>
    <property name="toolTip">
     <string>Start saving a sequence of OBJ files in a folder</string>
@@ -1538,7 +1532,7 @@
   </action>
   <action name="actionStopOBJSequence">
    <property name="text">
-    <string>Stop OBJ Sequence</string>
+    <string>Stop OB&amp;J Sequence</string>
    </property>
    <property name="toolTip">
     <string>Stop saving a sequence of OBJ files in a folder</string>
@@ -1598,7 +1592,7 @@
      <normaloff>:/images/Mode Icons/Construction Mode Icon.svg</normaloff>:/images/Mode Icons/Construction Mode Icon.svg</iconset>
    </property>
    <property name="text">
-    <string>Construction Mode</string>
+    <string>C&amp;onstruction Mode</string>
    </property>
    <property name="toolTip">
     <string>Use for constructing and editing the model</string>
@@ -1613,7 +1607,7 @@
      <normaloff>:/images/Mode Icons/Run Mode Icon.svg</normaloff>:/images/Mode Icons/Run Mode Icon.svg</iconset>
    </property>
    <property name="text">
-    <string>Run Mode</string>
+    <string>&amp;Run Mode</string>
    </property>
    <property name="toolTip">
     <string>Mode for running the simulation</string>
@@ -1661,17 +1655,17 @@
   </action>
   <action name="actionCreateTestingDrivers">
    <property name="text">
-    <string>Create Testing Drivers...</string>
+    <string>Create &amp;Testing Drivers...</string>
    </property>
   </action>
   <action name="actionCreateMirrorElements">
    <property name="text">
-    <string>Create Mirror Elements...</string>
+    <string>Create M&amp;irror Elements...</string>
    </property>
   </action>
   <action name="actionRenameElement">
    <property name="text">
-    <string>Rename Element...</string>
+    <string>Re&amp;name Element...</string>
    </property>
   </action>
  </widget>

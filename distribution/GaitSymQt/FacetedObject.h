@@ -138,6 +138,8 @@ public:
     double decal() const;
     void setDecal(double decal);
 
+    std::string filename() const;
+
 private:
 
     std::vector<double> m_vertexList;

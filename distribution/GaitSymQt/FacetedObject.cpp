@@ -571,6 +571,7 @@ int FacetedObject::ParseOBJMaterialFile(const std::string &filename, std::map<st
 
 int FacetedObject::ParsePLYFile(const std::string &filename)
 {
+    m_filename = filename;
     MeshStoreObject *meshStoreObject = m_meshStore.getMesh(filename);
     if (meshStoreObject)
     {
@@ -735,6 +736,7 @@ int FacetedObject::ParsePLYFile(const std::string &filename)
 
 int FacetedObject::ReadFromMemory(const char *data, size_t len, bool binary, const std::string &meshName)
 {
+    m_filename = meshName;
     MeshStoreObject *meshStoreObject = m_meshStore.getMesh(meshName);
     if (meshStoreObject)
     {
@@ -893,6 +895,7 @@ void FacetedObject::SaveToMemory(std::vector<char> *data, bool binary)
 
 int FacetedObject::ReadFromResource(const QString &resourceName)
 {
+    m_filename = resourceName.toStdString();
     MeshStoreObject *meshStoreObject = m_meshStore.getMesh(resourceName.toStdString());
     if (meshStoreObject)
     {
@@ -2334,6 +2337,11 @@ double FacetedObject::decal() const
 void FacetedObject::setDecal(double decal)
 {
     m_decal = decal;
+}
+
+std::string FacetedObject::filename() const
+{
+    return m_filename;
 }
 
 QColor FacetedObject::blendColour() const

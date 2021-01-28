@@ -98,6 +98,42 @@ const std::vector<std::string> *Global::ConstMeshSearchPath() const
     return &m_MeshSearchPath;
 }
 
+void Global::MeshSearchPathAddToFront(const std::string &meshSearchPath)
+{
+    if (m_MeshSearchPath[0] != meshSearchPath)
+    {
+        MeshSearchPathRemove(meshSearchPath);
+        m_MeshSearchPath.insert(m_MeshSearchPath.begin(), meshSearchPath); // because there is no push_front in a vector
+    }
+}
+
+void Global::MeshSearchPathAddToBack(const std::string &meshSearchPath)
+{
+    if (m_MeshSearchPath[m_MeshSearchPath.size() - 1] != meshSearchPath)
+    {
+        MeshSearchPathRemove(meshSearchPath);
+        m_MeshSearchPath.push_back(meshSearchPath);
+    }
+}
+
+bool Global::MeshSearchPathRemove(const std::string &meshSearchPath)
+{
+    bool altered = false;
+    for (auto it = m_MeshSearchPath.begin(); it != m_MeshSearchPath.end();)
+    {
+        if ((*it) == meshSearchPath)
+        {
+            it = m_MeshSearchPath.erase(it);
+            altered = true;
+        }
+        else
+        {
+            it++;
+        }
+    }
+    return altered;
+}
+
 double Global::LinearDamping() const
 {
     return m_LinearDamping;

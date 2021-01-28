@@ -307,6 +307,7 @@ SOURCES += \
     ../src/DampedSpringMuscle.cpp \
     ../src/DataFile.cpp \
     ../src/DataTarget.cpp \
+    ../src/DataTargetMarkerCompare.cpp \
     ../src/DataTargetQuaternion.cpp \
     ../src/DataTargetScalar.cpp \
     ../src/DataTargetVector.cpp \
@@ -628,6 +629,7 @@ HEADERS += \
     ../src/DampedSpringMuscle.h \
     ../src/DataFile.h \
     ../src/DataTarget.h \
+    ../src/DataTargetMarkerCompare.h \
     ../src/DataTargetQuaternion.h \
     ../src/DataTargetScalar.h \
     ../src/DataTargetVector.h \

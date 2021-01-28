@@ -26,7 +26,7 @@ Marker::Marker(Body *body)
     m_body = body;
 }
 
-void Marker::SetPosition (double x, double y, double z)
+void Marker::SetPosition(double x, double y, double z)
 {
     m_position.x = x; m_position.y = y; m_position.z = z;
 }
@@ -298,6 +298,10 @@ std::string *Marker::SetWorldQuaternion(double qs0, double qx1, double qy2, doub
     return nullptr;
 }
 
+void Marker::OffsetPosition(double x, double y, double z)
+{
+    m_position.x += x; m_position.y += y; m_position.z += z;
+}
 
 pgd::Vector3 Marker::GetPosition() const
 {

@@ -22,6 +22,7 @@
 #include <map>
 #include <deque>
 #include <memory>
+#include <random>
 
 class Simulation;
 class Hosts;
@@ -63,13 +64,17 @@ private:
     ENetHost *m_client = nullptr;
     ENetPeer *m_peer = nullptr;
     unsigned int m_MD5[4] = {};
-    int m_sleepTime = 10000;
+    int m_sleepTime = 10000; // milliseconds
+    int m_timeout = 100000; // milliseconds
 
     std::map<std::vector<uint32_t>, std::string> m_cachedConfigFiles;
     std::deque<std::vector<uint32_t>> m_cachedConfigFilesQueue;
     size_t m_cachedConfigFilesLimit = 10;
     TCPIPMessage m_genomeMessage = {};
     bool m_connected = false;
+
+    std::unique_ptr<std::mt19937_64> m_gen;
+    std::unique_ptr<std::uniform_real_distribution<double>> m_distrib;
 
     bool m_debug = false;
 };

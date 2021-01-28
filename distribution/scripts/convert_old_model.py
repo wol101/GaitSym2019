@@ -13,6 +13,8 @@ def convert_old_model():
     parser = argparse.ArgumentParser(description="Try to convert an old GaitSym XML config file (needs to be saved in World format)")
     parser.add_argument("-i", "--input_xml_file", required=True, help="the input old format GaitSym XML config file")
     parser.add_argument("-o", "--output_xml_file", required=True, help="the output GaitSym2019 XML config file")
+    parser.add_argument("-oo", "--original_obj_folder", default="", help="read existing meshes here")
+    parser.add_argument("-to", "--translated_obj_folder", default = "", help="output translated meshes here")
     parser.add_argument("-m1", "--mesh1regex", nargs=2, help="Set mesh1 based on a regex search and replace of GraphicFile")
     parser.add_argument("-m2", "--mesh2regex", nargs=2, help="Set mesh2 based on a regex search and replace of GraphicFile")
     parser.add_argument("-m3", "--mesh3regex", nargs=2, help="Set mesh3 based on a regex search and replace of GraphicFile")
@@ -32,15 +34,31 @@ def convert_old_model():
     if os.path.exists(args.output_xml_file) and not args.force:
         print("Error: \"%s\" exists. Use --force to overwrite" % (args.output_xml_file))
         sys.exit(1)
-        
+    if args.original_obj_folder and not os.path.isdir(args.original_obj_folder):
+        print("Error: \"%s\" is not a folder" % (args.original_obj_folder))
+        sys.exit(1)
+    if args.translated_obj_folder and os.path.exists(args.translated_obj_folder):
+        if not os.path.isdir(args.translated_obj_folder):
+            print("Error: \"%s\" exists and is not a folder" % (args.translated_obj_folder))
+            sys.exit(1)
+        else:
+            onlyfiles = [f for f in os.listdir(args.translated_obj_folder) if os.path.isfile(os.path.join(args.translated_obj_folder, f))]
+            if len(onlyfiles) > 0 and not args.force:
+                print("Error: \"%s\" exists and contains files. Use --force to overwrite" % (args.translated_obj_folder))
+                sys.exit(1)
+    else:
+        if args.verbose: print('Creating folder "%s"' % (args.translated_obj_folder))
+        os.mkdir(args.translated_obj_folder)
+
     # handle the attributes to add
     add_tags = []
     add_attributes = []
     add_values = []
-    for tag_attribute_value in args.tag_attribute_value:
-        add_tags.append(tag_attribute_value[0])
-        add_attributes.append(tag_attribute_value[1])
-        add_values.append(tag_attribute_value[2])
+    if args.tag_attribute_value:
+        for tag_attribute_value in args.tag_attribute_value:
+            add_tags.append(tag_attribute_value[0])
+            add_attributes.append(tag_attribute_value[1])
+            add_values.append(tag_attribute_value[2])
 
     # read the input XML file
     if args.verbose: print('Reading "%s"' % (args.input_xml_file))
@@ -196,10 +214,12 @@ def convert_old_model():
 def convert_global(global_element):
     new_global = xml.etree.ElementTree.Element("GLOBAL")
     new_global.tail = "\n"
-    required_attributes = ["AllowConnectedCollisions", "AllowInternalCollisions", "BMR", "CFM", "ContactMaxCorrectingVel",
+    required_attributes = ["AllowInternalCollisions", "BMR", "CFM", "ContactMaxCorrectingVel",
                            "ContactSurfaceLayer", "DistanceTravelledBodyID", "ERP", "FitnessType", "GravityVector",
-                           "IntegrationStepSize", "MechanicalEnergyLimit", "MetabolicEnergyLimit", "StepType", "TimeLimit"]
-    test_required_attributes(global_element, required_attributes, required_only_flag = True, quiet_flag = False)
+                           "IntegrationStepSize", "MechanicalEnergyLimit", "MetabolicEnergyLimit", "TimeLimit"]
+    test_required_attributes(global_element, required_attributes, required_only_flag = False, quiet_flag = False)
+    if "AllowConnectedCollisions" not in global_element.attrib: new_global.attrib["AllowConnectedCollisions"] = "false"
+    if "StepType" not in global_element.attrib: new_global.attrib["StepType"] = "World"
     for name in global_element.attrib:
         new_global.attrib[name] = global_element.attrib[name]
     erp = float(global_element.attrib["ERP"])
@@ -239,6 +259,22 @@ def convert_body(body, marker_list, args):
     if args.mesh3regex:
         new_body.attrib["GraphicFile3"] = re.sub(args.mesh3regex[0], args.mesh3regex[1], body.attrib["GraphicFile"])
 
+    if args.translated_obj_folder and body.attrib["GraphicFile"]:
+        filename = os.path.join(args.original_obj_folder, body.attrib["GraphicFile"])
+        if not os.path.isfile(filename):
+            print('Error: mesh "%s" missing' % (filename))
+            sys.exit(1)
+        (vertices, triangles, objects) = read_obj_file(filename, args.verbose)
+        p = [float(s) for s in strip_world(body.attrib["Position"]).split()]
+        o = [float(s) for s in strip_world(body.attrib["Offset"]).split()]
+        delta = Sub3x1(p, o)
+        new_vertices = []
+        for vertex in vertices:
+            new_vertices.append(Add3x1(vertex, delta))
+        new_filename = os.path.join(args.translated_obj_folder, new_body.attrib["GraphicFile1"])
+        if args.verbose:
+            print('"%s" delta = %f, %f, %f' % (new_filename, delta[0], delta[1], delta[2]))
+        write_obj_file(new_filename, new_vertices, triangles, objects, args.verbose)
 
     # and then create any new markers needed
     new_marker = xml.etree.ElementTree.Element("MARKER")
@@ -619,7 +655,14 @@ def convert_muscle(muscle, marker_list, markers_only):
                 viapoint_marker = xml.etree.ElementTree.Element("MARKER")
                 viapoint_marker.tail = "\n"
                 viapoint_marker.attrib["ID"] = muscle.attrib["ID"] + "_ViaPoint_Marker_" + str(n_viapoints)
-                viapoint_marker.attrib["BodyID"] = muscle.attrib["ViaPointBody" + str(n_viapoints)]
+                if "ViaPointBody" + str(n_viapoints) in muscle.attrib:
+                    viapoint_marker.attrib["BodyID"] = muscle.attrib["ViaPointBody" + str(n_viapoints)]
+                else:
+                    if "ViaPoint" + str(n_viapoints) + "BodyID" in muscle.attrib:
+                        viapoint_marker.attrib["BodyID"] = muscle.attrib["ViaPoint" + str(n_viapoints) + "BodyID"]
+                    else:
+                        print('Error neither "%s" nor "%s" found' % ("ViaPointBody" + str(n_viapoints), "ViaPoint" + str(n_viapoints) + "BodyID"))
+                        sys.exit(1)
                 viapoint_marker.attrib["Position"] = "World " + strip_world(muscle.attrib[viapoint_name])
                 viapoint_marker.attrib["Quaternion"] = "1 0 0 0"
                 marker_list[viapoint_marker.attrib["ID"]] = viapoint_marker
@@ -761,7 +804,60 @@ def convert_to_spring_and_damping_constants(erp, cfm, integration_stepsize):
     spring_constant = kp
     damping_constant = kd
     return (spring_constant, damping_constant)
+    
+def write_obj_file(filename, vertices, triangles, objects, verbose):
+    if verbose:
+        print('Writing "%s"' % (filename))
+    with open(filename, 'w') as f_out:
+        f_out.write('# Generated by convert_obj_to_sac.py\n')
+        f_out.write('# Vertices: %d\n' % (len(vertices)))
+        f_out.write('# Faces: %d\n' % (len(triangles)))
+        for i in range(0, len(vertices)):
+            v = vertices[i]
+            f_out.write('v %f %f %f\n' % (v[0], v[1], v[2]))
+        for i in range(0, len(triangles)):
+            if i in objects:
+                f_out.write('g %s\n' % objects[i])
+                f_out.write('o %s\n' % objects[i])
+            t = triangles[i]
+            f_out.write('f %d %d %d\n' % (t[0] + 1, t[1] + 1, t[2] + 1))
+        f_out.write('# End of file\n')
+        if verbose:
+            print('Written %d vertices and %d triangles' % (len(vertices), len(triangles)))
 
+def read_obj_file(filename, verbose):
+    vertices = []
+    triangles = []
+    objects = {}
+    if verbose:
+        print('Reading "%s"' % (filename))
+    with open(filename) as f_in:
+        lines = f_in.read().splitlines()
+    for line in lines:
+        line = line.strip()
+        if line.startswith('#'):
+            continue
+        tokens = line.split()
+        if len(tokens) == 0:
+            continue
+        if tokens[0] == 'v':
+            if len(tokens) != 4:
+                print('Error in read_obj_file: vertices need 3 coordinates')
+                sys.exit(1)
+            vertices.append([float(i) for i in tokens[1:4]])
+            continue
+        if tokens[0] == 'f':
+            if len(tokens) != 4:
+                print('Error in read_obj_file: only triangular faces supported')
+                sys.exit(1)
+            triangles.append([int(i.split('/')[0]) - 1 for i in tokens[1:4]])
+        if tokens[0] == 'o':
+            objects[len(triangles)] = tokens[1]
+    if verbose:
+        print('Read %d vertices and %d triangles' % (len(vertices), len(triangles)))
+        print('%d objects found' % (len(objects)))
+    return (vertices, triangles, objects)
+    
 def pretty_print_sys_argv(sys_argv):
     quoted_sys_argv = quoted_if_necessary(sys_argv)
     print((" ".join(quoted_sys_argv)))
@@ -777,6 +873,22 @@ def quoted_if_necessary(input_list):
             item = "\"" + item + "\""
         output_list.append(item)
     return output_list
+
+# add two vectors
+def Add3x1(a, b):
+    c = [0, 0, 0]
+    c[0] = a[0] + b[0]
+    c[1] = a[1] + b[1]
+    c[2] = a[2] + b[2]
+    return c
+
+# subtract two vectors
+def Sub3x1(a, b):
+    c = [0, 0, 0]
+    c[0] = a[0] - b[0]
+    c[1] = a[1] - b[1]
+    c[2] = a[2] - b[2]
+    return c
 
 # calculate cross product (vector product)
 def CrossProduct3x1(a, b):

@@ -25,7 +25,7 @@ public:
     Marker(Body *body);
 
     // these functions set the geom position relative to its body
-    void SetPosition (double x, double y, double z);
+    void SetPosition(double x, double y, double z);
     void SetQuaternion(double qs0, double qx1, double qy2, double qz3);
     std::string *SetPosition (const std::string &buf);
     std::string *SetPosition(const std::string &body, double x, double y, double z);
@@ -33,6 +33,7 @@ public:
     std::string *SetQuaternion(const std::string &buf);
     std::string *SetQuaternion(const std::string &body, double qs0, double qx1, double qy2, double qz3);
     std::string *SetWorldQuaternion(double qs0, double qx1, double qy2, double qz3);
+    void OffsetPosition(double x, double y, double z);
 
     SMART_ENUM(Axis, axisStrings, axisCount, X, Y, Z);
 //    enum Axis { X = 0, Y = 1, Z = 2 };

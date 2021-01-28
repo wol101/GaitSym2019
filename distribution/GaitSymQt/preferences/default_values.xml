@@ -1140,13 +1140,13 @@
         type="QString"
         value="." />
 
-    <SETTING defaultValue="Monospace"
+    <SETTING defaultValue="Courier,10,-1,5,50,0,0,0,0,0"
         display="1"
         key="TextEditDialogEditorFont"
         label="Raw XML Editor Font"
         order="5"
         type="QFont"
-        value="Monospace" />
+        value="Courier,10,-1,5,50,0,0,0,0,0" />
     <SETTING defaultValue="false"
         display="1"
         key="TextEditDialogCaseSensitiveSearch"
@@ -1183,13 +1183,13 @@
         type="QString"
         value="" />
 
-    <SETTING defaultValue="Monospace"
+    <SETTING defaultValue="Courier,10,-1,5,50,0,0,0,0,0"
         display="1"
         key="DialogCreateMirrorElementsEditorFont"
         label="Create Mirror Elements Font"
         order="5"
         type="QFont"
-        value="Monospace" />
+        value="Courier,10,-1,5,50,0,0,0,0,0" />
     <SETTING defaultValue="false"
         display="1"
         key="DialogCreateMirrorElementsCaseSensitiveSearch"
@@ -1235,13 +1235,13 @@
         type="int"
         value="1" />
 
-    <SETTING defaultValue="Monospace"
+    <SETTING defaultValue="Courier,10,-1,5,50,0,0,0,0,0"
         display="1"
         key="DialogCreateTestingDriversEditorFont"
         label="Create Testing Drivers Font"
         order="5"
         type="QFont"
-        value="Monospace" />
+        value="Courier,10,-1,5,50,0,0,0,0,0" />
     <SETTING defaultValue="_testing_driver"
         display="1"
         key="DialogCreateTestingDriversSuffix"
@@ -1335,6 +1335,12 @@
         defaultValue="false"
         display="0"
         value="false"/>
+    <SETTING type="bool"
+        label="DialogMarkerIgnoreMissingBodies"
+        key="DialogMarkerIgnoreMissingBodies"
+        defaultValue="false"
+        display="0"
+        value="false"/>
     <SETTING type="int"
         label="DialogMarkerImportExportSeparatorOption"
         key="DialogMarkerImportExportSeparatorOption"
@@ -1343,12 +1349,75 @@
         display="0"
         maximumValue="2"
         value="0"/>
+
     <SETTING type="QString"
         label="DialogMarkersMirrorAxis"
         key="DialogMarkersMirrorAxis"
         defaultValue="X"
         display="0"
         value="X"/>
+
+    <SETTING defaultValue="Courier,10,-1,5,50,0,0,0,0,0"
+        display="1"
+        key="DialogInfoEditorFont"
+        label="Info Display Font"
+        order="5"
+        type="QFont"
+        value="Courier,10,-1,5,50,0,0,0,0,0" />
+
+    <SETTING defaultValue="Courier,10,-1,5,50,0,0,0,0,0"
+        display="1"
+        key="DialogRenameEditorFont"
+        label="Rename Editor Font"
+        order="5"
+        type="QFont"
+        value="Courier,10,-1,5,50,0,0,0,0,0" />
+    <SETTING type="bool"
+        label="DialogRenameCaseSensitiveSearch"
+        key="DialogRenameCaseSensitiveSearch"
+        defaultValue="false"
+        display="0"
+        value="false"/>
+    <SETTING type="bool"
+        label="DialogRenameRegularExpressionSearch"
+        key="DialogRenameRegularExpressionSearch"
+        defaultValue="false"
+        display="0"
+        value="false"/>
+    <SETTING type="bool"
+        label="DialogRenameWholeWordSearch"
+        key="DialogRenameWholeWordSearch"
+        defaultValue="false"
+        display="0"
+        value="false"/>
+    <SETTING type="QString"
+        label="DialogRenameFrom"
+        key="DialogRenameFrom"
+        defaultValue=""
+        display="0"
+        value=""/>
+    <SETTING type="QString"
+        label="DialogRenameTo"
+        key="DialogRenameTo"
+        defaultValue=""
+        display="0"
+        value=""/>
+
+
+    <SETTING defaultValue="Courier,10,-1,5,50,0,0,0,0,0"
+        display="1"
+        key="DialogRenameEditorFont"
+        label="Rename Editor Font"
+        order="5"
+        type="QFont"
+        value="Courier,10,-1,5,50,0,0,0,0,0" />
+
+    <SETTING type="bool"
+        label="DialogBodyBuilder move markers with CM"
+        key="DialogBodyBuilderMoveMarkers"
+        defaultValue="false"
+        display="0"
+        value="false"/>
 
 
 </PREFERENCES>

@@ -3,6 +3,7 @@
 
 #include "Preferences.h"
 #include "Body.h"
+#include "FacetedObject.h"
 
 #include <QDialog>
 
@@ -49,12 +50,14 @@ protected:
 
 private:
     void lineEditMeshActivated(LineEditPath *lineEdit);
+    std::string findCompletePath(const std::string &filename);
 
     Ui::DialogBodyBuilder *ui = nullptr;
 
-    QString m_displayFileName;
-
-    std::shared_ptr<FacetedObject> m_referenceObject;
+    FacetedObject m_mesh1;
+    FacetedObject m_mesh2;
+    FacetedObject m_mesh3;
+    FacetedObject *m_referenceObject = nullptr;
     Body *m_inputBody = nullptr;
     std::unique_ptr<Body> m_outputBody;
     Simulation *m_simulation = nullptr;

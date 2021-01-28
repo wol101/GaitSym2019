@@ -47,11 +47,19 @@ UDP::UDP()
     wVersionRequested = MAKEWORD(2, 2);
     err = WSAStartup(wVersionRequested, &wsaData);
     if (err != 0) std::cerr << "Error in UDP::UDP: Unable to find a usable Winsock DLL " << err;
+    if (LOBYTE (wsaData.wVersion) != 2|| HIBYTE (wsaData.wVersion) != 2)
+    {
+       WSACleanup();
+       std::cerr << "Error in UDP::UDP: Version mismatch in Winsock DLL " << err;
+    }
 #endif
 }
 
 UDP::~UDP()
 {
+#if defined(_WIN32) || defined(WIN32)
+    WSACleanup();
+#endif
 }
 
 int UDP::StartListener(int port)
@@ -286,7 +294,7 @@ int UDP::ReceiveText(char **buf, unsigned long matchID)
                 memcpy(p, ((SendTextUDPPacket *)&m_packet), sizeof(SendTextUDPPacket));
                 packetList[p->packetCount] = p;
                 len += p->lenThisUDPPacket;
-                if (packetList.size() >= p->numUDPPackets) break;
+                if (packetList.size() >= size_t(p->numUDPPackets)) break;
             }
         }
 
@@ -400,7 +408,7 @@ int UDP::ReceiveFEC(char **buf, unsigned long matchID, int percentRedundancy)
                 p = new SendFECUDPPacket();
                 memcpy(p, ((SendFECUDPPacket *)&m_packet), sizeof(SendFECUDPPacket));
                 packetList[p->packetCount] = p;
-                if (packetList.size() == p->numUDPPackets) break;
+                if (packetList.size() == size_t(p->numUDPPackets)) break;
             }
         }
 
@@ -479,7 +487,8 @@ int UDP::CheckReceiver(long usecTimeout)
     tv.tv_usec = usecTimeout % 1000000;
 
     // wait until timeout or data received
-    n = select(m_RecSockfd + 1, &fds, nullptr, nullptr, &tv);
+    // note 1st parameter is ignored on Windows
+    n = select(int(m_RecSockfd + 1), &fds, nullptr, nullptr, &tv);
 #ifdef UDP_DEBUG
         std::cerr << "UDP::CheckReceiver\n";
         std::cerr << "n = " << n << " m_RecSockfd = " << m_RecSockfd << "\n";

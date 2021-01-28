@@ -89,7 +89,7 @@ ObjectiveMainTCP::ObjectiveMainTCP(int argc, const char **argv)
     std::vector<std::string> rawHosts;
     std::vector<std::string> result;
     m_argparse.Get("--hostsList"s, &rawHosts);
-    for (auto it: rawHosts)
+    for (auto &&it: rawHosts)
     {
         pystring::split(it, result, ":"s);
         if (result.size() == 2)

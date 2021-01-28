@@ -104,6 +104,11 @@ public:
     double GetGravitationalPotentialEnergy();
     dBodyID GetBodyID() const;
 
+    void SetInitialPosition(double x, double y, double z);
+    void SetInitialQuaternion(double n, double x, double y, double z);
+    const double *GetInitialPosition();
+    const double *GetInitialQuaternion();
+
     LimitTestResult TestLimits();
     int SanityCheck(Body *otherBody, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
 
@@ -120,13 +125,7 @@ public:
                              double ax, double ay, double az, // axis of rotation - must be unit length
                              double *ixxp, double *iyyp, double *izzp, double *ixyp, double *iyzp, double *izxp); // transformed moments of inertia about new coordinate system
 
-    // these values are really only used for graphics
-//    void SetGraphicOffset(double x, double y, double z) {m_graphicOffset[0] = x; m_graphicOffset[1] = y; m_graphicOffset[2] = z; }
-//    const double *GetGraphicOffset() { return m_graphicOffset; }
-//    void SetGraphicScale(double x, double y, double z) {m_graphicScale[0] = x; m_graphicScale[1] = y; m_graphicScale[2] = z; }
-//    const double *GetGraphicScale() { return m_graphicScale; }
-//    void SetGraphicFile(const std::string &graphicFile) { m_graphicFile = graphicFile; }
-//    std::string GetGraphicFile() { return m_graphicFile; }
+    static double GetProjectedAngle(const pgd::Vector3 &planeNormal, const pgd::Vector3 &vector1, const pgd::Vector3 &vector2);
 
     void SetGraphicFile1(const std::string &graphicFile) { m_graphicFile1 = graphicFile; }
     std::string GetGraphicFile1() const { return m_graphicFile1; }

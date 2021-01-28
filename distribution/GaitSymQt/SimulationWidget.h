@@ -127,9 +127,9 @@ public:
     int StartAVISave(const QString &filename);
     int StopAVISave();
 
-    void AddExtraObjectToDraw(const std::string &name, std::shared_ptr<FacetedObject> object);
-    size_t DeleteExtraObjectToDraw(const std::string &name);
-    std::shared_ptr<FacetedObject> GetExtraObjectToDraw(const std::string &name);
+//    void AddExtraObjectToDraw(const std::string &name, std::shared_ptr<FacetedObject> object);
+//    size_t DeleteExtraObjectToDraw(const std::string &name);
+//    std::shared_ptr<FacetedObject> GetExtraObjectToDraw(const std::string &name);
 
     bool DeleteDrawBody(const std::string &bodyName);
 
@@ -259,7 +259,7 @@ private:
     float m_axesScale = 1;
     std::unique_ptr<FacetedObject> m_globalAxes;
 
-    std::map<std::string, std::shared_ptr<FacetedObject>> m_extraObjectsToDrawMap;
+//    std::map<std::string, std::shared_ptr<FacetedObject>> m_extraObjectsToDrawMap;
 
     AVIWriter *m_aviWriter = nullptr;
     int m_aviQuality = 80;

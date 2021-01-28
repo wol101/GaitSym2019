@@ -26,6 +26,7 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
+#include <random>
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 #include <WinSock2.h>
@@ -72,6 +73,7 @@ ObjectiveMainENET::ObjectiveMainENET(int argc, const char **argv)
     m_argparse.AddArgument("-ol"s, "-outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
 
     m_argparse.AddArgument("-hl"s, "--hostsList"s, "List of hosts "s, "localhost:8086"s, 1, MAX_ARGS, true, ArgParse::String);
+    m_argparse.AddArgument("-to"s, "--timeout"s, "The timeout value in milliseconds"s, "100000"s, 1, false, ArgParse::Int);
 
     int err = m_argparse.Parse();
     if (err)
@@ -95,7 +97,7 @@ ObjectiveMainENET::ObjectiveMainENET(int argc, const char **argv)
     std::vector<std::string> rawHosts;
     std::vector<std::string> result;
     m_argparse.Get("--hostsList"s, &rawHosts);
-    for (auto it: rawHosts)
+    for (auto &&it: rawHosts)
     {
         pystring::split(it, result, ":"s);
         if (result.size() == 2)
@@ -106,6 +108,13 @@ ObjectiveMainENET::ObjectiveMainENET(int argc, const char **argv)
             m_hosts.push_back(std::move(h));
         }
     }
+
+    // complicated stuff for the random number generator
+    std::random_device rd;
+    std::mt19937_64::result_type seed = rd() ^ ( (std::mt19937_64::result_type) std::chrono::duration_cast<std::chrono::seconds>( std::chrono::system_clock::now().time_since_epoch() ).count()
+                                              + (std::mt19937_64::result_type) std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now().time_since_epoch() ).count() );
+    m_gen = std::make_unique<std::mt19937_64>(seed);
+    m_distrib = std::make_unique<std::uniform_real_distribution<double>>(0.0, 1.0);
 }
 
 int ObjectiveMainENET::Run()
@@ -133,6 +142,7 @@ int ObjectiveMainENET::Run()
 
     double startTime = GSUtil::GetTime();
     bool finishedFlag = true;
+    int timeoutMultiplier = 1;
     while(m_runTimeLimit == 0 || m_runTime <= m_runTimeLimit)
     {
         m_runTime = GSUtil::GetTime() - startTime;
@@ -142,12 +152,15 @@ int ObjectiveMainENET::Run()
             status = ReadModel();
             if (m_peer)
             {
-                enet_peer_disconnect_now(m_peer, 0);
+                // enet_peer_disconnect_now(m_peer, 0);
+                if (m_debug) std::cerr <<  "enet_peer_reset(m_peer) after ReadModel\n";
+                enet_peer_reset(m_peer);
                 m_peer = nullptr;
             }
             if (status == 0)
             {
                 finishedFlag = false;
+                timeoutMultiplier = 1;
 
                 for (size_t i = 0; i < m_outputList.size(); i++)
                 {
@@ -157,7 +170,11 @@ int ObjectiveMainENET::Run()
             }
             else
             {
-                std::this_thread::sleep_for(std::chrono::microseconds(m_sleepTime)); // slight pause on read failure
+                m_sleepTime = int((*m_distrib.get())(*m_gen.get()) * 10000.0 * timeoutMultiplier);
+                if (m_debug) std::cerr <<  "timeoutMultiplier = " << timeoutMultiplier << " m_sleepTime = " << m_sleepTime << " ms\n";
+                std::this_thread::sleep_for(std::chrono::milliseconds(m_sleepTime));
+                if (timeoutMultiplier < 100) timeoutMultiplier++;
+                //std::this_thread::sleep_for(std::chrono::microseconds(m_sleepTime)); // slight pause on read failure
             }
             m_IOTime += (GSUtil::GetTime() - ioStartTime);
         }
@@ -175,7 +192,9 @@ int ObjectiveMainENET::Run()
             status = WriteOutput();
             if (m_peer)
             {
-                enet_peer_disconnect_now(m_peer, 0);
+                // enet_peer_disconnect_now(m_peer, 0);
+                if (m_debug) std::cerr <<  "enet_peer_reset(m_peer) after WriteOutput\n";
+                enet_peer_reset(m_peer);
                 m_peer = nullptr;
             }
         }
@@ -218,8 +237,8 @@ int ObjectiveMainENET::ReadModel()
     }
 
     ENetEvent event = {};
-    enet_uint32 timeout = 10000; // milliseconds or set to 0 to return immediately
-    // first check any incoming events (this call creates and event.packet that we need to destroy later)
+    enet_uint32 timeout = m_timeout; // milliseconds or set to 0 to return immediately
+    // first check any incoming events (this call creates an event.packet that we need to destroy later)
     status = enet_host_service(m_client, &event, timeout);
     if (status > 0)
     {
@@ -227,17 +246,17 @@ int ObjectiveMainENET::ReadModel()
         {
         case ENET_EVENT_TYPE_CONNECT:
             m_connected = true;
-            std::cerr << "New connection from " << GSUtil::ToString(event.peer->address.host, event.peer->address.port) << "\n";
+            if (m_debug) std::cerr << "New connection from " << GSUtil::ToString(event.peer->address.host, event.peer->address.port) << "\n";
             break;
 
         case ENET_EVENT_TYPE_RECEIVE:
-            std::cerr << "Data received from " << GSUtil::ToString(event.peer->address.host, event.peer->address.port) << "\n";
-            std::cerr << "Data packet is " << event.packet->dataLength << " bytes long\n";
+            if (m_debug) std::cerr << "Data received from " << GSUtil::ToString(event.peer->address.host, event.peer->address.port) << "\n";
+            if (m_debug) std::cerr << "Data packet is " << event.packet->dataLength << " bytes long\n";
             enet_packet_destroy(event.packet);
             break;
 
         case ENET_EVENT_TYPE_DISCONNECT:
-            std::cerr << "Disconnect from " << GSUtil::ToString(event.peer->address.host, event.peer->address.port) << "\n";
+            if (m_debug) std::cerr << "Disconnect from " << GSUtil::ToString(event.peer->address.host, event.peer->address.port) << "\n";
             break;
         case ENET_EVENT_TYPE_NONE:
             break;
@@ -253,7 +272,7 @@ int ObjectiveMainENET::ReadModel()
     message.senderIP = m_client->address.host;
     message.senderPort = m_client->address.port;
     message.score = 0;
-    enet_uint32 flags = ENET_PACKET_FLAG_RELIABLE; // zero of ENET_PACKET_FLAG_RELIABLE most commonly
+    enet_uint32 flags = ENET_PACKET_FLAG_RELIABLE; // zero or ENET_PACKET_FLAG_RELIABLE most commonly
     ENetPacket *packet = enet_packet_create(message.text, sizeof(TCPIPMessage), flags);
     enet_uint8 channelID = 0;
     status = enet_peer_send(m_peer, channelID, packet);
@@ -269,7 +288,6 @@ int ObjectiveMainENET::ReadModel()
     enet_host_flush(m_client);
     std::vector<double> genomeData;
     // wait for a response
-    timeout = 10000; // milliseconds
     status = enet_host_service(m_client, &event, timeout);
     if (status > 0 && event.type == ENET_EVENT_TYPE_RECEIVE)
     {
@@ -323,7 +341,8 @@ int ObjectiveMainENET::ReadModel()
         }
         else
         {
-            // no, so request of from the server
+            // no, so request it from the server
+
             strcpy(message.text, "reqxml");
             packet = enet_packet_create(message.text, sizeof(TCPIPMessage), flags);
             status = enet_peer_send(m_peer, channelID, packet);
@@ -338,7 +357,6 @@ int ObjectiveMainENET::ReadModel()
             }
             enet_host_flush(m_client);
             // wait for a response
-            timeout = 10000; // milliseconds
             status = enet_host_service(m_client, &event, timeout);
             if (status > 0 && event.type == ENET_EVENT_TYPE_RECEIVE)
             {
@@ -452,7 +470,7 @@ int ObjectiveMainENET::WriteOutput()
     }
 
     ENetEvent event = {};
-    enet_uint32 timeout = 10000; // milliseconds or set to 0 to return immediately
+    enet_uint32 timeout = m_timeout; // milliseconds or set to 0 to return immediately
     // first check any incoming events (this call creates and event.packet that we need to destroy later)
     status = enet_host_service(m_client, &event, timeout);
     if (status > 0)

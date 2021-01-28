@@ -19,6 +19,7 @@
 #include "DataTargetScalar.h"
 #include "DataTargetQuaternion.h"
 #include "DataTargetVector.h"
+#include "DataTargetMarkerCompare.h"
 #include "DataFile.h"
 #include "PGDMath.h"
 #include "Body.h"
@@ -172,7 +173,7 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
     }
     if (lastErrorPtr()->size()) return lastErrorPtr();
     if (cycles > 1)
-        std::cerr << "Warning: file took " << cycles << " to parse. Consider reordering for speed.\n";
+        std::cerr << "Warning: file took " << cycles << " cycles to parse. Consider reordering for speed.\n";
 
     // joints are created with the bodies in construction poses
     // then the bodies are moved to their starting poses
@@ -251,9 +252,6 @@ void Simulation::UpdateSimulation()
     }
 
     // update the muscles
-    double tension;
-    std::vector<std::unique_ptr<PointForce >> *pointForceList;
-    PointForce *pointForce;
     for (auto iter1 = m_MuscleList.begin(); iter1 != m_MuscleList.end(); /* no increment */)
     {
         iter1->second->CalculateStrap();
@@ -270,17 +268,18 @@ void Simulation::UpdateSimulation()
             }
         }
 
-        pointForceList = iter1->second->GetPointForceList();
-        tension = iter1->second->GetTension();
+        std::vector<std::unique_ptr<PointForce>> *pointForceList = iter1->second->GetPointForceList();
+        double tension = iter1->second->GetTension();
 #ifdef DEBUG_CHECK_FORCES
         pgd::Vector3 force(0, 0, 0);
 #endif
         for (unsigned int i = 0; i < pointForceList->size(); i++)
         {
-            pointForce = (*pointForceList)[i].get();
-            dBodyAddForceAtPos(pointForce->body->GetBodyID(),
-                               pointForce->vector[0] * tension, pointForce->vector[1] * tension, pointForce->vector[2] * tension,
-                               pointForce->point[0], pointForce->point[1], pointForce->point[2]);
+            PointForce *pointForce = (*pointForceList)[i].get();
+            if (pointForce->body)
+                dBodyAddForceAtPos(pointForce->body->GetBodyID(),
+                                   pointForce->vector[0] * tension, pointForce->vector[1] * tension, pointForce->vector[2] * tension,
+                                   pointForce->point[0], pointForce->point[1], pointForce->point[2]);
 #ifdef DEBUG_CHECK_FORCES
             force += pgd::Vector3(pointForce->vector[0] * tension, pointForce->vector[1] * tension, pointForce->vector[2] * tension);
 #endif
@@ -948,6 +947,10 @@ std::string *Simulation::ParseDataTarget(const ParseXML::XMLElement *node)
     else if (buf == "Vector"s)
     {
         dataTarget = std::make_unique<DataTargetVector>();
+    }
+    else if (buf == "MarkerCompare"s)
+    {
+        dataTarget = std::make_unique<DataTargetMarkerCompare>();
     }
     else
     {

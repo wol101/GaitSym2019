@@ -37,10 +37,27 @@
 
 TCP::TCP()
 {
+#if defined(_WIN32) || defined(WIN32)
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    int err;
+    /* Use the MAKEWORD(lowbyte, highbyte) macro declared in Windef.h */
+    wVersionRequested = MAKEWORD(2, 2);
+    err = WSAStartup(wVersionRequested, &wsaData);
+    if (err != 0) std::cerr << "Error in TCP::TCP: Unable to find a usable Winsock DLL " << err;
+    if (LOBYTE(wsaData.wVersion) != 2|| HIBYTE(wsaData.wVersion) != 2)
+    {
+       WSACleanup();
+       std::cerr << "Error in TCP::TCP: Version mismatch in Winsock DLL " << err;
+    }
+#endif
 }
 
 TCP::~TCP()
 {
+#if defined(_WIN32) || defined(WIN32)
+    WSACleanup();
+#endif
 }
 
 int TCP::StartServer(int port)
