@@ -92,10 +92,10 @@ DialogDrivers::DialogDrivers(QWidget *parent) :
         if (checkBox) connect(checkBox, SIGNAL(stateChanged(int)), this, SLOT(checkBoxChanged(int)));
     }
 
-    connect(ui->spinBoxTargets, SIGNAL(valueChanged(const QString &)), this, SLOT(spinBoxChangedTargets(const QString &)));
-    connect(ui->spinBoxSteps, SIGNAL(valueChanged(const QString &)), this, SLOT(spinBoxChangedSteps(const QString &)));
-    connect(ui->spinBoxStepsPerCycle, SIGNAL(valueChanged(const QString &)), this, SLOT(spinBoxChangedStepsPerCycle(const QString &)));
-    connect(ui->spinBoxBoxcarStackSize, SIGNAL(valueChanged(const QString &)), this, SLOT(spinBoxChangedBoxcarStackSize(const QString &)));
+    connect(ui->spinBoxTargets, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChangedTargets(int)));
+    connect(ui->spinBoxSteps, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChangedSteps(int)));
+    connect(ui->spinBoxStepsPerCycle, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChangedStepsPerCycle(int)));
+    connect(ui->spinBoxBoxcarStackSize, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChangedBoxcarStackSize(int)));
 
     ui->pushButtonOK->setEnabled(false);
 
@@ -401,7 +401,7 @@ void DialogDrivers::lineEditChanged(const QString & /* text */)
     updateActivation();
 }
 
-void DialogDrivers::spinBoxChangedTargets(const QString & /* text */)
+void DialogDrivers::spinBoxChangedTargets(int /* value */)
 {
     // store the current values in the list
     QVector<QString> oldValues(m_targetComboBoxList.size());
@@ -445,19 +445,19 @@ void DialogDrivers::spinBoxChangedTargets(const QString & /* text */)
 
     updateActivation();
 }
-void DialogDrivers::spinBoxChangedSteps(const QString & /* text */)
+void DialogDrivers::spinBoxChangedSteps(int /* value */)
 {
     ui->tableWidgetStep->setRowCount(ui->spinBoxSteps->value());
     updateActivation();
 }
 
-void DialogDrivers::spinBoxChangedStepsPerCycle(const QString & /* text */)
+void DialogDrivers::spinBoxChangedStepsPerCycle(int /* value */)
 {
     ui->tableWidgetCyclic->setRowCount(ui->spinBoxStepsPerCycle->value());
     updateActivation();
 }
 
-void DialogDrivers::spinBoxChangedBoxcarStackSize(const QString & /* text */)
+void DialogDrivers::spinBoxChangedBoxcarStackSize(int /* value */)
 {
     // store the current values in the list
     QVector<QString> oldValues(m_boxcarLineEditDoubleList.size());

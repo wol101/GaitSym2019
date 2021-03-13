@@ -39,10 +39,10 @@ public slots:
     virtual void reject() Q_DECL_OVERRIDE;
     void comboBoxChanged(int index);
     void lineEditChanged(const QString &text);
-    void spinBoxChangedTargets(const QString &text);
-    void spinBoxChangedSteps(const QString &text);
-    void spinBoxChangedStepsPerCycle(const QString &text);
-    void spinBoxChangedBoxcarStackSize(const QString &text);
+    void spinBoxChangedTargets(int value);
+    void spinBoxChangedSteps(int value);
+    void spinBoxChangedStepsPerCycle(int value);
+    void spinBoxChangedBoxcarStackSize(int value);
     void checkBoxChanged(int index);
     void tabChanged(int index);
 

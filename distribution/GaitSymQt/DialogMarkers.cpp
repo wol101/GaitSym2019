@@ -10,6 +10,10 @@
 #include "DialogProperties.h"
 
 #include <QDebug>
+#include <QSignalBlocker>
+#include <QGridLayout>
+#include <QMenu>
+#include <QAction>
 
 #include <map>
 
@@ -30,26 +34,44 @@ DialogMarkers::DialogMarkers(QWidget *parent) :
     ui->radioButtonY->setChecked(mirrorAxis == "Y");
     ui->radioButtonZ->setChecked(mirrorAxis == "Z");
 
-    ui->lineEditFraction->setBottom(0.0);
-    ui->lineEditFraction->setTop(1.0);
-    ui->lineEditFraction->setValue(0.5);
+    connect(ui->pushButtonOK, &QPushButton::clicked, this, &DialogMarkers::accept);
+    connect(ui->pushButtonCancel, &QPushButton::clicked, this, &DialogMarkers::reject);
+    connect(ui->pushButtonProperties, &QPushButton::clicked, this, &DialogMarkers::properties);
+    connect(ui->pushButtonCalculatePosition, &QPushButton::clicked, this, &DialogMarkers::calculatePosition);
+    connect(ui->pushButtonCopyMarker1, &QPushButton::clicked, this, &DialogMarkers::calculatePositionCopyMarker1);
+    connect(ui->pushButtonCopyMarker2, &QPushButton::clicked, this, &DialogMarkers::calculatePositionCopyMarker2);
+    connect(ui->pushButtonCalculateOrientation2Marker, &QPushButton::clicked, this, &DialogMarkers::calculateOrientation2Marker);
+    connect(ui->pushButtonCalculateOrientation3Marker, &QPushButton::clicked, this, &DialogMarkers::calculateOrientation3Marker);
+    connect(ui->pushButtonCalculateMirrorMarker, &QPushButton::clicked, this, &DialogMarkers::calculateMirrorMarker);
+    connect(ui->pushButtonCalculatorCalculate, &QPushButton::clicked, this, &DialogMarkers::calculateCalculator);
+    connect(ui->pushButtonCalculatorImport, &QPushButton::clicked, this, &DialogMarkers::importCalculator);
+    connect(ui->pushButtonMatrixCalculate, &QPushButton::clicked, this, &DialogMarkers::calculateMatrix);
+    connect(ui->pushButtonMatrixImport, &QPushButton::clicked, this, &DialogMarkers::importMatrix);
+    connect(ui->pushButton3DCursor, &QPushButton::clicked, this, &DialogMarkers::copy3DCursorPosition);
+    connect(ui->lineEditMarkerID, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditIDTextChanged);
+    connect(ui->lineEditFraction, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditFractionTextChanged);
+    connect(ui->lineEditDistance, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditDistanceTextChanged);
+    connect(ui->lineEditEulerXAppend, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditEulerAppendTextChanged);
+    connect(ui->lineEditEulerYAppend, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditEulerAppendTextChanged);
+    connect(ui->lineEditEulerZAppend, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditEulerAppendTextChanged);
+    connect(ui->lineEditAngle, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditAxisAngleTextChanged);
+    connect(ui->lineEditAxisX, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditAxisAngleTextChanged);
+    connect(ui->lineEditAxisY, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditAxisAngleTextChanged);
+    connect(ui->lineEditAxisZ, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditAxisAngleTextChanged);
+    connect(ui->lineEditQuaternionN, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditQuaternionTextChanged);
+    connect(ui->lineEditQuaternionX, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditQuaternionTextChanged);
+    connect(ui->lineEditQuaternionY, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditQuaternionTextChanged);
+    connect(ui->lineEditQuaternionZ, &LineEditDouble::textChanged, this, &DialogMarkers::lineEditQuaternionTextChanged);
+    connect(ui->comboBoxPositionMarker1, &QComboBox::currentTextChanged, this, &DialogMarkers::positionMarkerChanged);
+    connect(ui->comboBoxPositionMarker2, &QComboBox::currentTextChanged, this, &DialogMarkers::positionMarkerChanged);
+    connect(ui->comboBoxOrientation2Marker1, &QComboBox::currentTextChanged, this, &DialogMarkers::orientation2MarkerChanged);
+    connect(ui->comboBoxOrientation2Marker2, &QComboBox::currentTextChanged, this, &DialogMarkers::orientation2MarkerChanged);
+    connect(ui->comboBoxOrientation3Marker1, &QComboBox::currentTextChanged, this, &DialogMarkers::orientation3MarkerChanged);
+    connect(ui->comboBoxOrientation3Marker2, &QComboBox::currentTextChanged, this, &DialogMarkers::orientation3MarkerChanged);
+    connect(ui->comboBoxOrientation3Marker3, &QComboBox::currentTextChanged, this, &DialogMarkers::orientation3MarkerChanged);
 
-    connect(ui->pushButtonOK, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(ui->pushButtonCancel, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(ui->pushButtonProperties, SIGNAL(clicked()), this, SLOT(properties()));
-    connect(ui->pushButtonCalculatePosition, SIGNAL(clicked()), this, SLOT(calculatePosition()));
-    connect(ui->pushButtonCopyMarker1, SIGNAL(clicked()), this, SLOT(calculatePositionCopyMarker1()));
-    connect(ui->pushButtonCopyMarker2, SIGNAL(clicked()), this, SLOT(calculatePositionCopyMarker2()));
-    connect(ui->pushButtonCalculateOrientation2Marker, SIGNAL(clicked()), this, SLOT(calculateOrientation2Marker()));
-    connect(ui->pushButtonCalculateOrientation3Marker, SIGNAL(clicked()), this, SLOT(calculateOrientation3Marker()));
-    connect(ui->pushButtonCalculateMirrorMarker, SIGNAL(clicked()), this, SLOT(calculateMirrorMarker()));
-    connect(ui->pushButton3DCursor, SIGNAL(clicked()), this, SLOT(copy3DCursorPosition()));
-    connect(ui->lineEditMarkerID, SIGNAL(textChanged(const QString &)), this, SLOT(lineEditIDTextChanged(const QString &)));
-    connect(ui->comboBoxOrientation2Marker1, SIGNAL(currentTextChanged(const QString &)), this, SLOT(orientation2MarkerChanged(const QString &)));
-    connect(ui->comboBoxOrientation2Marker2, SIGNAL(currentTextChanged(const QString &)), this, SLOT(orientation2MarkerChanged(const QString &)));
-    connect(ui->comboBoxOrientation3Marker1, SIGNAL(currentTextChanged(const QString &)), this, SLOT(orientation3MarkerChanged(const QString &)));
-    connect(ui->comboBoxOrientation3Marker2, SIGNAL(currentTextChanged(const QString &)), this, SLOT(orientation3MarkerChanged(const QString &)));
-    connect(ui->comboBoxOrientation3Marker3, SIGNAL(currentTextChanged(const QString &)), this, SLOT(orientation3MarkerChanged(const QString &)));
+    ui->labelAxisAngle->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->labelAxisAngle, &QLabel::customContextMenuRequested, this, &DialogMarkers::labelAxisAngleMenuRequest);
 }
 
 DialogMarkers::~DialogMarkers()
@@ -208,6 +230,8 @@ void DialogMarkers::lateInitialise()
     ui->lineEditEulerX->setValue(eulerAngles.x);
     ui->lineEditEulerY->setValue(eulerAngles.y);
     ui->lineEditEulerZ->setValue(eulerAngles.z);
+
+    ui->lineEditFraction->setValue(0.5);
 }
 
 void DialogMarkers::calculatePosition()
@@ -231,6 +255,11 @@ void DialogMarkers::calculatePosition()
     ui->lineEditEulerX->setValue(e.x);
     ui->lineEditEulerY->setValue(e.y);
     ui->lineEditEulerZ->setValue(e.z);
+
+    ui->comboBoxOrientation2Marker1->setCurrentText(ui->comboBoxPositionMarker1->currentText());
+    ui->comboBoxOrientation2Marker2->setCurrentText(ui->comboBoxPositionMarker2->currentText());
+    ui->comboBoxOrientation3Marker1->setCurrentText(ui->comboBoxPositionMarker1->currentText());
+    ui->comboBoxOrientation3Marker2->setCurrentText(ui->comboBoxPositionMarker2->currentText());
 }
 
 void DialogMarkers::calculatePositionCopyMarker1()
@@ -281,6 +310,11 @@ void DialogMarkers::calculateOrientation2Marker()
     ui->lineEditEulerX->setValue(e.x);
     ui->lineEditEulerY->setValue(e.y);
     ui->lineEditEulerZ->setValue(e.z);
+
+    ui->comboBoxPositionMarker1->setCurrentText(ui->comboBoxOrientation2Marker1->currentText());
+    ui->comboBoxPositionMarker2->setCurrentText(ui->comboBoxOrientation2Marker2->currentText());
+    ui->comboBoxOrientation3Marker1->setCurrentText(ui->comboBoxOrientation2Marker1->currentText());
+    ui->comboBoxOrientation3Marker2->setCurrentText(ui->comboBoxOrientation2Marker2->currentText());
 }
 
 // this calculates the basis where marker1 to marker2 is the x axis
@@ -308,6 +342,11 @@ void DialogMarkers::calculateOrientation3Marker()
     ui->lineEditEulerX->setValue(e.x);
     ui->lineEditEulerY->setValue(e.y);
     ui->lineEditEulerZ->setValue(e.z);
+
+    ui->comboBoxPositionMarker1->setCurrentText(ui->comboBoxOrientation3Marker1->currentText());
+    ui->comboBoxPositionMarker2->setCurrentText(ui->comboBoxOrientation3Marker2->currentText());
+    ui->comboBoxOrientation2Marker1->setCurrentText(ui->comboBoxOrientation3Marker1->currentText());
+    ui->comboBoxOrientation2Marker2->setCurrentText(ui->comboBoxOrientation3Marker2->currentText());
 }
 
 void DialogMarkers::calculateMirrorMarker()
@@ -339,6 +378,77 @@ void DialogMarkers::calculateMirrorMarker()
     ui->lineEditEulerZ->setValue(e.z);
 }
 
+void DialogMarkers::calculateCalculator()
+{
+    double ex = ui->lineEditEulerX->value();
+    double ey = ui->lineEditEulerY->value();
+    double ez = ui->lineEditEulerZ->value();
+    pgd::Quaternion qMarker = pgd::MakeQFromEulerAngles(ex, ey, ez);
+    pgd::Quaternion qRotation;
+    qRotation.n = ui->lineEditQuaternionN->value();
+    qRotation.x = ui->lineEditQuaternionX->value();
+    qRotation.y = ui->lineEditQuaternionY->value();
+    qRotation.z = ui->lineEditQuaternionZ->value();
+    pgd::Quaternion qMarker2 = qRotation * qMarker;
+    pgd::Vector3 eulerAngles = pgd::MakeEulerAnglesFromQ(qMarker2);
+    ui->lineEditEulerX->setValue(eulerAngles.x);
+    ui->lineEditEulerY->setValue(eulerAngles.y);
+    ui->lineEditEulerZ->setValue(eulerAngles.z);
+}
+
+void DialogMarkers::importCalculator()
+{
+    double ex = ui->lineEditEulerX->value();
+    double ey = ui->lineEditEulerY->value();
+    double ez = ui->lineEditEulerZ->value();
+    ui->lineEditEulerXAppend->setValue(ex);
+    ui->lineEditEulerYAppend->setValue(ey);
+    ui->lineEditEulerZAppend->setValue(ez);
+}
+
+void DialogMarkers::calculateMatrix()
+{
+    double ex = ui->lineEditEulerX->value();
+    double ey = ui->lineEditEulerY->value();
+    double ez = ui->lineEditEulerZ->value();
+    pgd::Quaternion qMarker = pgd::MakeQFromEulerAngles(ex, ey, ez);
+    pgd::Matrix3x3 mMarker = pgd::MakeMFromQ(qMarker);
+    pgd::Matrix3x3 matrix;
+    matrix.e11 = ui->lineEditMatrixr1c1->value();
+    matrix.e12 = ui->lineEditMatrixr1c2->value();
+    matrix.e13 = ui->lineEditMatrixr1c3->value();
+    matrix.e21 = ui->lineEditMatrixr2c1->value();
+    matrix.e22 = ui->lineEditMatrixr2c2->value();
+    matrix.e23 = ui->lineEditMatrixr2c3->value();
+    matrix.e31 = ui->lineEditMatrixr3c1->value();
+    matrix.e32 = ui->lineEditMatrixr3c2->value();
+    matrix.e33 = ui->lineEditMatrixr3c3->value();
+    pgd::Matrix3x3 mMarker2 = matrix * mMarker;
+    pgd::Quaternion qMarker2 = pgd::MakeQfromM(mMarker2);
+    pgd::Vector3 eulerAngles = pgd::MakeEulerAnglesFromQ(qMarker2);
+    ui->lineEditEulerX->setValue(eulerAngles.x);
+    ui->lineEditEulerY->setValue(eulerAngles.y);
+    ui->lineEditEulerZ->setValue(eulerAngles.z);
+}
+
+void DialogMarkers::importMatrix()
+{
+    double ex = ui->lineEditEulerX->value();
+    double ey = ui->lineEditEulerY->value();
+    double ez = ui->lineEditEulerZ->value();
+    pgd::Quaternion qMarker = pgd::MakeQFromEulerAngles(ex, ey, ez);
+    pgd::Matrix3x3 mMarker = pgd::MakeMFromQ(qMarker);
+    ui->lineEditMatrixr1c1->setValue(mMarker.e11);
+    ui->lineEditMatrixr1c2->setValue(mMarker.e12);
+    ui->lineEditMatrixr1c3->setValue(mMarker.e13);
+    ui->lineEditMatrixr2c1->setValue(mMarker.e21);
+    ui->lineEditMatrixr2c2->setValue(mMarker.e22);
+    ui->lineEditMatrixr2c3->setValue(mMarker.e23);
+    ui->lineEditMatrixr3c1->setValue(mMarker.e31);
+    ui->lineEditMatrixr3c2->setValue(mMarker.e32);
+    ui->lineEditMatrixr3c3->setValue(mMarker.e33);
+}
+
 void DialogMarkers::copy3DCursorPosition()
 {
     ui->lineEditPositionX->setValue(double(m_cursor3DPosition[0]));
@@ -358,6 +468,133 @@ void DialogMarkers::lineEditIDTextChanged(const QString & /* text */)
     QString textCopy = lineEdit->text();
     int pos = lineEdit->cursorPosition();
     ui->pushButtonOK->setEnabled(lineEdit->validator()->validate(textCopy, pos) == QValidator::Acceptable);
+}
+
+void DialogMarkers::lineEditFractionTextChanged(const QString & /* text */)
+{
+    double fraction = ui->lineEditFraction->value();
+    auto markerList = m_simulation->GetMarkerList();
+    Marker *marker1 = markerList->at(ui->comboBoxPositionMarker1->currentText().toStdString()).get();
+    Marker *marker2 = markerList->at(ui->comboBoxPositionMarker2->currentText().toStdString()).get();
+
+    pgd::Vector3 p1 = marker1->GetWorldPosition();
+    pgd::Vector3 p2 = marker2->GetWorldPosition();
+    pgd::Vector3 p = (p2 - p1) * fraction;
+    QSignalBlocker blocker(ui->lineEditDistance);
+    ui->lineEditDistance->setValue(p.Magnitude());
+}
+
+void DialogMarkers::lineEditDistanceTextChanged(const QString & /* text */)
+{
+    double distance = ui->lineEditDistance->value();
+    auto markerList = m_simulation->GetMarkerList();
+    Marker *marker1 = markerList->at(ui->comboBoxPositionMarker1->currentText().toStdString()).get();
+    Marker *marker2 = markerList->at(ui->comboBoxPositionMarker2->currentText().toStdString()).get();
+
+    pgd::Vector3 p1 = marker1->GetWorldPosition();
+    pgd::Vector3 p2 = marker2->GetWorldPosition();
+    pgd::Vector3 p = (p2 - p1) / distance;
+    QSignalBlocker blocker(ui->lineEditFraction);
+    ui->lineEditFraction->setValue(p.Magnitude());
+}
+
+void DialogMarkers::lineEditEulerAppendTextChanged(const QString & /*text*/)
+{
+    double ex = ui->lineEditEulerXAppend->value();
+    double ey = ui->lineEditEulerYAppend->value();
+    double ez = ui->lineEditEulerZAppend->value();
+    pgd::Quaternion qRotation = pgd::MakeQFromEulerAngles(ex, ey, ez);
+    QSignalBlocker blocker1(ui->lineEditQuaternionN);
+    QSignalBlocker blocker2(ui->lineEditQuaternionX);
+    QSignalBlocker blocker3(ui->lineEditQuaternionY);
+    QSignalBlocker blocker4(ui->lineEditQuaternionZ);
+    ui->lineEditQuaternionN->setValue(qRotation.n);
+    ui->lineEditQuaternionX->setValue(qRotation.x);
+    ui->lineEditQuaternionY->setValue(qRotation.y);
+    ui->lineEditQuaternionZ->setValue(qRotation.z);
+    double angle;
+    pgd::Vector3 axis;
+    pgd::MakeAxisAngleFromQ(qRotation, &axis.x, &axis.y, &axis.z, &angle);
+    angle = pgd::RadiansToDegrees(angle);
+    QSignalBlocker blocker5(ui->lineEditAngle);
+    QSignalBlocker blocker6(ui->lineEditAxisX);
+    QSignalBlocker blocker7(ui->lineEditAxisY);
+    QSignalBlocker blocker8(ui->lineEditAxisZ);
+    ui->lineEditAngle->setValue(angle);
+    ui->lineEditAxisX->setValue(axis.x);
+    ui->lineEditAxisY->setValue(axis.y);
+    ui->lineEditAxisZ->setValue(axis.z);
+}
+
+void DialogMarkers::lineEditAxisAngleTextChanged(const QString & /*text*/)
+{
+    pgd::Vector3 axis;
+    double angle = pgd::DegreesToRadians(ui->lineEditAngle->value());
+    axis.x = ui->lineEditAxisX->value();
+    axis.y = ui->lineEditAxisY->value();
+    axis.z = ui->lineEditAxisZ->value();
+    pgd::Quaternion qRotation;
+    if (axis.Magnitude2() > std::numeric_limits<double>::epsilon()) qRotation = pgd::MakeQFromAxisAngle(axis, angle, false);
+    else qRotation.Set(1, 0, 0, 0);
+    QSignalBlocker blocker1(ui->lineEditQuaternionN);
+    QSignalBlocker blocker2(ui->lineEditQuaternionX);
+    QSignalBlocker blocker3(ui->lineEditQuaternionY);
+    QSignalBlocker blocker4(ui->lineEditQuaternionZ);
+    ui->lineEditQuaternionN->setValue(qRotation.n);
+    ui->lineEditQuaternionX->setValue(qRotation.x);
+    ui->lineEditQuaternionY->setValue(qRotation.y);
+    ui->lineEditQuaternionZ->setValue(qRotation.z);
+    pgd::Vector3 eulerAngles = pgd::MakeEulerAnglesFromQ(qRotation);
+    QSignalBlocker blocker5(ui->lineEditEulerXAppend);
+    QSignalBlocker blocker6(ui->lineEditEulerYAppend);
+    QSignalBlocker blocker7(ui->lineEditEulerZAppend);
+    ui->lineEditEulerXAppend->setValue(eulerAngles.x);
+    ui->lineEditEulerYAppend->setValue(eulerAngles.y);
+    ui->lineEditEulerZAppend->setValue(eulerAngles.z);
+}
+
+void DialogMarkers::lineEditQuaternionTextChanged(const QString & /*text*/)
+{
+    pgd::Quaternion qRotation;
+    qRotation.n = ui->lineEditQuaternionN->value();
+    qRotation.x = ui->lineEditQuaternionX->value();
+    qRotation.y = ui->lineEditQuaternionY->value();
+    qRotation.z = ui->lineEditQuaternionZ->value();
+    double angle;
+    pgd::Vector3 axis;
+    pgd::MakeAxisAngleFromQ(qRotation, &axis.x, &axis.y, &axis.z, &angle);
+    angle = pgd::RadiansToDegrees(angle);
+    QSignalBlocker blocker1(ui->lineEditAngle);
+    QSignalBlocker blocker2(ui->lineEditAxisX);
+    QSignalBlocker blocker3(ui->lineEditAxisY);
+    QSignalBlocker blocker4(ui->lineEditAxisZ);
+    ui->lineEditAngle->setValue(angle);
+    ui->lineEditAxisX->setValue(axis.x);
+    ui->lineEditAxisY->setValue(axis.y);
+    ui->lineEditAxisZ->setValue(axis.z);
+    pgd::Vector3 eulerAngles = pgd::MakeEulerAnglesFromQ(qRotation);
+    QSignalBlocker blocker5(ui->lineEditEulerXAppend);
+    QSignalBlocker blocker6(ui->lineEditEulerYAppend);
+    QSignalBlocker blocker7(ui->lineEditEulerZAppend);
+    ui->lineEditEulerXAppend->setValue(eulerAngles.x);
+    ui->lineEditEulerYAppend->setValue(eulerAngles.y);
+    ui->lineEditEulerZAppend->setValue(eulerAngles.z);
+}
+
+void DialogMarkers::positionMarkerChanged(const QString & /* text */)
+{
+    double fraction = ui->lineEditFraction->value();
+    auto markerList = m_simulation->GetMarkerList();
+    if (markerList->find(ui->comboBoxPositionMarker1->currentText().toStdString()) == markerList->end()) return;
+    if (markerList->find(ui->comboBoxPositionMarker2->currentText().toStdString()) == markerList->end()) return;
+    Marker *marker1 = markerList->at(ui->comboBoxPositionMarker1->currentText().toStdString()).get();
+    Marker *marker2 = markerList->at(ui->comboBoxPositionMarker2->currentText().toStdString()).get();
+
+    pgd::Vector3 p1 = marker1->GetWorldPosition();
+    pgd::Vector3 p2 = marker2->GetWorldPosition();
+    pgd::Vector3 p = (p2 - p1) * fraction;
+    QSignalBlocker blocker(ui->lineEditDistance);
+    ui->lineEditDistance->setValue(p.Magnitude());
 }
 
 void DialogMarkers::orientation2MarkerChanged(const QString & /* text */)
@@ -411,6 +648,38 @@ enable_button:
 disable_button:
     ui->pushButtonCalculateOrientation3Marker->setEnabled(false);
     return;
+}
+
+void DialogMarkers::labelAxisAngleMenuRequest(const QPoint &pos)
+{
+    QMenu menu(this);
+    menu.addAction(tr("Set axis from matrix column 1"));
+    menu.addAction(tr("Set axis from matrix column 2"));
+    menu.addAction(tr("Set axis from matrix column 3"));
+
+    QPoint gp = ui->labelAxisAngle->mapToGlobal(pos);
+    QAction *action = menu.exec(gp);
+    if (action)
+    {
+        if (action->text() == tr("Set axis from matrix column 1"))
+        {
+            ui->lineEditAxisX->setValue(ui->lineEditMatrixr1c1->value());
+            ui->lineEditAxisY->setValue(ui->lineEditMatrixr2c1->value());
+            ui->lineEditAxisZ->setValue(ui->lineEditMatrixr3c1->value());
+        }
+        if (action->text() == tr("Set axis from matrix column 2"))
+        {
+            ui->lineEditAxisX->setValue(ui->lineEditMatrixr1c2->value());
+            ui->lineEditAxisY->setValue(ui->lineEditMatrixr2c2->value());
+            ui->lineEditAxisZ->setValue(ui->lineEditMatrixr3c2->value());
+        }
+        if (action->text() == tr("Set axis from matrix column 3"))
+        {
+            ui->lineEditAxisX->setValue(ui->lineEditMatrixr1c3->value());
+            ui->lineEditAxisY->setValue(ui->lineEditMatrixr2c3->value());
+            ui->lineEditAxisZ->setValue(ui->lineEditMatrixr3c3->value());
+        }
+    }
 }
 
 void DialogMarkers::properties()

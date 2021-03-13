@@ -49,10 +49,15 @@ void ThreeHingeJointDriver::Update()
     m_angleFraction = GSUtil::zeroin(0, 1, &CalculateLengthDifference, this, m_tolerance);
 
     // that sorts out the angles on the intermediate and distal joints - lets see where that takes us
-    // CalculateLength(m_angleFraction); // not needed because zeroin will have called this with the returned angleFraction as its last operation
+#ifndef NDEBUG
+    double testAngleFraction = m_angleFraction;
+    CalculateLength(m_angleFraction); // not mormally needed because zeroin will have called this with the returned angleFraction as its last operation
+    if (std::abs(testAngleFraction - m_angleFraction) >= std::numeric_limits<double>::epsilon())
+        std::cerr << "Warning zeroin calculated m_angleFraction does not match\n";
+#endif
 
     pgd::Vector3 targetVector = m_targetMarker->GetPosition() - m_proximalJoint->body1Marker()->GetPosition(); // these will both be on the same body
-    // need to find the rotations about m_proximalJoint->body1Marker()->GetAxis(Marker::X) and m_proximalJoint->body1Marker()->GetAxis(Marker::y)
+    // need to find the rotations about m_proximalJoint->body1Marker()->GetAxis(Marker::X) and m_proximalJoint->body1Marker()->GetAxis(Marker::Y)
     // that rotate m_distalBodyMarkerPositionWRTProxJoint to targetVector
     targetVector.Normalize();
     pgd::Vector3 startVector = m_distalBodyMarkerPositionWRTProxJoint;
@@ -494,8 +499,10 @@ std::string ThreeHingeJointDriver::dumpToString()
         if (m_dumpExtensionCurve)
         {
             s += dumpHelper({"AngleFraction", "Length"s});
-            for (double v = 0; v <= 1.0; v += 0.001)
+            for (int i = 0; i < 1001; i++)
             {
+                double v = double(i) * 0.001;
+                if (i == 1000) v = 1.0; // fix for likely rounding error
                 double le = CalculateLengthDifference(v, this);
                 s +=  dumpHelper({v, le});
             }

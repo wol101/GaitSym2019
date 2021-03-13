@@ -501,7 +501,7 @@ def convert_geom(geom, marker_list, markers_only):
     elif geom.attrib["Type"] == "Plane":
         # create the geom markers
         [a, b, c, d] = [float(i) for i in geom.attrib["ABCD"].split()]
-        [point, v1, v2] = convert_cartseian_plane_to_parametric(a, b, c, d)
+        [point, v1, v2] = convert_cartesian_plane_to_parametric(a, b, c, d)
         # now calculate the normal (z)
         z = CrossProduct3x1(v1, v2)
         z = Normalise3x1(z)
@@ -748,7 +748,7 @@ def test_required_attributes(element, required_attributes, required_only_flag, q
         sys.exit(1)
     return
 
-def convert_cartseian_plane_to_parametric(a, b, c, d):
+def convert_cartesian_plane_to_parametric(a, b, c, d):
     if a != 0:
         point = [ d / a, 0.0, 0.0]
         v1 =    [-b / a, 1.0, 0.0]

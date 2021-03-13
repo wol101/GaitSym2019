@@ -13,7 +13,6 @@
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QDebug>
-#include <QRegExp>
 
 #include <string>
 #include <vector>

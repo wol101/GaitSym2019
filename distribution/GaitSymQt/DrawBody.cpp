@@ -74,7 +74,11 @@ void DrawBody::setBody(Body *body)
 void DrawBody::initialise(SimulationWidget *simulationWidget)
 {
     if (!m_body) return;
-    // create an entity to hold the body transformation
+    // assign the deafult colours
+    // note these can be overwritten by the colours in the mesh files
+    // and they can act to blend with the mesh file colours too
+    // also the mesh cache means that the same mesh will only be coloured once
+    // which can produce unexpected effects if reusing meshes
     m_bodyColour1.setRedF(qreal(m_body->colour1().r()));
     m_bodyColour1.setGreenF(qreal(m_body->colour1().g()));
     m_bodyColour1.setBlueF(qreal(m_body->colour1().b()));

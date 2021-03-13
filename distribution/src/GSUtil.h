@@ -263,6 +263,21 @@ inline static int *Int(const std::string &buf, int n, int *d)
     return Int(buf.c_str(), n, d);
 }
 
+inline static std::vector<int> *Int(const std::string &buf, std::vector<int> *d)
+{
+    const char *cptr = buf.data();
+    char *ptr = nullptr;
+    int v;
+    while (true)
+    {
+        v = int(strtol(cptr, &ptr, 0));
+        if (ptr == cptr) break; // this is the no conversion condition
+        cptr = ptr;
+        d->push_back(v);
+    }
+    return d;
+}
+
 inline static bool Bool(const std::string &buf)
 {
     std::vector<char> vbuf(buf.c_str(), buf.c_str() + buf.size() + 1);

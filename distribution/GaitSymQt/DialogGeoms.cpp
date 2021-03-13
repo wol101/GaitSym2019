@@ -17,6 +17,9 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QScrollArea>
+
+#include <algorithm>
 
 
 DialogGeoms::DialogGeoms(QWidget *parent) :
@@ -31,22 +34,43 @@ DialogGeoms::DialogGeoms(QWidget *parent) :
 #endif
     restoreGeometry(Preferences::valueQByteArray("DialogGeomsGeometry"));
 
-    connect(ui->pushButtonOK, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(ui->pushButtonCancel, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(ui->pushButtonProperties, SIGNAL(clicked()), this, SLOT(properties()));
+    QVBoxLayout *verticalLayoutExcludedGeoms;
+    QScrollArea *scrollAreaExcludedGeoms;
+    QWidget *scrollAreaWidgetContentsExcludedGeoms;
+    verticalLayoutExcludedGeoms = new QVBoxLayout();
+    verticalLayoutExcludedGeoms->setSpacing(6);
+    verticalLayoutExcludedGeoms->setContentsMargins(11, 11, 11, 11);
+    verticalLayoutExcludedGeoms->setObjectName(QStringLiteral("verticalLayout"));
+    scrollAreaExcludedGeoms = new QScrollArea();
+    scrollAreaExcludedGeoms->setObjectName(QStringLiteral("scrollArea"));
+    scrollAreaExcludedGeoms->setWidgetResizable(true);
+    scrollAreaWidgetContentsExcludedGeoms = new QWidget();
+    scrollAreaWidgetContentsExcludedGeoms->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
+    m_gridLayoutExcludedGeoms = new QGridLayout();
+    m_gridLayoutExcludedGeoms->setSpacing(6);
+    m_gridLayoutExcludedGeoms->setContentsMargins(11, 11, 11, 11);
+    m_gridLayoutExcludedGeoms->setObjectName(QStringLiteral("gridLayout"));
+    scrollAreaWidgetContentsExcludedGeoms->setLayout(m_gridLayoutExcludedGeoms);
+    scrollAreaExcludedGeoms->setWidget(scrollAreaWidgetContentsExcludedGeoms);
+    verticalLayoutExcludedGeoms->addWidget(scrollAreaExcludedGeoms);
+    ui->widgetExcludedGeomsPlaceholder->setLayout(verticalLayoutExcludedGeoms);
+
+    connect(ui->pushButtonOK, &QPushButton::clicked, this, &DialogGeoms::accept);
+    connect(ui->pushButtonCancel, &QPushButton::clicked, this, &DialogGeoms::reject);
+    connect(ui->pushButtonProperties, &QPushButton::clicked, this, &DialogGeoms::properties);
 
     // this logic monitors for changing values
     QList<QWidget *> widgets = this->findChildren<QWidget *>();
     for (auto it = widgets.begin(); it != widgets.end(); it++)
     {
         QComboBox *comboBox = dynamic_cast<QComboBox *>(*it);
-        if (comboBox) connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        if (comboBox) connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DialogGeoms::comboBoxChanged); // QOverload<int> selects the (int) rather than the (QString) version of currentIndexChanged
         QLineEdit *lineEdit = dynamic_cast<QLineEdit *>(*it);
-        if (lineEdit) connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(lineEditChanged(const QString &)));
+        if (lineEdit) connect(lineEdit, &QLineEdit::textChanged, this, &DialogGeoms::lineEditChanged);
         QSpinBox *spinBox = dynamic_cast<QSpinBox *>(*it);
-        if (spinBox) connect(spinBox, SIGNAL(valueChanged(const QString &)), this, SLOT(spinBoxChanged(const QString &)));
+        if (spinBox) connect(spinBox, &QSpinBox::textChanged, this, &DialogGeoms::spinBoxChanged);
         QCheckBox *checkBox = dynamic_cast<QCheckBox *>(*it);
-        if (checkBox) connect(checkBox, SIGNAL(stateChanged(int)), this, SLOT(checkBoxChanged(int)));
+        if (checkBox) connect(checkBox, &QCheckBox::stateChanged, this, &DialogGeoms::checkBoxChanged);
     }
 
 }
@@ -79,8 +103,8 @@ void DialogGeoms::accept() // this catches OK and return/enter
     else if (strapTab == "Plane")
     {
         Marker *geomMarker = markerList->at(ui->comboBoxGeomMarker->currentText().toStdString()).get();
-        pgd::Vector3 normal = geomMarker->GetAxis(Marker::Axis::Z);
-        pgd::Vector3 point = geomMarker->GetPosition();
+        pgd::Vector3 normal = geomMarker->GetWorldAxis(Marker::Axis::Z);
+        pgd::Vector3 point = geomMarker->GetWorldPosition();
         double a = normal.x;
         double b = normal.y;
         double c = normal.z;
@@ -95,6 +119,19 @@ void DialogGeoms::accept() // this catches OK and return/enter
     m_outputGeom->SetContactMu(ui->lineEditMu->value());
     m_outputGeom->SetContactBounce(ui->lineEditBounce->value());
     m_outputGeom->SetAbort(ui->checkBoxAbort->isChecked());
+
+    std::vector<Geom *> *excludedGeoms = m_outputGeom->GetExcludeList();
+    excludedGeoms->clear();
+    if (ui->spinBoxNExcludedGeoms->value())
+    {
+        auto geomList = m_simulation->GetGeomList();
+        for (int i = 0; i < ui->spinBoxNExcludedGeoms->value(); i++)
+        {
+            Geom *geom = geomList->at(m_excludedGeomComboBoxList[i]->currentText().toStdString()).get();
+            if (std::find(excludedGeoms->begin(), excludedGeoms->end(), geom) == excludedGeoms->end() && geom->name() != m_outputGeom->name())
+                excludedGeoms->push_back(geom);
+        }
+    }
 
     if (m_inputGeom)
     {
@@ -210,6 +247,30 @@ void DialogGeoms::lateInitialise()
     if ((s = m_inputGeom->findAttribute("Abort"s)).size()) ui->checkBoxAbort->setChecked(GSUtil::Bool(s));
     if ((s = m_inputGeom->findAttribute("Adhesion"s)).size()) ui->checkBoxAdhesion->setChecked(GSUtil::Bool(s));
 
+    std::vector<Geom *> *excludeList = m_inputGeom->GetExcludeList();
+    if (excludeList->size())
+    {
+        QStringList geomIDs;
+        for (auto &&it : *m_simulation->GetGeomList()) geomIDs.append(QString::fromStdString(it.first));
+        const QSignalBlocker blocker(ui->spinBoxNExcludedGeoms);
+        ui->spinBoxNExcludedGeoms->setValue(int(excludeList->size()));
+        for (int i = 0; i < ui->spinBoxNExcludedGeoms->value(); i++)
+        {
+            QLabel *label = new QLabel();
+            label->setText(QString("Excluded Geom %1").arg(i));
+            m_gridLayoutExcludedGeoms->addWidget(label, i, 0, Qt::AlignTop);
+            QComboBox *comboBoxMarker = new QComboBox();
+            comboBoxMarker->addItems(geomIDs);
+            comboBoxMarker->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+            m_gridLayoutExcludedGeoms->addWidget(comboBoxMarker, i, 1, Qt::AlignTop);
+            m_excludedGeomLabelList.push_back(label);
+            m_excludedGeomComboBoxList.push_back(comboBoxMarker);
+            comboBoxMarker->setCurrentText(QString::fromStdString(excludeList->at(size_t(i))->name()));
+        }
+        QSpacerItem *gridSpacerExcludedGeoms = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        m_gridLayoutExcludedGeoms->addItem(gridSpacerExcludedGeoms, ui->spinBoxNExcludedGeoms->value(), 0);
+    }
+
     SphereGeom *sphereGeom = dynamic_cast<SphereGeom *>(m_inputGeom);
     if (sphereGeom)
     {
@@ -253,6 +314,44 @@ void DialogGeoms::lineEditChanged(const QString &/*text*/)
 
 void DialogGeoms::spinBoxChanged(const QString &/*text*/)
 {
+    if (this->sender() == ui->spinBoxNExcludedGeoms)
+    {
+        // get the lists in the right formats
+        QStringList geomIDs;
+        for (auto &&it : *m_simulation->GetGeomList()) geomIDs.append(QString::fromStdString(it.first));
+
+        // store the current values in the list
+        QVector<QString> oldValues(m_excludedGeomComboBoxList.size());
+        for (int i = 0; i < m_excludedGeomComboBoxList.size(); i++) oldValues[i] = m_excludedGeomComboBoxList[i]->currentText();
+
+        // delete all the existing widgets in the layout
+        QLayoutItem *child;
+        while ((child = m_gridLayoutExcludedGeoms->takeAt(0)) != nullptr)
+        {
+            delete child->widget(); // delete the widget
+            delete child;   // delete the layout item
+        }
+        m_excludedGeomLabelList.clear();
+        m_excludedGeomComboBoxList.clear();
+
+        // now create a new set
+        int requiredExcludedGeoms = ui->spinBoxNExcludedGeoms->value();
+        for (int i = 0; i < requiredExcludedGeoms; i++)
+        {
+            QLabel *label = new QLabel();
+            label->setText(QString("Excluded Geom %1").arg(i));
+            m_gridLayoutExcludedGeoms->addWidget(label, i, 0, Qt::AlignTop);
+            QComboBox *comboBoxMarker = new QComboBox();
+            comboBoxMarker->addItems(geomIDs);
+            comboBoxMarker->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+            if (i < oldValues.size()) comboBoxMarker->setCurrentText(oldValues[i]);
+            m_gridLayoutExcludedGeoms->addWidget(comboBoxMarker, i, 1, Qt::AlignTop);
+            m_excludedGeomLabelList.push_back(label);
+            m_excludedGeomComboBoxList.push_back(comboBoxMarker);
+        }
+        QSpacerItem *gridSpacerExcludedGeoms = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        m_gridLayoutExcludedGeoms->addItem(gridSpacerExcludedGeoms, requiredExcludedGeoms, 0);
+    }
     updateActivation();
 }
 

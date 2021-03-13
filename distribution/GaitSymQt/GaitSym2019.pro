@@ -10,8 +10,8 @@
 VERSION = 2019
 AUTHOR = "Bill Sellers 2019"
 OBJECTS_DIR = obj
-QT += opengl xml gui svg
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += opengl xml gui svg widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += openglwidgets
 TARGET = GaitSym2019
 TEMPLATE = app
 CONFIG += no_batch # this gets around a bug in Visual Studio with the object_parallel_to_source option
@@ -20,7 +20,6 @@ CONFIG += c++14 # there are a few c++14 specifics - mostly string_literals
 
 macx {
     DEFINES += \
-        USE_QT \
         dIDEDOUBLE dTRIMESH_ENABLED dTRIMESH_OPCODE CCD_IDEDOUBLE dLIBCCD_ENABLED dTHREADING_INTF_DISABLED \
         HAVE_ALLOCA_H BYTE_ORDER_LITTLE_ENDIAN \
         DEBUG_OUTPUT \
@@ -50,7 +49,6 @@ macx {
 win32 {
     RC_FILE = app.rc
     DEFINES += \
-        USE_QT \
         dIDEDOUBLE dTRIMESH_ENABLED=1 dTRIMESH_OPCODE=1 dTRIMESH_GIMPACT=0 dTRIMESH_16BIT_INDICES=0 \
         CCD_IDEDOUBLE dLIBCCD_ENABLED=1 dTHREADING_INTF_DISABLED=1 dTRIMESH_OPCODE_USE_OLD_TRIMESH_TRIMESH_COLLIDER=0 \
         ICE_NO_DLL dTLS_ENABLED=0 \
@@ -78,7 +76,7 @@ win32 {
     HEADERS +=
         win32-msvc {
         QMAKE_CXXFLAGS += -bigobj
-        QMAKE_LFLAGS_RELEASE += -LTCG
+        # QMAKE_LFLAGS_RELEASE += -LTCG
         # QMAKE_CXXFLAGS += -openmp
         # QMAKE_CXXFLAGS_DEBUG += -Od -RTCsu
         # QMAKE_CXXFLAGS_RELEASE += -Ox -fp:fast -GL
@@ -95,7 +93,6 @@ win32 {
 
 unix:!macx {
     DEFINES += \
-        USE_QT \
         dIDEDOUBLE dTRIMESH_ENABLED dTRIMESH_OPCODE CCD_IDEDOUBLE dLIBCCD_ENABLED dTHREADING_INTF_DISABLED \
         HAVE_ALLOCA_H BYTE_ORDER_LITTLE_ENDIAN \
         DEBUG_OUTPUT \
@@ -302,6 +299,7 @@ SOURCES += \
     ../src/Colour.cpp \
     ../src/Contact.cpp \
     ../src/Controller.cpp \
+    ../src/ConvexGeom.cpp \
     ../src/CyclicDriver.cpp \
     ../src/CylinderWrapStrap.cpp \
     ../src/DampedSpringMuscle.cpp \
@@ -624,6 +622,7 @@ HEADERS += \
     ../src/Colour.h \
     ../src/Contact.h \
     ../src/Controller.h \
+    ../src/ConvexGeom.h \
     ../src/CyclicDriver.h \
     ../src/CylinderWrapStrap.h \
     ../src/DampedSpringMuscle.h \

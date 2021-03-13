@@ -2,7 +2,7 @@
 #define UNIQUENAMEVALIDATOR_H
 
 #include <QValidator>
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 #include <QSet>
 #include <QString>
 
@@ -22,7 +22,7 @@ public slots:
 
 private:
     QSet<QString> m_setOfExistingStrings;
-    QRegExpValidator m_internalValidator;
+    QRegularExpressionValidator m_internalValidator;
 };
 
 #endif // UNIQUENAMEVALIDATOR_H

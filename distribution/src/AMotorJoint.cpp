@@ -212,7 +212,7 @@ void AMotorJoint::setReverseBodyOrderInCalculations(bool reverseBodyOrderInCalcu
 
 void AMotorJoint::SetTargetAngles(double angle0)
 {
-    m_targetAxis = body1Marker()->GetAxis(Marker::X);
+    m_targetAxis = body1Marker()->GetWorldAxis(Marker::X);
     m_targetAngle = angle0;
     m_targetAnglesList.clear();
     m_targetAnglesList.push_back(angle0);
@@ -221,7 +221,7 @@ void AMotorJoint::SetTargetAngles(double angle0)
 void AMotorJoint::SetTargetAngles(double angle0, double angle1)
 {
     pgd::Vector3 ax,ay,az;
-    body1Marker()->GetBasis(&ax, &ay, &az);
+    body1Marker()->GetWorldBasis(&ax, &ay, &az);
     pgd::Quaternion r1 = pgd::MakeQFromAxisAngle(ax, angle0);
     pgd::Quaternion r2 = pgd::MakeQFromAxisAngle(ay, angle1);
     pgd::MakeAxisAngleFromQ(r2 * r1, &m_targetAxis.x, &m_targetAxis.y, &m_targetAxis.z, &m_targetAngle);
@@ -233,7 +233,7 @@ void AMotorJoint::SetTargetAngles(double angle0, double angle1)
 void AMotorJoint::SetTargetAngles(double angle0, double angle1, double angle2)
 {
     pgd::Vector3 ax,ay,az;
-    body1Marker()->GetBasis(&ax, &ay, &az);
+    body1Marker()->GetWorldBasis(&ax, &ay, &az);
     pgd::Quaternion r1 = pgd::MakeQFromAxisAngle(ax, angle0);
     pgd::Quaternion r2 = pgd::MakeQFromAxisAngle(ay, angle1);
     pgd::Quaternion r3 = pgd::MakeQFromAxisAngle(az, angle2);

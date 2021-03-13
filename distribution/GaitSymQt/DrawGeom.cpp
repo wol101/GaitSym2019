@@ -19,6 +19,7 @@
 #include "SphereGeom.h"
 #include "BoxGeom.h"
 #include "PlaneGeom.h"
+#include "ConvexGeom.h"
 #include "FacetedConicSegment.h"
 #include "FacetedPolyline.h"
 #include "FacetedCheckerboard.h"
@@ -105,6 +106,37 @@ void DrawGeom::initialise(SimulationWidget *simulationWidget)
         return;
     }
 
+    ConvexGeom *convexGeom = dynamic_cast<ConvexGeom *>(m_geom);
+    if (convexGeom)
+    {
+        m_facetedObject = std::make_unique<FacetedObject>();
+        m_facetedObject->setBlendColour(m_geomColor1, 1);
+        m_facetedObject->setSimulationWidget(simulationWidget);
+        std::vector<int> *triangles = convexGeom->triangles();
+        std::vector<double> *vertices = convexGeom->vertices();
+        double triangleVertices[9];
+        m_facetedObject->AllocateMemory(triangles->size() / 3);
+        for (size_t i = 0; i < triangles->size(); )
+        {
+            triangleVertices[0] = (*vertices)[(*triangles)[i] * 3];
+            triangleVertices[1] = (*vertices)[(*triangles)[i] * 3 + 1];
+            triangleVertices[2] = (*vertices)[(*triangles)[i] * 3 + 2];
+            i++;
+            triangleVertices[3] = (*vertices)[(*triangles)[i] * 3];
+            triangleVertices[4] = (*vertices)[(*triangles)[i] * 3 + 1];
+            triangleVertices[5] = (*vertices)[(*triangles)[i] * 3 + 2];
+            i++;
+            triangleVertices[6] = (*vertices)[(*triangles)[i] * 3];
+            triangleVertices[7] = (*vertices)[(*triangles)[i] * 3 + 1];
+            triangleVertices[8] = (*vertices)[(*triangles)[i] * 3 + 2];
+            i++;
+            m_facetedObject->AddTriangle(triangleVertices);
+        }
+        m_facetedObjectList.push_back(m_facetedObject.get());
+        return;
+    }
+
+
     qDebug() << "Error in DrawGeom::initialise: Unsupported GEOM type";
 }
 
@@ -152,7 +184,7 @@ void DrawGeom::updateEntityPose()
 
 void DrawGeom::Draw()
 {
-    m_facetedObject->Draw();
+    if (m_facetedObject) m_facetedObject->Draw();
     m_geom->setRedraw(false);
 }
 

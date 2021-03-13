@@ -28,13 +28,11 @@
 #include <QTimer>
 #include <QFileDialog>
 #include <QBoxLayout>
-#include <QDesktopWidget>
 #include <QScreen>
 #include <QListWidgetItem>
 #include <QLineEdit>
 #include <QFile>
 #include <QKeyEvent>
-#include <QRegExp>
 #include <QDir>
 #include <QStringList>
 #include <QTemporaryFile>
@@ -45,10 +43,28 @@
 #include <QComboBox>
 #include <QTreeWidgetItem>
 #include <QtGlobal>
+#include <QWindow>
 
 #include <algorithm>
+#include <sstream>
 
 using namespace std::literals::string_literals;
+
+// simple guard class for std::cerr stream capture
+class cerrRedirect
+{
+public:
+    cerrRedirect(std::streambuf *newBuffer)
+    {
+        oldBuffer = std::cerr.rdbuf(newBuffer);
+    }
+    ~cerrRedirect()
+    {
+        std::cerr.rdbuf(oldBuffer);
+    }
+private:
+    std::streambuf *oldBuffer;
+};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -265,8 +281,11 @@ void MainWindow::processOneThing()
 {
     if (m_simulation)
     {
+        std::stringstream capturedCerr;
+        cerrRedirect redirect(capturedCerr.rdbuf());
         if (m_simulation->ShouldQuit() || m_simulation->TestForCatastrophy())
         {
+            log(QString::fromStdString(capturedCerr.str()));
             setStatusString(tr("Unable to start simulation"), 1);
             ui->actionRun->setChecked(false);
             m_mainWindowActions->run();
@@ -304,6 +323,7 @@ void MainWindow::processOneThing()
 
         if (m_simulation->ShouldQuit())
         {
+            log(QString::fromStdString(capturedCerr.str()));
             setStatusString(tr("Simulation ended normally"), 1);
             ui->textEditLog->append(QString("Fitness = %1\n").arg(m_simulation->CalculateInstantaneousFitness(), 0, 'f', 5));
             ui->textEditLog->append(QString("Time = %1\n").arg(m_simulation->GetTime(), 0, 'f', 5));
@@ -318,6 +338,7 @@ void MainWindow::processOneThing()
         }
         if (m_simulation->TestForCatastrophy())
         {
+            log(QString::fromStdString(capturedCerr.str()));
             setStatusString(tr("Simulation aborted"), 1);
             ui->textEditLog->append(QString("Fitness = %1\n").arg(m_simulation->CalculateInstantaneousFitness(), 0, 'f', 5));
             ui->widgetSimulation->update();
@@ -327,6 +348,7 @@ void MainWindow::processOneThing()
             m_mainWindowActions->run();
             return;
         }
+        log(QString::fromStdString(capturedCerr.str()));
     }
     updateEnable();
 }
@@ -558,12 +580,18 @@ void MainWindow::setUIFoV(float v)
 void MainWindow::resizeSimulationWindow(int openGLWidth, int openGLHeight)
 {
     showNormal();
-    if (!screen())
+#if QT_VERSION >= 0x050E00
+   QScreen *screen = this->screen();
+#else
+   QScreen *screen = this->window()->windowHandle()->screen();
+#endif
+
+    if (!screen)
     {
         setStatusString("Error: Unable to access screen for resize", 0);
         return;
     }
-    QRect available = screen()->availableGeometry();
+    QRect available = screen->availableGeometry();
     if (available.width() * devicePixelRatio() < openGLWidth || available.height() * devicePixelRatio() < openGLHeight)
     {
         setStatusString(QString("Error: max screen for resize width = %1 height = %2").arg(available.width() * devicePixelRatio()).arg(available.height() * devicePixelRatio()), 0);
@@ -601,10 +629,7 @@ Simulation *MainWindow::simulation() const
 
 void MainWindow::resizeAndCentre(int w, int h)
 {
-    int screenNumber = QApplication::desktop()->screenNumber(this);
-    if (screenNumber < 0) return;
-    QList<QScreen *> screens = QGuiApplication::screens();
-    QRect available = screens[screenNumber]->availableGeometry();
+    QRect available = screen()->availableGeometry();
 
     // Need to find how big the central widget is compared to the window
     int heightDiff = height() - ui->widgetSimulation->height();
@@ -631,7 +656,10 @@ void MainWindow::reportOpenGLSize(int width, int height)
 
 void MainWindow::log(const QString &text)
 {
-    ui->textEditLog->append(text);
+    if (text.trimmed().size()) // only log strings with content
+    {
+        ui->textEditLog->append(text);
+    }
 }
 
 
@@ -673,8 +701,8 @@ void MainWindow::updateEnable()
     ui->actionCreateGeom->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0 && m_simulation->GetMarkerList()->size() > 0);
     ui->actionCreateDriver->setEnabled(m_simulation != nullptr && m_mode == constructionMode && (m_simulation->GetMuscleList()->size() > 0 || m_simulation->GetControllerList()->size() > 0));
     ui->actionEditGlobal->setEnabled(m_simulation != nullptr && m_mode == constructionMode);
-    ui->actionCreateAssembly->setEnabled(m_simulation != nullptr && m_simulation->GetBodyList()->size() > 0);
-    ui->actionDeleteAssembly->setEnabled(m_simulation != nullptr && m_simulation->HasAssembly());
+    ui->actionCreateAssembly->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0);
+    ui->actionDeleteAssembly->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->HasAssembly());
     ui->actionConstructionMode->setEnabled(m_simulation != nullptr && m_mode == runMode && m_stepCount == 0);
     ui->actionRunMode->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0);
 }
@@ -1072,7 +1100,7 @@ void MainWindow::moveExistingMarker(const QString &s, const QVector3D &p)
             it->saveToAttributes();
             it->createFromAttributes();
             it->setRedraw(true);
-            // everything needs a redraw but somethings also need extra work
+            // everything needs a redraw but some things also need extra work
             if (dynamic_cast<Strap *>(it)) dynamic_cast<Strap *>(it)->Calculate();
         }
     }

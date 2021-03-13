@@ -11,7 +11,6 @@ class Simulation;
 class Muscle;
 class Strap;
 class QGridLayout;
-class QSpacerItem;
 class QLabel;
 class QComboBox;
 
@@ -62,12 +61,10 @@ private:
     QList<QLabel *> m_viaPointLabelList;
     QList<QComboBox *> m_viaPointComboBoxList;
     QGridLayout *m_gridLayoutViaPoints = nullptr;
-    QSpacerItem *m_gridSpacerViaPoints = nullptr;
 
     QList<QLabel *> m_torqueMarkerLabelList;
     QList<QComboBox *> m_torqueMarkerComboBoxList;
     QGridLayout *m_gridLayoutTorqueMarkers = nullptr;
-    QSpacerItem *m_gridSpacerTorqueMarkers = nullptr;
 
     QMap<QString, SettingsItem> m_properties;
 

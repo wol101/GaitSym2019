@@ -11,8 +11,8 @@
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QDebug>
-#include <QRegExp>
-#include <QRegExpValidator>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 #include <string>
 #include <vector>
@@ -43,8 +43,8 @@ DialogCreateTestingDrivers::DialogCreateTestingDrivers(QWidget *parent) :
     ui->lineEditActivationTime->setBottom(std::numeric_limits<double>::epsilon());
     ui->lineEditActivationValue->setBottom(0);
     ui->lineEditActivationValue->setTop(1.0);
-    QRegExp rx("[0-9A-Za-z_]+");
-    QValidator *validator = new QRegExpValidator(rx, this);
+    QRegularExpression rx("[0-9A-Za-z_]+");
+    QValidator *validator = new QRegularExpressionValidator(rx, this);
     ui->lineEditSuffix->setValidator(validator);
 
     setEditorFonts();

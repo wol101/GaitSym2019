@@ -12,10 +12,10 @@ def conditional_attrib_edit():
     parser = argparse.ArgumentParser(description="Conditional XML attribute editor (as a side effect it sorts attributes)")
     parser.add_argument("-i", "--input_xml_file", required=True, help="the input old format GaitSym XML config file")
     parser.add_argument("-o", "--output_xml_file", required=True, help="the output GaitSym2019 XML config file")
-    parser.add_argument("-ct", "--condition_tag", required=True, help="the tag to match to allow change (regex)")
-    parser.add_argument("-ca", "--condition_attrib", required=True, help="the attribute to match to allow change (exact)")
-    parser.add_argument("-cav", "--condition_attrib_value", required=True, help="the attribute to match to allow change (regex)")
-    parser.add_argument("-ac", "--attrib_to_change", required=True, help="the attribute to change (exact)")
+    parser.add_argument("-ct", "--condition_tag", required=True, help="the tag to match to allow change (regex search)")
+    parser.add_argument("-ca", "--condition_attrib", required=True, help="the attribute to match to allow change (regex search)")
+    parser.add_argument("-cav", "--condition_attrib_value", required=True, help="the attribute to match to allow change (regex search)")
+    parser.add_argument("-ac", "--attrib_to_change", required=True, help="the attribute to change or create (exact)")
     parser.add_argument("-av", "--attrib_new_value", required=True, help="the attribute new value (exact)")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")
     parser.add_argument("-v", "--verbose", action="store_true", help="write out more information whilst processing")
@@ -51,14 +51,16 @@ def process_children(node, args):
     if re.search(args.condition_tag, node.tag):
         if args.verbose:
             print('Tag "%s" matches "%s"' % (node.tag, args.condition_tag))
-        if args.condition_attrib in node.attrib:
-            if args.verbose:
-                print('"%s" found' % (args.condition_attrib))
-            if re.search(args.condition_attrib_value, node.attrib[args.condition_attrib]):
+        attrib_keys = list(node.attrib.keys()) # this should take a copy of the keys
+        for attrib in attrib_keys:
+            if re.search(args.condition_attrib, attrib):
                 if args.verbose:
-                    print('Attrib "%s" matches "%s"' % (node.attrib[args.condition_attrib], args.condition_attrib_value))
-                    print('Changing attrib "%s" to "%s"' % (args.attrib_to_change, args.attrib_new_value))
-                node.attrib[args.attrib_to_change] = args.attrib_new_value
+                    print('"%s" found' % (args.condition_attrib))
+                if re.search(args.condition_attrib_value, node.attrib[args.condition_attrib]):
+                    if args.verbose:
+                        print('Attrib "%s" matches "%s"' % (node.attrib[args.condition_attrib], args.condition_attrib_value))
+                        print('Changing attrib "%s" to "%s"' % (args.attrib_to_change, args.attrib_new_value))
+                    node.attrib[args.attrib_to_change] = args.attrib_new_value
 
     for child in node:
         process_children(child, args)

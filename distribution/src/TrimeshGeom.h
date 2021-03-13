@@ -12,7 +12,6 @@
 
 #include "Geom.h"
 
-class FacetedObject;
 class StridedVertex;
 class StridedTri;
 class GimpactStridedVertex;
@@ -20,11 +19,10 @@ class GimpactStridedVertex;
 class TrimeshGeom : public Geom
 {
 public:
-    TrimeshGeom(dSpaceID space, FacetedObject *facetedObject);
+    TrimeshGeom(dSpaceID space, const std::vector<double> &vertexList);
     virtual ~TrimeshGeom();
 
 private:
-    FacetedObject *m_FacetedObject = nullptr;
 
 #ifdef USE_GIMPACT
     GimpactStridedVertex *m_Vertices = nullptr;

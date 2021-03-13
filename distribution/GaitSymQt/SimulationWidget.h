@@ -247,7 +247,6 @@ private:
 
     float m_zoomDistance = 0;
     float m_zoomStartFOV = 0;
-    QMouseEvent m_mouseClickEvent;
 
     std::unique_ptr<FacetedSphere> m_cursor3D;
     float m_cursorRadius = 0.1f;

@@ -428,6 +428,7 @@ std::string Global::percentDecode(const std::string &input)
         if (it1 == characterMap.end() || it2 == characterMap.end()) { output.push_back(input[i]); continue; }
         uint8_t decodedChar = it1->second * uint8_t(16) + it2->second;
         output.push_back(char(decodedChar));
+        i += 2;
     }
     return output;
 }

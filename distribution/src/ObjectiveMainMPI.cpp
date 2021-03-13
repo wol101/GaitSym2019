@@ -67,10 +67,6 @@ ObjectiveMainMPI::ObjectiveMainMPI()
 static int g_submitCount = 0;
 #endif
 
-#ifdef USE_QT
-#include "MainWindow.h"
-#endif
-
 // Simulation global
 static Simulation *gSimulation = 0;
 
@@ -105,10 +101,9 @@ static double gSimulationTimeLimit = -1;
 static int gRunTimeLimit = 0;
 static double gWarehouseFailDistanceAbort = 0;
 
-#ifndef USE_QT
+
 static double gLastTime = 0;
 static double gCurrentTime = 0;
-#endif
 static double gSimulationTime = 0;
 static double gIOTime = 0;
 
@@ -145,8 +140,6 @@ static int gRunID;
 extern int gMPI_Comm_size;
 extern int gMPI_Comm_rank;
 #endif
-
-#ifndef USE_QT
 
 #if !defined(USE_MPI) && !defined(USE_GAUL) && !defined(USE_QT_AGA)
 int main(int argc, char *argv[])
@@ -231,14 +224,13 @@ int GaitSymMain(int argc, char *argv[])
 
             gFinishedFlag = true;
             runCount++;
-            if (runCount % 100 == 0) std::cout << "gSimulationTime=" << gSimulationTime << " gIOTime=" << gIOTime << "\n" << std::flush;
+            if (runCount % 100 == 0) std::cerr << "gSimulationTime=" << gSimulationTime << " gIOTime=" << gIOTime << "\n" << std::flush;
             if (WriteModel()) return 0;
         }
     }
     return 0;
 }
 
-#endif
 
 void ParseArguments(int argc, char ** argv)
 {

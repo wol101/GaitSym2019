@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QScrollArea>
 #include <QSpacerItem>
+#include <QGridLayout>
 
 #include <string>
 #include <map>
@@ -90,13 +91,17 @@ DialogMuscles::DialogMuscles(QWidget *parent) :
     for (auto it = widgets.begin(); it != widgets.end(); it++)
     {
         QComboBox *comboBox = dynamic_cast<QComboBox *>(*it);
-        if (comboBox) connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        if (comboBox)
+            connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
         QLineEdit *lineEdit = dynamic_cast<QLineEdit *>(*it);
-        if (lineEdit) connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(lineEditChanged(const QString &)));
+        if (lineEdit)
+            connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(lineEditChanged(const QString &)));
         QSpinBox *spinBox = dynamic_cast<QSpinBox *>(*it);
-        if (spinBox) connect(spinBox, SIGNAL(valueChanged(const QString &)), this, SLOT(spinBoxChanged(const QString &)));
+        if (spinBox)
+            connect(spinBox, SIGNAL(textChanged(const QString &)), this, SLOT(spinBoxChanged(const QString &)));
         QCheckBox *checkBox = dynamic_cast<QCheckBox *>(*it);
-        if (checkBox) connect(checkBox, SIGNAL(stateChanged(int)), this, SLOT(checkBoxChanged(int)));
+        if (checkBox)
+            connect(checkBox, SIGNAL(stateChanged(int)), this, SLOT(checkBoxChanged(int)));
     }
 
     ui->pushButtonOK->setEnabled(false);
@@ -310,12 +315,9 @@ void DialogMuscles::accept() // this catches OK and return/enter
             m_outputMuscle->setSize2(m_properties["StrapForceScale"].value.toDouble());
     }
 
-    m_outputMuscle->saveToAttributes();
-    m_outputMuscle->createFromAttributes();
-    // createFromAttributes will have reassigned the strap so put it back to what it should be
     m_outputStrap->saveToAttributes();
     m_outputStrap->createFromAttributes();
-    m_outputMuscle->SetStrap(m_outputStrap.get());
+    // muscle has no dependencies so it does not need saving and loading
 
     Preferences::insert("DialogMusclesGeometry", saveGeometry());
     QDialog::accept();
@@ -529,6 +531,7 @@ void DialogMuscles::lateInitialise()
             pystring::split(s, result);
             if (result.size())
             {
+                const QSignalBlocker blocker(ui->spinBoxNViaPoints);
                 ui->spinBoxNViaPoints->setValue(int(result.size()));
                 for (int i = 0; i < ui->spinBoxNViaPoints->value(); i++)
                 {
@@ -538,13 +541,13 @@ void DialogMuscles::lateInitialise()
                     QComboBox *comboBoxMarker = new QComboBox();
                     comboBoxMarker->addItems(markerIDs);
                     comboBoxMarker->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-                    m_gridLayoutViaPoints->addWidget(comboBoxMarker, i, 2, Qt::AlignTop);
+                    m_gridLayoutViaPoints->addWidget(comboBoxMarker, i, 1, Qt::AlignTop);
                     m_viaPointLabelList.push_back(label);
                     m_viaPointComboBoxList.push_back(comboBoxMarker);
                     comboBoxMarker->setCurrentText(QString::fromStdString(result[size_t(i)]));
                 }
-                m_gridSpacerViaPoints = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-                m_gridLayoutViaPoints->addItem(m_gridSpacerViaPoints, ui->spinBoxNViaPoints->value(), 0);
+                QSpacerItem *gridSpacerViaPoints = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+                m_gridLayoutViaPoints->addItem(gridSpacerViaPoints, ui->spinBoxNViaPoints->value(), 0);
             }
         }
         ui->tabWidgetStrap->setCurrentIndex(tabNamesStrap.indexOf("N-Point"));
@@ -566,32 +569,6 @@ void DialogMuscles::lateInitialise()
         if ((s = twoCylinderWrapStrap->findAttribute("Cylinder2MarkerID"s)).size()) ui->comboBox2Cylinder2Marker->setCurrentText(QString::fromStdString(s));
         if ((s = twoCylinderWrapStrap->findAttribute("Cylinder2Radius"s)).size()) ui->lineEdit2Cylinder2Radius->setValue(GSUtil::Double(s));
         ui->tabWidgetStrap->setCurrentIndex(tabNamesStrap.indexOf("2-Cylinder"));
-
-
-        if ((s = m_inputMuscle->GetStrap()->findAttribute("TorqueMarkerIDList"s)).size())
-        {
-            std::vector<std::string> result;
-            pystring::split(s, result);
-            if (result.empty())
-            {
-                ui->spinBoxNTorqueMarkers->setValue(int(result.size()));
-                for (int i = 0; i < ui->spinBoxNTorqueMarkers->value(); i++)
-                {
-                    QLabel *label = new QLabel();
-                    label->setText(QString("Torque Marker %1").arg(i));
-                    m_gridLayoutTorqueMarkers->addWidget(label, i, 0, Qt::AlignTop);
-                    QComboBox *comboBoxMarker = new QComboBox();
-                    comboBoxMarker->addItems(markerIDs);
-                    comboBoxMarker->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-                    m_gridLayoutTorqueMarkers->addWidget(comboBoxMarker, i, 2, Qt::AlignTop);
-                    m_torqueMarkerLabelList.push_back(label);
-                    m_torqueMarkerComboBoxList.push_back(comboBoxMarker);
-                    comboBoxMarker->setCurrentText(QString::fromStdString(result[size_t(i)]));
-                }
-                m_gridSpacerTorqueMarkers = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-                m_gridLayoutTorqueMarkers->addItem(m_gridSpacerTorqueMarkers, ui->spinBoxNTorqueMarkers->value(), 0);
-            }
-        }
     }
 
     if (m_inputMuscle->GetStrap()->torqueMarkerList().size())
@@ -606,13 +583,13 @@ void DialogMuscles::lateInitialise()
             QComboBox *comboBoxMarker = new QComboBox();
             comboBoxMarker->addItems(markerIDs);
             comboBoxMarker->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-            m_gridLayoutTorqueMarkers->addWidget(comboBoxMarker, i, 2, Qt::AlignTop);
+            m_gridLayoutTorqueMarkers->addWidget(comboBoxMarker, i, 1, Qt::AlignTop);
             m_torqueMarkerLabelList.push_back(label);
             m_torqueMarkerComboBoxList.push_back(comboBoxMarker);
             comboBoxMarker->setCurrentText(QString::fromStdString(m_inputMuscle->GetStrap()->torqueMarkerList().at(i)->name()));
         }
-        m_gridSpacerTorqueMarkers = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        m_gridLayoutTorqueMarkers->addItem(m_gridSpacerTorqueMarkers, ui->spinBoxNTorqueMarkers->value(), 0);
+        QSpacerItem *gridSpacerTorqueMarkers = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        m_gridLayoutTorqueMarkers->addItem(gridSpacerTorqueMarkers, ui->spinBoxNTorqueMarkers->value(), 0);
     }
 
 }
@@ -647,26 +624,18 @@ void DialogMuscles::spinBoxChanged(const QString &/*text*/)
         for (int i = 0; i < m_viaPointComboBoxList.size(); i++) oldValues[i] = m_viaPointComboBoxList[i]->currentText();
 
         // delete all the existing widgets in the layout
-        if (m_gridSpacerViaPoints)
+        QLayoutItem *child;
+        while ((child = m_gridLayoutViaPoints->takeAt(0)) != nullptr)
         {
-            m_gridLayoutViaPoints->removeItem(m_gridSpacerViaPoints);
-            delete m_gridSpacerViaPoints;
-        }
-        for (auto it = m_viaPointLabelList.rbegin(); it != m_viaPointLabelList.rend(); it++)
-        {
-            m_gridLayoutViaPoints->removeWidget(*it);
-            delete *it;
+            delete child->widget(); // delete the widget
+            delete child;   // delete the layout item
         }
         m_viaPointLabelList.clear();
-        for (auto it = m_viaPointComboBoxList.rbegin(); it != m_viaPointComboBoxList.rend(); it++)
-        {
-            m_gridLayoutViaPoints->removeWidget(*it);
-            delete *it;
-        }
         m_viaPointComboBoxList.clear();
 
         // now create a new set
-        for (int i = 0; i < ui->spinBoxNViaPoints->value(); i++)
+        int requiredViaPoints = ui->spinBoxNViaPoints->value();
+        for (int i = 0; i < requiredViaPoints; i++)
         {
             QLabel *label = new QLabel();
             label->setText(QString("Via Point %1").arg(i));
@@ -674,13 +643,13 @@ void DialogMuscles::spinBoxChanged(const QString &/*text*/)
             QComboBox *comboBoxMarker = new QComboBox();
             comboBoxMarker->addItems(markerIDs);
             comboBoxMarker->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-            m_gridLayoutViaPoints->addWidget(comboBoxMarker, i, 2, Qt::AlignTop);
+            if (i < oldValues.size()) comboBoxMarker->setCurrentText(oldValues[i]);
+            m_gridLayoutViaPoints->addWidget(comboBoxMarker, i, 1, Qt::AlignTop);
             m_viaPointLabelList.push_back(label);
             m_viaPointComboBoxList.push_back(comboBoxMarker);
-            if (i < oldValues.size()) comboBoxMarker->setCurrentText(oldValues[i]);
         }
-        m_gridSpacerViaPoints = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        m_gridLayoutViaPoints->addItem(m_gridSpacerViaPoints, ui->spinBoxNViaPoints->value(), 0);
+        QSpacerItem *gridSpacerViaPoints = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        m_gridLayoutViaPoints->addItem(gridSpacerViaPoints, requiredViaPoints, 0);
     }
 
     if (this->sender() == ui->spinBoxNTorqueMarkers)
@@ -695,26 +664,18 @@ void DialogMuscles::spinBoxChanged(const QString &/*text*/)
         for (int i = 0; i < m_torqueMarkerComboBoxList.size(); i++) oldValues[i] = m_torqueMarkerComboBoxList[i]->currentText();
 
         // delete all the existing widgets in the layout
-        if (m_gridSpacerTorqueMarkers)
+        QLayoutItem *child;
+        while ((child = m_gridLayoutTorqueMarkers->takeAt(0)) != nullptr)
         {
-            m_gridLayoutTorqueMarkers->removeItem(m_gridSpacerTorqueMarkers);
-            delete m_gridSpacerTorqueMarkers;
-        }
-        for (auto it = m_torqueMarkerLabelList.rbegin(); it != m_torqueMarkerLabelList.rend(); it++)
-        {
-            m_gridLayoutTorqueMarkers->removeWidget(*it);
-            delete *it;
+            delete child->widget(); // delete the widget
+            delete child;   // delete the layout item
         }
         m_torqueMarkerLabelList.clear();
-        for (auto it = m_torqueMarkerComboBoxList.rbegin(); it != m_torqueMarkerComboBoxList.rend(); it++)
-        {
-            m_gridLayoutTorqueMarkers->removeWidget(*it);
-            delete *it;
-        }
         m_torqueMarkerComboBoxList.clear();
 
         // now create a new set
-        for (int i = 0; i < ui->spinBoxNTorqueMarkers->value(); i++)
+        int requiredTorqueMarkers = ui->spinBoxNTorqueMarkers->value();
+        for (int i = 0; i < requiredTorqueMarkers; i++)
         {
             QLabel *label = new QLabel();
             label->setText(QString("Torque Marker %1").arg(i));
@@ -722,13 +683,13 @@ void DialogMuscles::spinBoxChanged(const QString &/*text*/)
             QComboBox *comboBoxMarker = new QComboBox();
             comboBoxMarker->addItems(markerIDs);
             comboBoxMarker->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-            m_gridLayoutTorqueMarkers->addWidget(comboBoxMarker, i, 2, Qt::AlignTop);
+            if (i < oldValues.size()) comboBoxMarker->setCurrentText(oldValues[i]);
+            m_gridLayoutTorqueMarkers->addWidget(comboBoxMarker, i, 1, Qt::AlignTop);
             m_torqueMarkerLabelList.push_back(label);
             m_torqueMarkerComboBoxList.push_back(comboBoxMarker);
-            if (i < oldValues.size()) comboBoxMarker->setCurrentText(oldValues[i]);
         }
-        m_gridSpacerTorqueMarkers = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        m_gridLayoutTorqueMarkers->addItem(m_gridSpacerTorqueMarkers, ui->spinBoxNTorqueMarkers->value(), 0);
+        QSpacerItem *gridSpacerTorqueMarkers = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        m_gridLayoutTorqueMarkers->addItem(gridSpacerTorqueMarkers, requiredTorqueMarkers, 0);
     }
 
     updateActivation();

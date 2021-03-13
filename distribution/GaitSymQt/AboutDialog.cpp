@@ -17,6 +17,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+    setWindowTitle(tr("About GaitSym2019"));
 #ifdef Q_OS_MACOS
     setWindowFlags(windowFlags() & (~Qt::Dialog) | Qt::Window); // allows the window to be resized on macs
 #endif

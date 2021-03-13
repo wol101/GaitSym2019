@@ -257,8 +257,8 @@ std::vector<std::unique_ptr<ParseXML::XMLElement>> *ParseXML::elementList()
 // this is the required rapidxml error handler when RAPIDXML_NO_EXCEPTIONS is used to disable exceptions
 void rapidxml::parse_error_handler(const char *what, void *where)
 {
-    std::cout << "rapidxml::parse_error_handler Parse error (what) " << what << "\n";
-    std::cout << "(where) " << where << "\n";
+    std::cerr << "rapidxml::parse_error_handler Parse error (what) " << what << "\n";
+    std::cerr << "(where) " << where << "\n";
 }
 #endif
 

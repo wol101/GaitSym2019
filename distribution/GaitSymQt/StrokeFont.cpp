@@ -19,6 +19,9 @@
 #include "SimulationWidget.h"
 
 #include <QOpenGLFunctions_3_3_Core>
+#if QT_VERSION >= 0x060000
+#include <QOpenGLVersionFunctionsFactory>
+#endif
 
 #include <algorithm>
 
@@ -616,7 +619,12 @@ void StrokeFont::Draw()
 
         // Store the vertex attribute bindings for the program.
         m_VBO.bind();
-        QOpenGLFunctions_3_3_Core *f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Core>();
+#if QT_VERSION >= 0x060000
+        QOpenGLFunctions_3_3_Core *f = QOpenGLVersionFunctionsFactory::get<QOpenGLFunctions_3_3_Core>(QOpenGLContext::currentContext());
+#else
+    QOpenGLFunctions_3_3_Core *f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Core>();
+#endif
+
         f->glEnableVertexAttribArray(0);
         f->glEnableVertexAttribArray(1);
         f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, line_buffer_stride * sizeof(GLfloat), nullptr);

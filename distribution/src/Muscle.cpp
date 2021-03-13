@@ -114,7 +114,7 @@ double Muscle::GetTension() const
 
 double Muscle::GetPower() const
 {
-    return -m_Strap->GetTension() * m_Strap->GetVelocity();
+    return -(m_Strap->GetTension() * m_Strap->GetVelocity());
 }
 
 void Muscle::CalculateStrap()

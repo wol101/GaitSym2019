@@ -17,10 +17,6 @@
 class Body;
 class Geom;
 
-#ifdef USE_QT
-class SimulationWindow;
-#endif
-
 class TegotaeDriver : public Driver
 {
 public:

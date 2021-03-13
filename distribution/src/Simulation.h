@@ -132,9 +132,6 @@ public:
     void OutputProgramState();
     void OutputWarehouse();
 
-    void SetMainWindow(MainWindow *mainWindow) { m_MainWindow = mainWindow; }
-    MainWindow *GetMainWindow() { return m_MainWindow; }
-
     Global *GetGlobal();
     void SetGlobal(std::unique_ptr<Global> global);
 
@@ -230,8 +227,6 @@ private:
     double m_NegativeSerialElasticWork = 0;
     double m_PositiveParallelElasticWork = 0;
     double m_NegativeParallelElasticWork = 0;
-
-    MainWindow *m_MainWindow = nullptr;
 
     // values for dump output
     std::string m_dumpExtension = {".tab"};

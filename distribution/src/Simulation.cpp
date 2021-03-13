@@ -28,6 +28,7 @@
 #include "FloatingHingeJoint.h"
 #include "CappedCylinderGeom.h"
 #include "SphereGeom.h"
+#include "ConvexGeom.h"
 #include "Muscle.h"
 #include "MAMuscle.h"
 #include "MAMuscleComplete.h"
@@ -61,13 +62,6 @@
 #include "TegotaeDriver.h"
 #include "ThreeHingeJointDriver.h"
 #include "Filter.h"
-
-#ifdef USE_QT
-#include "FacetedObject.h"
-#include "MainWindow.h"
-#include "Preferences.h"
-#include <QColor>
-#endif
 
 #include "ode/ode.h"
 
@@ -400,10 +394,6 @@ void Simulation::UpdateSimulation()
 //----------------------------------------------------------------------------
 bool Simulation::TestForCatastrophy()
 {
-#if defined(USE_QT)
-    std::stringstream ss;
-#endif
-
     // first of all check to see that ODE is happy
     if (IsMessage())
     {
@@ -411,19 +401,11 @@ bool Simulation::TestForCatastrophy()
         const char *messageText = GetLastMessage(&num);
         if (m_AbortOnODEMessage)
         {
-#if defined(USE_QT)
-            ss << "t=" << m_SimulationTime << "Failed due to ODE warning " << num << " " << messageText;
-            if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
             std::cerr << "t=" << m_SimulationTime << "Failed due to ODE warning " << num << " " << messageText << "\n";
             return true;
         }
         else
         {
-#if defined(USE_QT)
-            ss << "t=" << m_SimulationTime << " ODE warning " << num << " " << messageText;
-            if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
             std::cerr << "t=" << m_SimulationTime << " ODE warning " << num << " " << messageText << "\n";
         }
     }
@@ -431,10 +413,6 @@ bool Simulation::TestForCatastrophy()
     // check for simulation error
     if (m_SimulationError)
     {
-#if defined(USE_QT)
-        ss << "Failed due to simulation error " << m_SimulationError;
-        if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
         std::cerr << "Failed due to simulation error " << m_SimulationError << "\n";
         return true;
     }
@@ -442,10 +420,6 @@ bool Simulation::TestForCatastrophy()
     // check for contact abort
     if (m_ContactAbort)
     {
-#if defined(USE_QT)
-        ss << "Failed due to contact abort";
-        if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
         std::cerr << "Failed due to contact abort\n";
         return true;
     }
@@ -453,10 +427,6 @@ bool Simulation::TestForCatastrophy()
     // check for data target abort
     if (m_DataTargetAbort)
     {
-#if defined(USE_QT)
-        ss << "Failed due to DataTarget abort";
-        if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
         std::cerr << "Failed due to DataTarget abort\n";
         return true;
     }
@@ -475,29 +445,17 @@ bool Simulation::TestForCatastrophy()
         case Body::XPosError:
         case Body::YPosError:
         case Body::ZPosError:
-#if defined(USE_QT)
-            ss << "Failed due to position error " << p << " in: " << iter1.second->name();
-            if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
-            std::cerr << "Failed due to position error " << p << " in: " << iter1.second->name() << "\n";
+            std::cerr << "Failed due to position error " << Body::limitTestResultStrings(p) << " in: " << iter1.second->name() << "\n";
             return true;
 
         case Body::XVelError:
         case Body::YVelError:
         case Body::ZVelError:
-#if defined(USE_QT)
-            ss << "Failed due to velocity error " << p << " in: " << iter1.second->name();
-            if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
-            std::cerr << "Failed due to velocity error " << p << " in: " << iter1.second->name() << "\n";
+            std::cerr << "Failed due to velocity error " << Body::limitTestResultStrings(p) << " in: " << iter1.second->name() << "\n";
             return true;
 
         case Body::NumericalError:
-#if defined(USE_QT)
-            ss << "Failed due to numerical error " << p << " in: " << iter1.second->name();
-            if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
-            std::cerr << "Failed due to numerical error " << p << " in: " << iter1.second->name() << "\n";
+            std::cerr << "Failed due to numerical error " << Body::limitTestResultStrings(p) << " in: " << iter1.second->name() << "\n";
             return true;
         }
     }
@@ -513,19 +471,11 @@ bool Simulation::TestForCatastrophy()
             t = j->TestLimits();
             if (t < 0)
             {
-#if defined(USE_QT)
-                ss << __FILE__ << "Failed due to LoStopTorqueLimit error in: " << iter3.second->name();
-                if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
                 std::cerr << "Failed due to LoStopTorqueLimit error in: " << iter3.second->name() << "\n";
                 return true;
             }
             else if (t > 0)
             {
-#if defined(USE_QT)
-                ss << __FILE__ << "Failed due to HiStopTorqueLimit error in: " << iter3.second->name();
-                if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
                 std::cerr << "Failed due to HiStopTorqueLimit error in: " << iter3.second->name() << "\n";
                 return true;
             }
@@ -536,10 +486,6 @@ bool Simulation::TestForCatastrophy()
         {
             if (f->CheckStressAbort())
             {
-#if defined(USE_QT)
-                ss << __FILE__ << "Failed due to stress limit error in: " << iter3.second->name() << " " << f->GetLowPassMinStress() << " " << f->GetLowPassMaxStress();
-                if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
                 std::cerr << "Failed due to stress limit error in: " << iter3.second->name() << " " << f->GetLowPassMinStress() << " " << f->GetLowPassMaxStress() << "\n";
                 return true;
             }
@@ -551,10 +497,6 @@ bool Simulation::TestForCatastrophy()
     {
         if (reporterIter.second->ShouldAbort())
         {
-#if defined(USE_QT)
-            ss << __FILE__ << "Failed due to Reporter Abort in: " << reporterIter.second->name();
-            if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
             std::cerr << "Failed due to Reporter Abort in: " << reporterIter.second->name() << "\n";
             return true;
         }
@@ -563,10 +505,6 @@ bool Simulation::TestForCatastrophy()
 
     if (m_OutputModelStateOccured && m_AbortAfterModelStateOutput)
     {
-#if defined(USE_QT)
-        ss << __FILE__ << "Abort because ModelState successfully written";
-        if (m_MainWindow) m_MainWindow->log(ss.str().c_str());
-#endif
         std::cerr << "Abort because ModelState successfully written\n";
         return true;
     }
@@ -739,6 +677,18 @@ std::string *Simulation::ParseGeom(const ParseXML::XMLElement *node)
         sphereGeom->createAttributeMap(node->attributes);
         errorMessage = sphereGeom->createFromAttributes();
         geom = std::move(sphereGeom);
+    }
+    else if (buf == "Convex"s)
+    {
+        // dummy values to prevent the constructor throwing an exception
+        double planes[1], points[1];
+        unsigned int polygons[1];
+        unsigned int planecount = 0, pointcount = 0;
+        std::unique_ptr<ConvexGeom> convexGeom = std::make_unique<ConvexGeom>(m_SpaceID, planes, planecount, points, pointcount, polygons);
+        convexGeom->setSimulation(this);
+        convexGeom->createAttributeMap(node->attributes);
+        errorMessage = convexGeom->createFromAttributes();
+        geom = std::move(convexGeom);
     }
     else
     {
@@ -1337,9 +1287,12 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
     int numc;
     Simulation *s = reinterpret_cast<Simulation *>(data);
 
-    // exit without doing anything if the two bodies are connected by a joint
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
+    if (b1 == b2)
+    {
+        return; // it is never useful for two contacts on the same body to collide [I'm not sure if this every happens - FIX ME - set up a test]
+    }
 
     if (s->m_global->AllowConnectedCollisions() == false)
     {
@@ -1351,7 +1304,24 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
         if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetGeomLocation() == reinterpret_cast<Geom *>(dGeomGetData(o2))->GetGeomLocation()) return;
     }
 
-    std::unique_ptr<dContact[]> contact = std::make_unique<dContact[]>(size_t(s->m_MaxContacts)); // up to m_MaxContacts contacts per box-box
+    if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetExcludeList()->size())
+    {
+        std::vector<Geom *> *excludeList = reinterpret_cast<Geom *>(dGeomGetData(o1))->GetExcludeList();
+        for (size_t i = 0; i < excludeList->size(); i++)
+        {
+            if (excludeList->at(i) == reinterpret_cast<Geom *>(dGeomGetData(o2))) return;
+        }
+    }
+    if (reinterpret_cast<Geom *>(dGeomGetData(o2))->GetExcludeList()->size())
+    {
+        std::vector<Geom *> *excludeList = reinterpret_cast<Geom *>(dGeomGetData(o2))->GetExcludeList();
+        for (size_t i = 0; i < excludeList->size(); i++)
+        {
+            if (excludeList->at(i) == reinterpret_cast<Geom *>(dGeomGetData(o1))) return;
+        }
+    }
+
+    std::unique_ptr<dContact[]> contact = std::make_unique<dContact[]>(size_t(s->m_MaxContacts));
     double cfm = MAX(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftCFM(),
                      reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactSoftCFM());
     double erp = MIN(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftERP(),

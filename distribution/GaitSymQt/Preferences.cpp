@@ -200,12 +200,12 @@ void Preferences::ParseQDomElement(const QDomElement &docElem)
                     break;
                 case QMetaType::QVector2D:
                     {
-                        QStringList list = e.attribute("value").split(" ", QString::SkipEmptyParts);
+                        QStringList list = e.attribute("value").split(" ", Qt::SkipEmptyParts);
                         QVector2D value;
                         if (list.size() > 0) value.setX(list[0].toFloat());
                         if (list.size() > 1) value.setY(list[1].toFloat());
                         item.value = value;
-                        list = e.attribute("defaultValue").split(" ", QString::SkipEmptyParts);
+                        list = e.attribute("defaultValue").split(" ", Qt::SkipEmptyParts);
                         QVector2D defaultValue;
                         if (list.size() > 0) defaultValue.setX(list[0].toFloat());
                         if (list.size() > 1) defaultValue.setY(list[1].toFloat());
@@ -214,13 +214,13 @@ void Preferences::ParseQDomElement(const QDomElement &docElem)
                     break;
                 case QMetaType::QVector3D:
                     {
-                        QStringList list = e.attribute("value").split(" ", QString::SkipEmptyParts);
+                        QStringList list = e.attribute("value").split(" ", Qt::SkipEmptyParts);
                         QVector3D value;
                         if (list.size() > 0) value.setX(list[0].toFloat());
                         if (list.size() > 1) value.setY(list[1].toFloat());
                         if (list.size() > 2) value.setZ(list[2].toFloat());
                         item.value = value;
-                        list = e.attribute("defaultValue").split(" ", QString::SkipEmptyParts);
+                        list = e.attribute("defaultValue").split(" ", Qt::SkipEmptyParts);
                         QVector3D defaultValue;
                         if (list.size() > 0) defaultValue.setX(list[0].toFloat());
                         if (list.size() > 1) defaultValue.setY(list[1].toFloat());

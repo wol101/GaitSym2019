@@ -16,7 +16,6 @@
 #include <set>
 
 class Body;
-class FacetedObject;
 class Marker;
 
 struct PointForce

@@ -49,7 +49,7 @@ DialogJoints::DialogJoints(QWidget *parent) :
         QLineEdit *lineEdit = dynamic_cast<QLineEdit *>(*it);
         if (lineEdit) connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(lineEditChanged(const QString &)));
         QSpinBox *spinBox = dynamic_cast<QSpinBox *>(*it);
-        if (spinBox) connect(spinBox, SIGNAL(valueChanged(const QString &)), this, SLOT(spinBoxChanged(const QString &)));
+        if (spinBox) connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChanged(int)));
         QCheckBox *checkBox = dynamic_cast<QCheckBox *>(*it);
         if (checkBox) connect(checkBox, SIGNAL(stateChanged(int)), this, SLOT(checkBoxChanged(int)));
     }
@@ -184,7 +184,7 @@ void DialogJoints::accept() // this catches OK and return/enter
                 }
             }
             // remember that SetCrossSection takes ownership of the stiffnessMap
-            joint->SetCrossSection(stiffnessMap, image.width(), image.height(),
+            joint->SetCrossSection(stiffnessMap, size_t(image.width()), size_t(image.height()),
                                    ui->lineEditFixedStressBitmapPixelSize->value(), ui->lineEditFixedStressBitmapPixelSize->value());
 
             if (mode == "Beam Low Pass")
@@ -207,7 +207,7 @@ void DialogJoints::accept() // this catches OK and return/enter
                 joint->SetStressCalculationType(FixedJoint::spring);
                 joint->SetLowPassType(FixedJoint::MovingAverageLowPass);
             }
-            joint->SetWindow(ui->spinBoxFixedStressWindow->value());
+            joint->SetWindow(size_t(ui->spinBoxFixedStressWindow->value()));
             joint->SetCutoffFrequency(ui->lineEditFixedStressCutoffFrequency->value());
             joint->SetStressLimit(ui->lineEditFixedStressLimit->value());
         }
@@ -421,12 +421,12 @@ void DialogJoints::comboBoxChanged(int /*index*/)
     updateActivation();
 }
 
-void DialogJoints::lineEditChanged(const QString &/*text*/)
+void DialogJoints::lineEditChanged(const QString & /*text*/)
 {
     updateActivation();
 }
 
-void DialogJoints::spinBoxChanged(const QString &/*text*/)
+void DialogJoints::spinBoxChanged(int /*value*/)
 {
     updateActivation();
 }
@@ -453,10 +453,8 @@ void DialogJoints::updateActivation()
 
     if (tab == "Hinge")
     {
-        if (ui->lineEditHingeLowStop->text().size() || ui->lineEditHingeHighStop->text().size())
-        {
-            if (ui->lineEditHingeLowStop->value() >= ui->lineEditHingeHighStop->value()) okEnable = false;
-        }
+        if (ui->lineEditHingeLowStop->value() >= ui->lineEditHingeHighStop->value())
+            okEnable = false;
     }
 
     else if (tab == "Ball")

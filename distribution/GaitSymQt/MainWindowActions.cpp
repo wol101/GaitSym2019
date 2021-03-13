@@ -56,6 +56,7 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <QMessageBox>
+#include <QRegularExpression>
 
 using namespace std::literals::string_literals;
 
@@ -74,7 +75,7 @@ void MainWindowActions::menuOpen()
         if (ret == QMessageBox::Cancel) return;
     }
 
-    QFileInfo info = Preferences::valueQString("LastFileOpened");
+    QFileInfo info(Preferences::valueQString("LastFileOpened"));
     QString fileName;
 
     fileName = QFileDialog::getOpenFileName(m_mainWindow, tr("Open Config File"), info.absoluteFilePath(), tr("Config Files (*.gaitsym *.xml);;Any File (*.* *)"), nullptr);
@@ -114,7 +115,6 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
     if (fileData)
     {
         m_mainWindow->m_simulation = new Simulation();
-        m_mainWindow->m_simulation->SetMainWindow(m_mainWindow);
         errorMessage = m_mainWindow->m_simulation->LoadModel(fileData->constData(), fileData->size());
     }
     else
@@ -129,7 +129,6 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
             return;
         }
         m_mainWindow->m_simulation = new Simulation();
-        m_mainWindow->m_simulation->SetMainWindow(m_mainWindow);
         errorMessage = m_mainWindow->m_simulation->LoadModel(file.GetRawData(), file.GetSize());
     }
     if (errorMessage)
@@ -240,7 +239,7 @@ void MainWindowActions::menuSaveAs()
     QString fileName;
     if (m_mainWindow->m_configFile.absoluteFilePath().isEmpty())
     {
-        QFileInfo info = Preferences::valueQString("LastFileOpened");
+        QFileInfo info(Preferences::valueQString("LastFileOpened"));
         fileName = QFileDialog::getSaveFileName(m_mainWindow, tr("Save Model State File "), info.absoluteFilePath(), tr("Config Files (*.gaitsym);;XML files (*.xml)"), nullptr);
     }
     else
@@ -278,6 +277,7 @@ void MainWindowActions::menuSaveAs()
         m_mainWindow->setStatusString(fileName + QString(" saved"), 1);
         QDir::setCurrent(m_mainWindow->m_configFile.absolutePath());
         Preferences::insert("LastFileOpened", m_mainWindow->m_configFile.canonicalFilePath());
+        Preferences::Write();
         // if (fileName.size() <= 256) m_mainWindow->setWindowTitle(fileName + "[*]");
         // else m_mainWindow->setWindowTitle(QString("...") + fileName.right(256) + "[*]");
         m_mainWindow->setWindowTitle(m_mainWindow->m_configFile.canonicalFilePath() + "[*]");
@@ -333,6 +333,7 @@ void MainWindowActions::menuSave()
         for (auto &&it : *m_mainWindow->m_simulation->GetMuscleList()) it.second->LateInitialisation();
         for (auto &&it : *m_mainWindow->m_simulation->GetFluidSacList()) it.second->LateInitialisation();
     }
+    Preferences::Write();
     m_mainWindow->updateEnable();
 }
 
@@ -373,7 +374,7 @@ void MainWindowActions::snapshot()
     int count = 0;
     QDir dir(m_mainWindow->m_configFile.absolutePath());
     QStringList list = dir.entryList(QDir::Files | QDir::Dirs, QDir::Name);
-    QStringList matches = list.filter(QRegExp(QString("^Snapshot\\d\\d\\d\\d\\d.*")));
+    QStringList matches = list.filter(QRegularExpression(QString("^Snapshot\\d\\d\\d\\d\\d.*")));
     if (matches.size() > 0)
     {
         QString numberString = matches.last().mid(8, 5);
@@ -673,7 +674,6 @@ void MainWindowActions::menuNew()
         std::unique_ptr<Global> newGlobal = dialogGlobal.outputGlobal();
         newGlobal->setSimulation(m_mainWindow->m_simulation);
         m_mainWindow->m_simulation->SetGlobal(std::move(newGlobal));
-        m_mainWindow->m_simulation->SetMainWindow(m_mainWindow);
         m_mainWindow->ui->widgetSimulation->setSimulation(m_mainWindow->m_simulation);
         m_mainWindow->ui->widgetSimulation->update();
         m_mainWindow->ui->treeWidgetElements->setSimulation(m_mainWindow->m_simulation);

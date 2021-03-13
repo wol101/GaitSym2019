@@ -87,6 +87,8 @@ void DrawJoint::initialise(SimulationWidget *simulationWidget)
         polyLine.push_back(pgd::Vector3(-halfLen, 0, 0));
         polyLine.push_back(pgd::Vector3(+halfLen, 0, 0));
         m_facetedObject1 = std::make_unique<FacetedPolyline>(&polyLine, halfLen / 10, m_jointSegments, m_jointColor, 1);
+        polyLine[0] = pgd::Vector3(0, -halfLen, 0);
+        polyLine[1] = pgd::Vector3(0, +halfLen, 0);
         m_facetedObject2 = std::make_unique<FacetedPolyline>(&polyLine, halfLen / 10, m_jointSegments, m_jointColor, 1);
         m_facetedObject1->setSimulationWidget(simulationWidget);
         m_facetedObject2->setSimulationWidget(simulationWidget);

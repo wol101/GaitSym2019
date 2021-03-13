@@ -34,6 +34,7 @@ DrawMuscle::DrawMuscle()
     m_strapNumSegments = size_t(Preferences::valueInt("StrapSegments"));
     m_strapCylinderLength = Preferences::valueDouble("StrapCylinderLength");
     m_strapCylinderSegments = size_t(Preferences::valueDouble("StrapCylinderSegments"));
+    m_strapCylinderWrapSegments = size_t(Preferences::valueInt("StrapCylinderWrapSegments"));
     m_displayMuscleForces = Preferences::valueBool("DisplayMuscleForces");
     m_strapForceScale = Preferences::valueDouble("StrapForceScale");
     m_strapForceRadius = Preferences::valueDouble("StrapForceRadius");
@@ -241,16 +242,14 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
         CylinderWrapStrap *cylinderWrapStrap = dynamic_cast<CylinderWrapStrap *>(m_muscle->GetStrap());
         if (cylinderWrapStrap)
         {
-            std::vector<pgd::Vector3> polyline;
-            const pgd::Vector3 *pathCoordinates = cylinderWrapStrap->GetPathCoordinates();
-            int numPathCoordinates = cylinderWrapStrap->GetNumPathCoordinates();
-            polyline.reserve(size_t(numPathCoordinates));
-            if (numPathCoordinates)
+            if (cylinderWrapStrap->GetNumWrapSegments() != m_strapCylinderWrapSegments)
             {
-                for (size_t i = 0; i < size_t(numPathCoordinates); i++)
-                {
-                    polyline.push_back(pathCoordinates[i]);
-                }
+                cylinderWrapStrap->SetNumWrapSegments(m_strapCylinderWrapSegments);
+                cylinderWrapStrap->Calculate();
+            }
+            std::vector<pgd::Vector3> polyline = *cylinderWrapStrap->GetPathCoordinates();
+            if (polyline.size())
+            {
                 m_facetedObject1 = std::make_unique<FacetedPolyline>(&polyline, m_strapRadius, m_strapNumSegments, m_strapColor, 1);
                 m_facetedObject1->setSimulationWidget(simulationWidget);
                 m_facetedObjectList.push_back(m_facetedObject1.get());

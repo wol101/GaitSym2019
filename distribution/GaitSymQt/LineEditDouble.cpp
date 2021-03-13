@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QLocale>
+#include <QMenu>
 
 #include <limits>
 #include <cmath>
@@ -12,11 +13,13 @@ LineEditDouble::LineEditDouble(QWidget *parent) :
 {
     DoubleValidator *doubleValidator = new DoubleValidator();
     doubleValidator->setNotation(QDoubleValidator::ScientificNotation);
-    // doubleValidator->setRange(-std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::digits10);
-    // doubleValidator->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::digits10);
-    doubleValidator->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 17);
+    // not really sure whether I should use max_digits10 [17] or digits_10 [15]
+    doubleValidator->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max_digits10);
     this->setValidator(doubleValidator);
     connect(this, SIGNAL(textChanged(const QString &)), this, SLOT(textChangedSlot(const QString &)));
+
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(menuRequestPath(QPoint)));
 
     m_defaultStyleSheet = this->styleSheet();
     this->setText("");
@@ -45,11 +48,14 @@ void LineEditDouble::setBottom(double bottom)
 {
     const DoubleValidator *v = dynamic_cast<const DoubleValidator *>(this->validator());
     Q_ASSERT(v);
-//    double bottom = v->bottom();
     double top = v->top();
     int decimals = v->decimals();
     if (top <= bottom) top = std::nextafter(bottom, std::numeric_limits<double>::max());
-    setValidator(new DoubleValidator(bottom, top, decimals));
+    QDoubleValidator::Notation notation = v->notation();
+    DoubleValidator *doubleValidator = new DoubleValidator();
+    doubleValidator->setNotation(notation);
+    doubleValidator->setRange(bottom, top, decimals);
+    setValidator(doubleValidator);
 }
 
 void LineEditDouble::setTop(double top)
@@ -57,10 +63,13 @@ void LineEditDouble::setTop(double top)
     const DoubleValidator *v = dynamic_cast<const DoubleValidator *>(this->validator());
     Q_ASSERT(v);
     double bottom = v->bottom();
-//    double top = v->top();
     int decimals = v->decimals();
     if (bottom >= top) bottom = std::nextafter(top, -std::numeric_limits<double>::max());
-    setValidator(new DoubleValidator(bottom, top, decimals));
+    QDoubleValidator::Notation notation = v->notation();
+    DoubleValidator *doubleValidator = new DoubleValidator();
+    doubleValidator->setNotation(notation);
+    doubleValidator->setRange(bottom, top, decimals);
+    setValidator(doubleValidator);
 }
 
 void LineEditDouble::setDecimals(int decimals)
@@ -69,12 +78,36 @@ void LineEditDouble::setDecimals(int decimals)
     Q_ASSERT(v);
     double bottom = v->bottom();
     double top = v->top();
-//    int decimals = v->decimals();
-    setValidator(new DoubleValidator(bottom, top, decimals));
+    QDoubleValidator::Notation notation = v->notation();
+    DoubleValidator *doubleValidator = new DoubleValidator();
+    doubleValidator->setNotation(notation);
+    doubleValidator->setRange(bottom, top, decimals);
+    setValidator(doubleValidator);
+}
+
+void LineEditDouble::setNotation(QDoubleValidator::Notation notation)
+{
+    const DoubleValidator *v = dynamic_cast<const DoubleValidator *>(this->validator());
+    Q_ASSERT(v);
+    double bottom = v->bottom();
+    double top = v->top();
+    int decimals = v->decimals();
+    DoubleValidator *doubleValidator = new DoubleValidator();
+    doubleValidator->setNotation(notation);
+    doubleValidator->setRange(bottom, top, decimals);
+    setValidator(doubleValidator);
 }
 
 void LineEditDouble::setValue(double value)
 {
+    // do some checks for validity
+    while (!std::isfinite(value))
+    {
+        if (value == std::numeric_limits<double>::infinity()) { value = std::numeric_limits<double>::max(); break; }
+        if (value == -std::numeric_limits<double>::infinity()) { value = -std::numeric_limits<double>::max(); break; }
+        value = 0.0;
+        break;
+    }
     // there are potential round trip problems here if value is equal to either bottom or top
     const DoubleValidator *validator = static_cast<const DoubleValidator *>(this->validator());
     QString valueString;
@@ -83,7 +116,7 @@ void LineEditDouble::setValue(double value)
     int pos = 0;
     if (validator->validate(valueString, pos) != QValidator::Acceptable)
     {
-        if (decimals > std::numeric_limits<double>::digits10) valueString.setNum(value, 'e', std::numeric_limits<double>::digits10);
+        if (decimals > std::numeric_limits<double>::max_digits10) valueString.setNum(value, 'e', std::numeric_limits<double>::max_digits10);
         else valueString.setNum(value, 'e', decimals);
     }
     this->setText(valueString);
@@ -91,6 +124,40 @@ void LineEditDouble::setValue(double value)
 
 double LineEditDouble::value()
 {
-    return QLocale().toDouble(this->text());
+    bool ok;
+    double value = QLocale().toDouble(this->text(), &ok);
+    while (!ok)
+    {
+        if (value == std::numeric_limits<double>::infinity()) { value = std::numeric_limits<double>::max(); break; }
+        if (value == -std::numeric_limits<double>::infinity()) { value = -std::numeric_limits<double>::max(); break; }
+        value = 0.0;
+        break;
+    }
+    return value;
+}
+
+void LineEditDouble::menuRequestPath(const QPoint &pos)
+{
+    QMenu *menu = this->createStandardContextMenu();
+    menu->addSeparator();
+    menu->addAction(tr("Insert Minimum"));
+    menu->addAction(tr("Insert Maximum"));
+//    menu->addAction(tr("Scientific Notation"));
+//    menu->addAction(tr("Standard Notation"));
+    menu->addAction(tr("Float Precision"));
+    menu->addAction(tr("Double Precision"));
+    QPoint gp = this->mapToGlobal(pos);
+    QAction *action = menu->exec(gp);
+    while (action)
+    {
+        if (action->text() == tr("Insert Minimum")) { const DoubleValidator *v = dynamic_cast<const DoubleValidator *>(this->validator()); if (v) setValue(v->bottom()); break; }
+        if (action->text() == tr("Insert Maximum")) { const DoubleValidator *v = dynamic_cast<const DoubleValidator *>(this->validator()); if (v) setValue(v->top()); break; }
+//        if (action->text() == tr("Scientific Notation")) { setNotation(QDoubleValidator::ScientificNotation); setValue(value()); break; }
+//        if (action->text() == tr("Standard Notation")) { setNotation(QDoubleValidator::StandardNotation); setValue(value()); break; }
+        if (action->text() == tr("Float Precision")) { setDecimals(std::numeric_limits<float>::max_digits10); setValue(value()); break; }
+        if (action->text() == tr("Double Precision")) { setDecimals(std::numeric_limits<double>::max_digits10); setValue(value()); break; }
+        break;
+    }
+    delete menu;
 }
 

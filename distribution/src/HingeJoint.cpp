@@ -92,9 +92,6 @@ void HingeJoint::SetJointStops(double loStop, double hiStop)
     dJointSetHingeParam(JointID(), dParamHiStop, hiStop);
     dJointSetHingeParam(JointID(), dParamLoStop, loStop);
     dJointSetHingeParam(JointID(), dParamHiStop, hiStop);
-
-    // we don't want bouncy stops
-    dJointSetHingeParam(JointID(), dParamBounce, 0);
 }
 
 void HingeJoint::CalculateStopTorque()

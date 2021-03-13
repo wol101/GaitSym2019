@@ -18,18 +18,10 @@
 #include <cmath>
 #include <string.h>
 
-#ifdef USE_QT
-#include "Preferences.h"
-#endif
-
 using namespace std::string_literals;
 
 TwoCylinderWrapStrap::TwoCylinderWrapStrap()
 {
-#ifdef USE_QT
-    m_numWrapSegments = Preferences::valueInt("StrapCylinderWrapSegments");
-    m_pathCoordinates.resize(size_t(m_numWrapSegments) * 2 + 6);
-#endif
 }
 
 TwoCylinderWrapStrap::~TwoCylinderWrapStrap()
@@ -211,9 +203,10 @@ void TwoCylinderWrapStrap::SetCylinder2Position(double x, double y, double z)
     m_cylinder2Position.z = z;
 }
 
-void TwoCylinderWrapStrap::SetNumWrapSegments(int num)
+void TwoCylinderWrapStrap::SetNumWrapSegments(int numWrapSegments)
 {
-    m_numWrapSegments = num;
+    m_numWrapSegments = numWrapSegments;
+    m_pathCoordinates.reserve(size_t(m_numWrapSegments) * 2 + 6);
 }
 
 void TwoCylinderWrapStrap::GetCylinder2(const Body **body, dVector3 position, double *radius, dQuaternion q) const
@@ -334,7 +327,7 @@ void TwoCylinderWrapStrap::Calculate()
                     cylinderCylinder2Position, m_cylinder2Radius, tension, m_numWrapSegments, M_PI,
                     theOriginForce, theInsertionForce, theCylinder1Force, theCylinder1ForcePosition,
                     theCylinder2Force, theCylinder2ForcePosition, &length,
-                    m_pathCoordinates.data(), &m_numPathCoordinates, &m_wrapStatus);
+                    &m_pathCoordinates, &m_wrapStatus);
     if (Length() >= 0 && simulation() && simulation()->GetTimeIncrement() > 0) setVelocity((length - Length()) / simulation()->GetTimeIncrement());
     else setVelocity(0);
     setLength(length);
@@ -363,11 +356,22 @@ void TwoCylinderWrapStrap::Calculate()
     theCylinder2->point[0] = theCylinder2ForcePosition.x; theCylinder2->point[1] = theCylinder2ForcePosition.y; theCylinder2->point[2] = theCylinder2ForcePosition.z;
 
     // and handle the path coordinates
-    for (size_t i = 0; i < size_t(m_numPathCoordinates); i++)
+    for (size_t i = 0; i < m_pathCoordinates.size(); i++)
     {
         m_pathCoordinates[i] = QVRotate(qCylinder1Body, QVRotate(m_cylinderQuaternion, m_pathCoordinates[i]));
     }
 
+    // check that we don't have any non-finite values for directions which can occur if points co-locate
+    for (size_t i = 0; i < GetPointForceList()->size(); i++)
+    {
+        if ((std::isfinite((*GetPointForceList())[i]->vector[0]) && std::isfinite((*GetPointForceList())[i]->vector[1]) && std::isfinite((*GetPointForceList())[i]->vector[2])) == false)
+        {
+            (*GetPointForceList())[i]->vector[0] = 0.0;
+            (*GetPointForceList())[i]->vector[1] = 0.0;
+            (*GetPointForceList())[i]->vector[2] = 0.0;
+            std::cerr << "Warning: point force direction in \"" << name() << "\" is invalid so applying standard fixup\n";
+        }
+    }
 }
 
 // function to wrap a line around two parallel cylinders
@@ -379,7 +383,7 @@ void TwoCylinderWrapStrap::TwoCylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &i
                                            pgd::Vector3 &cylinderPosition2, double radius2, double tension, int nPointsPerCylinderArc, double maxAngle,
                                            pgd::Vector3 &originForce, pgd::Vector3 &insertionForce, pgd::Vector3 &cylinderForce1, pgd::Vector3 &cylinderForcePosition1,
                                            pgd::Vector3 &cylinderForce2, pgd::Vector3 &cylinderForcePosition2, double *pathLength,
-                                           pgd::Vector3 *pathCoordinates, int *numPathCoordinates, int *wrapOK)
+                                           std::vector<pgd::Vector3> *pathCoordinates, int *wrapOK)
 {
     // this is the special case looking down the axis of the cylinder (i.e. xy plane)
     // this is standard tangent to a circle stuff
@@ -397,7 +401,7 @@ void TwoCylinderWrapStrap::TwoCylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &i
     const double small_angle = 1e-10;
     int number_of_tangents;
 
-    *numPathCoordinates = 0;
+    pathCoordinates->clear();
 
     pgd::Vector3 E1, E2, H1, H2, G1, G2, F1, F2, J1, J2, K1, K2;
 
@@ -436,11 +440,9 @@ void TwoCylinderWrapStrap::TwoCylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &i
 
     double l1, l2, l3, l4, l5;
     double planar_path_length, delta_Z, cyl1_del_theta, cyl2_del_theta, theta;
-    int i, j;
 
     if (cyl1_theta < maxAngle && cyl2_theta < maxAngle && cyl1_theta > small_angle && cyl2_theta > small_angle) // the double wrap case
     {
-
         *wrapOK = 1;
 
         l1 = vector_distance2d(O, E2);
@@ -479,48 +481,41 @@ void TwoCylinderWrapStrap::TwoCylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &i
 
         *pathLength = sqrt(delta_Z * delta_Z + planar_path_length * planar_path_length);
 
-        if (pathCoordinates)
+        if (pathCoordinates && nPointsPerCylinderArc > 1)
         {
-            i = 0;
-            pathCoordinates[i] = O;
-            i = i + 1;
-            pathCoordinates[i] = E2;
-            i = i + 1;
+            pgd::Vector3 p;
+            pathCoordinates->push_back(O);
+            pathCoordinates->push_back(E2);
 
             // now fill in the missing bits of the 1st circle
             cyl1_del_theta = cyl1_theta / nPointsPerCylinderArc;
             theta = cyl1_start_angle;
-            for (j = 1; j <= nPointsPerCylinderArc - 1; j++)
+            for (int j = 1; j <= nPointsPerCylinderArc - 1; j++)
             {
                 theta = theta + cyl1_del_theta;
-                pathCoordinates[i].x = C.x + r * cos(theta);
-                pathCoordinates[i].y = C.y + r * sin(theta);
-                pathCoordinates[i].z = O.z + delta_Z * (l1 + (double(j) / double(nPointsPerCylinderArc)) * l2) / planar_path_length;
-                i = i + 1;
+                p.x = C.x + r * cos(theta);
+                p.y = C.y + r * sin(theta);
+                p.z = O.z + delta_Z * (l1 + (double(j) / double(nPointsPerCylinderArc)) * l2) / planar_path_length;
+                pathCoordinates->push_back(p);
             }
 
-            pathCoordinates[i] = F2;
-            i = i + 1;
-            pathCoordinates[i] = G2;
-            i = i + 1;
+            pathCoordinates->push_back(F2);
+            pathCoordinates->push_back(G2);
 
             // now fill in the missing bits of the 2nd circle
             cyl2_del_theta = cyl2_theta / nPointsPerCylinderArc;
             theta = cyl2_start_angle;
-            for (j = 1; j <= nPointsPerCylinderArc - 1; j++)
+            for (int j = 1; j <= nPointsPerCylinderArc - 1; j++)
             {
                 theta = theta + cyl2_del_theta;
-                pathCoordinates[i].x = D.x + s * cos(theta);
-                pathCoordinates[i].y = D.y + s * sin(theta);
-                pathCoordinates[i].z = O.z + delta_Z * (l1 + l2 + l3 + (double(j) / double(nPointsPerCylinderArc)) * l4) / planar_path_length;
-                i = i + 1;
+                p.x = D.x + s * cos(theta);
+                p.y = D.y + s * sin(theta);
+                p.z = O.z + delta_Z * (l1 + l2 + l3 + (double(j) / double(nPointsPerCylinderArc)) * l4) / planar_path_length;
+                pathCoordinates->push_back(p);
             }
 
-            pathCoordinates[i] = H1;
-            i = i + 1;
-            pathCoordinates[i] = I;
-            i = i + 1;
-            *numPathCoordinates = i;
+            pathCoordinates->push_back(H1);
+            pathCoordinates->push_back(I);
         }
         return;
     }
@@ -574,33 +569,27 @@ void TwoCylinderWrapStrap::TwoCylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &i
 
             *pathLength = sqrt(delta_Z * delta_Z + planar_path_length * planar_path_length);
 
-            if (pathCoordinates)
+            if (pathCoordinates && nPointsPerCylinderArc > 1)
             {
-                i = 0;
-                pathCoordinates[i] = O;
-                i = i + 1;
-                pathCoordinates[i] = E2;
-                i = i + 1;
+                pgd::Vector3 p;
+                pathCoordinates->push_back(O);
+                pathCoordinates->push_back(E2);
 
                 // now fill in the missing bits of the 1st circle
                 cyl1_del_theta = cyl1_theta / nPointsPerCylinderArc;
                 theta = cyl1_start_angle;
-                for (j = 1; j <= nPointsPerCylinderArc - 1; j++)
+                for (int j = 1; j <= nPointsPerCylinderArc - 1; j++)
                 {
                     theta = theta + cyl1_del_theta;
-                    pathCoordinates[i].x = C.x + r * cos(theta);
-                    pathCoordinates[i].y = C.y + r * sin(theta);
-                    pathCoordinates[i].z = O.z + delta_Z * (l1 + (double(j) / double(nPointsPerCylinderArc)) * l2) / planar_path_length;
-                    i = i + 1;
+                    p.x = C.x + r * cos(theta);
+                    p.y = C.y + r * sin(theta);
+                    p.z = O.z + delta_Z * (l1 + (double(j) / double(nPointsPerCylinderArc)) * l2) / planar_path_length;
+                    pathCoordinates->push_back(p);
                 }
 
-                pathCoordinates[i] = K1;
-                i = i + 1;
-                pathCoordinates[i] = I;
-                i = i + 1;
-                *numPathCoordinates = i;
+                pathCoordinates->push_back(K1);
+                pathCoordinates->push_back(I);
             }
-
             return;
         }
     }
@@ -654,33 +643,27 @@ void TwoCylinderWrapStrap::TwoCylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &i
 
             *pathLength = sqrt(delta_Z * delta_Z + planar_path_length * planar_path_length);
 
-            if (pathCoordinates)
+            if (pathCoordinates && nPointsPerCylinderArc > 1)
             {
-                i = 0;
-                pathCoordinates[i] = O;
-                i = i + 1;
-                pathCoordinates[i] = J2;
-                i = i + 1;
+                pgd::Vector3 p;
+                pathCoordinates->push_back(O);
+                pathCoordinates->push_back(J2);
 
                 // now fill in the missing bits of the 1st circle
                 cyl2_del_theta = cyl2_theta / nPointsPerCylinderArc;
                 theta = cyl2_start_angle;
-                for (j = 1; j <= nPointsPerCylinderArc - 1; j++)
+                for (int j = 1; j <= nPointsPerCylinderArc - 1; j++)
                 {
                     theta = theta + cyl2_del_theta;
-                    pathCoordinates[i].x = D.x + s * cos(theta);
-                    pathCoordinates[i].y = D.y + s * sin(theta);
-                    pathCoordinates[i].z = O.z + delta_Z * (l1 + (double(j) / double(nPointsPerCylinderArc)) * l2) / planar_path_length;
-                    i = i + 1;
+                    p.x = D.x + s * cos(theta);
+                    p.y = D.y + s * sin(theta);
+                    p.z = O.z + delta_Z * (l1 + (double(j) / double(nPointsPerCylinderArc)) * l2) / planar_path_length;
+                    pathCoordinates->push_back(p);
                 }
 
-                pathCoordinates[i] = H1;
-                i = i + 1;
-                pathCoordinates[i] = I;
-                i = i + 1;
-                *numPathCoordinates = i;
+                pathCoordinates->push_back(H1);
+                pathCoordinates->push_back(I);
             }
-
             return;
         }
     }
@@ -710,14 +693,10 @@ void TwoCylinderWrapStrap::TwoCylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &i
     cylinderForcePosition2.y = 0;
     cylinderForcePosition2.z = 0;
 
-    if (pathCoordinates)
+    if (pathCoordinates && nPointsPerCylinderArc > 1)
     {
-        i = 0;
-        pathCoordinates[i] = O;
-        i = i + 1;
-        pathCoordinates[i] = I;
-        i = i + 1;
-        *numPathCoordinates = i;
+        pathCoordinates->push_back(O);
+        pathCoordinates->push_back(I);
     }
 
     return;
@@ -938,6 +917,11 @@ double TwoCylinderWrapStrap::Cylinder2Radius() const
 double TwoCylinderWrapStrap::Cylinder1Radius() const
 {
     return m_cylinder1Radius;
+}
+
+const std::vector<pgd::Vector3> *TwoCylinderWrapStrap::GetPathCoordinates()
+{
+    return &m_pathCoordinates;
 }
 
 int TwoCylinderWrapStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight)

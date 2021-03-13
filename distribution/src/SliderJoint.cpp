@@ -72,9 +72,6 @@ void SliderJoint::SetJointStops(double loStop, double hiStop)
     dJointSetSliderParam(JointID(), dParamHiStop, hiStop);
     dJointSetSliderParam(JointID(), dParamLoStop, loStop);
     dJointSetSliderParam(JointID(), dParamHiStop, hiStop);
-
-    // we don't want bouncy stops
-    dJointSetSliderParam(JointID(), dParamBounce, 0);
 }
 
 void SliderJoint::SetStopCFM(double cfm)

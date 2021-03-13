@@ -12,12 +12,13 @@
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QDebug>
-#include <QRegExp>
 #include <QToolButton>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QFileDialog>
 #include <QComboBox>
+
+#include <QRegularExpression>
 
 #include <string>
 #include <regex>
@@ -29,6 +30,10 @@ TextEditDialog::TextEditDialog(QWidget *parent) :
     ui(new Ui::TextEditDialog)
 {
     ui->setupUi(this);
+    setWindowTitle(tr("Raw XML Editor"));
+#ifdef Q_OS_MACOS
+    setWindowFlags(windowFlags() & (~Qt::Dialog) | Qt::Window); // allows the window to be resized on macs
+#endif
 
     loadPreferences();
 
@@ -146,7 +151,7 @@ void TextEditDialog::find()
     bool result = false;
     if (ui->checkBoxRegularExpression->isChecked())
     {
-        QRegExp regExp(findString, ui->checkBoxCaseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive);
+        QRegularExpression regExp(findString, ui->checkBoxCaseSensitive->isChecked() ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
         result = ui->plainTextEdit->find(regExp);
     }
     else
@@ -204,10 +209,9 @@ void TextEditDialog::replaceAll()
 bool TextEditDialog::replace(const QString &findString, const QString &replaceString)
 {
     bool result = false;
-    QRegExp regExp;
     if (ui->checkBoxRegularExpression->isChecked())
     {
-        regExp = QRegExp(findString, ui->checkBoxCaseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive);
+        QRegularExpression regExp(findString, ui->checkBoxCaseSensitive->isChecked() ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
         result = ui->plainTextEdit->find(regExp);
     }
     else
@@ -226,6 +230,7 @@ bool TextEditDialog::replace(const QString &findString, const QString &replaceSt
         QTextCursor cursor = ui->plainTextEdit->textCursor();
         QString selectedString;
         selectedString.setUtf16(cursor.selectedText().utf16(), cursor.selectedText().size()); // this forces a deep copy
+        QRegularExpression regExp(findString, ui->checkBoxCaseSensitive->isChecked() ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
         selectedString.replace(regExp, replaceString);
         cursor.insertText(cursor.selectedText().replace(cursor.selectedText(), selectedString));
     }
@@ -408,11 +413,7 @@ void TextEditDialog::attributeMachineLoad()
 
 void TextEditDialog::attributeMachineLoadFromString(const QString &string, bool quiet)
 {
-#if QT_VERSION >= 0x050F00
-    QStringList lines = string.split(QRegExp("[\r\n]"), Qt::SkipEmptyParts);
-#else
-    QStringList lines = string.split(QRegExp("[\r\n]"), QString::SkipEmptyParts);
-#endif
+    QStringList lines = string.split(QRegularExpression("[\r\n]"), Qt::SkipEmptyParts);
     QStringList tokenList;
     QString line;
     int iLine = 0;
@@ -676,8 +677,9 @@ bool TextEditDialog::attributeMachineMatch(const std::string &refStr, const std:
         return false;
     }
 
-    QRegExp regExp(qFindStr, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
-    return regExp.exactMatch(qRefStr);
+    QRegularExpression regExp(qFindStr, caseSensitive ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
+    QRegularExpressionMatch match = regExp.match(QRegularExpression::anchoredPattern(qRefStr));
+    return match.hasMatch();
 }
 
 std::string TextEditDialog::attributeMachineReplace(const std::string input, const std::string &before, const std::string &after)
@@ -695,7 +697,7 @@ std::string TextEditDialog::attributeMachineReplace(const std::string input, con
         return qReplaceStr.toStdString();
     }
 
-    QRegExp regExp(qBefore, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+    QRegularExpression regExp(qBefore, caseSensitive ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
     QString qReplaceStr = qInput.replace(regExp, qAfter);
     return qReplaceStr.toStdString();
 }

@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QDebug>
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include <string>
 #include <vector>
@@ -450,9 +450,9 @@ bool DialogCreateMirrorElements::attributeFind(const std::string &refStr, const 
     QString qFindStr = QString::fromStdString(findStr);
     if (!useRegex) return qRefStr.contains(qFindStr, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
 
-    QRegExp regExp(qFindStr, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
-    int index = regExp.indexIn(qRefStr);
-    if (index == -1) return false;
+    QRegularExpression regExp(qFindStr, caseSensitive ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
+    QRegularExpressionMatch match = regExp.match(qRefStr);
+    if (match.capturedStart(0) == -1) return false;
     return true;
 }
 
@@ -471,7 +471,7 @@ std::string DialogCreateMirrorElements::attributeReplace(const std::string input
         return qReplaceStr.toStdString();
     }
 
-    QRegExp regExp(qBefore, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+    QRegularExpression regExp(qBefore, caseSensitive ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
     QString qReplaceStr = qInput.replace(regExp, qAfter);
     return qReplaceStr.toStdString();
 }

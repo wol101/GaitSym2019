@@ -2,8 +2,8 @@
 
 UniqueNameValidator::UniqueNameValidator(QObject *parent) : QValidator(parent)
 {
-    QRegExp regExp("[a-zA-Z0-9_]+");
-    m_internalValidator.setRegExp(regExp);
+    QRegularExpression regExp("[a-zA-Z0-9_]+");
+    m_internalValidator.setRegularExpression(regExp);
 }
 
 QValidator::State UniqueNameValidator::validate(QString &input, int &pos) const

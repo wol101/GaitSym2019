@@ -100,9 +100,6 @@ void UniversalJoint::SetJointStops1(double loStop, double hiStop)
     dJointSetUniversalParam(JointID(), dParamHiStop1, hiStop);
     dJointSetUniversalParam(JointID(), dParamLoStop1, loStop);
     dJointSetUniversalParam(JointID(), dParamHiStop1, hiStop);
-
-    // we don't want bouncy stops
-    dJointSetUniversalParam(JointID(), dParamBounce1, 0);
 }
 
 void UniversalJoint::SetStopCFM2(double cfm)
@@ -156,9 +153,6 @@ void UniversalJoint::SetJointStops2(double loStop, double hiStop)
     dJointSetUniversalParam(JointID(), dParamHiStop2, hiStop);
     dJointSetUniversalParam(JointID(), dParamLoStop2, loStop);
     dJointSetUniversalParam(JointID(), dParamHiStop2, hiStop);
-
-    // we don't want bouncy stops
-    dJointSetUniversalParam(JointID(), dParamBounce2, 0);
 }
 
 void UniversalJoint::GetUniversalAnchor(dVector3 result)

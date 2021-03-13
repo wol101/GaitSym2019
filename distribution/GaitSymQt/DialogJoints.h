@@ -37,7 +37,7 @@ public slots:
     void properties();
     void comboBoxChanged(int index);
     void lineEditChanged(const QString &text);
-    void spinBoxChanged(const QString &text);
+    void spinBoxChanged(int value);
     void checkBoxChanged(int index);
     void tabChanged(int index);
 

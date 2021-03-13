@@ -167,8 +167,6 @@ void NPointStrap::Calculate()
     pgd::Vector3 v;
 
     // calculate the world positions
-//    dBodyGetRelPointPos(m_originBody->GetBodyID(), m_origin[0], m_origin[1], m_origin[2], theOrigin->point);
-//    dBodyGetRelPointPos(m_insertionBody->GetBodyID(), m_insertion[0], m_insertion[1], m_insertion[2], theInsertion->point);
     pgd::Vector3 origin = m_originMarker->GetWorldPosition();
     theOrigin->point[0] = origin.x;
     theOrigin->point[1] = origin.y;
@@ -177,11 +175,6 @@ void NPointStrap::Calculate()
     theInsertion->point[0] = insertion.x;
     theInsertion->point[1] = insertion.y;
     theInsertion->point[2] = insertion.z;
-//    for (i = 0; i < m_ViaPointList.size(); i++)
-//    {
-//        v = m_ViaPointList[i];
-//        dBodyGetRelPointPos(m_ViaBodyList[i]->GetBodyID(), v.x, v.y, v.z, (*GetPointForceList())[i + 2]->point);
-//    }
     for (i = 0; i < m_ViaPointMarkerList.size(); i++)
     {
         v = m_ViaPointMarkerList[i]->GetWorldPosition();
@@ -243,6 +236,18 @@ void NPointStrap::Calculate()
     if (Length() >= 0 && simulation() && simulation()->GetTimeIncrement() > 0) setVelocity((totalLength - Length()) / simulation()->GetTimeIncrement());
     else setVelocity(0);
     setLength(totalLength);
+
+    // check that we don't have any non-normal values for directions which can occur if points co-locate
+    for (size_t i = 0; i < GetPointForceList()->size(); i++)
+    {
+        if ((std::isnormal((*GetPointForceList())[i]->vector[0]) && std::isnormal((*GetPointForceList())[i]->vector[1]) && std::isnormal((*GetPointForceList())[i]->vector[2])) == false)
+        {
+            (*GetPointForceList())[i]->vector[0] = 1.0;
+            (*GetPointForceList())[i]->vector[1] = 0.0;
+            (*GetPointForceList())[i]->vector[2] = 0.0;
+            std::cerr << "Warning: point force direction in \"" << name() << "\" is invalid so applying standard fixup\n";
+        }
+    }
 }
 
 int NPointStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight)

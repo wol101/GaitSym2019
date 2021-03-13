@@ -35,7 +35,7 @@ public:
     void SetCylinder2Radius(double radius);
     void SetCylinder2Position(double x, double y, double z);
     void SetCylinder2(Marker *cylinder2Marker);
-    void SetNumWrapSegments(int num);
+    void SetNumWrapSegments(int numWrapSegments);
 
     virtual void Calculate();
 
@@ -48,6 +48,8 @@ public:
     Marker *GetInsertionMarker() const;
     Marker *GetCylinder1Marker() const;
     Marker *GetCylinder2Marker() const;
+
+    const std::vector<pgd::Vector3> *GetPathCoordinates();
 
     virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
 
@@ -63,7 +65,7 @@ private:
                          pgd::Vector3 &cylinderPosition2, double radius2, double tension, int nPointsPerCylinderArc, double maxAngle,
                          pgd::Vector3 &originForce, pgd::Vector3 &insertionForce, pgd::Vector3 &cylinderForce1, pgd::Vector3 &cylinderForcePosition1,
                          pgd::Vector3 &cylinderForce2, pgd::Vector3 &cylinderForcePosition2, double *pathLength,
-                         pgd::Vector3 *pathCoordinates, int *numPathCoordinates, int *wrapOK);
+                         std::vector<pgd::Vector3> *pathCoordinates, int *wrapOK);
     void FindCircleCircleTangents(pgd::Vector3 &c1, double radius1, pgd::Vector3 &c2, double radius2,
                                   pgd::Vector3 &outer1_p1, pgd::Vector3 &outer1_p2, pgd::Vector3 &outer2_p1, pgd::Vector3 &outer2_p2,
                                   pgd::Vector3 &inner1_p1, pgd::Vector3 &inner1_p2, pgd::Vector3 &inner2_p1, pgd::Vector3 &inner2_p2, int *number_of_tangents);
@@ -87,12 +89,11 @@ private:
     Body *m_cylinder2Body = nullptr;
     pgd::Vector3 m_cylinder2Position;
     double m_cylinder2Radius = 1;
-    int m_numWrapSegments = 2;
+    int m_numWrapSegments = 0;
 
     int m_wrapStatus = -1;
 
     std::vector<pgd::Vector3> m_pathCoordinates;
-    int m_numPathCoordinates = 0;
 
     Marker *m_originMarker = nullptr;
     Marker *m_insertionMarker = nullptr;

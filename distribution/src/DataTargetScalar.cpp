@@ -316,6 +316,12 @@ double DataTargetScalar::calculateError(size_t index)
         case MechanicalEnergy:
             m_errorScore = (simulation()->GetMechanicalEnergy() - m_ValueList[size_t(index)]);
             break;
+        case Time:
+            m_errorScore = (simulation()->GetTime() - m_ValueList[size_t(index)]);
+            break;
+        case DeltaTime:
+            m_errorScore = (simulation()->GetTimeIncrement() - m_ValueList[size_t(index)]);
+            break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
         }
@@ -589,6 +595,12 @@ double DataTargetScalar::calculateError(double time)
         case MechanicalEnergy:
             m_errorScore = (simulation()->GetMechanicalEnergy() - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
+        case Time:
+            m_errorScore = (simulation()->GetTime() - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
+            break;
+        case DeltaTime:
+            m_errorScore = (simulation()->GetTimeIncrement() - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
+            break;
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
         }
@@ -796,6 +808,12 @@ std::string DataTargetScalar::dumpToString()
         case MechanicalEnergy:
             ref = simulation()->GetMechanicalEnergy();
             break;
+        case Time:
+            ref = simulation()->GetTime();
+            break;
+        case DeltaTime:
+            ref = simulation()->GetTimeIncrement();
+            break;
         default:
             break;
         }
@@ -868,7 +886,7 @@ std::string *DataTargetScalar::createFromAttributes()
     }
     m_ValueList.clear();
     m_ValueList.reserve(targetValuesTokens.size());
-    for (auto token : targetValuesTokens) m_ValueList.push_back(GSUtil::Double(token));
+    for (auto &&token : targetValuesTokens) m_ValueList.push_back(GSUtil::Double(token));
 
     if (m_Target) setUpstreamObjects({m_Target});
     return nullptr;

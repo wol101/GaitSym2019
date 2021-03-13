@@ -82,12 +82,20 @@ double DataTargetMarkerCompare::calculateError(double time)
             break;
         }
         pgd::Vector3 axis1, axis2;
-        if (m_marker1Comparison == XAD) axis1 = m_marker1->GetAxis(Marker::X);
-        else if (m_marker1Comparison == YAD) axis1 = m_marker1->GetAxis(Marker::Y);
-        else if (m_marker1Comparison == ZAD) axis1 = m_marker1->GetAxis(Marker::Z);
-        if (m_marker2Comparison == XAD) axis2 = m_marker2->GetAxis(Marker::X);
-        else if (m_marker2Comparison == YAD) axis2 = m_marker2->GetAxis(Marker::Y);
-        else if (m_marker2Comparison == ZAD) axis2 = m_marker2->GetAxis(Marker::Z);
+        while (true)
+        {
+            if (m_marker1Comparison == XAD) { axis1 = m_marker1->GetWorldAxis(Marker::X); break; }
+            if (m_marker1Comparison == YAD) { axis1 = m_marker1->GetWorldAxis(Marker::Y); break; }
+            if (m_marker1Comparison == ZAD) { axis1 = m_marker1->GetWorldAxis(Marker::Z); break; }
+            break;
+        }
+        while (true)
+        {
+            if (m_marker2Comparison == XAD) { axis2 = m_marker2->GetWorldAxis(Marker::X); break; }
+            if (m_marker2Comparison == YAD) { axis2 = m_marker2->GetWorldAxis(Marker::Y); break; }
+            if (m_marker2Comparison == ZAD) { axis2 = m_marker2->GetWorldAxis(Marker::Z); break; }
+            break;
+        }
         // for two vectors
         // angle = acos(v1 dot v2)
         // axis = norm(v1 cross v2)
@@ -137,8 +145,7 @@ double DataTargetMarkerCompare::calculateError(size_t index)
         }
         if (m_marker1Comparison == Angle && m_marker2Comparison == Angle)
         {
-            pgd::Quaternion q = pgd::FindRotation(m_marker1->GetWorldQuaternion(), m_marker2->GetWorldQuaternion());
-            double angle = pgd::QGetAngle(q);
+            double angle = pgd::FindAngle(m_marker1->GetWorldQuaternion(), m_marker2->GetWorldQuaternion());
             m_errorScore = (angle - m_ValueList[size_t(index)]);
             break;
         }
@@ -169,14 +176,14 @@ std::string *DataTargetMarkerCompare::createFromAttributes()
     if (DataTarget::createFromAttributes()) return lastErrorPtr();
 
     std::string buf;
-    if (findAttribute("Marker1"s, &buf) == nullptr) return lastErrorPtr();
+    if (findAttribute("Marker1ID"s, &buf) == nullptr) return lastErrorPtr();
     Marker *marker1 = simulation()->GetMarker(buf);
     if (!marker1)
     {
         setLastError("DataTargetMarkerCompare ID=\""s + name() +"\" Marker1 not found "s + buf);
         return lastErrorPtr();
     }
-    if (findAttribute("Marker2"s, &buf) == nullptr) return lastErrorPtr();
+    if (findAttribute("Marker2ID"s, &buf) == nullptr) return lastErrorPtr();
     Marker *marker2 = simulation()->GetMarker(buf);
     if (!marker2)
     {
@@ -244,7 +251,7 @@ std::string *DataTargetMarkerCompare::createFromAttributes()
     }
     m_ValueList.clear();
     m_ValueList.reserve(targetValuesTokens.size());
-    for (auto token : targetValuesTokens) m_ValueList.push_back(GSUtil::Double(token));
+    for (auto &&token : targetValuesTokens) m_ValueList.push_back(GSUtil::Double(token));
 
     setUpstreamObjects({m_marker1, m_marker2});
     return nullptr;
@@ -256,8 +263,8 @@ void DataTargetMarkerCompare::appendToAttributes()
     DataTarget::appendToAttributes();
     std::string buf;
     setAttribute("Type"s, "MarkerCompare"s);
-    setAttribute("Marker1"s, m_marker1->name());
-    setAttribute("Marker2"s, m_marker2->name());
+    setAttribute("Marker1ID"s, m_marker1->name());
+    setAttribute("Marker2ID"s, m_marker2->name());
     setAttribute("Marker1Comparison"s, comparisonStrings(m_marker1Comparison));
     setAttribute("Marker2Comparison"s, comparisonStrings(m_marker2Comparison));
     setAttribute("TargetValues"s, *GSUtil::ToString(m_ValueList.data(), m_ValueList.size(), &buf));

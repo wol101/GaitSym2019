@@ -78,6 +78,7 @@ private:
     size_t m_strapNumSegments = 0;
     double m_strapCylinderLength = 0;
     size_t m_strapCylinderSegments = 0;
+    size_t m_strapCylinderWrapSegments = 0;
     bool m_displayMuscleForces = 0;
     double m_strapForceScale = 0;
     double m_strapForceRadius = 0;

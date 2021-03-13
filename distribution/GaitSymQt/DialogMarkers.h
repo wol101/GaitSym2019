@@ -49,10 +49,21 @@ public slots:
     void calculateOrientation2Marker();
     void calculateOrientation3Marker();
     void calculateMirrorMarker();
+    void calculateCalculator();
+    void calculateMatrix();
     void copy3DCursorPosition();
+    void importCalculator();
+    void importMatrix();
     void lineEditIDTextChanged(const QString &text);
+    void lineEditFractionTextChanged(const QString &text);
+    void lineEditDistanceTextChanged(const QString &text);
+    void lineEditEulerAppendTextChanged(const QString &text);
+    void lineEditAxisAngleTextChanged(const QString &text);
+    void lineEditQuaternionTextChanged(const QString &text);
+    void positionMarkerChanged(const QString &text);
     void orientation2MarkerChanged(const QString &text);
     void orientation3MarkerChanged(const QString &text);
+    void labelAxisAngleMenuRequest(const QPoint &pos);
 
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;

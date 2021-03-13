@@ -169,11 +169,6 @@ void BallJoint::SetStops(double a0Low, double a0High, double a1Low, double a1Hig
         dJointSetAMotorParam(m_MotorJointID, dParamHiStop2, a1High);
         dJointSetAMotorParam(m_MotorJointID, dParamLoStop3, a2Low);
         dJointSetAMotorParam(m_MotorJointID, dParamHiStop3, a2High);
-
-        // we don't want bouncy stops
-        dJointSetAMotorParam(m_MotorJointID, dParamBounce1, 0);
-        dJointSetAMotorParam(m_MotorJointID, dParamBounce2, 0);
-        dJointSetAMotorParam(m_MotorJointID, dParamBounce3, 0);
     }
 
 }

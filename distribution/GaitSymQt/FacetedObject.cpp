@@ -28,6 +28,9 @@
 #include <QDebug>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLTexture>
+#if QT_VERSION >= 0x060000
+#include <QOpenGLVersionFunctionsFactory>
+#endif
 
 
 #include <stdio.h>
@@ -599,16 +602,16 @@ int FacetedObject::ParsePLYFile(const std::string &filename)
         tinyply::PlyFile file;
         file.parse_header(ss);
 
-        for (auto c : file.get_comments()) qDebug() << "Comment: " << c.c_str() << "\n";
+        for (auto &&c : file.get_comments()) qDebug() << "Comment: " << c.c_str() << "\n";
         std::vector<tinyply::PlyElement> elementVector = file.get_elements();
         std::map<std::string, tinyply::PlyProperty *> vertexProperties;
         std::map<std::string, tinyply::PlyProperty *> faceProperties;
-        for (auto e : elementVector)
+        for (auto &&e : elementVector)
         {
             qDebug() << "element - " << e.name.c_str() << " (" << e.size << ")" << "\n";
-            if (e.name == "vertex") for (auto p : e.properties) vertexProperties[p.name] = &p;
-            else if (e.name == "face") for (auto p : e.properties) faceProperties[p.name] = &p;
-            for (auto p : e.properties)
+            if (e.name == "vertex") for (auto &&p : e.properties) vertexProperties[p.name] = &p;
+            else if (e.name == "face") for (auto &&p : e.properties) faceProperties[p.name] = &p;
+            for (auto &&p : e.properties)
             {
                 if (p.isList) qDebug() << "\tproperty - " << p.name.c_str() << " (" << tinyply::PropertyTable[p.listType].str.c_str() << ")" << " (" << tinyply::PropertyTable[p.propertyType].str.c_str() << ")" << "\n";
                 else
@@ -953,7 +956,11 @@ int FacetedObject::ReadFromResource(const QString &resourceName)
 
 void FacetedObject::Draw()
 {
+#if QT_VERSION >= 0x060000
+        QOpenGLFunctions_3_3_Core *f = QOpenGLVersionFunctionsFactory::get<QOpenGLFunctions_3_3_Core>(QOpenGLContext::currentContext());
+#else
     QOpenGLFunctions_3_3_Core *f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Core>();
+#endif
 
     if (m_VBOAllocated == false)
     {

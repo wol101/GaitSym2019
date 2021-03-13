@@ -19,6 +19,9 @@
 #include <QOpenGLFunctions>
 #include <QMessageBox>
 #include <QTimer>
+#if QT_VERSION >= 0x060000
+#include <QColorSpace>
+#endif
 
 #if defined(QT_DEBUG) && defined(Q_OS_WIN)
 #include <crtdbg.h>
@@ -35,8 +38,10 @@ int main(int argc, char *argv[])
     Preferences::Read();
 
 //    QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL); // AA_UseOpenGLES not currently supported
+#if QT_VERSION < 0x060000
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
 
     QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
     fmt.setRenderableType(QSurfaceFormat::OpenGL);
@@ -49,7 +54,11 @@ int main(int argc, char *argv[])
     fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     fmt.setSwapInterval(1);
     fmt.setSamples(8);
+#if QT_VERSION < 0x060000
     fmt.setColorSpace(QSurfaceFormat::sRGBColorSpace);
+#else
+    fmt.setColorSpace(QColorSpace(QColorSpace::SRgb));
+#endif
     fmt.setVersion(3, 3); // OpenGL 3.3
     fmt.setProfile(QSurfaceFormat::CoreProfile); // only use the core functions
 #ifdef QT_DEBUG

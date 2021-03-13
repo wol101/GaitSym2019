@@ -276,11 +276,13 @@ SOURCES += \
     ../src/Colour.cpp \
     ../src/Contact.cpp \
     ../src/Controller.cpp \
+    ../src/ConvexGeom.cpp \
     ../src/CyclicDriver.cpp \
     ../src/CylinderWrapStrap.cpp \
     ../src/DampedSpringMuscle.cpp \
     ../src/DataFile.cpp \
     ../src/DataTarget.cpp \
+    ../src/DataTargetMarkerCompare.cpp \
     ../src/DataTargetQuaternion.cpp \
     ../src/DataTargetScalar.cpp \
     ../src/DataTargetVector.cpp \
@@ -530,11 +532,13 @@ HEADERS += \
     ../src/Colour.h \
     ../src/Contact.h \
     ../src/Controller.h \
+    ../src/ConvexGeom.h \
     ../src/CyclicDriver.h \
     ../src/CylinderWrapStrap.h \
     ../src/DampedSpringMuscle.h \
     ../src/DataFile.h \
     ../src/DataTarget.h \
+    ../src/DataTargetMarkerCompare.h \
     ../src/DataTargetQuaternion.h \
     ../src/DataTargetScalar.h \
     ../src/DataTargetVector.h \

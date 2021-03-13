@@ -20,6 +20,8 @@
 #include "GSUtil.h"
 #include "PlaneGeom.h"
 
+#include "pystring.h"
+
 #include <iostream>
 #include <sstream>
 
@@ -50,26 +52,44 @@ dBodyID Geom::GetBody()
 
 void Geom::SetPosition (double x, double y, double z)
 {
-    dGeomSetOffsetPosition(GetGeomID(), x, y, z);
+    if (GetBody())
+        dGeomSetOffsetPosition(GetGeomID(), x, y, z);
+    else
+        dGeomSetPosition(GetGeomID(), x, y, z);
 }
 
 const double *Geom::GetPosition()
 {
-    return dGeomGetOffsetPosition(GetGeomID());
+    if (GetBody())
+        return dGeomGetOffsetPosition(GetGeomID());
+    else
+        return dGeomGetPosition(GetGeomID());
 }
 
 void Geom::GetWorldPosition(dVector3 p)
 {
-    const double *relPosition = dGeomGetOffsetPosition(GetGeomID());
-    dBodyGetRelPointPos(dGeomGetBody(GetGeomID()), relPosition[0], relPosition[1], relPosition[2], p);
-    return;
+    if (GetBody())
+    {
+        const double *relPosition = dGeomGetOffsetPosition(GetGeomID());
+        dBodyGetRelPointPos(dGeomGetBody(GetGeomID()), relPosition[0], relPosition[1], relPosition[2], p);
+    }
+    else
+    {
+        const double *position = dGeomGetPosition(GetGeomID());
+        p[0] = position[0];
+        p[1] = position[1];
+        p[2] = position[2];
+    }
 }
 
 void Geom::SetQuaternion(double q0, double q1, double q2, double q3)
 {
     dQuaternion q;
     q[0] = q0; q[1] = q1; q[2] = q2; q[3] = q3;
-    dGeomSetOffsetQuaternion(GetGeomID(), q);
+    if (GetBody())
+        dGeomSetOffsetQuaternion(GetGeomID(), q);
+    else
+        dGeomSetQuaternion(GetGeomID(), q);
 }
 
 void Geom::setGeomMarker(Marker *geomMarker)
@@ -96,16 +116,26 @@ void Geom::setGeomMarker(Marker *geomMarker)
 
 void Geom::GetQuaternion(dQuaternion q)
 {
-    dGeomGetOffsetQuaternion(GetGeomID(), q);
+    if (GetBody())
+        dGeomGetOffsetQuaternion(GetGeomID(), q);
+    else
+        dGeomGetQuaternion(GetGeomID(), q);
 }
 
 void Geom::GetWorldQuaternion(dQuaternion q)
 {
-    const double *bodyRotation = dBodyGetQuaternion(dGeomGetBody(GetGeomID()));
-    dQuaternion relRotation;
-    dGeomGetOffsetQuaternion(GetGeomID(), relRotation);
-    //combine the body rotation with the cylinder rotation to get combined rotation from world coordinates
-    dQMultiply0 (q, bodyRotation, relRotation);
+    if (GetBody())
+    {
+        const double *bodyRotation = dBodyGetQuaternion(dGeomGetBody(GetGeomID()));
+        dQuaternion relRotation;
+        dGeomGetOffsetQuaternion(GetGeomID(), relRotation);
+        //combine the body rotation with the cylinder rotation to get combined rotation from world coordinates
+        dQMultiply0 (q, bodyRotation, relRotation);
+    }
+    else
+    {
+        dGeomGetQuaternion(GetGeomID(), q);
+    }
 }
 
 void Geom::SetSpringDamp(double springConstant, double dampingConstant, double integrationStep)
@@ -325,6 +355,23 @@ std::string *Geom::createFromAttributes()
     if (findAttribute("Adhesion"s, &buf) == nullptr) return lastErrorPtr();
     this->SetAdhesion(GSUtil::Bool(buf));
 
+    m_ExcludeList.clear();
+    if (findAttribute("ExcludeIDList"s, &buf))
+    {
+        std::vector<std::string> geomNames;
+        pystring::split(buf, geomNames);
+        for (size_t i = 0; i < geomNames.size(); i++)
+        {
+            Geom *geom = simulation()->GetGeom(geomNames[i]);
+            if (!geom)
+            {
+                setLastError("GEOM ID=\""s + name() + "ExcludeList geom "s + geomNames[i] + " missing"s);
+                return lastErrorPtr();
+            }
+            m_ExcludeList.push_back(geom);
+        }
+    }
+
     setUpstreamObjects({m_geomMarker});
     return nullptr;
 }
@@ -350,5 +397,8 @@ void Geom::appendToAttributes()
     setAttribute("Mu"s, *GSUtil::ToString(m_Mu, &buf));
     setAttribute("Abort"s, *GSUtil::ToString(m_Abort, &buf));
     setAttribute("Adhesion"s, *GSUtil::ToString(m_Adhesion, &buf));
+    std::vector<std::string> geomNames;
+    for (size_t i = 0; i < m_ExcludeList.size(); i++) geomNames.push_back(m_ExcludeList[i]->name());
+    setAttribute("ExcludeIDList"s, pystring::join(" "s, geomNames));
 }
 

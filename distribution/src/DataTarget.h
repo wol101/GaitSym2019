@@ -27,25 +27,8 @@ public:
     SMART_ENUM(MatchType, matchTypeStrings, matchTypeCount, Linear, Square, Raw);
     SMART_ENUM(InterpolationType, interpolationTypeStrings, interpolationTypeCount, Punctuated, Continuous);
 
-//    void SetTargetTimes(int size, double *targetTimes);
-//    virtual void SetTargetValues(int size, double *values) = 0;
-
-//    int TargetMatch(double time, double tolerance);
-//    int GetLastMatchIndex();
-
-    void setIntercept(double intercept);
-    void setSlope(double slope);
-    void setMatchType(MatchType t);
-    void setAbortThreshold(double a);
-
     std::tuple<double, bool> calculateMatchValue(double time);
-
     double positiveFunction(double v);
-
-
-//    int TargetTimeListLength() const;
-
-//    const double *TargetTimeList() const;
 
     virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
@@ -68,6 +51,7 @@ private:
     std::vector<double> m_targetTimeList;
     size_t m_lastIndex = SIZE_MAX;
     double m_lastValue = 0;
+    double m_abortBonus = 0;
 };
 
 #endif

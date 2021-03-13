@@ -76,6 +76,8 @@ public:
     std::vector<Contact *> *GetContactList() { return &m_ContactList; }
     void ClearContacts() { m_ContactList.clear(); }
 
+    std::vector<Geom *> *GetExcludeList() { return &m_ExcludeList; }
+
     virtual std::string dumpToString();
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();
@@ -104,6 +106,8 @@ private:
     std::vector<Contact *> m_ContactList;
 
     Marker *m_geomMarker = nullptr;
+
+    std::vector<Geom *> m_ExcludeList;
 
     // used for XMLSave
     double m_SpringConstant = 0;

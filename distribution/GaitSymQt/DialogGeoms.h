@@ -9,6 +9,9 @@
 
 class Geom;
 class Simulation;
+class QGridLayout;
+class QLabel;
+class QComboBox;
 
 namespace Ui {
 class DialogGeoms;
@@ -49,6 +52,11 @@ private:
     Simulation *m_simulation = nullptr;
     Geom *m_inputGeom = nullptr;
     std::unique_ptr<Geom> m_outputGeom;
+
+    QList<QLabel *> m_excludedGeomLabelList;
+    QList<QComboBox *> m_excludedGeomComboBoxList;
+    QGridLayout *m_gridLayoutExcludedGeoms = nullptr;
+
 
     QMap<QString, SettingsItem> m_properties;
 

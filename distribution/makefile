@@ -145,6 +145,7 @@ CappedCylinderGeom.cpp\
 Colour.cpp\
 Contact.cpp\
 Controller.cpp\
+ConvexGeom.cpp\
 CyclicDriver.cpp\
 CylinderWrapStrap.cpp\
 DampedSpringMuscle.cpp\

@@ -54,7 +54,7 @@
 #include <regex>
 
 SimulationWidget::SimulationWidget(QWidget *parent)
-    : QOpenGLWidget(parent), m_mouseClickEvent(QEvent::Type::None, QPointF(), Qt::MouseButton::NoButton, Qt::NoButton, Qt::NoModifier)
+    : QOpenGLWidget(parent)
 {
     m_cursorColour = Preferences::valueQColor("CursorColour");
     m_cursorLevel = size_t(Preferences::valueInt("CursorLevel"));
@@ -267,8 +267,6 @@ void SimulationWidget::resizeGL(int width, int height)
 
 void SimulationWidget::mousePressEvent(QMouseEvent *event)
 {
-    m_mouseClickEvent = *event;
-
     // on high resolution (e.g.retina) displays the units of the viewport are device pixels whereas the units of event->pos() are scaled pixels
     // the following mapping should always give the right values for the UnProject matrix
     GLfloat winX = (GLfloat(event->pos().x()) / GLfloat(width())) * 2 - 1;
@@ -278,32 +276,33 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
     if (m_moveMarkerMode)
     {
         m_moveMarkerMode = false;
-        if (m_mouseClickEvent.modifiers() == Qt::NoModifier) emit EmitMoveMarkerRequest(QString::fromStdString(m_moveMarkerName), m_cursor3DPosition);
+        if (event->modifiers() == Qt::NoModifier) emit EmitMoveMarkerRequest(QString::fromStdString(m_moveMarkerName), m_cursor3DPosition);
         return;
     }
 
-    if (m_mouseClickEvent.buttons() & Qt::LeftButton)
+    if (event->buttons() & Qt::LeftButton)
     {
-        if (m_mouseClickEvent.modifiers() == Qt::NoModifier)
+        if (event->modifiers() == Qt::NoModifier)
         {
             int trackballRadius;
             if (width() < height()) trackballRadius = int(float(width()) / 2.2f);
             else trackballRadius = int(float(height()) / 2.2f);
             m_trackballStartCameraVec = QVector3D(m_cameraVecX, m_cameraVecY, m_cameraVecZ);
             m_trackballStartUp = QVector3D(m_upX, m_upY, m_upZ);
-            m_trackball->StartTrackball(m_mouseClickEvent.pos().x(), m_mouseClickEvent.pos().y(), width() / 2, height() / 2, trackballRadius,
+            m_trackball->StartTrackball(event->pos().x(), event->pos().y(), width() / 2, height() / 2, trackballRadius,
                                         pgd::Vector3(double(m_trackballStartUp.x()), double(m_trackballStartUp.y()), double(m_trackballStartUp.z())),
                                         pgd::Vector3(double(-m_trackballStartCameraVec.x()), double(-m_trackballStartCameraVec.y()), double(-m_trackballStartCameraVec.z())));
             m_trackballFlag = true;
             emit EmitStatusString(tr("Rotate"), 2);
             update();
         }
-        else if (m_mouseClickEvent.modifiers() & Qt::ShiftModifier)
+        else if (event->modifiers() & Qt::ShiftModifier)
         {
             // detect the collision point of the mouse click
             if (m_hits.size() > 0)
             {
-                m_cursor3DPosition = QVector3D(float(getClosestHit()->worldLocation().x), float(getClosestHit()->worldLocation().y), float(getClosestHit()->worldLocation().z));
+                auto closestHit = getClosestHit();
+                m_cursor3DPosition = QVector3D(float(closestHit->worldLocation().x), float(closestHit->worldLocation().y), float(closestHit->worldLocation().z));
                 QClipboard *clipboard = QApplication::clipboard();
                 clipboard->setText(QString("%1\t%2\t%3").arg(double(m_cursor3DPosition.x())).arg(double(m_cursor3DPosition.y())).arg(double(m_cursor3DPosition.z())), QClipboard::Clipboard);
                 emit EmitStatusString(QString("3D Cursor %1\t%2\t%3").arg(double(m_cursor3DPosition.x())).arg(double(m_cursor3DPosition.y())).arg(double(m_cursor3DPosition.z())), 2);
@@ -311,9 +310,9 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             }
         }
     }
-    else if (m_mouseClickEvent.buttons() & Qt::MidButton)
+    else if (event->buttons() & Qt::MiddleButton)
     {
-        if (m_mouseClickEvent.modifiers() == Qt::NoModifier)
+        if (event->modifiers() == Qt::NoModifier)
         {
             m_panStartCOI = QVector3D(m_COIx, m_COIy, m_COIz);
             m_projectPanMatrix = m_proj * m_view; // model would be identity so mvpMatrix isn't needed
@@ -328,7 +327,8 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             // detect the collision point of the mouse click
             if (m_hits.size() > 0)
             {
-                m_panStartPoint = QVector3D(float(getClosestHit()->worldLocation().x), float(getClosestHit()->worldLocation().y), float(getClosestHit()->worldLocation().z));
+                auto closestHit = getClosestHit();
+                m_panStartPoint = QVector3D(float(closestHit->worldLocation().x), float(closestHit->worldLocation().y), float(closestHit->worldLocation().z));
                 QVector3D screenStartPoint = m_projectPanMatrix * m_panStartPoint;
                 m_panStartScreenPoint.setZ(screenStartPoint.z());
             }
@@ -343,11 +343,12 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             emit EmitStatusString(tr("Pan"), 2);
             update();
         }
-        else if (m_mouseClickEvent.modifiers() & Qt::AltModifier)
+        else if (event->modifiers() & Qt::AltModifier)
         {
             if (m_hits.size() > 0)
             {
-                QVector3D worldIntersection = QVector3D(float(getClosestHit()->worldLocation().x), float(getClosestHit()->worldLocation().y), float(getClosestHit()->worldLocation().z));
+                auto closestHit = getClosestHit();
+                QVector3D worldIntersection = QVector3D(float(closestHit->worldLocation().x), float(closestHit->worldLocation().y), float(closestHit->worldLocation().z));
                 m_COIx = worldIntersection.x();
                 m_COIy = worldIntersection.y();
                 m_COIz = worldIntersection.z();
@@ -359,11 +360,11 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             }
         }
     }
-    else if (m_mouseClickEvent.buttons() & Qt::RightButton)
+    else if (event->buttons() & Qt::RightButton)
     {
-        if (m_mouseClickEvent.modifiers() == Qt::NoModifier)
+        if (event->modifiers() == Qt::NoModifier)
         {
-            menuRequest(m_mouseClickEvent.pos());
+            menuRequest(event->pos());
         }
     }
 }
@@ -378,8 +379,9 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
             GLfloat winX = (GLfloat(event->pos().x()) / GLfloat(width())) * 2 - 1;
             GLfloat winY = -1 * ((GLfloat(event->pos().y()) / GLfloat(height())) * 2 - 1);
             intersectModel(winX, winY);
-            if (m_hits.size() == 0) return;
-            m_cursor3DPosition = QVector3D(float(getClosestHit()->worldLocation().x), float(getClosestHit()->worldLocation().y), float(getClosestHit()->worldLocation().z));
+            auto closestHit = getClosestHit();
+            if (!closestHit) return;
+            m_cursor3DPosition = QVector3D(float(closestHit->worldLocation().x), float(closestHit->worldLocation().y), float(closestHit->worldLocation().z));
             update();
             return;
         }
@@ -409,7 +411,7 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
             emit EmitStatusString(QString("Camera %1 %2 %3 Up %4 %5 %6").arg(double(m_cameraVecX)).arg(double(m_cameraVecY)).arg(double(m_cameraVecZ)).arg(double(m_upX)).arg(double(m_upY)).arg(double(m_upZ)), 2);
         }
     }
-    else if (event->buttons() & Qt::MidButton)
+    else if (event->buttons() & Qt::MiddleButton)
     {
         if (m_panFlag)
         {
@@ -574,9 +576,10 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         m_lastMenuItem = action->text();
         if (action->text() == tr("Centre View"))
         {
-            m_COIx = float(getClosestHit()->worldLocation().x);
-            m_COIy = float(getClosestHit()->worldLocation().y);
-            m_COIz = float(getClosestHit()->worldLocation().z);
+            auto closestHit = getClosestHit();
+            m_COIx = float(closestHit->worldLocation().x);
+            m_COIy = float(closestHit->worldLocation().y);
+            m_COIz = float(closestHit->worldLocation().z);
             QClipboard *clipboard = QApplication::clipboard();
             clipboard->setText(QString("%1\t%2\t%3").arg(double(m_COIx)).arg(double(m_COIy)).arg(double(m_COIz)), QClipboard::Clipboard);
             emit EmitStatusString(QString("Centre of Interest %1\t%2\t%3").arg(double(m_COIx)).arg(double(m_COIy)).arg(double(m_COIz)), 2);
@@ -846,7 +849,8 @@ void SimulationWidget::drawModel()
     auto drawBodyMapIter = m_drawBodyMap.begin();
     while (drawBodyMapIter != m_drawBodyMap.end())
     {
-        if (bodyList->find(drawBodyMapIter->first) == bodyList->end() || drawBodyMapIter->second->body()->redraw() == true)
+        auto found = bodyList->find(drawBodyMapIter->first);
+        if (found == bodyList->end() || found->second->redraw() == true)
         {
             delete drawBodyMapIter->second;
             drawBodyMapIter = m_drawBodyMap.erase(drawBodyMapIter);
@@ -877,7 +881,8 @@ void SimulationWidget::drawModel()
     auto drawJointMapIter = m_drawJointMap.begin();
     while (drawJointMapIter != m_drawJointMap.end())
     {
-        if (jointList->find(drawJointMapIter->first) == jointList->end() || drawJointMapIter->second->joint()->redraw() == true)
+        auto found = jointList->find(drawJointMapIter->first);
+        if (found == jointList->end() || found->second->redraw() == true)
         {
             delete drawJointMapIter->second;
             drawJointMapIter = m_drawJointMap.erase(drawJointMapIter);
@@ -905,7 +910,8 @@ void SimulationWidget::drawModel()
     auto drawGeomMapIter = m_drawGeomMap.begin();
     while (drawGeomMapIter != m_drawGeomMap.end())
     {
-        if (geomList->find(drawGeomMapIter->first) == geomList->end() || drawGeomMapIter->second->geom()->redraw() == true)
+        auto found = geomList->find(drawGeomMapIter->first);
+        if (found == geomList->end() || found->second->redraw() == true)
         {
             delete drawGeomMapIter->second;
             drawGeomMapIter = m_drawGeomMap.erase(drawGeomMapIter);
@@ -933,7 +939,8 @@ void SimulationWidget::drawModel()
     auto drawMarkerMapIter = m_drawMarkerMap.begin();
     while (drawMarkerMapIter != m_drawMarkerMap.end())
     {
-        if (markerList->find(drawMarkerMapIter->first) == markerList->end() || drawMarkerMapIter->second->marker()->redraw() == true)
+        auto found = markerList->find(drawMarkerMapIter->first);
+        if (found == markerList->end() || found->second->redraw() == true)
         {
             delete drawMarkerMapIter->second;
             drawMarkerMapIter = m_drawMarkerMap.erase(drawMarkerMapIter);
@@ -961,7 +968,8 @@ void SimulationWidget::drawModel()
     auto drawMuscleMapIter = m_drawMuscleMap.begin();
     while (drawMuscleMapIter != m_drawMuscleMap.end())
     {
-        if (muscleList->find(drawMuscleMapIter->first) == muscleList->end() || drawMuscleMapIter->second->muscle()->redraw() == true || drawMuscleMapIter->second->muscle()->GetStrap()->redraw() == true)
+        auto found = muscleList->find(drawMuscleMapIter->first);
+        if (found == muscleList->end() || found->second->redraw() == true || found->second->GetStrap()->redraw() == true)
         {
             delete drawMuscleMapIter->second;
             drawMuscleMapIter = m_drawMuscleMap.erase(drawMuscleMapIter);
@@ -988,7 +996,8 @@ void SimulationWidget::drawModel()
     auto drawFluidSacMapIter = m_drawFluidSacMap.begin();
     while (drawFluidSacMapIter != m_drawFluidSacMap.end())
     {
-        if (fluidSacList->find(drawFluidSacMapIter->first) == fluidSacList->end() || drawFluidSacMapIter->second->fluidSac()->redraw() == true)
+        auto found = fluidSacList->find(drawFluidSacMapIter->first);
+        if (found == fluidSacList->end() || found->second->redraw() == true)
         {
             delete drawFluidSacMapIter->second;
             drawFluidSacMapIter = m_drawFluidSacMap.erase(drawFluidSacMapIter);
@@ -1112,7 +1121,7 @@ bool SimulationWidget::intersectModel(float winX, float winY)
         }
     }
     // now handle the non-drawables
-    std::vector<FacetedObject *> facetedObjectList = { m_cursor3D.get(), m_globalAxes.get() };
+    std::vector<FacetedObject *> facetedObjectList = { m_globalAxes.get() }; // don't include m_cursor3D.get() in this list because this causes problems with marker moving
     for (auto &&facetedObjectIter : facetedObjectList)
     {
         QMatrix4x4 mvpMatrix = m_proj * m_view * facetedObjectIter->model();

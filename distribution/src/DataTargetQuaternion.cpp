@@ -125,7 +125,7 @@ std::string DataTargetQuaternion::dumpToString()
     Geom *geom;
     const double *r;
     double angle = 0;
-    dQuaternion q;
+    dQuaternion q = {0, 0, 0, 0};
 
     size_t valueListIndex = 0;
     auto lowerBounds = std::lower_bound(targetTimeList()->begin(), targetTimeList()->end(), simulation()->GetTime());
@@ -135,6 +135,10 @@ std::string DataTargetQuaternion::dumpToString()
     {
         r = body->GetQuaternion();
         angle = pgd::FindAngle(m_QValueList[size_t(valueListIndex)], pgd::Quaternion(r[0], r[1], r[2], r[3]));
+        q[0] = r[0];
+        q[1] = r[1];
+        q[2] = r[2];
+        q[3] = r[3];
     }
     else if ((geom = dynamic_cast<Geom *>(GetTarget())) != nullptr)
     {

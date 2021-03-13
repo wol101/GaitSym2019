@@ -21,7 +21,6 @@
 #include <set>
 #include <initializer_list>
 
-class FacetedObject;
 class Simulation;
 
 namespace rapidxml { template<class Ch> class xml_node; }

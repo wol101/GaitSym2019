@@ -57,8 +57,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>171</width>
-              <height>675</height>
+              <width>254</width>
+              <height>918</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_10">
@@ -114,7 +114,7 @@
                    <font/>
                   </property>
                   <property name="text">
-                   <string>Dist</string>
+                   <string>Distance</string>
                   </property>
                  </widget>
                 </item>
@@ -838,8 +838,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>358</width>
-              <height>437</height>
+              <width>374</width>
+              <height>467</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
@@ -945,8 +945,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>1137</width>
-          <height>343</height>
+          <width>1129</width>
+          <height>273</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
@@ -1012,7 +1012,7 @@
      <x>0</x>
      <y>0</y>
      <width>1157</width>
-     <height>22</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

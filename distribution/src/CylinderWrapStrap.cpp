@@ -18,18 +18,10 @@
 #include <cmath>
 #include <string.h>
 
-#ifdef USE_QT
-#include "Preferences.h"
-#endif
-
 using namespace std::string_literals;
 
 CylinderWrapStrap::CylinderWrapStrap()
 {
-#ifdef USE_QT
-    m_numWrapSegments = Preferences::valueInt("StrapCylinderWrapSegments");
-    m_pathCoordinates.resize(size_t(m_numWrapSegments) + 2);
-#endif
 }
 
 CylinderWrapStrap::~CylinderWrapStrap()
@@ -192,9 +184,15 @@ void CylinderWrapStrap::SetCylinderRadius(double radius)
     m_cylinderRadius = radius;
 }
 
-void CylinderWrapStrap::SetNumWrapSegments(int num)
+void CylinderWrapStrap::SetNumWrapSegments(int numWrapSegments)
 {
-    m_numWrapSegments = num;
+    m_numWrapSegments = numWrapSegments;
+    m_pathCoordinates.reserve(size_t(m_numWrapSegments) + 2);
+}
+
+int CylinderWrapStrap::GetNumWrapSegments()
+{
+    return m_numWrapSegments;
 }
 
 Marker *CylinderWrapStrap::GetOriginMarker() const
@@ -267,10 +265,10 @@ void CylinderWrapStrap::Calculate()
     pgd::Vector3 theCylinderForce;
     pgd::Vector3 theCylinderForcePosition;
 
-    double length;
+    double length = 0;
     m_wrapStatus = CylinderWrap(cylinderOriginPosition, cylinderInsertionPosition, m_cylinderRadius, m_numWrapSegments, M_PI,
                                 theOriginForce, theInsertionForce, theCylinderForce, theCylinderForcePosition,
-                                &length, m_pathCoordinates.data(), &m_numPathCoordinates);
+                                &length, &m_pathCoordinates);
     if (Length() >= 0 && simulation() && simulation()->GetTimeIncrement() > 0) setVelocity((length - Length()) / simulation()->GetTimeIncrement());
     else setVelocity(0);
     setLength(length);
@@ -295,10 +293,22 @@ void CylinderWrapStrap::Calculate()
     theCylinder->point[0] = theCylinderForcePosition.x; theCylinder->point[1] = theCylinderForcePosition.y; theCylinder->point[2] = theCylinderForcePosition.z;
 
     // and handle the path coordinates
-    for (size_t i = 0; i < size_t(m_numPathCoordinates); i++)
+    for (size_t i = 0; i < m_pathCoordinates.size(); i++)
     {
         m_pathCoordinates[i] = QVRotate(m_cylinderQuaternion, m_pathCoordinates[i]) + m_cylinderPosition;
         m_pathCoordinates[i] = QVRotate(qCylinderBody, m_pathCoordinates[i]) + vCylinderBody;
+    }
+
+    // check that we don't have any non-finite values for directions which can occur if points co-locate
+    for (size_t i = 0; i < GetPointForceList()->size(); i++)
+    {
+        if ((std::isfinite((*GetPointForceList())[i]->vector[0]) && std::isfinite((*GetPointForceList())[i]->vector[1]) && std::isfinite((*GetPointForceList())[i]->vector[2])) == false)
+        {
+            (*GetPointForceList())[i]->vector[0] = 0.0;
+            (*GetPointForceList())[i]->vector[1] = 0.0;
+            (*GetPointForceList())[i]->vector[2] = 0.0;
+            std::cerr << "Warning: point force direction in \"" << name() << "\" is invalid so applying standard fixup\n";
+        }
     }
 }
 
@@ -314,8 +324,9 @@ void CylinderWrapStrap::Calculate()
 // returns 1 if wrapping occurs
 int CylinderWrapStrap::CylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &insertion, double radius, int nWrapSegments, double maxAngle,
                  pgd::Vector3 &originForce, pgd::Vector3 &insertionForce, pgd::Vector3 &cylinderForce, pgd::Vector3 &cylinderForcePosition,
-                 double *pathLength, pgd::Vector3 *pathCoordinates, int *numPathCoordinates)
+                 double *pathLength, std::vector<pgd::Vector3> *pathCoordinates)
 {
+    pathCoordinates->clear();
     // first of all calculate the planar case looking down the axis of the cylinder (i.e. xy plane)
     // this is standard tangent to a circle stuff
 
@@ -332,7 +343,6 @@ int CylinderWrapStrap::CylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &insertio
     // error condition
     if (d1 <= radius)
     {
-        *numPathCoordinates = 0;
         return -1;
     }
 
@@ -362,7 +372,6 @@ int CylinderWrapStrap::CylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &insertio
     // error condition
     if (d2 <= radius)
     {
-        *numPathCoordinates = 0;
         return -1;
     }
 
@@ -409,11 +418,10 @@ int CylinderWrapStrap::CylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &insertio
         cylinderForcePosition.x = cylinderForcePosition.y = cylinderForcePosition.z = 0;
 
         // and a simple straight path
-        if (pathCoordinates)
+        if (pathCoordinates && nWrapSegments > 1)
         {
-            pathCoordinates[0] = origin;
-            pathCoordinates[1] = insertion;
-            *numPathCoordinates = 2;
+            pathCoordinates->push_back(origin);
+            pathCoordinates->push_back(insertion);
         }
 
         return 0;
@@ -463,31 +471,26 @@ int CylinderWrapStrap::CylinderWrap(pgd::Vector3 &origin, pgd::Vector3 &insertio
     // that's the main calculations done.
     // Now check whether we need more points for drawing the path.
     int i;
-    pgd::Vector3 *p = pathCoordinates;
-    if (pathCoordinates)
+    pgd::Vector3 p;
+    if (pathCoordinates && nWrapSegments > 1)
     {
-        *p = origin;
-        p++;
-
-        if (nWrapSegments > 0)
+        pathCoordinates->push_back(origin);
+        double delAngle = rho / (nWrapSegments);
+        double angle = tangentPointTheta1;
+        double delZ = (tangentPointZ2 - tangentPointZ1) / (nWrapSegments);
+        p.z = tangentPointZ1;
+        p.x = radius * cos(angle);
+        p.y = radius * sin(angle);
+        pathCoordinates->push_back(p);
+        for (i = 0; i < nWrapSegments; i++)
         {
-            double delAngle = rho / (nWrapSegments);
-            double angle = tangentPointTheta1;
-            double delZ = (tangentPointZ2 - tangentPointZ1) / (nWrapSegments);
-            double z = tangentPointZ1;
-            for (i = 0; i < nWrapSegments; i++)
-            {
-                angle = angle + delAngle;
-                p->x = radius * cos(angle);
-                p->y = radius * sin(angle);
-                z = z + delZ;
-                p->z = z;
-                p++;
-            }
+            angle = angle + delAngle;
+            p.x = radius * cos(angle);
+            p.y = radius * sin(angle);
+            p.z += delZ;
+            pathCoordinates->push_back(p);
         }
-
-        *p = insertion;
-        *numPathCoordinates = nWrapSegments + 2;
+        pathCoordinates->push_back(insertion);
     }
 
     return 1;
@@ -497,6 +500,12 @@ double CylinderWrapStrap::cylinderRadius() const
 {
     return m_cylinderRadius;
 }
+
+const std::vector<pgd::Vector3> *CylinderWrapStrap::GetPathCoordinates()
+{
+    return &m_pathCoordinates;
+}
+
 
 int CylinderWrapStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight)
 {

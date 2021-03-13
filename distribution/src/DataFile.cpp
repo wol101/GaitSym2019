@@ -1185,7 +1185,7 @@ size_t DataFile::ReturnLines(char *string, char *ptrs[], size_t size)
 // read the next integer
 bool DataFile::ReadNextBinary(int *val)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(int)) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(int)) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(int));
     m_Index += sizeof(int);
     return false;
@@ -1194,7 +1194,7 @@ bool DataFile::ReadNextBinary(int *val)
 // read the next float
 bool DataFile::ReadNextBinary(float *val)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(float)) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(float)) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(float));
     m_Index += sizeof(float);
     return false;
@@ -1203,7 +1203,7 @@ bool DataFile::ReadNextBinary(float *val)
 // read the next double
 bool DataFile::ReadNextBinary(double *val)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(double)) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(double)) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(double));
     m_Index += sizeof(double);
     return false;
@@ -1212,7 +1212,7 @@ bool DataFile::ReadNextBinary(double *val)
 // read the next char
 bool DataFile::ReadNextBinary(char *val)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(char)) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(char)) return true;
     *val = *m_Index;
     m_Index += sizeof(char);
     return false;
@@ -1221,7 +1221,7 @@ bool DataFile::ReadNextBinary(char *val)
 // read the next bool
 bool DataFile::ReadNextBinary(bool *val)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(bool)) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(bool)) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(bool));
     m_Index += sizeof(bool);
     return false;
@@ -1230,7 +1230,7 @@ bool DataFile::ReadNextBinary(bool *val)
 // read the next integer array
 bool DataFile::ReadNextBinary(int *val, size_t n)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(int) * n) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(int) * n) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(int) * n);
     m_Index += sizeof(int) * n;
     return false;
@@ -1239,7 +1239,7 @@ bool DataFile::ReadNextBinary(int *val, size_t n)
 // read the next float array
 bool DataFile::ReadNextBinary(float *val, size_t n)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(float) * n) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(float) * n) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(float) * n);
     m_Index += sizeof(float) * n;
     return false;
@@ -1248,7 +1248,7 @@ bool DataFile::ReadNextBinary(float *val, size_t n)
 // read the next double array
 bool DataFile::ReadNextBinary(double *val, size_t n)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(double) * n) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(double) * n) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(double) * n);
     m_Index += sizeof(double) * n;
     return false;
@@ -1257,7 +1257,7 @@ bool DataFile::ReadNextBinary(double *val, size_t n)
 // read the next character array
 bool DataFile::ReadNextBinary(char *val, size_t n)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(char) * n) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(char) * n) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(char) * n);
     m_Index += sizeof(char) * n;
     return false;
@@ -1266,7 +1266,7 @@ bool DataFile::ReadNextBinary(char *val, size_t n)
 // read the next bool array
 bool DataFile::ReadNextBinary(bool *val, size_t n)
 {
-    if ((m_Index - m_FileData) > m_Size - sizeof(bool) * n) return true;
+    if (size_t(m_Index - m_FileData) > m_Size - sizeof(bool) * n) return true;
     memcpy(reinterpret_cast<void *>((val)), m_Index, sizeof(bool) * n);
     m_Index += sizeof(bool) * n;
     return false;

@@ -106,8 +106,8 @@ std::string *PlaneGeom::createFromAttributes()
     // the normal is (a,b,c)
     // d is the dot product of the normal at the point on the plane
 
-    pgd::Vector3 normal = geomMarker()->GetAxis(Marker::Axis::Z);
-    pgd::Vector3 point = geomMarker()->GetPosition();
+    pgd::Vector3 normal = geomMarker()->GetWorldAxis(Marker::Axis::Z);
+    pgd::Vector3 point = geomMarker()->GetWorldPosition();
     double a = normal.x;
     double b = normal.y;
     double c = normal.z;

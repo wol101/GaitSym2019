@@ -17,14 +17,12 @@
 #include "PGDMath.h"
 #include "SmartEnum.h"
 
-class FacetedObject;
-
 class Body: public NamedObject
 {
 public:
 
     Body(dWorldID worldID);
-    virtual ~Body();
+    virtual ~Body() override;
 
     virtual void LateInitialisation();
 
