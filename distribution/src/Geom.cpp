@@ -229,15 +229,14 @@ std::string Geom::dumpToString()
             else ss << reinterpret_cast<Body *>(dBodyGetData(bodyID))->name() << "\t";
 
             ss << (m_ContactList[i]->GetContactPosition())[0] << "\t" <<
-                                                                 (m_ContactList[i]->GetContactPosition())[1] << "\t" <<
-                                                                 (m_ContactList[i]->GetContactPosition())[2] << "\t";
+                  (m_ContactList[i]->GetContactPosition())[1] << "\t" <<
+                  (m_ContactList[i]->GetContactPosition())[2] << "\t";
 
             jointFeedback = m_ContactList[i]->GetJointFeedback();
-            ss <<
-                  jointFeedback->f1[0] << "\t" << jointFeedback->f1[1] << "\t" << jointFeedback->f1[2] << "\t" <<
-                                          jointFeedback->t1[0] << "\t" << jointFeedback->t1[1] << "\t" << jointFeedback->t1[2] << "\t" <<
-                                          jointFeedback->f2[0] << "\t" << jointFeedback->f2[1] << "\t" << jointFeedback->f2[2] << "\t" <<
-                                          jointFeedback->t2[0] << "\t" << jointFeedback->t2[1] << "\t" << jointFeedback->t2[2];
+            ss << jointFeedback->f1[0] << "\t" << jointFeedback->f1[1] << "\t" << jointFeedback->f1[2] << "\t" <<
+                  jointFeedback->t1[0] << "\t" << jointFeedback->t1[1] << "\t" << jointFeedback->t1[2] << "\t" <<
+                  jointFeedback->f2[0] << "\t" << jointFeedback->f2[1] << "\t" << jointFeedback->f2[2] << "\t" <<
+                  jointFeedback->t2[0] << "\t" << jointFeedback->t2[1] << "\t" << jointFeedback->t2[2];
         }
         else // reverse the order since our body is second
         {
@@ -249,15 +248,14 @@ std::string Geom::dumpToString()
             else ss << "\t" << reinterpret_cast<Body *>(dBodyGetData(bodyID))->name() << "\t";
 
             ss << (m_ContactList[i]->GetContactPosition())[0] << "\t" <<
-                                                                 (m_ContactList[i]->GetContactPosition())[1] << "\t" <<
-                                                                 (m_ContactList[i]->GetContactPosition())[2] << "\t";
+                  (m_ContactList[i]->GetContactPosition())[1] << "\t" <<
+                  (m_ContactList[i]->GetContactPosition())[2] << "\t";
 
             jointFeedback = m_ContactList[i]->GetJointFeedback();
-            ss <<
-                  jointFeedback->f2[0] << "\t" << jointFeedback->f2[1] << "\t" << jointFeedback->f2[2] << "\t" <<
-                                          jointFeedback->t2[0] << "\t" << jointFeedback->t2[1] << "\t" << jointFeedback->t2[2] << "\t" <<
-                                          jointFeedback->f1[0] << "\t" << jointFeedback->f1[1] << "\t" << jointFeedback->f1[2] << "\t" <<
-                                          jointFeedback->t1[0] << "\t" << jointFeedback->t1[1] << "\t" << jointFeedback->t1[2];
+            ss << jointFeedback->f2[0] << "\t" << jointFeedback->f2[1] << "\t" << jointFeedback->f2[2] << "\t" <<
+                  jointFeedback->t2[0] << "\t" << jointFeedback->t2[1] << "\t" << jointFeedback->t2[2] << "\t" <<
+                  jointFeedback->f1[0] << "\t" << jointFeedback->f1[1] << "\t" << jointFeedback->f1[2] << "\t" <<
+                  jointFeedback->t1[0] << "\t" << jointFeedback->t1[1] << "\t" << jointFeedback->t1[2];
         }
     }
     ss << "\n";
@@ -298,50 +296,56 @@ std::string *Geom::createFromAttributes()
 
     // can specify ERP & CFM; SpringConstant & DampingConstant; SpringConstant & ERP; SpringConstant & CFM; DampingConstant & ERP; DampingConstant & CFM
     double stepSize = simulation()->GetTimeIncrement();
-    if (findAttribute("ERP", &buf) && findAttribute("CFM", &buf2))
+    while (true)
     {
-        m_ERP = GSUtil::Double(buf);
-        m_CFM = GSUtil::Double(buf2);
-        m_SpringConstant = m_ERP / (m_CFM * stepSize);
-        m_DampingConstant = (1.0 - m_ERP) / m_CFM;
-    }
-    else if (findAttribute("ERP", &buf) && findAttribute("SpringConstant", &buf2))
-    {
-        m_ERP = GSUtil::Double(buf);
-        m_SpringConstant = GSUtil::Double(buf2);
-        m_DampingConstant = stepSize * (m_SpringConstant / m_ERP - m_SpringConstant);
-        m_CFM = 1.0/(stepSize * m_SpringConstant + m_DampingConstant);
-    }
-    else if (findAttribute("ERP", &buf) && findAttribute("DampingConstant", &buf2))
-    {
-        m_ERP = GSUtil::Double(buf);
-        m_DampingConstant = GSUtil::Double(buf2);
-        m_SpringConstant = m_DampingConstant / (stepSize / m_ERP - stepSize);
-        m_CFM = 1.0/(stepSize * m_SpringConstant + m_DampingConstant);
-    }
-    else if (findAttribute("CFM", &buf) && findAttribute("DampingConstant", &buf2))
-    {
-        m_CFM = GSUtil::Double(buf);
-        m_DampingConstant = GSUtil::Double(buf2);
-        m_SpringConstant = (1.0 / m_CFM - m_DampingConstant) / stepSize;
-        m_ERP = stepSize * m_SpringConstant/(stepSize * m_SpringConstant + m_DampingConstant);
-    }
-    else if (findAttribute("CFM", &buf) && findAttribute("SpringConstant", &buf2))
-    {
-        m_CFM = GSUtil::Double(buf);
-        m_SpringConstant = GSUtil::Double(buf2);
-        m_DampingConstant = 1.0 / m_CFM - stepSize * m_SpringConstant;
-        m_ERP = stepSize * m_SpringConstant/(stepSize * m_SpringConstant + m_DampingConstant);
-    }
-    else if (findAttribute("DampingConstant", &buf) && findAttribute("SpringConstant", &buf2))
-    {
-        m_DampingConstant = GSUtil::Double(buf);
-        m_SpringConstant = GSUtil::Double(buf2);
-        m_CFM = 1.0/(stepSize * m_SpringConstant + m_DampingConstant);
-        m_ERP = stepSize * m_SpringConstant/(stepSize * m_SpringConstant + m_DampingConstant);
-    }
-    else
-    {
+        if (findAttribute("ERP", &buf) && findAttribute("CFM", &buf2))
+        {
+            m_ERP = GSUtil::Double(buf);
+            m_CFM = GSUtil::Double(buf2);
+            m_SpringConstant = m_ERP / (m_CFM * stepSize);
+            m_DampingConstant = (1.0 - m_ERP) / m_CFM;
+            break;
+        }
+        if (findAttribute("ERP", &buf) && findAttribute("SpringConstant", &buf2))
+        {
+            m_ERP = GSUtil::Double(buf);
+            m_SpringConstant = GSUtil::Double(buf2);
+            m_DampingConstant = stepSize * (m_SpringConstant / m_ERP - m_SpringConstant);
+            m_CFM = 1.0/(stepSize * m_SpringConstant + m_DampingConstant);
+            break;
+        }
+        if (findAttribute("ERP", &buf) && findAttribute("DampingConstant", &buf2))
+        {
+            m_ERP = GSUtil::Double(buf);
+            m_DampingConstant = GSUtil::Double(buf2);
+            m_SpringConstant = m_DampingConstant / (stepSize / m_ERP - stepSize);
+            m_CFM = 1.0/(stepSize * m_SpringConstant + m_DampingConstant);
+            break;
+        }
+        if (findAttribute("CFM", &buf) && findAttribute("DampingConstant", &buf2))
+        {
+            m_CFM = GSUtil::Double(buf);
+            m_DampingConstant = GSUtil::Double(buf2);
+            m_SpringConstant = (1.0 / m_CFM - m_DampingConstant) / stepSize;
+            m_ERP = stepSize * m_SpringConstant/(stepSize * m_SpringConstant + m_DampingConstant);
+            break;
+        }
+        if (findAttribute("CFM", &buf) && findAttribute("SpringConstant", &buf2))
+        {
+            m_CFM = GSUtil::Double(buf);
+            m_SpringConstant = GSUtil::Double(buf2);
+            m_DampingConstant = 1.0 / m_CFM - stepSize * m_SpringConstant;
+            m_ERP = stepSize * m_SpringConstant/(stepSize * m_SpringConstant + m_DampingConstant);
+            break;
+        }
+        if (findAttribute("DampingConstant", &buf) && findAttribute("SpringConstant", &buf2))
+        {
+            m_DampingConstant = GSUtil::Double(buf);
+            m_SpringConstant = GSUtil::Double(buf2);
+            m_CFM = 1.0/(stepSize * m_SpringConstant + m_DampingConstant);
+            m_ERP = stepSize * m_SpringConstant/(stepSize * m_SpringConstant + m_DampingConstant);
+            break;
+        }
         setLastError("GEOM ID=\""s + name() +"\" 2 of DampingConstant, SpringConstant, CFM, or ERP must be provided"s);
         return lastErrorPtr();
     }
@@ -354,6 +358,11 @@ std::string *Geom::createFromAttributes()
     this->SetAbort(GSUtil::Bool(buf));
     if (findAttribute("Adhesion"s, &buf) == nullptr) return lastErrorPtr();
     this->SetAdhesion(GSUtil::Bool(buf));
+
+    if (findAttribute("Rho"s, &buf))
+    {
+        this->SetRho(GSUtil::Double(buf));
+    }
 
     m_ExcludeList.clear();
     if (findAttribute("ExcludeIDList"s, &buf))
@@ -395,6 +404,7 @@ void Geom::appendToAttributes()
     setAttribute("DampingConstant"s, *GSUtil::ToString(m_DampingConstant, &buf));
     setAttribute("Bounce"s, *GSUtil::ToString(m_Bounce, &buf));
     setAttribute("Mu"s, *GSUtil::ToString(m_Mu, &buf));
+    setAttribute("Rho"s, *GSUtil::ToString(m_Rho, &buf));
     setAttribute("Abort"s, *GSUtil::ToString(m_Abort, &buf));
     setAttribute("Adhesion"s, *GSUtil::ToString(m_Adhesion, &buf));
     std::vector<std::string> geomNames;

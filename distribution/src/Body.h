@@ -115,7 +115,7 @@ public:
 
 
     // Utility
-    void ParallelAxis(dMass *massProperties, const double *translation, const double *quaternion, dMass *newMassProperties);
+    static void ParallelAxis(dMass *massProperties, const double *translation, const double *quaternion, dMass *newMassProperties);
     static void ParallelAxis(double x, double y, double z, // transformation from centre of mass to new location (m)
                              double mass, // mass (kg)
                              double ixx, double iyy, double izz, double ixy, double iyz, double izx, // moments of inertia kgm2
@@ -124,6 +124,7 @@ public:
                              double *ixxp, double *iyyp, double *izzp, double *ixyp, double *iyzp, double *izxp); // transformed moments of inertia about new coordinate system
 
     static double GetProjectedAngle(const pgd::Vector3 &planeNormal, const pgd::Vector3 &vector1, const pgd::Vector3 &vector2);
+    static std::string MassCheck (const dMass *m);
 
     void SetGraphicFile1(const std::string &graphicFile) { m_graphicFile1 = graphicFile; }
     std::string GetGraphicFile1() const { return m_graphicFile1; }
@@ -132,10 +133,10 @@ public:
     void SetGraphicFile3(const std::string &graphicFile) { m_graphicFile3 = graphicFile; }
     std::string GetGraphicFile3() const { return m_graphicFile3; }
 
-    virtual std::string dumpToString();
-    virtual std::string *createFromAttributes();
-    virtual void saveToAttributes();
-    virtual void appendToAttributes();
+    virtual std::string dumpToString() override;
+    virtual std::string *createFromAttributes() override;
+    virtual void saveToAttributes() override;
+    virtual void appendToAttributes() override;
 
 private:
 

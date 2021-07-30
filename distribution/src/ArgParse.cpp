@@ -86,7 +86,7 @@ int ArgParse::Parse()
     }
     locations.push_back(m_rawArguments.size());
     // check required arguments are present
-    for (auto it: m_argumentList)
+    for (auto &&it: m_argumentList)
     {
         if (it.required)
         {
@@ -173,18 +173,18 @@ int ArgParse::Parse()
             }
         }
     }
-    bool helpFlag;
+    bool helpFlag = false;
     Get("--help"s, &helpFlag);
     if (helpFlag)
     {
         Usage();
         exit(1);
     }
-    bool verboseFlag;
+    bool verboseFlag = false;
     Get("--verbose"s, &verboseFlag);
     if (verboseFlag)
     {
-        for (auto it : m_argumentList)
+        for (auto &&it : m_argumentList)
         {
             auto findIt = m_parsedArguments.find(it.longName);
             if (findIt == m_parsedArguments.end())
@@ -472,9 +472,9 @@ bool ArgParse::IsNumber(const std::string &s)
 
 bool ArgParse::IsInt(const std::string &s)
 {
-    std::regex e("^(?:(0[xX][a-fA-F0-9]+(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?)?)"           // Hexadecimal
-                 "|([1-9][0-9]*(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?)?)"                    // Decimal
-                 "|(0[0-7]*(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?)?))$"s);                   // Octal
+    std::regex e("^(?:(0[xX][a-fA-F0-9]+(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?)?)$"           // Hexadecimal
+                 "|^([1-9][0-9]*(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?)?)$"                    // Decimal
+                 "|^(0[0-7]*(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?)?))$"s);                   // Octal
     return std::regex_match (s, e);
 }
 

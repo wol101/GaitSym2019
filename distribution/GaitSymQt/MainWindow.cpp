@@ -198,6 +198,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widgetSimulation, SIGNAL(EmitDeleteMarkerRequest(const QString &)), this, SLOT(deleteExistingMarker(const QString &)));
     connect(ui->widgetSimulation, SIGNAL(EmitDeleteMuscleRequest(const QString &)), this, SLOT(deleteExistingMuscle(const QString &)));
     connect(ui->widgetSimulation, SIGNAL(EmitInfoRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementInfo(const QString &, const QString &)));
+    connect(ui->widgetSimulation, SIGNAL(EmitHideRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementHide(const QString &, const QString &)));
     connect(ui->widgetSimulation, SIGNAL(EmitResize(int, int)), this, SLOT(reportOpenGLSize(int, int)));
 
     // the treeWidgetElements needs to know about this window
@@ -704,7 +705,7 @@ void MainWindow::updateEnable()
     ui->actionCreateAssembly->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0);
     ui->actionDeleteAssembly->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->HasAssembly());
     ui->actionConstructionMode->setEnabled(m_simulation != nullptr && m_mode == runMode && m_stepCount == 0);
-    ui->actionRunMode->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0);
+    ui->actionRunMode->setEnabled(m_simulation != nullptr && m_mode == constructionMode && isWindowModified() == false && m_simulation->GetBodyList()->size() > 0);
 }
 
 

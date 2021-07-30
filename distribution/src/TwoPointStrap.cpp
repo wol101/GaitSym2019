@@ -139,9 +139,9 @@ void TwoPointStrap::Calculate()
     // check that we don't have any non-normal values for directions which can occur if points co-locate
     for (size_t i = 0; i < GetPointForceList()->size(); i++)
     {
-        if ((std::isnormal((*GetPointForceList())[i]->vector[0]) && std::isnormal((*GetPointForceList())[i]->vector[1]) && std::isnormal((*GetPointForceList())[i]->vector[2])) == false)
+        if ((std::isfinite((*GetPointForceList())[i]->vector[0]) && std::isfinite((*GetPointForceList())[i]->vector[1]) && std::isfinite((*GetPointForceList())[i]->vector[2])) == false)
         {
-            (*GetPointForceList())[i]->vector[0] = 1.0;
+            (*GetPointForceList())[i]->vector[0] = 0.0;
             (*GetPointForceList())[i]->vector[1] = 0.0;
             (*GetPointForceList())[i]->vector[2] = 0.0;
             std::cerr << "Warning: point force direction in \"" << name() << "\" is invalid so applying standard fixup\n";

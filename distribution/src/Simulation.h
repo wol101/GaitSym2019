@@ -127,6 +127,7 @@ public:
     bool ShouldQuit();
     void SetContactAbort(bool contactAbort) { m_ContactAbort = contactAbort; }
     void SetDataTargetAbort(bool dataTargetAbort) { m_DataTargetAbort = dataTargetAbort; }
+    int m_numericalErrorCount = 0;
 
     std::string SaveToXML();
     void OutputProgramState();
@@ -206,7 +207,6 @@ private:
     double m_OutputModelStateAtCycle = -1;
     int m_SimulationError = false;
     bool m_StraightenBody = false;
-    bool m_AbortOnODEMessage = false;
     double m_WarehouseDistance = 0;
     bool m_OutputKinematicsFirstTimeFlag = false;
     double m_OutputWarehouseLastTime = -DBL_MAX;

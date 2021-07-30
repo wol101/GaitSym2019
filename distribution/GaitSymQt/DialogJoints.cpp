@@ -161,6 +161,7 @@ void DialogJoints::accept() // this catches OK and return/enter
         joint->setBody2Marker(markerList->at(ui->comboBoxMarker2->currentText().toStdString()).get());
         joint->Attach();
         joint->SetFixed();
+        joint->setLateFix(ui->checkBoxLateFix->isChecked());
         if (ui->lineEditCFM->text().size()) joint->setCFM(ui->lineEditCFM->value());
         if (ui->lineEditERP->text().size()) joint->setERP(ui->lineEditERP->value());
         QString mode = ui->comboBoxFixedStressCalculationType->currentText();
@@ -374,6 +375,7 @@ void DialogJoints::lateInitialise()
     FixedJoint *fixedJoint = dynamic_cast<FixedJoint *>(m_inputJoint);
     if (fixedJoint)
     {
+        ui->checkBoxLateFix->setChecked(fixedJoint->lateFix());
         std::string stressCalculationType = m_inputJoint->findAttribute("StressCalculationType"s);
         std::string lowPassType = m_inputJoint->findAttribute("LowPassType"s);
         QString text;

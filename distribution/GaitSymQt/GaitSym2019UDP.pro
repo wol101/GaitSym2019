@@ -1,34 +1,37 @@
 #/*
-# *  GaitSym2019.pro
+# *  GaitSym2019UDP.pro
 # *  GaitSymODE2019
 # *
-# *  Created by Bill Sellers on 08/10/2018.
-# *  Copyright 2018 Bill Sellers. All rights reserved.
+# *  Created by Bill Sellers on 05/01/2020.
+# *  Copyright 2020 Bill Sellers. All rights reserved.
 # *
 # */
 
 VERSION = 2019
 AUTHOR = "Bill Sellers 2019"
 OBJECTS_DIR = obj
-QT += opengl xml gui svg widgets
-greaterThan(QT_MAJOR_VERSION, 5): QT += openglwidgets
-TARGET = GaitSym2019
-TEMPLATE = app
+# QT += opengl xml gui
+# greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+TARGET = GaitSym2019UDP
+#TEMPLATE = app
 CONFIG += no_batch # this gets around a bug in Visual Studio with the object_parallel_to_source option
 CONFIG += object_parallel_to_source # this is important to stop obj files overwriting each other
-CONFIG += c++17
+
+QT -= gui
+
+CONFIG += c++17 console
+CONFIG -= app_bundle
 
 macx {
     DEFINES += \
+        USE_UDP \
         dIDEDOUBLE dTRIMESH_ENABLED dTRIMESH_OPCODE CCD_IDEDOUBLE dLIBCCD_ENABLED dTHREADING_INTF_DISABLED \
         HAVE_ALLOCA_H BYTE_ORDER_LITTLE_ENDIAN \
-        DEBUG_OUTPUT \
         EXPERIMENTAL
     INCLUDEPATH += \
         ../ann_1.1.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
-        ../libgwavi \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -49,6 +52,7 @@ macx {
 win32 {
     RC_FILE = app.rc
     DEFINES += \
+        USE_UDP \
         dIDEDOUBLE dTRIMESH_ENABLED=1 dTRIMESH_OPCODE=1 dTRIMESH_GIMPACT=0 dTRIMESH_16BIT_INDICES=0 \
         CCD_IDEDOUBLE dLIBCCD_ENABLED=1 dTHREADING_INTF_DISABLED=1 dTRIMESH_OPCODE_USE_OLD_TRIMESH_TRIMESH_COLLIDER=0 \
         ICE_NO_DLL dTLS_ENABLED=0 \
@@ -56,14 +60,11 @@ win32 {
         BYTE_ORDER_LITTLE_ENDIAN \
         HAVE_MALLOC_H USE_UNIX_ERRORS NEED_BCOPY \
         _USE_MATH_DEFINES _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS \
-        DEBUG_OUTPUT \
-#        GL_32 \
         EXPERIMENTAL
     INCLUDEPATH += \
         ../ann_1.1.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
-        ../libgwavi \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -80,47 +81,42 @@ win32 {
         # -Od set the debugging options on, -RTCsu enables a lot of run time checks
         QMAKE_CXXFLAGS_DEBUG += -Od -RTCsu
         # -O2 is maximise speed, -fp:fast is allow non IEEE math to increase speed (like gcc -fast-math), -GL is global optimisations
-        # -GL likes to have -LTCG as linker flags
+        # -GL likes to have -LTCG as linker flags but -GL makes linking slow
         # QMAKE_CXXFLAGS_RELEASE += -O2 -fp:fast -GL
-        QMAKE_CXXFLAGS_RELEASE += -O2 -GL
-        QMAKE_LFLAGS_RELEASE += -LTCG
+        # QMAKE_CXXFLAGS_RELEASE += -O2 -GL
+        # QMAKE_LFLAGS_RELEASE += -LTCG
+        QMAKE_CXXFLAGS_RELEASE += -O2
+        QMAKE_LFLAGS_RELEASE +=
         }
         win32-g++ | win32-clang-g++ {
         DEFINES += exprtk_disable_enhanced_features
         QMAKE_CXXFLAGS += -Wa,-mbig-obj
         }
 
-    # this line deletes the AboutDialog object file after linking which will force compile every time
-    # this is necessary because I use __TIME__ and __DATE__ in the About Dialog to get a build time
-    QMAKE_POST_LINK = C:\Windows\System32\cmd.exe /C "del obj\AboutDialog.obj"
 }
 
 unix:!macx {
     DEFINES += \
+        USE_UDP \
         dIDEDOUBLE dTRIMESH_ENABLED dTRIMESH_OPCODE CCD_IDEDOUBLE dLIBCCD_ENABLED dTHREADING_INTF_DISABLED \
         HAVE_ALLOCA_H BYTE_ORDER_LITTLE_ENDIAN \
-        DEBUG_OUTPUT \
         EXPERIMENTAL
     INCLUDEPATH += \
-        ../ann_1.1.2/include \
-        ../enet-1.3.14/include \
-        ../exprtk \
-        ../libgwavi \
-        ../ode-0.15/OPCODE \
-        ../ode-0.15/include \
-        ../ode-0.15/libccd/src \
-        ../ode-0.15/ode/src \
-        ../pystring \
-        ../rapidxml-1.13 \
-        ../src \
-        ../tinyply
+    ../ann_1.1.2/include \
+    ../enet-1.3.14/include \
+    ../exprtk \
+    ../ode-0.15/OPCODE \
+    ../ode-0.15/include \
+    ../ode-0.15/libccd/src \
+    ../ode-0.15/ode/src \
+    ../pystring \
+    ../rapidxml-1.13 \
+    ../src \
+    ../tinyply
     LIBS += -lX11 # -lXxf86vm
     HEADERS +=
+    QMAKE_CXXFLAGS +=
     QMAKE_CXXFLAGS_RELEASE += -O3 -ffast-math
-
-    # this line deletes the AboutDialog object file after linking which will force compile every time
-    # this is necessary because I use __TIME__ and __DATE__ in the About Dialog to get a build time
-    QMAKE_POST_LINK = rm -f obj\AboutDialog.obj
 }
 
 CONFIG(debug, debug|release) {
@@ -155,22 +151,6 @@ SOURCES += \
     ../enet-1.3.14/protocol.c \
     ../enet-1.3.14/unix.c \
     ../enet-1.3.14/win32.c \
-    ../glextrusion/ex_angle.c \
-    ../glextrusion/ex_cut_round.c \
-    ../glextrusion/ex_raw.c \
-    ../glextrusion/extrude.c \
-    ../glextrusion/intersect.c \
-    ../glextrusion/qmesh.c \
-    ../glextrusion/rot_prince.c \
-    ../glextrusion/rotate.c \
-    ../glextrusion/round_cap.c \
-    ../glextrusion/segment.c \
-    ../glextrusion/texgen.c \
-    ../glextrusion/urotate.c \
-    ../glextrusion/view.c \
-    ../libgwavi/avi-utils.c \
-    ../libgwavi/fileio.c \
-    ../libgwavi/gwavi.c \
     ../ode-0.15/OPCODE/Ice/IceAABB.cpp \
     ../ode-0.15/OPCODE/Ice/IceContainer.cpp \
     ../ode-0.15/OPCODE/Ice/IceHPoint.cpp \
@@ -340,6 +320,7 @@ SOURCES += \
     ../src/NamedObject.cpp \
     ../src/ObjectiveMain.cpp \
     ../src/ObjectiveMainENET.cpp \
+    ../src/ObjectiveMainENETThreaded.cpp \
     ../src/ObjectiveMainMPI.cpp \
     ../src/ObjectiveMainTCP.cpp \
     ../src/ObjectiveMainUDP.cpp \
@@ -368,61 +349,7 @@ SOURCES += \
     ../src/UDP.cpp \
     ../src/UniversalJoint.cpp \
     ../src/Warehouse.cpp \
-    ../src/XMLConverter.cpp \
-    AVIWriter.cpp \
-    AboutDialog.cpp \
-    BasicXMLSyntaxHighlighter.cpp \
-    DialogAssembly.cpp \
-    DialogBodyBuilder.cpp \
-    DialogCreateMirrorElements.cpp \
-    DialogCreateTestingDrivers.cpp \
-    DialogDrivers.cpp \
-    DialogGeoms.cpp \
-    DialogGlobal.cpp \
-    DialogInfo.cpp \
-    DialogJoints.cpp \
-    DialogMarkerImportExport.cpp \
-    DialogMarkers.cpp \
-    DialogMuscles.cpp \
-    DialogOutputSelect.cpp \
-    DialogPreferences.cpp \
-    DialogProperties.cpp \
-    DialogRename.cpp \
-    DoubleValidator.cpp \
-    DrawBody.cpp \
-    DrawCustom.cpp \
-    DrawFluidSac.cpp \
-    DrawGeom.cpp \
-    DrawJoint.cpp \
-    DrawMarker.cpp \
-    DrawMuscle.cpp \
-    Drawable.cpp \
-    ElementTreeWidget.cpp \
-    FacetedAxes.cpp \
-    FacetedBox.cpp \
-    FacetedCappedCylinder.cpp \
-    FacetedCheckerboard.cpp \
-    FacetedConicSegment.cpp \
-    FacetedObject.cpp \
-    FacetedPolyline.cpp \
-    FacetedRect.cpp \
-    FacetedSphere.cpp \
-    GLUtils.cpp \
-    IntersectionHits.cpp \
-    LineEditDouble.cpp \
-    LineEditPath.cpp \
-    LineEditUniqueName.cpp \
-    MainWindow.cpp \
-    MainWindowActions.cpp \
-    MeshStore.cpp \
-    Preferences.cpp \
-    SimulationWidget.cpp \
-    StrokeFont.cpp \
-    TextEditDialog.cpp \
-    TrackBall.cpp \
-    UniqueNameValidator.cpp \
-    ViewControlWidget.cpp \
-    main.cpp
+    ../src/XMLConverter.cpp
 
 HEADERS += \
     ../ann_1.1.2/include/ANN/ANN.h \
@@ -447,19 +374,6 @@ HEADERS += \
     ../enet-1.3.14/include/enet/utility.h \
     ../enet-1.3.14/include/enet/win32.h \
     ../exprtk/exprtk.hpp \
-    ../glextrusion/copy.h \
-    ../glextrusion/extrude.h \
-    ../glextrusion/gle.h \
-    ../glextrusion/intersect.h \
-    ../glextrusion/port.h \
-    ../glextrusion/rot.h \
-    ../glextrusion/segment.h \
-    ../glextrusion/tube_gc.h \
-    ../glextrusion/vvector.h \
-    ../libgwavi/avi-utils.h \
-    ../libgwavi/fileio.h \
-    ../libgwavi/gwavi.h \
-    ../libgwavi/gwavi_private.h \
     ../ode-0.15/OPCODE/Ice/IceAABB.h \
     ../ode-0.15/OPCODE/Ice/IceAxes.h \
     ../ode-0.15/OPCODE/Ice/IceBoundingSphere.h \
@@ -665,6 +579,7 @@ HEADERS += \
     ../src/NamedObject.h \
     ../src/ObjectiveMain.h \
     ../src/ObjectiveMainENET.h \
+    ../src/ObjectiveMainENETThreaded.h \
     ../src/ObjectiveMainMPI.h \
     ../src/ObjectiveMainTCP.h \
     ../src/ObjectiveMainUDP.h \
@@ -697,88 +612,8 @@ HEADERS += \
     ../src/UDP.h \
     ../src/UniversalJoint.h \
     ../src/Warehouse.h \
-    ../src/XMLConverter.h \
-    ../tinyply/tinyply.h \
-    AVIWriter.h \
-    AboutDialog.h \
-    BasicXMLSyntaxHighlighter.h \
-    DialogAssembly.h \
-    DialogBodyBuilder.h \
-    DialogCreateMirrorElements.h \
-    DialogCreateTestingDrivers.h \
-    DialogDrivers.h \
-    DialogGeoms.h \
-    DialogGlobal.h \
-    DialogInfo.h \
-    DialogJoints.h \
-    DialogMarkerImportExport.h \
-    DialogMarkers.h \
-    DialogMuscles.h \
-    DialogOutputSelect.h \
-    DialogPreferences.h \
-    DialogProperties.h \
-    DialogRename.h \
-    DoubleValidator.h \
-    DrawBody.h \
-    DrawCustom.h \
-    DrawFluidSac.h \
-    DrawGeom.h \
-    DrawJoint.h \
-    DrawMarker.h \
-    DrawMuscle.h \
-    Drawable.h \
-    ElementTreeWidget.h \
-    FacetedAxes.h \
-    FacetedBox.h \
-    FacetedCappedCylinder.h \
-    FacetedCheckerboard.h \
-    FacetedConicSegment.h \
-    FacetedObject.h \
-    FacetedPolyline.h \
-    FacetedRect.h \
-    FacetedSphere.h \
-    GLUtils.h \
-    IntersectionHits.h \
-    LineEditDouble.h \
-    LineEditPath.h \
-    LineEditUniqueName.h \
-    MainWindow.h \
-    MainWindowActions.h \
-    MeshStore.h \
-    Preferences.h \
-    SimulationWidget.h \
-    StrokeFont.h \
-    TextEditDialog.h \
-    TrackBall.h \
-    UniqueNameValidator.h \
-    ViewControlWidget.h
+    ../src/XMLConverter.h
 
-FORMS += \
-    AboutDialog.ui \
-    DialogAssembly.ui \
-    DialogBodyBuilder.ui \
-    DialogCreateMirrorElements.ui \
-    DialogCreateTestingDrivers.ui \
-    DialogDrivers.ui \
-    DialogGeoms.ui \
-    DialogGlobal.ui \
-    DialogInfo.ui \
-    DialogJoints.ui \
-    DialogMarkerImportExport.ui \
-    DialogMarkers.ui \
-    DialogMuscles.ui \
-    DialogOutputSelect.ui \
-    DialogPreferences.ui \
-    DialogProperties.ui \
-    DialogRename.ui \
-    MainWindow.ui \
-    TextEditDialog.ui
-
-RESOURCES += resources.qrc
-
-OTHER_FILES += \
-    app.rc \
-    Icon.ico
 
 DISTFILES += \
     ../Ideas.txt \
@@ -805,6 +640,7 @@ DISTFILES += \
     opengl/fragment_shader_2.glsl \
     opengl/vertex_shader.glsl \
     opengl/vertex_shader_2.glsl
+
 
 
 

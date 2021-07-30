@@ -29,7 +29,7 @@ void main()
     else
     {
         // part 2 of a generic Phong shading model shader with optional blendColour
-        vec4 blendColourFrag = blendColour * blendFraction + colourFrag * (1 - blendFraction);
+        vec4 blendColourFrag = blendColour * blendFraction + colourFrag * (1.0 - blendFraction);
 
         vec4 spec = vec4(0.0);
 

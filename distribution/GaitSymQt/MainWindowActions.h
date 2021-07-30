@@ -85,6 +85,7 @@ public slots:
     void menuCreateEditDriver(Driver *driver);
 
     void elementInfo(const QString &elementType, const QString &elementName);
+    void elementHide(const QString &elementType, const QString &elementName);
 
     void objSnapshot();
     void run();

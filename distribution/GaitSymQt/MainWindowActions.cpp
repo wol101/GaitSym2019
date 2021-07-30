@@ -1233,6 +1233,7 @@ void MainWindowActions::menuEditGlobal()
         m_mainWindow->setStatusString(tr("Global values edited"), 1);
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
+        m_mainWindow->ui->doubleSpinBoxTimeMax->setValue(m_mainWindow->m_simulation->GetGlobal()->TimeLimit());
         m_mainWindow->ui->widgetSimulation->setAxesScale(float(m_mainWindow->m_simulation->GetGlobal()->size1()));
         m_mainWindow->ui->widgetSimulation->setBackgroundColour(QString::fromStdString(m_mainWindow->m_simulation->GetGlobal()->colour1().GetHexArgb()));
         m_mainWindow->ui->widgetSimulation->update();
@@ -1577,6 +1578,11 @@ void MainWindowActions::elementInfo(const QString &elementType, const QString &e
     {
         m_mainWindow->ui->statusBar->showMessage(tr("Info window closed"));
     }
+}
+
+void MainWindowActions::elementHide(const QString &elementType, const QString &elementName)
+{
+    m_mainWindow->ui->treeWidgetElements->setVisibleSwitch(elementType.toUpper(), elementName, false);
 }
 
 void MainWindowActions::menuClearMeshCache()

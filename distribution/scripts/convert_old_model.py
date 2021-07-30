@@ -226,8 +226,8 @@ def convert_global(global_element):
     cfm = float(global_element.attrib["CFM"])
     integration_stepsize = float(global_element.attrib["IntegrationStepSize"])
     (spring_constant, damping_constant) = convert_to_spring_and_damping_constants(erp, cfm, integration_stepsize)
-    new_global.attrib["SpringConstant"] = format(spring_constant, ".17e")
-    new_global.attrib["DampingConstant"] = format(damping_constant, ".17e")
+    new_global.attrib["SpringConstant"] = format(spring_constant, ".18e")
+    new_global.attrib["DampingConstant"] = format(damping_constant, ".18e")
     new_global.attrib["StepType"] = new_global.attrib["StepType"].replace("Step", "")
     new_global.attrib["ID"] = "global"
     return new_global
@@ -296,7 +296,7 @@ def convert_joint(joint, marker_list, markers_only):
         body1_marker.attrib["Position"] = "World " + strip_world(joint.attrib["HingeAnchor"])
         v1 = [float(i) for i in strip_world(joint.attrib["HingeAxis"]).split()]
         q = GetRotationTo([1.0, 0.0, 0.0], v1)
-        body1_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".17e") for x in q)
+        body1_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".18e") for x in q)
         marker_list[body1_marker.attrib["ID"]] = body1_marker
         body2_marker = xml.etree.ElementTree.Element("MARKER")
         body2_marker.tail = "\n"
@@ -305,7 +305,7 @@ def convert_joint(joint, marker_list, markers_only):
         body2_marker.attrib["Position"] = "World " + strip_world(joint.attrib["HingeAnchor"])
         v1 = [float(i) for i in strip_world(joint.attrib["HingeAxis"]).split()]
         q = GetRotationTo([1.0, 0.0, 0.0], v1)
-        body2_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".17e") for x in q)
+        body2_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".18e") for x in q)
         marker_list[body2_marker.attrib["ID"]] = body2_marker
         if markers_only:
             return
@@ -327,7 +327,7 @@ def convert_joint(joint, marker_list, markers_only):
         body1_marker.attrib["Position"] = joint.attrib["Body1ID"] + " 0 0 0"
         v1 = [float(i) for i in strip_world(joint.attrib["FloatingHingeAxis"]).split()]
         q = GetRotationTo([1.0, 0.0, 0.0], v1)
-        body1_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".17e") for x in q)
+        body1_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".18e") for x in q)
         marker_list[body1_marker.attrib["ID"]] = body1_marker
         body2_marker = xml.etree.ElementTree.Element("MARKER")
         body2_marker.tail = "\n"
@@ -336,7 +336,7 @@ def convert_joint(joint, marker_list, markers_only):
         body2_marker.attrib["Position"] = joint.attrib["Body2ID"] + " 0 0 0"
         v1 = [float(i) for i in strip_world(joint.attrib["FloatingHingeAxis"]).split()]
         q = GetRotationTo([1.0, 0.0, 0.0], v1)
-        body2_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".17e") for x in q)
+        body2_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".18e") for x in q)
         marker_list[body2_marker.attrib["ID"]] = body2_marker
         if markers_only:
             return
@@ -364,7 +364,7 @@ def convert_joint(joint, marker_list, markers_only):
         R.e12 = v2[0]; R.e22 = v2[1]; R.e32 = v2[2]
         R.e13 = v3[0]; R.e23 = v3[1]; R.e33 = v3[2]
         q = QuaternionFromMatrix(R)
-        body1_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".17e") for x in q)
+        body1_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".18e") for x in q)
         marker_list[body1_marker.attrib["ID"]] = body1_marker
         body2_marker = xml.etree.ElementTree.Element("MARKER")
         body2_marker.tail = "\n"
@@ -378,7 +378,7 @@ def convert_joint(joint, marker_list, markers_only):
         R.e12 = v2[0]; R.e22 = v2[1]; R.e32 = v2[2]
         R.e13 = v3[0]; R.e23 = v3[1]; R.e33 = v3[2]
         q = QuaternionFromMatrix(R)
-        body2_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".17e") for x in q)
+        body2_marker.attrib["Quaternion"] = "World " + " ".join(format(x, ".18e") for x in q)
         marker_list[body2_marker.attrib["ID"]] = body2_marker
         if markers_only:
             return
@@ -510,8 +510,8 @@ def convert_geom(geom, marker_list, markers_only):
         centre_marker.tail = "\n"
         centre_marker.attrib["ID"] = geom.attrib["ID"] + "_Plane_Marker"
         centre_marker.attrib["BodyID"] = "World"
-        centre_marker.attrib["Position"] = "World " + ' '.join(format(x, '.17g') for x in point)
-        centre_marker.attrib["Quaternion"] = "World " + ' '.join(format(x, '.17g') for x in quaternion)
+        centre_marker.attrib["Position"] = "World " + ' '.join(format(x, '.18e') for x in point)
+        centre_marker.attrib["Quaternion"] = "World " + ' '.join(format(x, '.18e') for x in quaternion)
         marker_list[centre_marker.attrib["ID"]] = centre_marker
         if markers_only:
             return
@@ -772,7 +772,7 @@ def fix_cylinder_rotation(str):
     # should be able to obtain that by post multiplying by an (XtoZ) quaternion
     xtoz = QuaternionFromAxisAngle([0.0, 1.0, 0.0], -90.0 * math.pi / 180.0)
     new_rotation = QuaternionQuaternionMultiply(q1, xtoz)
-    return ' '.join(format(x, '.17g') for x in new_rotation)
+    return ' '.join(format(x, '.18e') for x in new_rotation)
 
 def strip_world(str):
     tokens = str.split()

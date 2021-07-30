@@ -94,19 +94,9 @@ int ObjectiveMain::Run()
     while(m_runTimeLimit <= 0 || m_simulationTime <= m_runTimeLimit)
     {
         m_simulationTime = GSUtil::GetTime() - startTime;
-
         if (m_simulation->ShouldQuit()) break;
         if (m_simulation->TestForCatastrophy()) break;
-
         m_simulation->UpdateSimulation();
-    }
-
-
-    while (m_simulation->ShouldQuit() == false)
-    {
-        m_simulation->UpdateSimulation();
-
-        if (m_simulation->TestForCatastrophy()) break;
     }
 
     if (WriteOutput()) return __LINE__;

@@ -26,6 +26,7 @@ DialogGlobal::DialogGlobal(QWidget *parent) :
     setWindowFlags(windowFlags() & (~Qt::Dialog) | Qt::Window); // allows the window to be resized on macs
 #endif
 
+    initialiseDefaultGlobal();
     ui->lineEditCurrentWarehouseFile->setPathType(LineEditPath::FileForOpen);
 
     ui->groupBoxWarehouse->setHidden(true);
@@ -36,6 +37,7 @@ DialogGlobal::DialogGlobal(QWidget *parent) :
     connect(ui->pushButtonOK, SIGNAL(clicked()), this, SLOT(accept()));
     connect(ui->pushButtonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(ui->pushButtonProperties, SIGNAL(clicked()), this, SLOT(properties()));
+    connect(ui->pushButtonDefaults, SIGNAL(clicked()), this, SLOT(setDefaults()));
     connect(ui->checkBoxSpringDamping, SIGNAL(stateChanged(int)), this, SLOT(checkBoxSpringDampingStateChanged(int)));
 
     restoreGeometry(Preferences::valueQByteArray("DialogGlobalGeometry"));
@@ -55,13 +57,14 @@ void DialogGlobal::accept() // this catches OK and return/enter
     m_outputGlobal->setStepType(static_cast<Global::StepType>(ui->comboBoxStepType->currentIndex()));
     m_outputGlobal->setDistanceTravelledBodyIDName(ui->comboBoxDistanceTravelledBodyIDName->currentText().toStdString());
     m_outputGlobal->setContactMaxCorrectingVel(ui->lineEditContactMaxCorrectingVel->value());
-    m_outputGlobal->setContactSurfaceLayer(ui->lineEditERPContactSurfaceLayer->value());
+    m_outputGlobal->setContactSurfaceLayer(ui->lineEditContactSurfaceLayer->value());
     m_outputGlobal->setWarehouseFailDistanceAbort(ui->lineEditFailDistanceAbort->value());
     m_outputGlobal->setGravity(ui->lineEditGravityX->value(), ui->lineEditGravityY->value(), ui->lineEditGravityZ->value());
     m_outputGlobal->setMechanicalEnergyLimit(ui->lineEditMechanicalEnergyLimit->value());
     m_outputGlobal->setMetabolicEnergyLimit(ui->lineEditMetabolicEnergyLimit->value());
     m_outputGlobal->setStepSize(ui->lineEditStepSize->value());
     m_outputGlobal->setTimeLimit(ui->lineEditTimeLimit->value());
+    m_outputGlobal->setNumericalErrorsScore(ui->lineEditNumericalErrorScore->value());
     m_outputGlobal->setWarehouseUnitIncreaseDistanceThreshold(ui->lineEditUnitIncreaseDistanceThreshold->value());
     m_outputGlobal->setWarehouseDecreaseThresholdFactor(ui->lineEditWarehouseDecreaseThresholdFactor->value());
     m_outputGlobal->setLinearDamping(ui->lineEditLinearDamping->value());
@@ -69,6 +72,7 @@ void DialogGlobal::accept() // this catches OK and return/enter
     m_outputGlobal->setCurrentWarehouseFile(ui->lineEditCurrentWarehouseFile->text().toStdString());
     m_outputGlobal->setAllowConnectedCollisions(ui->checkBoxAllowConnectedCollisions->isChecked());
     m_outputGlobal->setAllowInternalCollisions(ui->checkBoxAllowInternalCollisions->isChecked());
+    m_outputGlobal->setPermittedNumericalErrors(ui->spinBoxPermittedErrorCount->value());
 
     m_outputGlobal->setName("Global");
 
@@ -144,11 +148,17 @@ void DialogGlobal::closeEvent(QCloseEvent *event)
 
 void DialogGlobal::lateInitialise()
 {
-    const Global *globalPtr;
-    Global defaultGlobal;
-    if (m_inputGlobal) globalPtr = m_inputGlobal;
-    else globalPtr = &defaultGlobal;
+    if (m_inputGlobal) updateUI(m_inputGlobal);
+    else updateUI(&m_defaultGlobal);
+}
 
+void DialogGlobal::setDefaults()
+{
+    updateUI(&m_defaultGlobal);
+}
+
+void DialogGlobal::updateUI(const Global *globalPtr)
+{
     // assign the QComboBox items
     for (size_t i = 0; i < Global::fitnessTypeCount; i++) ui->comboBoxFitnessType->addItem(globalPtr->fitnessTypeStrings(i));
     for (size_t i = 0; i < Global::stepTypeCount; i++) ui->comboBoxStepType->addItem(globalPtr->stepTypeStrings(i));
@@ -175,7 +185,7 @@ void DialogGlobal::lateInitialise()
     ui->lineEditCFM->setValue(globalPtr->CFM());
     ui->lineEditContactMaxCorrectingVel->setValue(globalPtr->ContactMaxCorrectingVel());
     ui->lineEditERP->setValue(globalPtr->ERP());
-    ui->lineEditERPContactSurfaceLayer->setValue(globalPtr->ContactSurfaceLayer());
+    ui->lineEditContactSurfaceLayer->setValue(globalPtr->ContactSurfaceLayer());
     ui->lineEditFailDistanceAbort->setValue(globalPtr->WarehouseFailDistanceAbort());
     ui->lineEditGravityX->setValue(globalPtr->Gravity().x);
     ui->lineEditGravityY->setValue(globalPtr->Gravity().y);
@@ -184,6 +194,7 @@ void DialogGlobal::lateInitialise()
     ui->lineEditMetabolicEnergyLimit->setValue(globalPtr->MetabolicEnergyLimit());
     ui->lineEditStepSize->setValue(globalPtr->StepSize());
     ui->lineEditTimeLimit->setValue(globalPtr->TimeLimit());
+    ui->lineEditNumericalErrorScore->setValue(globalPtr->NumericalErrorsScore());
     ui->lineEditUnitIncreaseDistanceThreshold->setValue(globalPtr->WarehouseUnitIncreaseDistanceThreshold());
     ui->lineEditWarehouseDecreaseThresholdFactor->setValue(globalPtr->WarehouseDecreaseThresholdFactor());
     ui->lineEditLinearDamping->setValue(globalPtr->LinearDamping());
@@ -191,7 +202,9 @@ void DialogGlobal::lateInitialise()
     ui->lineEditCurrentWarehouseFile->setText(QString::fromStdString(globalPtr->CurrentWarehouseFile()));
     ui->checkBoxAllowConnectedCollisions->setChecked(globalPtr->AllowConnectedCollisions());
     ui->checkBoxAllowInternalCollisions->setChecked(globalPtr->AllowInternalCollisions());
+    ui->spinBoxPermittedErrorCount->setValue(globalPtr->PermittedNumericalErrors());
 
+    ui->listWidgetMeshPath->clear();
     for (size_t i = 0; i < globalPtr->ConstMeshSearchPath()->size(); i++)
     {
         QListWidgetItem *item = new QListWidgetItem(QString::fromStdString(globalPtr->ConstMeshSearchPath()->at(i)));
@@ -315,5 +328,55 @@ void DialogGlobal::setExistingBodies(const std::map<std::string, std::unique_ptr
     m_existingBodies = existingBodies;
 }
 
+void DialogGlobal::initialiseDefaultGlobal()
+{
+    for (size_t i = 0; i < Global::fitnessTypeCount; i++)
+    {
+        if (Preferences::valueQString("GlobalDefaultFitnessType") == Global::fitnessTypeStrings(i))
+        {
+            m_defaultGlobal.setFitnessType(static_cast<Global::FitnessType>(i));
+            break;
+        }
+    }
+    for (size_t i = 0; i < Global::stepTypeCount; i++)
+    {
+        if (Preferences::valueQString("GlobalDefaultStepType") == Global::stepTypeStrings(i))
+        {
+            m_defaultGlobal.setStepType(static_cast<Global::StepType>(i));
+            break;
+        }
+    }
+    m_defaultGlobal.setAllowConnectedCollisions(Preferences::valueBool("GlobalDefaultAllowConnectedCollisions"));
+    m_defaultGlobal.setAllowInternalCollisions(Preferences::valueBool("GlobalDefaultAllowInternalCollisions"));
+    m_defaultGlobal.setPermittedNumericalErrors(Preferences::valueBool("GlobalDefaultPermittedNumericalErrors"));
+    m_defaultGlobal.setGravity(Preferences::valueDouble("GlobalDefaultGravityX"), Preferences::valueDouble("GlobalDefaultGravityY"), Preferences::valueDouble("GlobalDefaultGravityZ"));
+    m_defaultGlobal.setBMR(Preferences::valueDouble("GlobalDefaultBMR"));
+    m_defaultGlobal.setCFM(Preferences::valueDouble("GlobalDefaultCFM"));
+    m_defaultGlobal.setContactMaxCorrectingVel(Preferences::valueDouble("GlobalDefaultContactMaxCorrectingVel"));
+    m_defaultGlobal.setContactSurfaceLayer(Preferences::valueDouble("GlobalDefaultContactSurfaceLayer"));
+    m_defaultGlobal.setDampingConstant(Preferences::valueDouble("GlobalDefaultDampingConstant"));
+    m_defaultGlobal.setERP(Preferences::valueDouble("GlobalDefaultERP"));
+    m_defaultGlobal.setMechanicalEnergyLimit(Preferences::valueDouble("GlobalDefaultMechanicalEnergyLimit"));
+    m_defaultGlobal.setMetabolicEnergyLimit(Preferences::valueDouble("GlobalDefaultMetabolicEnergyLimit"));
+    m_defaultGlobal.setSpringConstant(Preferences::valueDouble("GlobalDefaultSpringConstant"));
+    m_defaultGlobal.setStepSize(Preferences::valueDouble("GlobalDefaultStepSize"));
+    m_defaultGlobal.setTimeLimit(Preferences::valueDouble("GlobalDefaultTimeLimit"));
+    m_defaultGlobal.setWarehouseDecreaseThresholdFactor(Preferences::valueDouble("GlobalDefaultWarehouseDecreaseThresholdFactor"));
+    m_defaultGlobal.setWarehouseFailDistanceAbort(Preferences::valueDouble("GlobalDefaultWarehouseFailDistanceAbort"));
+    m_defaultGlobal.setWarehouseUnitIncreaseDistanceThreshold(Preferences::valueDouble("GlobalDefaultWarehouseUnitIncreaseDistanceThreshold"));
+    m_defaultGlobal.setLinearDamping(Preferences::valueDouble("GlobalDefaultLinearDamping"));
+    m_defaultGlobal.setAngularDamping(Preferences::valueDouble("GlobalDefaultAngularDamping"));
+    m_defaultGlobal.setNumericalErrorsScore(Preferences::valueDouble("GlobalDefaultNumericalErrorsScore"));
+    m_defaultGlobal.setCurrentWarehouseFile(Preferences::valueQString("GlobalDefaultCurrentWarehouseFile").toStdString());
+    m_defaultGlobal.setDistanceTravelledBodyIDName(Preferences::valueQString("GlobalDefaultDistanceTravelledBodyIDName").toStdString());
 
+    m_defaultGlobal.MeshSearchPath()->clear();
+    std::string buf = Preferences::valueQString("GlobalDefaultMeshSearchPath").toStdString();
+    std::vector<std::string> encodedMeshSearchPath;
+    if (buf.size())
+    {
+        pystring::split(buf, encodedMeshSearchPath, ":"s);
+        for (size_t i = 0; i < encodedMeshSearchPath.size(); i++) m_defaultGlobal.MeshSearchPath()->push_back(Global::percentDecode(encodedMeshSearchPath[i]));
+    }
+}
 

@@ -12,6 +12,10 @@
 
 #include "Preferences.h"
 
+#include <QOffscreenSurface>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AboutDialog)
@@ -24,16 +28,25 @@ AboutDialog::AboutDialog(QWidget *parent) :
     restoreGeometry(Preferences::valueQByteArray("AboutDialogGeometry"));
 
     QString buildDate = QString("Build: %1 %2").arg(__DATE__).arg(__TIME__);
+    QString buildType;
 #ifdef dNODEBUG
-    QString descriptor = QString("Release");
+    buildType = "Release";
 #else
-    QString descriptor = QString("Debug");
+    buildType = "Debug";
 #endif
 #ifdef EXPERIMENTAL
-    descriptor = QString("%1 %2").arg(descriptor).arg("Experimental");
+    buildType += " experimental";
 #endif
 
-    descriptor = QString("%1 %2").arg(descriptor).arg(buildDate);
+    QOffscreenSurface surf;
+    surf.create();
+    QOpenGLContext ctx;
+    ctx.create();
+    ctx.makeCurrent(&surf);
+    const char *p = reinterpret_cast<const char *>(ctx.functions()->glGetString(GL_VERSION));
+    std::string glVersionString = (p ? p : "");
+
+    QString descriptor = QString("%1\n%2\n%3").arg(buildDate).arg(buildType).arg(glVersionString.c_str());
     ui->labelDescriptor->setText(descriptor);
 }
 

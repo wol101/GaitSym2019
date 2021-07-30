@@ -26,6 +26,7 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
+#include <random>
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 #include <WinSock2.h>
@@ -40,8 +41,14 @@ using namespace std::string_literals;
 #if defined(USE_TCP)
 int main(int argc, const char **argv)
 {
+    if (TCP::OneOffInitialisation())
+    {
+        std::cerr << "Failed to initialise TCPIP\n";
+        return 1;
+    }
     ObjectiveMainTCP objectiveMain(argc, argv);
     objectiveMain.Run();
+    TCP::OneOffCleanup();
 }
 #endif
 
@@ -51,7 +58,6 @@ ObjectiveMainTCP::ObjectiveMainTCP(int argc, const char **argv)
     std::string compileTime(__TIME__);
     m_argparse.Initialise(argc, argv, "ObjectiveMainTCP command line interface to GaitSym2019 build "s + compileDate + " "s + compileTime, 0, 0);
     m_argparse.AddArgument("-sc"s, "--score"s, "Score filename"s, ""s, 1, false, ArgParse::String);
-    m_argparse.AddArgument("-co"s, "--config"s, "Config filename"s, ""s, 1, true, ArgParse::String);
     m_argparse.AddArgument("-ow"s, "--outputWarehouse"s, "Output warehouse filename"s, ""s, 1, false, ArgParse::String);
     m_argparse.AddArgument("-iw"s, "--inputWarehouse"s, "Input warehouse filename"s, ""s, 1, false, ArgParse::String);
     m_argparse.AddArgument("-ms"s, "--modelState"s, "Model state filename"s, ""s, 1, false, ArgParse::String);
@@ -61,6 +67,7 @@ ObjectiveMainTCP::ObjectiveMainTCP(int argc, const char **argv)
     m_argparse.AddArgument("-mt"s, "--outputModelStateAtTime"s, "Output model state at this cycle"s, ""s, 1, false, ArgParse::Double);
     m_argparse.AddArgument("-mw"s, "--outputModelStateAtWarehouseDistance"s, "Output model state at this warehouse distance"s, ""s, 1, false, ArgParse::Double);
     m_argparse.AddArgument("-wd"s, "--warehouseFailDistanceAbort"s, "Abort the simulation when the warehouse distance fails"s, "0"s, 1, false, ArgParse::Bool);
+    m_argparse.AddArgument("-de"s, "--debug"s, "Turn debugging on"s);
 
     m_argparse.AddArgument("-ol"s, "-outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
 
@@ -85,6 +92,7 @@ ObjectiveMainTCP::ObjectiveMainTCP(int argc, const char **argv)
     m_argparse.Get("--modelState"s, &m_outputModelStateFilename);
     m_argparse.Get("--inputWarehouse"s, &m_inputWarehouseFilename);
     m_argparse.Get("--outputWarehouse"s, &m_outputWarehouseFilename);
+    m_argparse.Get("--debug"s, &m_debug);
 
     std::vector<std::string> rawHosts;
     std::vector<std::string> result;
@@ -94,12 +102,18 @@ ObjectiveMainTCP::ObjectiveMainTCP(int argc, const char **argv)
         pystring::split(it, result, ":"s);
         if (result.size() == 2)
         {
-            Hosts h;
+            Host h;
             h.host = result[0];
             h.port = GSUtil::Int(result[1]);
-            m_hosts.push_back(h);
+            m_hosts.push_back(std::move(h));
         }
     }
+
+    // complicated stuff for the random number generator
+    std::random_device rd;
+    std::mt19937_64::result_type seed = rd();
+    m_gen = std::mt19937_64(seed);
+    m_distrib = std::uniform_real_distribution<double>(0.5, 1.5);
 }
 
 int ObjectiveMainTCP::Run()
@@ -109,13 +123,15 @@ int ObjectiveMainTCP::Run()
     double currentTime;
     double lastTime = 0;
     double runTime = 0;
+    double timeoutMultiplier = 1.0;
     while(m_runTimeLimit == 0 || runTime <= m_runTimeLimit)
     {
         runTime = GSUtil::GetTime() - startTime;
 
         if (finishedFlag)
         {
-            if (ReadModel() == 0)
+            if (m_xmlMissing) ReadXML();
+            if (ReadGenome() == 0)
             {
                 finishedFlag = false;
 
@@ -129,10 +145,17 @@ int ObjectiveMainTCP::Run()
                     if (m_simulation->GetDataTargetList()->find(m_outputList[i]) != m_simulation->GetDataTargetList()->end()) (*m_simulation->GetDataTargetList())[m_outputList[i]]->setDump(true);
                     if (m_simulation->GetReporterList()->find(m_outputList[i]) != m_simulation->GetReporterList()->end()) (*m_simulation->GetReporterList())[m_outputList[i]]->setDump(true);
                 }
+                timeoutMultiplier = 1.0;
             }
             else
             {
-                std::this_thread::sleep_for(std::chrono::microseconds(m_sleepTime)); // slight pause on read failure
+                m_currentHost++;
+                if (m_currentHost >= m_hosts.size()) m_currentHost = 0;
+                // randomly variable increasing sleep time
+                m_sleepTime = int(m_distrib(m_gen) * 1000.0 * timeoutMultiplier);
+                if (m_debug) std::cerr <<  "timeoutMultiplier = " << timeoutMultiplier << " m_sleepTime = " << m_sleepTime << " ms\n";
+                std::this_thread::sleep_for(std::chrono::milliseconds(m_sleepTime));
+                if (timeoutMultiplier < 100) timeoutMultiplier++;
             }
         }
         else
@@ -150,7 +173,10 @@ int ObjectiveMainTCP::Run()
             lastTime = currentTime;
 
             finishedFlag = true;
-            if (WriteOutput()) return 0;
+            int status = 0;
+            for (size_t i = 0; i < 100; i++) { if ((status = WriteOutput()) == 0) break; }
+            if (status && m_debug) std::cerr << "Failed to write output score\n";
+            m_simulation.reset();
         }
     }
     return 0;
@@ -158,119 +184,62 @@ int ObjectiveMainTCP::Run()
 
 // this routine attemps to read the model specification and initialise the simulation
 // it returns zero on success
-int ObjectiveMainTCP::ReadModel()
+int ObjectiveMainTCP::ReadGenome()
 {
-    DataFile myFile;
-    myFile.SetExitOnError(false);
-#ifdef TCP_DEBUG
-    std::cerr <<  "ReadModel m_currentHost " << m_currentHost
-        << " host " << m_hosts[m_currentHost].host
-        << " port " << m_hosts[m_currentHost].port
-        << "\n";
-#endif
+    if (m_debug) std::cerr <<  "ReadGenome m_currentHost " << m_currentHost << " host " << m_hosts[m_currentHost].host << " port " << m_hosts[m_currentHost].port << "\n";
 
-    // get model config file from server
+    int status = m_TCP.StartClient(m_hosts[m_currentHost].port, m_hosts[m_currentHost].host.c_str());
+    if (status != 0) { return __LINE__; }
+    if (m_debug) std::cerr <<  "ReadGenome TCP.StartClient initiated\n";
+    TCPStopClientGuard stopClientGuard(&m_TCP);
 
-    int status;
-    int numBytes, len;
-    char buffer[64];
-    struct TCPIPMessage
+    // request info from the server
+    m_requestMessage = {};
+    m_TCP.GetMyAddress(&m_requestMessage.senderIP, &m_requestMessage.senderPort);
+    strcpy(m_requestMessage.text, "req_genome");
+    int numBytes = m_TCP.SendData(m_requestMessage.text, sizeof(RequestMessage));
+    if (numBytes != sizeof(RequestMessage)) { return __LINE__; }
+    if (m_debug) std::cerr <<  "ReadGenome req_genome sent\n";
+    std::vector<char> dataMessage(sizeof(DataMessage) + m_dataMessage.genomeLength * sizeof(double));
+    DataMessage *dataMessagePtr = reinterpret_cast<DataMessage *>(dataMessage.data());
+    numBytes = m_TCP.ReceiveData(dataMessage.data(), int(dataMessage.size()), 10, 0);
+    if (numBytes != int(dataMessage.size())) { return __LINE__; }
+    if (m_debug) std::cerr << "ReadGenome " << dataMessagePtr->text << " received\n"
+                           << "senderIP = " << dataMessagePtr->senderIP
+                           << " senderPort = " << dataMessagePtr->senderPort
+                           << " runID = " << dataMessagePtr->runID
+                           << " genomeLength = " << dataMessagePtr->genomeLength
+                           << " xmlLength = " << dataMessagePtr->xmlLength
+                           << " md5 = " << dataMessagePtr->md5[0] << " " << dataMessagePtr->md5[1] << " "
+                           << dataMessagePtr->md5[2] << " " << dataMessagePtr->md5[3] << "\n";
+    m_dataMessage = *dataMessagePtr;
+
+    // check the current hash
+    if (std::equal(std::begin(m_hash), std::end(m_hash), std::begin(dataMessagePtr->md5)) == false)
     {
-        char text[32];
-        uint32_t length;
-        uint32_t runID;
-        double score;
-        uint32_t md5[4];
-
-        enum { StandardMessageSize = 64 };
-    };
-    TCPIPMessage *messagePtr = reinterpret_cast<TCPIPMessage *>(buffer);
-
-    try
-    {
-        status = m_TCP.StartClient(m_hosts[m_currentHost].port, m_hosts[m_currentHost].host.c_str());
-        if (status != 0) throw -1 * __LINE__;
-
-        if (m_XMLConverter.BaseXMLString().size() == false)
+        // hash doesn't match but is it in the cache?
+        for (size_t i = 0; i < m_hash.size(); i++) m_hash[i] = dataMessagePtr->md5[i];
+        auto it = m_cachedConfigFiles.find(m_hash);
+        if (it != m_cachedConfigFiles.end())
         {
-            strcpy(buffer, "req_xml_length");
-            numBytes = m_TCP.SendData(buffer, TCPIPMessage::StandardMessageSize);
-            //OUT_VAR(buffer);
-            //OUT_VAR(numBytes);
-            if (numBytes != TCPIPMessage::StandardMessageSize) throw __LINE__;
-
-            numBytes = m_TCP.ReceiveData(buffer, TCPIPMessage::StandardMessageSize, 10, 0);
-            //OUT_VAR(numBytes);
-            if (numBytes != TCPIPMessage::StandardMessageSize) throw __LINE__;
-            len = messagePtr->length;
-            //OUT_VAR(len);
-            char *xmlbuf = new char[len];
-
-            strcpy(buffer, "req_xml_data");
-            numBytes = m_TCP.SendData(buffer, TCPIPMessage::StandardMessageSize);
-            //OUT_VAR(buffer);
-            if (numBytes != TCPIPMessage::StandardMessageSize) throw __LINE__;
-
-            numBytes = m_TCP.ReceiveData(xmlbuf, len, 10, 0);
-            //OUT_VAR(numBytes);
-            if (numBytes < len) throw __LINE__;
-            memcpy(m_MD5, md5(xmlbuf, len), sizeof(m_MD5)); // the is the md5 score of everything that is sent (which includes a terminating zero)
-            // std::cerr << hexDigest(gMD5) << "\n";
-
-            m_XMLConverter.LoadBaseXMLString(xmlbuf, len);
-            delete [] xmlbuf;
+            // yes, so just load it from the cache
+            if (m_debug) std::cerr << "XML file found in cache\n";
+            m_XMLConverter.LoadBaseXMLString(it->second.c_str(), it->second.size());
         }
-
-        strcpy(buffer, "req_send_length");
-        numBytes = m_TCP.SendData(buffer, TCPIPMessage::StandardMessageSize);
-        if (numBytes != TCPIPMessage::StandardMessageSize) throw __LINE__;
-
-        numBytes = m_TCP.ReceiveData(buffer, TCPIPMessage::StandardMessageSize, 10, 0);
-        if (numBytes != TCPIPMessage::StandardMessageSize) throw __LINE__;
-        len = messagePtr->length;
-        m_submitCount = messagePtr->runID;
-        // std::cerr << hexDigest((const unsigned int *)ptr) << "\n";
-        if (std::equal(std::begin(m_MD5), std::end(m_MD5), std::begin(messagePtr->md5)) == false)
+        else
         {
-            m_XMLConverter.Clear();
-            throw __LINE__;
+            m_xmlMissing = true;
+            return __LINE__;
         }
-        char *buf = new char[len];
-
-        strcpy(buffer, "req_send_data");
-        numBytes = m_TCP.SendData(buffer, TCPIPMessage::StandardMessageSize);
-        if (numBytes != TCPIPMessage::StandardMessageSize) throw __LINE__;
-
-        //OUT_VAR(len);
-        //OUT_VAR(g_submitCount);
-
-        numBytes = m_TCP.ReceiveData(buf, len, 10, 0);
-        if (numBytes < len) throw __LINE__;
-        //OUT_VAR(buf);
-
-        double *dPtr = (double *)buf;
-        int genomeLength = len / sizeof(double);
-        m_XMLConverter.ApplyGenome(genomeLength, dPtr);
-        size_t xmlLen;
-        const char *xmlPtr = m_XMLConverter.GetFormattedXML(&xmlLen);
-        myFile.SetRawData(xmlPtr, xmlLen);
-        delete [] buf;
-        m_TCP.StopClient();
     }
 
-    catch (int e)
-    {
-        if (e > 0) m_TCP.StopClient();
-#ifdef TCP_DEBUG
-        std::cerr <<  "ReadModel error on line " << e << "\n";
-#endif
-        m_currentHost++;
-        if (m_currentHost >= m_hosts.size()) m_currentHost = 0;
-        return 1;
-    }
+    // and apply the new genome
+    m_XMLConverter.ApplyGenome(int(dataMessagePtr->genomeLength), dataMessagePtr->payload.genome);
+    size_t xmlLen;
+    const char *xmlPtr = m_XMLConverter.GetFormattedXML(&xmlLen);
 
     // create the simulation object
-    m_simulation = new Simulation();
+    m_simulation = std::make_unique<Simulation>();
     if (m_outputWarehouseFilename.size()) m_simulation->SetOutputWarehouseFile(m_outputWarehouseFilename);
     if (m_outputModelStateFilename.size()) m_simulation->SetOutputModelStateFile(m_outputModelStateFilename);
     if (m_outputModelStateAtTime >= 0) m_simulation->SetOutputModelStateAtTime(m_outputModelStateAtTime);
@@ -278,11 +247,10 @@ int ObjectiveMainTCP::ReadModel()
     if (m_inputWarehouseFilename.size()) m_simulation->AddWarehouse(m_inputWarehouseFilename);
     if (m_outputModelStateAtWarehouseDistance >= 0) m_simulation->SetOutputModelStateAtWarehouseDistance(m_outputModelStateAtWarehouseDistance);
 
-    if (m_simulation->LoadModel(myFile.GetRawData(), myFile.GetSize()))
+    if (m_simulation->LoadModel(xmlPtr, xmlLen))
     {
-        delete m_simulation;
-        m_simulation = nullptr;
-        return 1;
+        m_simulation.reset();
+        return __LINE__;
     }
 
     // late initialisation options
@@ -290,7 +258,46 @@ int ObjectiveMainTCP::ReadModel()
     if (m_warehouseFailDistanceAbort != 0) m_simulation->SetWarehouseFailDistanceAbort(m_warehouseFailDistanceAbort);
 
     return 0;
+
 }
+
+int ObjectiveMainTCP::ReadXML()
+{
+    if (m_debug) std::cerr <<  "ReadXML m_currentHost " << m_currentHost << " host " << m_hosts[m_currentHost].host << " port " << m_hosts[m_currentHost].port << "\n";
+
+    int status = m_TCP.StartClient(m_hosts[m_currentHost].port, m_hosts[m_currentHost].host.c_str());
+    if (status != 0) { return __LINE__; }
+    if (m_debug) std::cerr <<  "ReadGenome TCP.StartClient initiated\n";
+    TCPStopClientGuard stopClientGuard(&m_TCP);
+
+    m_requestMessage = {};
+    m_TCP.GetMyAddress(&m_requestMessage.senderIP, &m_requestMessage.senderPort);
+    strcpy(m_requestMessage.text, "req_xml");
+    int numBytes = m_TCP.SendData(m_requestMessage.text, sizeof(RequestMessage));
+    if (numBytes != sizeof(RequestMessage)) { return __LINE__; }
+    if (m_debug) std::cerr << "ReadXML req_xml sent\n";
+
+    std::vector<char> dataMessage(sizeof(DataMessage) + m_dataMessage.xmlLength * sizeof(char));
+    DataMessage *dataMessagePtr = reinterpret_cast<DataMessage *>(dataMessage.data());
+    numBytes = m_TCP.ReceiveData(dataMessage.data(), int(dataMessage.size()), 10, 0);
+    if (numBytes != int(dataMessage.size())) { return __LINE__; }
+    if (m_debug) std::cerr << "ReadXML xml received " << dataMessage.size() << " characters\n";
+
+    m_XMLConverter.LoadBaseXMLString(dataMessagePtr->payload.xml, dataMessagePtr->xmlLength);
+    std::string xml(dataMessagePtr->payload.xml, dataMessagePtr->xmlLength);
+    for (size_t i = 0; i < m_hash.size(); i++) m_hash[i] = dataMessagePtr->md5[i];
+    m_cachedConfigFiles[m_hash] = std::move(xml);
+    m_cachedConfigFilesQueue.push_back(m_hash);
+
+    if (m_cachedConfigFilesQueue.size() > m_cachedConfigFilesLimit)
+    {
+        m_cachedConfigFiles.erase(m_cachedConfigFilesQueue.front());
+        m_cachedConfigFilesQueue.pop_front();
+    }
+    m_xmlMissing = false;
+    return 0;
+}
+
 
 // returns 0 if continuing
 // returns 1 if exit requested
@@ -306,44 +313,21 @@ int ObjectiveMainTCP::WriteOutput()
                  " CPUTimeIO: " << m_IOTime <<
                  "\n";
 
-    int status = 0;
-    int numBytes;
-    char buffer[64];
-    struct TCPIPMessage
-    {
-        char text[32];
-        uint32_t length;
-        uint32_t runID;
-        double score;
-        uint32_t md5[4];
+    int status = m_TCP.StartClient(m_hosts[m_currentHost].port, m_hosts[m_currentHost].host.c_str());
+    if (status != 0) { return __LINE__; }
+    if (m_debug) std::cerr <<  "ReadGenome TCP.StartClient initiated\n";
+    TCPStopClientGuard stopClientGuard(&m_TCP);
 
-        enum { StandardMessageSize = 64 };
-    };
-    TCPIPMessage *messagePtr = (TCPIPMessage *)buffer;
-    try
+    m_requestMessage = {};
+    m_TCP.GetMyAddress(&m_requestMessage.senderIP, &m_requestMessage.senderPort);
+    strcpy(m_requestMessage.text, "result");
+    m_requestMessage.score = score;
+    m_requestMessage.runID = m_dataMessage.runID;
+    int numBytes = m_TCP.SendData(m_requestMessage.text, sizeof(RequestMessage));
+    if (numBytes != sizeof(RequestMessage))
     {
-        for (int i = 0; i < 10; i++)
-        {
-            status = m_TCP.StartClient(m_hosts[m_currentHost].port, m_hosts[m_currentHost].host.c_str());
-            if (status == 0) break;
-            std::this_thread::sleep_for(std::chrono::microseconds(m_sleepAfterFailMicroseconds));
-        }
-        if (status != 0) throw -1 * __LINE__;
-
-        strcpy(messagePtr->text, "result");
-        messagePtr->score = score;
-        messagePtr->runID = m_submitCount;
-        memcpy(messagePtr->md5, m_MD5, sizeof(m_MD5));
-        numBytes = m_TCP.SendData(buffer, TCPIPMessage::StandardMessageSize);
-        if (numBytes != TCPIPMessage::StandardMessageSize) throw __LINE__;
-        m_TCP.StopClient();
-    }
-
-    catch (int e)
-    {
-        std::cerr << "Unable to write result back to host " << m_hosts[m_currentHost].host << " on port " << m_hosts[m_currentHost].port << "\n";
-        if (e > 0) m_TCP.StopClient();
-        return 1;
+        std::cerr << "SendData error: Unable to write result back to host " << m_hosts[m_currentHost].host << " on port " << m_hosts[m_currentHost].port << "\n";
+        return __LINE__;
     }
 
     return 0;

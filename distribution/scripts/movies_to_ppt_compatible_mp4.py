@@ -40,12 +40,12 @@ def movies_to_ppt_compatible_mp4():
     for current_file in args.items:
         if args.verbose:
             print('Testing %s\n' % (current_file))
-        file_type = subprocess.check_output([args.file, current_file])
+        file_type = subprocess.check_output([args.file, '-b', current_file]).decode('utf-8')
         if args.verbose:
             print('File type is %s\n' % (file_type))
         if re.search(args.regex, file_type):
             print('File %s type matches %s\n' % (current_file, args.regex))
-            media_data = subprocess.check_output([args.ffprobe, '-i', current_file], stderr=subprocess.STDOUT)
+            media_data = subprocess.check_output([args.ffprobe, '-i', current_file], stderr=subprocess.STDOUT).decode('utf-8')
             video_codec = 'copy'
             audio_codec = 'copy'
             if re.search('h264', media_data) == None:
@@ -76,7 +76,7 @@ def pretty_print_argparse_args(argparse_args):
 def quoted_if_necessary(input_list):
     output_list = []
     for item in input_list:
-        if re.search('[^a-zA-Z0-9_-.]', item):
+        if re.search('[^a-zA-Z0-9_.-]', item):
             item = '"' + item + '"'
         output_list.append(item)
     return output_list

@@ -64,6 +64,7 @@
 #include "Filter.h"
 
 #include "ode/ode.h"
+#include "pystring.h"
 
 #include <iostream>
 #include <fstream>
@@ -90,9 +91,10 @@ Simulation::Simulation()
     m_WorldID = dWorldCreate();
     m_SpaceID = dHashSpaceCreate(nullptr); // FIX ME hash space is a compromise but this should probably be user controlled
     m_ContactGroup = dJointGroupCreate(0);
-    dSetMessageHandler(ODEMessageTrap);
-    dSetErrorHandler(ODEMessageTrap);
-    dSetDebugHandler(ODEMessageTrap);
+    dSetMessageHandler(ErrorHandler::ODEMessageTrap);
+    dSetErrorHandler(ErrorHandler::ODEMessageTrap);
+    dSetDebugHandler(ErrorHandler::ODEMessageTrap);
+//    std::cerr << "dGetMessageHandler() = " << size_t(dGetMessageHandler()) << "\n";
 }
 
 //----------------------------------------------------------------------------
@@ -135,10 +137,12 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
     for (auto &&it : *m_parseXML.elementList()) unprocessedList.push_back(it.get());
     size_t lastSize = 0;
     size_t cycles = 0;
+    std::vector<std::string> errorList;
     while (unprocessedList.size() > 0 && unprocessedList.size() != lastSize)
     {
         cycles++;
         lastSize = unprocessedList.size();
+        errorList.clear();
         for (auto it = unprocessedList.begin(); it != unprocessedList.end();)
         {
             lastErrorPtr()->clear();
@@ -157,6 +161,7 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
             else if ((*it)->tag == "FLUIDSAC"s) ParseFluidSac(*it);
             if (lastErrorPtr()->size())
             {
+                errorList.push_back(*lastErrorPtr());
                 it++;
             }
             else
@@ -165,7 +170,11 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
             }
         }
     }
-    if (lastErrorPtr()->size()) return lastErrorPtr();
+    if (lastErrorPtr()->size())
+    {
+        setLastError(pystring::join("\n"s, errorList));
+        return lastErrorPtr();
+    }
     if (cycles > 1)
         std::cerr << "Warning: file took " << cycles << " cycles to parse. Consider reordering for speed.\n";
 
@@ -337,6 +346,9 @@ void Simulation::UpdateSimulation()
         break;
     }
 
+    // test for penalties
+    if (ErrorHandler::IsMessage()) m_KinematicMatchFitness += m_global->NumericalErrorsScore();
+
     // calculate the energies
     for (auto &&iter1 : m_MuscleList)
     {
@@ -395,19 +407,21 @@ void Simulation::UpdateSimulation()
 bool Simulation::TestForCatastrophy()
 {
     // first of all check to see that ODE is happy
-    if (IsMessage())
+    if (ErrorHandler::IsMessage())
     {
-        int num;
-        const char *messageText = GetLastMessage(&num);
-        if (m_AbortOnODEMessage)
+        int num = ErrorHandler::GetLastMessageNumber();
+        std::string messageText = ErrorHandler::GetLastMessage();
+        m_numericalErrorCount++;
+        if (m_numericalErrorCount > m_global->PermittedNumericalErrors())
         {
-            std::cerr << "t=" << m_SimulationTime << "Failed due to ODE warning " << num << " " << messageText << "\n";
+            std::cerr << "t=" << m_SimulationTime << " error count=" << m_numericalErrorCount << " Failed due to ODE warning " << num << " " << messageText << "\n";
             return true;
         }
         else
         {
             std::cerr << "t=" << m_SimulationTime << " ODE warning " << num << " " << messageText << "\n";
         }
+        ErrorHandler::ClearMessage();
     }
 
     // check for simulation error
@@ -1322,14 +1336,23 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
     }
 
     std::unique_ptr<dContact[]> contact = std::make_unique<dContact[]>(size_t(s->m_MaxContacts));
-    double cfm = MAX(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftCFM(),
+    // the choice of std::max(cfm) and std::min(erp) means that the softest contact should be used
+    double cfm = std::max(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftCFM(),
                      reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactSoftCFM());
-    double erp = MIN(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftERP(),
+    double erp = std::min(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftERP(),
                      reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactSoftERP());
-    double mu = MIN(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactMu(),
+    // just use the largest for mu, rho and bounce
+    double mu = std::max(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactMu(),
                     reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactMu());
-    double bounce = MAX(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactBounce(),
+    double bounce = std::max(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactBounce(),
                         reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactBounce());
+    double rho = std::max(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetRho(),
+                        reinterpret_cast<Geom *>(dGeomGetData(o2))->GetRho());
+    if (erp < 0) // the only one that needs checking because all the others are std::max so values <0 will never be chosen if one value is >0
+    {
+        if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftERP() < 0) erp = reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactSoftERP();
+        else erp = reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftERP();
+    }
     for (size_t i = 0; i < size_t(s->m_MaxContacts); i++)
     {
         contact[i].surface.mode = dContactApprox1;
@@ -1339,12 +1362,17 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
             contact[i].surface.bounce = bounce;
             contact[i].surface.mode += dContactBounce;
         }
+        if (rho >= 0)
+        {
+            contact[i].surface.rho = rho;
+            contact[i].surface.mode += dContactRolling;
+        }
         if (cfm >= 0)
         {
             contact[i].surface.soft_cfm = cfm;
             contact[i].surface.mode += dContactSoftCFM;
         }
-        if (erp <= 1)
+        if (erp >= 0)
         {
             contact[i].surface.soft_erp = erp;
             contact[i].surface.mode += dContactSoftERP;

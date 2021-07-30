@@ -22,6 +22,7 @@ public:
     void fillVisibitilityLists(Simulation *simulation);
     void setVisibleSwitchAll(const QString &elementType, bool visibility);
     void setOutputSwitchAll(const QString &elementType, bool output);
+    void setVisibleSwitch(const QString &elementType, const QString &elementName, bool visibility);
 
     static bool BinarySearch(QTreeWidgetItem *A, const QString &value, int *index);
 

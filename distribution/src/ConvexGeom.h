@@ -31,6 +31,7 @@ private:
     // these are the data as supplied in the XML
     std::vector<double> m_vertices;
     std::vector<int> m_triangles;
+    bool m_reverseWinding = false;
     // these are the data as required by the setConvex routine
     std::vector<double> m_planes;
     unsigned int m_planecount = 0;

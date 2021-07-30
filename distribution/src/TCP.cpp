@@ -37,6 +37,14 @@
 
 TCP::TCP()
 {
+}
+
+TCP::~TCP()
+{
+}
+
+int TCP::OneOffInitialisation()
+{
 #if defined(_WIN32) || defined(WIN32)
     WORD wVersionRequested;
     WSADATA wsaData;
@@ -44,16 +52,22 @@ TCP::TCP()
     /* Use the MAKEWORD(lowbyte, highbyte) macro declared in Windef.h */
     wVersionRequested = MAKEWORD(2, 2);
     err = WSAStartup(wVersionRequested, &wsaData);
-    if (err != 0) std::cerr << "Error in TCP::TCP: Unable to find a usable Winsock DLL " << err;
+    if (err != 0)
+    {
+        std::cerr << "Error in TCP::TCP: Unable to find a usable Winsock DLL " << err;
+        return __LINE__;
+    }
     if (LOBYTE(wsaData.wVersion) != 2|| HIBYTE(wsaData.wVersion) != 2)
     {
        WSACleanup();
        std::cerr << "Error in TCP::TCP: Version mismatch in Winsock DLL " << err;
+       return __LINE__;
     }
 #endif
+    return 0;
 }
 
-TCP::~TCP()
+void TCP::OneOffCleanup()
 {
 #if defined(_WIN32) || defined(WIN32)
     WSACleanup();
@@ -355,5 +369,34 @@ int TCP::CheckReceiver(long secTimeout, long usecTimeout)
     return n; // 0 if nothing ready, 1 if something there, -1 on error
 }
 
+void TCP::GetSenderAddress(uint32_t *address, uint32_t *port)
+{
+    // only valid for IP4
+    if (m_senderAddress.sin_family == AF_INET)
+    {
+        *address = ntohl(m_senderAddress.sin_addr.s_addr);
+        *port = ntohs(m_senderAddress.sin_port);
+    }
+    else
+    {
+        *address = 0;
+        *port = 0;
+    }
+}
+
+void TCP::GetMyAddress(uint32_t *address, uint32_t *port)
+{
+    // only valid for IP4
+    if (m_myAddress.sin_family == AF_INET)
+    {
+        *address = ntohl(m_myAddress.sin_addr.s_addr);
+        *port = ntohs(m_myAddress.sin_port);
+    }
+    else
+    {
+        *address = 0;
+        *port = 0;
+    }
+}
 
 

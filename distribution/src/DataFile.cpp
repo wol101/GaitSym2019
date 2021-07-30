@@ -18,6 +18,8 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <iostream>
+#include <locale>
+#include <codecvt>
 
 #ifdef STRINGS_H_NEEDED
 #include <strings.h>
@@ -1291,7 +1293,7 @@ bool DataFile::WriteParameter(const char * const param, double val)
 {
     char buffer[64];
 
-    sprintf(buffer, "%.17e", val);
+    sprintf(buffer, "%.18g", val);
     if (WriteParameter(param, buffer)) return true;
 
     return false;
@@ -1397,7 +1399,7 @@ bool DataFile::WriteNext(double val, char after)
 {
     char buffer[64];
 
-    sprintf(buffer, "%.17e", val);
+    sprintf(buffer, "%.18g", val);
     if (WriteNext(buffer, after)) return true;
 
     return false;
@@ -1652,8 +1654,7 @@ bool DataFile::EndsWith(const char *str, const char *suffix)
     return strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
 }
 
-#include <locale>
-#include <codecvt>
+
 
 std::wstring DataFile::ConvertUTF8ToWide(const std::string& str)
 {

@@ -336,21 +336,17 @@ void FacetedConicSegment::WritePOVRay(std::ostringstream &theString)
     if (drawDisc)
     {
         theString << "  disc {\n";
-        theString << "    <" << bpx << "," << bpy << "," << bpz << ">, <"
-                  << cpx - bpx << "," << cpy - bpy << "," << cpz - bpz << ">, " << MAX(m_R1, m_R2) << "\n";
+        theString << "    <" << bpx << "," << bpy << "," << bpz << ">, <" << cpx - bpx << "," << cpy - bpy << "," << cpz - bpz << ">, " << MAX(m_R1, m_R2) << "\n";
     }
     else
     {
         theString << "  cone {\n";
-        theString << std::setprecision(17) << "    <" << bpx << "," << bpy << "," << bpz << ">, " << m_R1 <<
-                  ", <"
-                  << cpx << "," << cpy << "," << cpz << ">, " << m_R2 << "\n";
+        theString << "    <" << bpx << "," << bpy << "," << bpz << ">, " << m_R1 << ", <" << cpx << "," << cpy << "," << cpz << ">, " << m_R2 << "\n";
     }
 
     // now colour
     theString << "    pigment {\n";
-    theString << "      color rgbf<" << blendColour().redF() << "," << blendColour().greenF() << "," <<
-              blendColour().blueF() << "," << 1 - blendColour().alphaF() << ">\n";
+    theString << "      color rgbf<" << blendColour().redF() << "," << blendColour().greenF() << "," << blendColour().blueF() << "," << 1 - blendColour().alphaF() << ">\n";
     theString << "    }\n";
 
     theString << "  }\n";

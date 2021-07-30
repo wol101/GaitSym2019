@@ -117,6 +117,7 @@ void DialogGeoms::accept() // this catches OK and return/enter
     m_outputGeom->setGeomMarker(markerList->at(ui->comboBoxGeomMarker->currentText().toStdString()).get());
     m_outputGeom->SetSpringDamp(ui->lineEditSpring->value(), ui->lineEditDamp->value(), m_simulation->GetTimeIncrement());
     m_outputGeom->SetContactMu(ui->lineEditMu->value());
+    m_outputGeom->SetRho(ui->lineEditRho->value());
     m_outputGeom->SetContactBounce(ui->lineEditBounce->value());
     m_outputGeom->SetAbort(ui->checkBoxAbort->isChecked());
 
@@ -195,10 +196,12 @@ void DialogGeoms::lateInitialise()
     ui->lineEditSpring->setValue(Preferences::valueDouble("GlobalDefaultSpringConstant"));
     ui->lineEditDamp->setBottom(std::numeric_limits<double>::min());
     ui->lineEditDamp->setValue(Preferences::valueDouble("GlobalDefaultDampingConstant"));
-    ui->lineEditBounce->setBottom(0);
-    ui->lineEditBounce->setValue(0);
-    ui->lineEditMu->setBottom(0);
+    ui->lineEditBounce->setBottom(-1);
+    ui->lineEditBounce->setValue(-1);
+    ui->lineEditMu->setBottom(-1);
     ui->lineEditMu->setValue(1);
+    ui->lineEditRho->setBottom(-1);
+    ui->lineEditRho->setValue(-1);
     ui->checkBoxAbort->setChecked(false);
     ui->checkBoxAdhesion->setChecked(false);
 
@@ -244,6 +247,7 @@ void DialogGeoms::lateInitialise()
     if ((s = m_inputGeom->findAttribute("DampingConstant"s)).size()) ui->lineEditDamp->setValue(GSUtil::Double(s));
     if ((s = m_inputGeom->findAttribute("Bounce"s)).size()) ui->lineEditBounce->setValue(GSUtil::Double(s));
     if ((s = m_inputGeom->findAttribute("Mu"s)).size()) ui->lineEditMu->setValue(GSUtil::Double(s));
+    if ((s = m_inputGeom->findAttribute("Rho"s)).size()) ui->lineEditRho->setValue(GSUtil::Double(s));
     if ((s = m_inputGeom->findAttribute("Abort"s)).size()) ui->checkBoxAbort->setChecked(GSUtil::Bool(s));
     if ((s = m_inputGeom->findAttribute("Adhesion"s)).size()) ui->checkBoxAdhesion->setChecked(GSUtil::Bool(s));
 

@@ -27,26 +27,6 @@ public:
     SMART_ENUM(DataType, dataTypeStrings, dataTypeCount, XP, YP, ZP, Q0, Q1, Q2, Q3, XV, YV, ZV,
                XRV, YRV, ZRV, Angle, MetabolicEnergy, MechanicalEnergy, DriverError, Time, DeltaTime);
 
-//    enum DataType
-//    {
-//        XP,
-//        YP,
-//        ZP,
-//        Q0,
-//        Q1,
-//        Q2,
-//        Q3,
-//        XV,
-//        YV,
-//        ZV,
-//        XRV,
-//        YRV,
-//        ZRV,
-//        Angle,
-//        MetabolicEnergy,
-//        MechanicalEnergy,
-//        DriverError
-//    };
 
     void SetTarget(NamedObject *target);
     NamedObject *GetTarget();

@@ -767,6 +767,44 @@ int Body::SanityCheck(Body *otherBody, Simulation::AxisType axis, const std::str
     return 0;
 }
 
+std::string Body::MassCheck(const dMass *m)
+{
+    if (m->mass <= 0)
+    {
+        return "mass must be > 0"s;
+    }
+    if (!dIsPositiveDefinite (m->I,3))
+    {
+        return "inertia must be positive definite"s;
+    }
+
+    // verify that the center of mass position is consistent with the mass
+    // and inertia matrix. this is done by checking that the inertia around
+    // the center of mass is also positive definite. from the comment in
+    // dMassTranslate(), if the body is translated so that its center of mass
+    // is at the point of reference, then the new inertia is:
+    //   I + mass*crossmat(c)^2
+    // note that requiring this to be positive definite is exactly equivalent
+    // to requiring that the spatial inertia matrix
+    //   [ mass*eye(3,3)   M*crossmat(c)^T ]
+    //   [ M*crossmat(c)   I               ]
+    // is positive definite, given that I is PD and mass>0. see the theorem
+    // about partitioned PD matrices for proof.
+
+    dMatrix3 I2,chat;
+    dSetZero (chat,12);
+    dSetCrossMatrixPlus (chat,m->c,4);
+    dMultiply0_333 (I2,chat,chat);
+    for (int i=0; i<3; i++) I2[i] = m->I[i] + m->mass*I2[i];
+    for (int i=4; i<7; i++) I2[i] = m->I[i] + m->mass*I2[i];
+    for (int i=8; i<11; i++) I2[i] = m->I[i] + m->mass*I2[i];
+    if (!dIsPositiveDefinite (I2,3))
+    {
+        return "center of mass inconsistent with mass parameters"s;
+    }
+    return ""s;
+}
+
 void Body::SetLinearDamping(double linearDamping)
 {
     m_LinearDamping = linearDamping;
@@ -855,6 +893,12 @@ std::string *Body::createFromAttributes()
 //    I23 = doubleList[5];
 //    dMassSetParameters(&mass, theMass, 0, 0, 0, I11, I22, I33, I12, I13, I23);
     dMassSetParameters(&mass, theMass, 0, 0, 0, doubleList[0], doubleList[1], doubleList[2], doubleList[3], doubleList[4], doubleList[5]);
+    buf = MassCheck(&mass);
+    if (buf.size())
+    {
+        setLastError("BODY ID=\""s + name() +"\" mass property error: " + buf);
+        return lastErrorPtr();
+    }
     this->SetMass(&mass);
 
     // get limits if available

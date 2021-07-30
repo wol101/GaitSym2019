@@ -35,6 +35,7 @@
 #define RETURNLINEIFZERO(a) if (!(a)) return __LINE__
 #define RETURNLINEIF(a) if (a) return __LINE__
 #define SQUARE(a) ((a) * (a))
+#define CUBE(x) ((x)*(x)*(x))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define ABS(a) ((a) >= 0 ? (a) : -(a))
@@ -543,6 +544,9 @@ static std::string ToString(const pgd::Matrix3x3 &m);
 static std::string ToString(const pgd::Quaternion &v);
 static std::string ToString(const pgd::Vector3 &v);
 static std::string ToString(uint32_t address, uint16_t port);
+
+static std::string ToString(const char * const printfFormatString, ...);
+static std::string ConvertIPAddressToString(uint32_t address, bool networkOrder);
 
 #if defined(__APPLE__)
 static std::string *ToString(size_t v, std::string *output);

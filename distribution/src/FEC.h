@@ -39,8 +39,8 @@
  * This is the only parameter you may want to change.
  */
 
-#define GF_BITS  8	/* code over GF(2**GF_BITS) - change to suit */
-#define	GF_SIZE ((1 << GF_BITS) - 1)	/* powers of \alpha */
+#define GF_BITS 16                      /* code over GF(2**GF_BITS) - change to suit */
+#define GF_SIZE ((1 << GF_BITS) - 1)    /* powers of \alpha */
 
 /*
  * You should not need to change anything beyond this point.
@@ -64,7 +64,7 @@ typedef unsigned short gf;
 
 struct fec_parms {
     unsigned long magic ;
-    int k, n ;		/* parameters of the code */
+    int k, n ;                          /* parameters of the code */
     gf *enc_matrix ;
 } ;
 

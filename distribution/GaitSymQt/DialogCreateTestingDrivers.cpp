@@ -218,9 +218,9 @@ void DialogCreateTestingDrivers::applyCreateTestingDrivers(double activationTime
         newElement->attributes["TargetIDList"s] = muscleNames[i];
         newElement->attributes["Type"s] = "StackedBoxcar"s;
         newElement->attributes["StackSize"s] = "1"s;
-        newElement->attributes["CycleTime"s] = std::to_string(double(muscleNames.size()) * activationTime);
-        newElement->attributes["Widths"s] = std::to_string(1.0 / double(muscleNames.size()));
-        newElement->attributes["Delays"s] = std::to_string(double(i) / double(muscleNames.size()));
+        newElement->attributes["CycleTime"s] = std::to_string(double(muscleNames.size() - 1) * activationTime);
+        newElement->attributes["Widths"s] = std::to_string(1.0 / double(muscleNames.size() - 1));
+        newElement->attributes["Delays"s] = std::to_string(double(i) / double(muscleNames.size() - 1));
         newElement->attributes["Heights"s] = std::to_string(activationValue);
         newElement->attributes["LinearInterpolation"s] = "false"s;
         newElement->attributes["DriverRange"s] = "0 1"s;
@@ -233,6 +233,7 @@ void DialogCreateTestingDrivers::applyCreateTestingDrivers(double activationTime
         newElement->attributes["Size3"s] = "0"s;
         newElements.push_back(std::move(newElement));
     }
+
     // and set the run time
     for (auto &&tagElementIt : *elementList)
     {
@@ -241,7 +242,7 @@ void DialogCreateTestingDrivers::applyCreateTestingDrivers(double activationTime
             auto timeLimit = tagElementIt->attributes.find("TimeLimit"s);
             if (timeLimit != tagElementIt->attributes.end())
             {
-                timeLimit->second = std::to_string(double(muscleNames.size()) * activationTime);
+                timeLimit->second = std::to_string(double(muscleNames.size() - 1) * activationTime);
             }
         }
     }

@@ -232,7 +232,7 @@ void DialogDrivers::lateInitialise()
     ui->lineEditMinimum->setValue(0);
     ui->lineEditMaximum->setValue(1);
     ui->checkBoxInterpolate->setChecked(false);
-    ui->spinBoxTargets->setValue(1);
+    ui->spinBoxTargets->setValue(0);
 
     ui->lineEditFixedValue->setValue(1);
 
@@ -293,7 +293,8 @@ void DialogDrivers::lateInitialise()
         m_targetComboBoxList.push_back(comboBoxDrivable);
     }
     m_targetGridSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    m_targetGridLayout->addItem(m_targetGridSpacer, ui->spinBoxTargets->value(), 0);
+    m_targetGridLayout->addItem(m_targetGridSpacer, int(targetNames.size()), 0);
+    ui->spinBoxTargets->setValue(int(targetNames.size()));
 
     ui->lineEditMinimum->setValue(m_inputDriver->MinValue());
     ui->lineEditMaximum->setValue(m_inputDriver->MaxValue());
@@ -378,7 +379,7 @@ void DialogDrivers::lateInitialise()
             m_boxcarLineEditDoubleList.push_back(lineEditHeight);
         }
         m_boxcarGridSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        m_boxcarGridLayout->addItem(m_boxcarGridSpacer, ui->spinBoxTargets->value(), 0);
+        m_boxcarGridLayout->addItem(m_boxcarGridSpacer, stackSize, 0);
 
         ui->spinBoxBoxcarStackSize->setValue(stackSize);
         ui->lineEditBoxcarCycleTime->setValue(GSUtil::Double(stackedBoxcarDriver->findAttribute("CycleTime"s)));

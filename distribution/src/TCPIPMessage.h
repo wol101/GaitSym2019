@@ -14,8 +14,9 @@
 
 struct TCPIPMessage
 {
-    char text[24];
-    uint32_t length;
+    char text[16];
+    uint32_t genomeLength;
+    uint32_t xmlLength;
     uint32_t runID;
     uint32_t senderIP;
     uint32_t senderPort;

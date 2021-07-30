@@ -10,27 +10,30 @@ import re
 # this line means that all the math functions do not require the math. prefix
 from math import *
 
-def apply_genome():
+def apply_population():
 
-    parser = argparse.ArgumentParser(description='Apply a genome to a GaitSym XML config file')
-    parser.add_argument('-g', '--genome_file', default='', help='the genome file to use (defaults to last BestGenome*.txt)')
+    parser = argparse.ArgumentParser(description='Apply a population to a GaitSym XML config file')
+    parser.add_argument('-p', '--population_file', default='', help='the population file to use (defaults to Population*.txt)')
     parser.add_argument('-i', '--input_xml_file', default='workingConfig.xml', help='the input GaitSym XML config file (defaults to workingConfig.xml)')
-    parser.add_argument('-o', '--output_xml_file', default='', help='the output GaitSym XML config file (defaults to genome_file name with .xml)')
+    parser.add_argument('-o', '--output_xml_file', default='', help='the output GaitSym XML config file (defaults to population_file genome_number with .xml)')
+    parser.add_argument('-n', '--genome_number', type=int, default=0, help='the required genome (defaults to 0)')
+    parser.add_argument('-r', '--genome_range', nargs=2, type=int, help='the required genome range (defaults to empty)')
     parser.add_argument('-l', '--recursion_limit', type=int, default=10000, help='set the python recursion limit (defaults to 10000)')
+    parser.add_argument('-q', '--query', action='store_true', help='only query the population file by outputting genome number and fitness')
     parser.add_argument('-f', '--force', action='store_true', help='force overwrite of destination file')
     parser.add_argument('-v', '--verbose', action='store_true', help='write out more information whilst processing')
     args = parser.parse_args()
 
     # start by creating any missing arguments
-    if not args.genome_file:
-        files = sorted(glob.glob('BestGenome*.txt'))
+    if not args.population_file:
+        files = sorted(glob.glob('Population*.txt'))
         if not files:
-            print("genome_file not found: glob('BestGenome*.txt') returned nothing")
+            print("population_file not found: glob('Population*.txt') returned nothing")
             sys.exit(1)
-        args.genome_file = files[-1]
+        args.population_file = files[-1]
     if not args.output_xml_file:
-        prefix, suffix = os.path.splitext(args.genome_file)
-        args.output_xml_file = prefix + '.xml'
+        prefix, suffix = os.path.splitext(args.population_file)
+        args.output_xml_file = '%s_%d.xml' % (prefix, args.genome_number)
 
     if args.verbose:
         pretty_print_sys_argv(sys.argv)
@@ -38,62 +41,117 @@ def apply_genome():
 
     if args.verbose:
         print('Checking files')
-    if os.path.exists(args.genome_file) == False:
-        print('genome_file "%s" not found' % (args.genome_file))
-        sys.exit(1)
-    if os.path.exists(args.input_xml_file) == False:
-        print('input_xml_file "%s" not found' % (args.input_xml_file))
-        sys.exit(1)
-    if os.path.exists(args.output_xml_file) == True:
-        if os.path.isfile(args.output_xml_file) == False:
-            print('output_xml_file "%s" exists and is not a file' % (args.output_xml_file))
-            sys.exit(1)
-        if args.force == False:
-            print('output_xml_file "%s" exists, use --force to overwrite' % (args.output_xml_file))
-            sys.exit(1)
-
+    preflight_read_file(args.population_file)
+    preflight_read_file(args.input_xml_file)
+        
+    
     if args.verbose:
-        print('Reading gemome file "%s"' % (args.genome_file))
-    f = open(args.genome_file, 'r')
-    lines = f.readlines()
-    f.close()
-    genome_type = int(lines[0])
+        print('Reading population file "%s"' % (args.population_file))
+    with open(args.population_file, 'r') as f:
+        lines = f.read().splitlines()
+    
+    index = 0
+    n_genomes = int(lines[index])
+    index = index + 1
+    if args.verbose:
+        print('n_genomes = %d' % (n_genomes))
+    if args.genome_number < 0 or args.genome_number >= n_genomes:
+        print('args.genome_number out of range')
+        sys.exit(1)
+    
+    if args.query:
+        for i in range(0, n_genomes):
+            (genes, fitness, index) = parse_genome(lines, index, args)
+            print('Genome n = %d fitness = %g' % (i, fitness))
+        return
+    
+    if not args.genome_range:
+        for i in range(0, args.genome_number + 1):
+            (genes, fitness, index) = parse_genome(lines, index, args)
+
+        if args.verbose:
+            print('Genome %d read, fitness = %g' % (args.genome_number, fitness))
+
+        if args.verbose:
+            print('Reading input XML file "%s"' % (args.input_xml_file))
+        with open(args.input_xml_file, 'r') as f:
+            contents = f.read()
+
+        if args.verbose:
+            print('Parsing input XML file "%s"' % (args.input_xml_file))
+
+        sys.setrecursionlimit(args.recursion_limit)
+        new_contents = process_insert(contents, genes, args)
+
+        preflight_write_file(args.output_xml_file, args.force)
+        if args.verbose:
+            print('Writing output XML file "%s"' % (args.output_xml_file))
+        with open(args.output_xml_file, 'w') as f:
+            f.write(new_contents)
+        return
+    
+    # skip to start genome
+    if args.verbose:
+        print('Skipping to genome %d' % (args.genome_range[0]))
+    for i in range(0, args.genome_range[0]):
+        (genes, fitness, index) = parse_genome(lines, index, args)
+    
+    # now process the range
+    for i in range(args.genome_range[0], min(args.genome_range[1], n_genomes)):
+        (genes, fitness, index) = parse_genome(lines, index, args)
+        args.output_xml_file = '%s_%d.xml' % (prefix, i)
+        
+        if args.verbose:
+            print('Genome %d read, fitness = %g' % (args.genome_number, fitness))
+
+        if args.verbose:
+            print('Reading input XML file "%s"' % (args.input_xml_file))
+        with open(args.input_xml_file, 'r') as f:
+            contents = f.read()
+
+        if args.verbose:
+            print('Parsing input XML file "%s"' % (args.input_xml_file))
+
+        sys.setrecursionlimit(args.recursion_limit)
+        new_contents = process_insert(contents, genes, args)
+
+        preflight_write_file(args.output_xml_file, args.force)
+        if args.verbose:
+            print('Writing output XML file "%s"' % (args.output_xml_file))
+        with open(args.output_xml_file, 'w') as f:
+            f.write(new_contents)
+    return
+
+def parse_genome(lines, index, args):
+    if index > len(lines) - 3:
+        print('Not enough lines in "%s"' % (args.genome_file))
+        sys.exit(1)
+    genome_type = int(lines[index])
+    index = index + 1
     if args.verbose:
         print('genome_type = %d' % (genome_type))
-    num_genes = int(lines[1])
+    num_genes = int(lines[index])
+    index = index + 1
     if args.verbose:
         print('num_genes = %d' % (num_genes))
     genes = []
     for g in range(0, num_genes):
-        l = g + 2
-        if l > len(lines):
+        if index > len(lines):
             print('Not enough genes in "%s"' % (args.genome_file))
             sys.exit(1)
-        tokens = lines[l].split()
+        tokens = lines[index].split()
+        index = index + 1
         if len(tokens) < 1:
-            print('Not enough tokens in "%s"' % (args.genome_file))
+            print('Not enough gene tokens in "%s"' % (args.genome_file))
             sys.exit(1)
-        tokens = lines[l].split()
         genes.append(float(tokens[0]))
-
-    if args.verbose:
-        print('Reading input XML file "%s"' % (args.input_xml_file))
-    f = open(args.input_xml_file, 'r')
-    contents = f.read()
-    f.close()
-
-    if args.verbose:
-        print('Parsing input XML file "%s"' % (args.input_xml_file))
-
-    sys.setrecursionlimit(args.recursion_limit)
-    new_contents = process_insert(contents, genes, args)
-
-    if args.verbose:
-        print('Writing output XML file "%s"' % (args.output_xml_file))
-    f = open(args.output_xml_file, 'w')
-    f.write(new_contents)
-    f.close()
-
+    tokens = lines[index].split()
+    index = index + 1
+    if len(tokens) < 1:
+        print('Not enough fitness tokens in "%s"' % (args.genome_file))
+        sys.exit(1)
+    fitness = float(tokens[0])
+    return (genes, fitness, index)
 
 def process_insert(contents, genes, args):
     next_index_start = contents.find('[[')
@@ -145,7 +203,7 @@ def parse_insert(insert_string, genes):
             print('Error parsing genes in %s' % (insert_string))
             sys.exit(1)
         argument_string = insert_string[match.end(): match.end() + closing_bracket]
-        arguments = split_on_unbracketed_comman(argument_string)
+        arguments = split_on_unbracketed_command(argument_string)
         if len(arguments) != 3:
             print('if() requires 3 arguments %s' % (insert_string))
             sys.exit(1)
@@ -176,7 +234,7 @@ def find_unmatched_close_bracket(input_string):
             return i
     return -1
 
-def split_on_unbracketed_comman(input_string):
+def split_on_unbracketed_command(input_string):
     num_brackets = 0
     split_string = []
     last_string_start = 0
@@ -196,7 +254,23 @@ def split_on_unbracketed_comman(input_string):
     else:
         split_string.append(input_string[last_string_start:])
     return split_string
+    
+def preflight_read_file(filename):
+    if not os.path.exists(filename):
+        print("Error: \"%s\" not found" % (filename))
+        sys.exit(1)
+    if not os.path.isfile(filename):
+        print("Error: \"%s\" not a file" % (filename))
+        sys.exit(1)
 
+def preflight_write_file(filename, force):
+    if os.path.exists(filename) and not os.path.isfile(filename):
+        print("Error: \"%s\" exists and is not a file" % (filename))
+        sys.exit(1)
+    if os.path.exists(filename) and not force:
+        print("Error: \"%s\" exists. Use --force to overwrite" % (filename))
+        sys.exit(1)
+        
 def pretty_print_sys_argv(sys_argv):
     quoted_sys_argv = quoted_if_necessary(sys_argv)
     print((' '.join(quoted_sys_argv)))
@@ -216,4 +290,4 @@ def quoted_if_necessary(input_list):
 # program starts here
 
 if __name__ == '__main__':
-    apply_genome()
+    apply_population()

@@ -59,10 +59,10 @@ def transform_bodies():
             p3 = QuaternionVectorRotate(rotation, p2)
             p4 = Add3x1(p3, rotation_centre)
             p5 = Add3x1(p4, translation)
-            child.attrib["Position"] = " ".join(format(x, ".17g") for x in p5)
+            child.attrib["Position"] = " ".join(format(x, ".18e") for x in p5)
             q1 = [float(i) for i in child.attrib["Quaternion"].split()]
             q2 = QuaternionQuaternionMultiply(rotation, q1)
-            child.attrib["Quaternion"] = " ".join(format(x, ".17g") for x in q2)
+            child.attrib["Quaternion"] = " ".join(format(x, ".18e") for x in q2)
             if args.verbose:
                 print('New: BODY ID="%s" Position="%s" Quaternion="%s"' % (child.attrib["ID"], child.attrib["Position"], child.attrib["Quaternion"]))
     with open(args.output_xml_file, "wb") as out_file:

@@ -21,7 +21,9 @@
 #include <QRegularExpression>
 
 #include <string>
+#include <sstream>
 #include <regex>
+#include <iomanip>
 
 using namespace std::literals::string_literals;
 
@@ -156,7 +158,7 @@ void TextEditDialog::find()
     }
     else
     {
-        QTextDocument::FindFlags options;
+        QTextDocument::FindFlags options = {};
         if (ui->checkBoxCaseSensitive->isChecked()) options |= QTextDocument::FindCaseSensitively;
         result = ui->plainTextEdit->find(findString, options);
     }
@@ -723,11 +725,10 @@ std::string TextEditDialog::attributeMachineArithmetic(const std::string &origin
     if (success)
     {
         double newValue = expression->value();
-        auto buffer = std::make_unique<char[]>(128);
-        int n = std::snprintf(buffer.get(), 128, "%.17g", newValue);
-        if (n >= 0 && n < 128) newString = std::string(buffer.get(), n);
+        std::stringstream ss;
+        ss << std::setprecision(18) << newValue; // this defaults to %.18g format if neither fixed nor scientific is set
+        newString = ss.str();
     }
-
     return newString;
 }
 

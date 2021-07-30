@@ -31,13 +31,16 @@ std::string *ConvexGeom::createFromAttributes()
 {
     if (Geom::createFromAttributes()) return lastErrorPtr();
     std::string buf;
+    buf.reserve(1000000);
     if (findAttribute("IndexStart"s, &buf) == nullptr) return lastErrorPtr();
     m_indexStart = GSUtil::Int(buf);
     if (findAttribute("Vertices"s, &buf) == nullptr) return lastErrorPtr();
     GSUtil::Double(buf, &m_vertices);
     if (findAttribute("Triangles"s, &buf) == nullptr) return lastErrorPtr();
     GSUtil::Int(buf, &m_triangles);
-    if (m_indexStart) { for (size_t i = 0; i < m_triangles.size(); i++) m_triangles[i] -= m_indexStart; }
+    if (findAttribute("ReverseWinding"s, &buf)) m_reverseWinding = GSUtil::Bool(buf);
+    if (m_indexStart) { for (size_t i = 0; i < m_triangles.size(); i++) { m_triangles[i] -= m_indexStart; } }
+    if (m_reverseWinding) { for (size_t i = 0; i < m_triangles.size(); i += 3) { std::swap(m_triangles[i], m_triangles[i + 2]); } }
     initialiseConvexData();
     setConvex(m_planes.data(), m_planecount, m_points.data(), m_pointcount, m_polygons.data());
     return nullptr;
@@ -47,12 +50,16 @@ void ConvexGeom::appendToAttributes()
 {
     Geom::appendToAttributes();
     std::string buf;
+    buf.reserve(1000000);
     setAttribute("Type"s, "Convex"s);
     setAttribute("IndexStart"s, *GSUtil::ToString(m_indexStart, &buf));
+    setAttribute("ReverseWinding"s, *GSUtil::ToString(m_reverseWinding, &buf));
     setAttribute("Vertices"s, *GSUtil::ToString(m_vertices.data(), m_vertices.size(), &buf));
-    if (m_indexStart) { for (size_t i = 0; i < m_triangles.size(); i++) m_triangles[i] += m_indexStart; }
+    if (m_indexStart) { for (size_t i = 0; i < m_triangles.size(); i++) { m_triangles[i] += m_indexStart; } }
+    if (m_reverseWinding) { for (size_t i = 0; i < m_triangles.size(); i += 3) { std::swap(m_triangles[i], m_triangles[i + 2]); } }
     setAttribute("Triangles"s, *GSUtil::ToString(m_triangles.data(), m_triangles.size(), &buf));
-    if (m_indexStart) { for (size_t i = 0; i < m_triangles.size(); i++) m_triangles[i] -= m_indexStart; }
+    if (m_reverseWinding) { for (size_t i = 0; i < m_triangles.size(); i += 3) { std::swap(m_triangles[i], m_triangles[i + 2]); } }
+    if (m_indexStart) { for (size_t i = 0; i < m_triangles.size(); i++) { m_triangles[i] -= m_indexStart; } }
     return;
 }
 
@@ -90,7 +97,7 @@ void ConvexGeom::initialiseConvexData()
     //
     //    n = cross(u, v)
     //
-    // n may need mormalising depending on how u and v are calculated
+    // n may need normalising depending on how u and v are calculated
     // We calculate d as dot(n, p) and a, b, and c are the components of the n vector:
     //
     // dot(n, x) = dot(n, p)
@@ -110,9 +117,12 @@ void ConvexGeom::initialiseConvexData()
         i++;
         v3.Set(m_vertices[m_triangles[i] * 3], m_vertices[m_triangles[i] * 3 + 1], m_vertices[m_triangles[i] * 3 + 2]);
         i++;
+        // for a triangle v1, v2, v3, if the vector U = v2 - v1 and the vector V = v3 - v1
+        // then the normal N = U x V
+        // Note: the normal is the same if V = v3 - v2
         p = v1;
         u = v2 - v1;
-        v = v3 - v2;
+        v = v3 - v1;
         n = pgd::Cross(u, v);
         n.Normalize();
         d = pgd::Dot(n, p);

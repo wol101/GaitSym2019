@@ -758,6 +758,24 @@ void ElementTreeWidget::setVisibleSwitchAll(const QString &elementType, bool vis
     }
 }
 
+void ElementTreeWidget::setVisibleSwitch(const QString &elementType, const QString &elementName, bool visibility)
+{
+    QTreeWidgetItem *tree = nullptr;
+    if (elementType == "BODY") tree = m_bodyTree;
+    if (elementType == "MARKER") tree = m_markerTree;
+    if (elementType == "JOINT") tree = m_jointTree;
+    if (elementType == "GEOM") tree = m_geomTree;
+    if (elementType == "MUSCLE") tree = m_muscleTree;
+    if (elementType == "FLUIDSAC") tree = m_fluidSacTree;
+    if (!tree) return;
+    for (int i = 0; i < tree->childCount (); i++)
+    {
+        QTreeWidgetItem *child = tree->child(i);
+        if (child->text(0) == elementName)
+            child->setCheckState(1, visibility ? Qt::Checked : Qt::Unchecked);
+    }
+}
+
 void ElementTreeWidget::setOutputSwitchAll(const QString &elementType, bool output)
 {
     QTreeWidgetItem *tree = nullptr;

@@ -45,6 +45,7 @@
 #include <QEvent>
 #include <QImage>
 #include <QOpenGLExtraFunctions>
+#include <QPainter>
 
 #include <cmath>
 #include <numeric>
@@ -171,6 +172,11 @@ void SimulationWidget::initializeGL()
 
 void SimulationWidget::paintGL()
 {
+    QPainter painter;
+    painter.begin(this);
+
+    painter.beginNativePainting();
+
     QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
 
     glClearColor(GLclampf(m_backgroundColour.redF()), GLclampf(m_backgroundColour.greenF()), GLclampf(m_backgroundColour.blueF()), GLclampf(m_backgroundColour.alphaF()));
@@ -249,6 +255,9 @@ void SimulationWidget::paintGL()
     }
 
    strokeFont.Draw();
+
+   painter.endNativePainting();
+   painter.end();
 }
 
 void SimulationWidget::resizeGL(int width, int height)
@@ -262,7 +271,7 @@ void SimulationWidget::resizeGL(int width, int height)
 //    qDebug() << image.width() << " " << image.height() << " ";
     int openGLWidth = devicePixelRatio() * width;
     int openGLHeight = devicePixelRatio() * height;
-    EmitResize(openGLWidth, openGLHeight);
+    emit EmitResize(openGLWidth, openGLHeight);
 }
 
 void SimulationWidget::mousePressEvent(QMouseEvent *event)
@@ -512,11 +521,12 @@ void SimulationWidget::menuRequest(const QPoint &pos)
     if (drawable)
     {
         std::string className = drawable->className();
+        name = drawable->name();
         // I want the bit after the Draw
         std::regex elementNameRegEx(".*Draw([A-Za-z]*)");
         std::string elementName = std::regex_replace(className, elementNameRegEx, "$1");
-        action = menu.addAction(QString::fromStdString(elementName) + QString(" Info..."));
-        name = drawable->name();
+        action = menu.addAction(QString("Info %1 %2...").arg(QString::fromStdString(elementName)).arg(QString::fromStdString(name)));
+        action = menu.addAction(QString("Hide %1 %2").arg(QString::fromStdString(elementName)).arg(QString::fromStdString(name)));
     }
 
     while (m_simulation && m_mainWindow->mode() == MainWindow::constructionMode) // use while to prevent nesting of if else statements
@@ -656,11 +666,17 @@ void SimulationWidget::menuRequest(const QPoint &pos)
             m_moveMarkerName = name;
             break;
         }
-        if (action->text().contains("Info"))
+        if (action->text().startsWith("Info"))
         {
             QStringList tokens = action->text().split(" ");
             if (tokens.size())
-                emit EmitInfoRequest(tokens[0], QString::fromStdString(name));
+                emit EmitInfoRequest(tokens[1], QString::fromStdString(name));
+        }
+        if (action->text().startsWith("Hide"))
+        {
+            QStringList tokens = action->text().split(" ");
+            if (tokens.size())
+                emit EmitHideRequest(tokens[1], QString::fromStdString(name));
         }
         break;
     }

@@ -992,6 +992,7 @@ void FacetedObject::Draw()
         m_VBO.create();
         m_VBO.bind();
         m_VBO.allocate(vertBuf.get(), int(vertBufSize * sizeof(GLfloat)));
+        m_VBO.release();
     }
     if (m_visible == false) return;
 
@@ -1017,7 +1018,7 @@ void FacetedObject::Draw()
     m_VBO.release();
 
     // set the uniforms
-    QMatrix4x4 model = this->model(); // thios recalculates the model matrix
+    QMatrix4x4 model = this->model(); // this recalculates the model matrix
     QMatrix4x4 modelView = m_simulationWidget->view() * model;
     m_simulationWidget->facetedObjectShader()->setUniformValue("mvMatrix", modelView);
     QMatrix4x4 modelViewProjection = m_simulationWidget->proj() * modelView;
@@ -1287,6 +1288,12 @@ void FacetedObject::WriteOBJFile(std::ostringstream &out)
 
 // utility to calculate a face normal
 // this assumes anticlockwise winding
+// for a triangle p1, p2, p3, if the vector A = p2 - p1 and the vector B = p3 - p1
+// then the normal N = A x B and can be calculated by:
+// this can be simplified to:
+// Nx = Ay * Bz - Az * By
+// Ny = Az * Bx - Ax * Bz
+// Nz = Ax * By - Ay * Bx
 void FacetedObject::ComputeFaceNormal(const double *v1, const double *v2, const double *v3, double normal[3])
 {
     double a[3], b[3];

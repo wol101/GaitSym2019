@@ -45,6 +45,7 @@ extern "C" void dSetDebugHandler (dMessageFunction *fn)
 extern "C" void dSetMessageHandler (dMessageFunction *fn)
 {
     message_function = fn;
+//    fprintf(stderr, "dSetMessageHandler message_function = %llu\n", (long long unsigned)message_function);
 }
 
 
@@ -110,6 +111,7 @@ extern "C" void dMessage (int num, const char *msg, ...)
 {
     va_list ap;
     va_start (ap,msg);
+//    fprintf(stderr, "dMessage message_function = %llu\n", (long long unsigned)message_function);
     if (message_function) message_function (num,msg,ap);
     else printMessage (num,"ODE Message",msg,ap);
     va_end (ap);

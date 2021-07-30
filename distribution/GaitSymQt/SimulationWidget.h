@@ -198,6 +198,7 @@ signals:
     void EmitDeleteMuscleRequest(const QString &s);
 //    void EmitDeleteFluidSacRequest(const QString &s);
     void EmitInfoRequest(const QString &elementType, const QString &elementName);
+    void EmitHideRequest(const QString &elementType, const QString &elementName);
     void EmitResize(int width, int height);
 
 protected:

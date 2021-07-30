@@ -24,16 +24,16 @@ class Global: public NamedObject
 public:
     Global();
 //    Global(const Global &global);
-    virtual ~Global();
+    virtual ~Global() override;
 
 //    Global& operator=(const Global&);
 
     SMART_ENUM(StepType, stepTypeStrings, stepTypeCount, World, Quick);
     SMART_ENUM(FitnessType, fitnessTypeStrings, fitnessTypeCount, KinematicMatch, KinematicMatchMiniMax);
 
-    virtual std::string *createFromAttributes();
-    virtual void saveToAttributes();
-    virtual void appendToAttributes();
+    virtual std::string *createFromAttributes() override;
+    virtual void saveToAttributes() override;
+    virtual void appendToAttributes() override;
 
     FitnessType fitnessType() const;
     void setFitnessType(FitnessType fitnessType);
@@ -114,11 +114,18 @@ public:
     static std::string percentEncode(const std::string &input, const std::string &encodeList);
     static std::string percentDecode(const std::string &input);
 
+    int PermittedNumericalErrors() const;
+    void setPermittedNumericalErrors(int PermittedNumericalErrors);
+
+    double NumericalErrorsScore() const;
+    void setNumericalErrorsScore(double NumericalErrorsScore);
+
 private:
     FitnessType m_FitnessType = KinematicMatch;
     StepType m_StepType = World;
     bool m_AllowConnectedCollisions = false;
     bool m_AllowInternalCollisions = false;
+    int m_PermittedNumericalErrors = 0;
     pgd::Vector3 m_Gravity = {0, 0, -9.81};
     double m_BMR = 0;
     double m_CFM = 1e-10;
@@ -136,9 +143,9 @@ private:
     double m_WarehouseUnitIncreaseDistanceThreshold = 0.5;
     double m_LinearDamping = 0;
     double m_AngularDamping = 0;
+    double m_NumericalErrorsScore = 0;
     std::string m_CurrentWarehouseFile;
     std::string m_DistanceTravelledBodyIDName;
-    std::string m_OutputModelStateFile;
     std::vector<std::string> m_MeshSearchPath = {"."s};
 };
 

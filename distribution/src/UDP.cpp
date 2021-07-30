@@ -19,10 +19,14 @@
 #include <map>
 #include <iostream>
 #include <iomanip>
+#include <limits>
+#include <algorithm>
+#include <cstring>
+#include <assert.h>
 
 #if defined(_WIN32) || defined(WIN32)
 #include <WinSock2.h>
-#include <process.h>
+#include <WS2tcpip.h>
 #else
 #include <unistd.h>
 #include <sys/socket.h>
@@ -31,48 +35,45 @@
 #include <arpa/inet.h>
 #endif
 
-#define MAXBUFLEN 1500 // MTU should be <= this
-
 UDP::UDP()
 {
     init_fec();
     std::random_device randomDevice;
     m_randomNumberGenerator.seed(randomDevice());
-
-#if defined(_WIN32) || defined(WIN32)
-    WORD wVersionRequested;
-    WSADATA wsaData;
-    int err;
-    /* Use the MAKEWORD(lowbyte, highbyte) macro declared in Windef.h */
-    wVersionRequested = MAKEWORD(2, 2);
-    err = WSAStartup(wVersionRequested, &wsaData);
-    if (err != 0) std::cerr << "Error in UDP::UDP: Unable to find a usable Winsock DLL " << err;
-    if (LOBYTE (wsaData.wVersion) != 2|| HIBYTE (wsaData.wVersion) != 2)
-    {
-       WSACleanup();
-       std::cerr << "Error in UDP::UDP: Version mismatch in Winsock DLL " << err;
-    }
-#endif
 }
 
 UDP::~UDP()
 {
 #if defined(_WIN32) || defined(WIN32)
-    WSACleanup();
+    if (m_RecSockfd >= 0) closesocket(m_RecSockfd);
+//    if (m_SendSockfd >= 0) closesocket(m_SendSockfd);
+#else
+    if (m_RecSockfd >= 0) close(m_RecSockfd);
+//    if (m_SendSockfd >= 0) close(m_SendSockfd);
 #endif
 }
 
-int UDP::StartListener(int port)
+int UDP::StartListener(uint16_t port)
 {
 #if defined(_WIN32) || defined(WIN32)
     if ((m_RecSockfd = socket(PF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET) return -1;
 #else
     if ((m_RecSockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1) return -1;
 #endif
+
+    struct timeval tv;
+    tv.tv_sec = long(m_receiveTimeout / 1000000);
+    tv.tv_usec = long(m_receiveTimeout % 1000000);
+    setsockopt(m_RecSockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));
+
+    tv.tv_sec = long(m_sendTimeout / 1000000);
+    tv.tv_usec = long(m_sendTimeout % 1000000);
+    setsockopt(m_RecSockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv, sizeof(struct timeval));
+
+    m_myAddress = {};
     m_myAddress.sin_family = AF_INET; // host byte order
     m_myAddress.sin_port = htons(port); // short, network byte order
     m_myAddress.sin_addr.s_addr = INADDR_ANY; // automatically fill with my IP
-    memset(&(m_myAddress.sin_zero), 0, 8); // zero the rest of the struct
 
     if (port != 0)
     {
@@ -88,13 +89,13 @@ int UDP::StartListener(int port)
     }
     else
     {
-        port = 32768;
+        port = 0x7fff;
         while (true)
         {
+            port++;
             m_myAddress.sin_port = htons(port); // short, network byte order
             if (bind(m_RecSockfd, (struct sockaddr *)&m_myAddress, sizeof(struct sockaddr)) == 0) break;
-            port++;
-            if (port > 65535)
+            if (port < 0x8000) // means that the uint16_t has wrapped around
             {
 #if defined(_WIN32) || defined(WIN32)
                 closesocket(m_RecSockfd);
@@ -104,17 +105,12 @@ int UDP::StartListener(int port)
                 return -1;
             }
         }
-
     }
 
     m_packetID = m_uint64Distribution(m_randomNumberGenerator);
     if (m_packetID == 0) m_packetID++;
 
-#ifdef UDP_DEBUG
-    std::cerr << "UDP::StartListener\n";
-    std::cerr << "Listening on port " << port << "\n";
-#endif
-
+    if (m_debug) { std::cerr << "UDP::StartListener listening on port " << port << "\n"; }
     return 0;
 }
 
@@ -125,357 +121,257 @@ void UDP::StopListener()
 #else
     close(m_RecSockfd);
 #endif
+    m_RecSockfd = 0;
+    if (m_debug) { std::cerr << "UDP::StopListener\n"; }
     return;
 }
 
-int UDP::StartTalker()
-{
-#if defined(_WIN32) || defined(WIN32)
-    if ((m_SendSockfd = socket(PF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET) return -1;
-#else
-    if ((m_SendSockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1) return -1;
-#endif
-#ifdef UDP_DEBUG
-    std::cerr << "UDP::StartTalker\n";
-#endif
-    return 0;
-}
+//int UDP::StartTalker()
+//{
+//#if defined(_WIN32) || defined(WIN32)
+//    if ((m_SendSockfd = socket(PF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET) return -1;
+//#else
+//    if ((m_SendSockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1) return -1;
+//#endif
+//    struct timeval tv;
+//    tv.tv_sec = long(m_sendTimeout / 1000000);
+//    tv.tv_usec = long(m_sendTimeout % 1000000);
+//    setsockopt(m_SendSockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv, sizeof(struct timeval));
 
-void UDP::StopTalker()
-{
-#if defined(_WIN32) || defined(WIN32)
-    closesocket(m_SendSockfd);
-#else
-    close(m_SendSockfd);
-#endif
-    return;
-}
+//    if (m_debug) { std::cerr << "UDP::StartTalker\n"; }
+//    return 0;
+//}
 
-int UDP::ReceiveUDPPacket(int numBytes)
+//void UDP::StopTalker()
+//{
+//#if defined(_WIN32) || defined(WIN32)
+//    closesocket(m_SendSockfd);
+//#else
+//    close(m_SendSockfd);
+//#endif
+//    m_SendSockfd = 0;
+//    if (m_debug) { std::cerr << "UDP::StopTalker\n"; }
+//    return;
+//}
+
+int UDP::ReceiveUDPPacket(udp::UDPPacket *packet, int numBytes, struct sockaddr_in *sender)
 {
-#if defined(_WIN32) || defined(WIN32)
-    int addr_len;
-#else
-    socklen_t addr_len;
-#endif
-    addr_len = sizeof(struct sockaddr);
-    numBytes = recvfrom(m_RecSockfd, (char *)&m_packet, numBytes, 0, (struct sockaddr *)&m_senderAddress, &addr_len);
-#ifdef UDP_DEBUG
-    std::cerr << "UDP::ReceiveUDPPacket\n";
-    std::cerr << "sin_addr.s_addr " << ntohl(m_senderAddress.sin_addr.s_addr) << "\n";
-    std::cerr << "sin_port " << ntohs(m_senderAddress.sin_port) << "\n";
-    std::cerr << "numBytes " << numBytes << "\n";
-    std::cerr << "type " << m_packet->type << "\n";
-    std::cerr << "packetID " << m_packet->packetID << "\n";
-    switch (m_packet->type)
-    {
-        case request_send_genome:
-            std::cerr << "port " << ((RequestSendGenomeUDPPacket *)m_packet)->port  << "\n";
-            std::cerr << "index " << ((RequestSendGenomeUDPPacket *)m_packet)->index  << "\n";
-            std::cerr << "packetNumber " << ((RequestSendGenomeUDPPacket *)m_packet)->packetNumber  << "\n";
-            break;
-        case genome_received:
-            std::cerr << "port " << ((GenomeReceivedUDPPacket *)m_packet)->port  << "\n";
-            std::cerr << "index " << ((GenomeReceivedUDPPacket *)m_packet)->index  << "\n";
-            break;
-        case send_result:
-            std::cerr << "port " << ((SendResultUDPPacket *)m_packet)->port  << "\n";
-            std::cerr << "index " << ((SendResultUDPPacket *)m_packet)->index  << "\n";
-            std::cerr << "result " << ((SendResultUDPPacket *)m_packet)->result  << "\n";
-            break;
-        case send_text:
-            std::cerr << "port " << ((SendTextUDPPacket *)m_packet)->port  << "\n";
-            std::cerr << "index " << ((SendTextUDPPacket *)m_packet)->index  << "\n";
-            std::cerr << "totalLength " << ((SendTextUDPPacket *)m_packet)->totalLength  << "\n";
-            std::cerr << "numUDPPackets " << ((SendTextUDPPacket *)m_packet)->numUDPPackets  << "\n";
-            std::cerr << "packetCount " << ((SendTextUDPPacket *)m_packet)->packetCount  << "\n";
-            std::cerr << "lenThisUDPPacket " << ((SendTextUDPPacket *)m_packet)->lenThisUDPPacket  << "\n";
-            std::cerr << "text " << std::setw(((SendTextUDPPacket *)m_packet)->lenThisUDPPacket) << ((SendTextUDPPacket *)m_packet)->text  << "\n";
-            break;
-    }
-#endif
+    // sockaddr_in starts with sockaddr so the cast to (struct sockaddr *) always works
+    socklen_t addr_len = sizeof(struct sockaddr_in);
+    numBytes = recvfrom(m_RecSockfd, reinterpret_cast<char *>(packet), numBytes, 0, reinterpret_cast<struct sockaddr *>(sender), &addr_len);
     return numBytes;
 }
 
-int UDP::SendUDPPacket(struct sockaddr_in *destination, int numBytes)
+int UDP::SendUDPPacket(const struct sockaddr_in &destination, const udp::UDPPacket *packet, int numBytes)
 {
-    numBytes = sendto(m_SendSockfd, (const char *)&m_packet, numBytes, 0, (struct sockaddr *)destination, sizeof(struct sockaddr));
-#ifdef UDP_DEBUG
-    std::cerr << "UDP::SendUDPPacket\n";
-    std::cerr << "sin_addr.s_addr " << ntohl(destination->sin_addr.s_addr) << "\n";
-    std::cerr << "sin_port " << ntohs(destination->sin_port) << "\n";
-    std::cerr << "numBytes " << numBytes << "\n";
-    std::cerr << "type " << &m_packet->type << "\n";
-    std::cerr << "packetID " << &m_packet->packetID << "\n";
-    switch (&m_packet->type)
-    {
-        case request_send_genome:
-            std::cerr << "port " << ((RequestSendGenomeUDPPacket *)&m_packet)->port  << "\n";
-            std::cerr << "index " << ((RequestSendGenomeUDPPacket *)&m_packet)->index  << "\n";
-            std::cerr << "packetNumber " << ((RequestSendGenomeUDPPacket *)&m_packet)->packetNumber  << "\n";
-            break;
-        case genome_received:
-            std::cerr << "port " << ((GenomeReceivedUDPPacket *)&m_packet)->port  << "\n";
-            std::cerr << "index " << ((GenomeReceivedUDPPacket *)&m_packet)->index  << "\n";
-            break;
-        case send_result:
-            std::cerr << "port " << ((SendResultUDPPacket *)&m_packet)->port  << "\n";
-            std::cerr << "index " << ((SendResultUDPPacket *)&m_packet)->index  << "\n";
-            std::cerr << "result " << ((SendResultUDPPacket *)&m_packet)->result  << "\n";
-            break;
-        case send_text:
-            std::cerr << "port " << ((SendTextUDPPacket *)&m_packet)->port  << "\n";
-            std::cerr << "index " << ((SendTextUDPPacket *)&m_packet)->index  << "\n";
-            std::cerr << "totalLength " << ((SendTextUDPPacket *)&m_packet)->totalLength  << "\n";
-            std::cerr << "numUDPPackets " << ((SendTextUDPPacket *)&m_packet)->numUDPPackets  << "\n";
-            std::cerr << "packetCount " << ((SendTextUDPPacket *)&m_packet)->packetCount  << "\n";
-            std::cerr << "lenThisUDPPacket " << ((SendTextUDPPacket *)&m_packet)->lenThisUDPPacket  << "\n";
-            std::cerr << "text " << std::setw(((SendTextUDPPacket *)&m_packet)->lenThisUDPPacket) << ((SendTextUDPPacket *)&m_packet)->text  << "\n";
-            break;
-    }
-#endif
+    // sockaddr_in starts with sockaddr so the cast to (struct sockaddr *) always works
+//    numBytes = sendto(m_SendSockfd, reinterpret_cast<const char *>(packet), numBytes, 0, reinterpret_cast<const struct sockaddr *>(&destination), sizeof(struct sockaddr_in));
+    numBytes = sendto(m_RecSockfd, reinterpret_cast<const char *>(packet), numBytes, 0, reinterpret_cast<const struct sockaddr *>(&destination), sizeof(struct sockaddr_in));
     return numBytes;
 }
 
-int UDP::SendText(struct sockaddr_in *destination, int index, char *text, int len)
+int UDP::SendText(uint64_t matchID, const struct sockaddr_in &destination, const std::string &text)
 {
-    char *p1 = text;
-    int bytesToSend = len;
-    int numBytes;
-    ((SendTextUDPPacket *)&m_packet)->type = send_text;
-    ((SendTextUDPPacket *)&m_packet)->totalLength = len;
-    ((SendTextUDPPacket *)&m_packet)->numUDPPackets = len / kUDPPacketTextSize;
-    if (len % kUDPPacketTextSize) ((SendTextUDPPacket *)&m_packet)->numUDPPackets++;
-    ((SendTextUDPPacket *)&m_packet)->packetCount = 0;
-    ((SendTextUDPPacket *)&m_packet)->index = index;
+    size_t p1 = 0;
+    size_t bytesToSend = text.size();
+    udp::SendTextUDPPacket packet;
+    packet.packetID =matchID;
+    packet.totalLength = text.size();
+    packet.numUDPPackets = packet.totalLength / udp::kUDPPacketTextSize;
+    if (packet.totalLength % udp::kUDPPacketTextSize) packet.numUDPPackets++;
+    packet.packetCount = 0;
 
     while (bytesToSend)
     {
-        if (bytesToSend >= kUDPPacketTextSize) ((SendTextUDPPacket *)&m_packet)->lenThisUDPPacket = kUDPPacketTextSize;
-        else ((SendTextUDPPacket *)&m_packet)->lenThisUDPPacket = bytesToSend;
-        memcpy(((SendTextUDPPacket *)&m_packet)->text, p1, ((SendTextUDPPacket *)&m_packet)->lenThisUDPPacket);
-#ifdef UDP_DEBUG
-        std::cerr << "UDP::SendText\n";
-        std::cerr << "Sending " << ((SendTextUDPPacket *&)&m_packet)->lenThisUDPPacket  << "\n";
-#endif
-        if ((numBytes = SendUDPPacket(destination, sizeof(SendTextUDPPacket))) == -1)
+        if (bytesToSend >= udp::kUDPPacketTextSize) packet.lenThisUDPPacket = udp::kUDPPacketTextSize;
+        else packet.lenThisUDPPacket = bytesToSend;
+        std::memcpy(packet.text, &text[p1], packet.lenThisUDPPacket);
+        if (m_debug) { std::cerr << "UDP::SendText Sending " << packet.lenThisUDPPacket  << "\n"; }
+        if (SendUDPPacket(destination, &packet, sizeof(udp::SendTextUDPPacket)) == -1)
         {
-#ifdef UDP_DEBUG
-            std::cerr << "Error sending text\n";
-#endif
+            if (m_debug) { std::cerr << "UDP::SendText error in SendUDPPacket\n"; }
             return -1;
         }
-        p1 += ((SendTextUDPPacket *)&m_packet)->lenThisUDPPacket;
-        bytesToSend -= ((SendTextUDPPacket *)&m_packet)->lenThisUDPPacket;
-        ((SendTextUDPPacket *)&m_packet)->packetCount++;
+        p1 += packet.lenThisUDPPacket;
+        bytesToSend -= packet.lenThisUDPPacket;
+        packet.packetCount++;
     }
-
-    return len;
+    return int(packet.totalLength);
 }
 
-int UDP::ReceiveText(char **buf, unsigned long matchID)
+int UDP::ReceiveText(uint64_t matchID, std::string *text, struct sockaddr_in *sender)
 {
-    std::map<int, SendTextUDPPacket *>packetList;
-    std::map<int, SendTextUDPPacket *>::iterator iter;
-    SendTextUDPPacket *p;
-    int len = 0;
+    std::map<size_t, udp::SendTextUDPPacket>packetList;
+    udp::SendTextUDPPacket packet;
+    size_t len = 0;
 
-    try
+    while (CheckReceiver(1000000) == 1)
     {
-        while (true)
+        if (ReceiveUDPPacket(&packet, sizeof(udp::SendTextUDPPacket), sender) == -1)
         {
-            if (CheckReceiver(1000000) != 1) throw __LINE__;
-            ReceiveUDPPacket(sizeof(SendTextUDPPacket));
-            p = (SendTextUDPPacket *)GetUDPPacket();
-            if (matchID && p->packetID == matchID) // ignore packets with the wrong ID
+            if (m_debug) { std::cerr << "UDP::ReceiveText error in ReceiveUDPPacket\n"; }
+            return -1;
+        }
+        if (matchID == 0 || packet.packetID == matchID) // if matchID is set ignore packets with the wrong ID
+        {
+            if (packet.type != udp::send_text)
             {
-                if (((SendTextUDPPacket *)&m_packet)->type != send_text) throw __LINE__;
-                p = new SendTextUDPPacket();
-                memcpy(p, ((SendTextUDPPacket *)&m_packet), sizeof(SendTextUDPPacket));
-                packetList[p->packetCount] = p;
-                len += p->lenThisUDPPacket;
-                if (packetList.size() >= size_t(p->numUDPPackets)) break;
+                if (m_debug) { std::cerr << "UDP::ReceiveText wrong packet type\n"; }
+                return -1;
             }
+            packetList[packet.packetCount] = packet;
+            len += packet.lenThisUDPPacket;
+            if (packetList.size() >= packet.numUDPPackets) break;
         }
-
-        if (len != p->totalLength) throw __LINE__;
-        *buf = new char[p->totalLength];
-        char *ptr = *buf;
-        for (iter = packetList.begin(); iter != packetList.end(); iter++)
-        {
-            memcpy(ptr, iter->second->text, iter->second->lenThisUDPPacket);
-            delete iter->second;
-            ptr += iter->second->lenThisUDPPacket;
-        }
-        return len;
     }
 
-    catch (int e)
+    if (len != packet.totalLength || packet.totalLength == 0)
     {
-#ifdef UDP_DEBUG
-        std::cerr << "UDP::ReceiveText\n";
-        std::cerr << "Error receiving text on line " << e << "\n";
-#endif
-        for (iter = packetList.begin(); iter != packetList.end(); iter++)
-        {
-            delete iter->second;
-        }
+        if (m_debug) { std::cerr << "UDP::ReceiveText len = " << len << " packet.totalLength = " << packet.totalLength << "\n"; }
         return -1;
     }
-
+    text->clear();
+    text->reserve(packet.totalLength);
+    for (auto &&iter : packetList) { text->append(iter.second.text, iter.second.lenThisUDPPacket); }
+    return int(packet.totalLength);
 }
 
 // redundancy specifies the number of extra packets to send
-int UDP::SendFEC(struct sockaddr_in *destination, int index, char *data, int len, int percentRedundancy)
+int UDP::SendFEC(uint64_t matchID, const struct sockaddr_in &destination, const std::string &data, uint32_t percentRedundancy)
 {
-    int i;
-    int numBytes;
-    int k = len / kUDPPacketTextSize;
-    if (len % kUDPPacketTextSize) k++;
-    int n = (k * percentRedundancy) / 100;
-    if (n <= k) n++;
+    // note that gf can be either unsigned char or unsigned short
+    // depending on the size of GF_BITS (2 to 16)
+    // GF_SIZE is ((1 << GF_BITS) - 1) so for
+    // GF_BITS = 8, GF_SIZE = 255, gf unsigned char
+    // GF_BITS = 16, GF_SIZE = 65535, gf unsigned short
+    assert(sizeof(gf) == 1 || sizeof(gf) == 2); // this check is just in case we have a compiler with weird unsigned short size
+    assert(udp::kUDPPacketTextSize % sizeof(gf) == 0); // this check means that udp::kUDPPacketTextSize is even when sizeof(gf) == 2
 
-    if (n >= GF_SIZE) // too big so current return an error
+    size_t len = data.size();
+    size_t k = len / udp::kUDPPacketTextSize;
+    if (len % udp::kUDPPacketTextSize) k++;
+    size_t n = size_t((k * (100 + percentRedundancy)) / 100);
+    if (n <= k) n++;
+    if (n >= GF_SIZE) // too big so currently return an error
     {
+        if (m_debug) { std::cerr << "UDP::SendFEC n (" << n << ") >= GF_SIZE (" << GF_SIZE << ") \n"; }
         return -1;
     }
 
-    ((SendFECUDPPacket *)&m_packet)->type = send_fec;
-    ((SendFECUDPPacket *)&m_packet)->totalLength = len;
-    ((SendFECUDPPacket *)&m_packet)->numUDPPackets = k;
-    ((SendFECUDPPacket *)&m_packet)->index = index;
-    ((SendFECUDPPacket *)&m_packet)->lenThisUDPPacket = kUDPPacketTextSize;
+    udp::SendFECUDPPacket packet;
+    packet.packetID = matchID;
+    packet.totalLength = len;
+    packet.numUDPPackets = k;
+    packet.lenThisUDPPacket = udp::kUDPPacketTextSize;
 
-    struct fec_parms *code = fec_new(k, n);
-
-    int paddedLen = k * kUDPPacketTextSize;
-    gf *buf = new gf[paddedLen];
-    memcpy(buf, data, len);
-    memset(buf + len, 0, paddedLen - len);
-    gf **src = new gf *[k];
-    for (i = 0; i < k; i++) src[i] = buf + i * kUDPPacketTextSize;
+    struct fec_parms *code = fec_new(int(k), int(n));
+    size_t paddedLen = k * udp::kUDPPacketTextSize;
+    std::unique_ptr<gf[]> buf = std::make_unique<gf[]>(paddedLen / sizeof(gf));
+    std::memcpy(reinterpret_cast<char *>(buf.get()), data.data(), len);
+    if (paddedLen != len) std::memset(reinterpret_cast<char *>(buf.get()) + len, 0, paddedLen - len);
+    std::unique_ptr<gf*[]> src = std::make_unique<gf*[]>(k);
+    for (size_t i = 0; i < k; i++) src[i] = buf.get() + i * udp::kUDPPacketTextSize / sizeof(gf);
     gf *fec;
 
-    for (i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
     {
-        ((SendFECUDPPacket *)&m_packet)->packetCount = i;
-        fec = (gf *)((SendFECUDPPacket *)&m_packet)->text;
-        fec_encode(code, src, fec, i, kUDPPacketTextSize);
-
-#ifdef UDP_DEBUG
-        std::cerr << "UDP::SendFEC\n";
-        std::cerr << "Sending FEC index " << i  << "\n";
-#endif
-        if ((numBytes = SendUDPPacket(destination, sizeof(SendFECUDPPacket))) == -1)
+        packet.packetCount = i;
+        fec = reinterpret_cast<gf *>(packet.text);
+        fec_encode(code, src.get(), fec, int(i), udp::kUDPPacketTextSize);
+        if (m_debug) { std::cerr << "UDP::SendFEC Sending FEC index " << i  << "\n"; }
+        if (SendUDPPacket(destination, &packet, sizeof(udp::SendFECUDPPacket)) == -1)
         {
-#ifdef UDP_DEBUG
-            std::cerr << "Error sending text\n";
-#endif
-            delete [] buf;
-            delete [] src;
+            if (m_debug) { std::cerr << "SendFEC Error sSendUDPPacket\n"; }
             fec_free(code);
             return -1;
         }
     }
-
-    delete [] buf;
-    delete [] src;
     fec_free(code);
-    return len;
+    return int(len);
 }
 
-int UDP::ReceiveFEC(char **buf, unsigned long matchID, int percentRedundancy)
+int UDP::ReceiveFEC(uint64_t matchID, uint32_t percentRedundancy, std::string *data, struct sockaddr_in *sender)
 {
-    std::map<int, SendFECUDPPacket *>packetList;
-    std::map<int, SendFECUDPPacket *>::iterator iter;
-    SendFECUDPPacket *p;
-    int i, j;
-    int status;
-    gf **pkt = 0;
-    int *index = 0;
-    struct fec_parms *code = 0;
+    // note that gf can be either unsigned char or unsigned short
+    // depending on the size of GF_BITS (2 to 16)
+    // GF_SIZE is ((1 << GF_BITS) - 1) so for
+    // GF_BITS = 8, GF_SIZE = 255, gf unsigned char
+    // GF_BITS = 16, GF_SIZE = 65535, gf unsigned short
+    assert(sizeof(gf) == 1 || sizeof(gf) == 2); // this check is just in case we have a compiler with weird unsigned short size
+    assert(udp::kUDPPacketTextSize % sizeof(gf) == 0); // this check means that udp::kUDPPacketTextSize is even when sizeof(gf) == 2
 
-    try
+    std::map<size_t, udp::SendFECUDPPacket>packetList;
+    udp::SendFECUDPPacket packet;
+
+    while (CheckReceiver(1000000) == 1)
     {
-        while (true)
+        if (ReceiveUDPPacket(&packet, sizeof(udp::SendFECUDPPacket), sender) == -1)
         {
-            if (CheckReceiver(1000000) != 1) throw __LINE__;
-            ReceiveUDPPacket(sizeof(SendFECUDPPacket));
-            p = (SendFECUDPPacket *)GetUDPPacket();
-            if (matchID && p->packetID == matchID) // ignore packets with the wrong ID
-            {
-                if (((SendFECUDPPacket *)&m_packet)->type != send_fec) throw __LINE__;
-                p = new SendFECUDPPacket();
-                memcpy(p, ((SendFECUDPPacket *)&m_packet), sizeof(SendFECUDPPacket));
-                packetList[p->packetCount] = p;
-                if (packetList.size() == size_t(p->numUDPPackets)) break;
-            }
+            if (m_debug) { std::cerr << "UDP::ReceiveFEC error in ReceiveUDPPacket\n"; }
+            return -1;
         }
-
-        int k = p->numUDPPackets;
-        int n = (k * percentRedundancy) / 100;
-        if (n <= k) n++;
-
-        if (n >= GF_SIZE) throw __LINE__;
-
-        code = fec_new(k, n);
-        pkt = new gf *[k];
-        index = new int[k];
-        j = 0;
-        for (iter = packetList.begin(); iter != packetList.end(); iter++)
+        // if matchID is set ignore packets with the wrong ID
+        if ((matchID == 0 || packet.packetID == matchID) && packet.type == udp::send_fec)
         {
-            i = iter->first;
-            pkt[j] = (gf *)iter->second->text;
-            index[j] = i;
-            j++;
+            packetList[packet.packetCount] = packet;
+            if (packetList.size() == packet.numUDPPackets) break;
         }
-
-        status = fec_decode(code, pkt, index, kUDPPacketTextSize);
-        if (status) throw __LINE__;
-
-        *buf = new char[kUDPPacketTextSize * k];
-        char *ptr = *buf;
-        for (i = 0; i < k; i++)
-        {
-            memcpy(ptr, pkt[i], kUDPPacketTextSize);
-            ptr += kUDPPacketTextSize;
-        }
-
-        for (iter = packetList.begin(); iter != packetList.end(); iter++)
-        {
-            delete iter->second;
-        }
-        delete [] pkt;
-        delete [] index;
-        fec_free(code);
-
-        return p->totalLength;
     }
 
-    catch (int e)
+    if (packetList.size() < packet.numUDPPackets || packet.numUDPPackets == 0)
     {
-#ifdef UDP_DEBUG
-        std::cerr << "UDP::ReceiveFEC\n";
-        std::cerr << "Error receiving text on line " << e << "\n";
-#endif
-        for (iter = packetList.begin(); iter != packetList.end(); iter++)
-        {
-            delete iter->second;
-        }
-        if (pkt) delete [] pkt;
-        if (index) delete [] index;
-        if (code) fec_free(code);
+        if (m_debug) { std::cerr << "UDP::ReceiveFEC " << packetList.size() << " packets received " << packet.numUDPPackets + 1 << " required\n"; }
         return -1;
     }
 
+    size_t k = packet.numUDPPackets;
+    size_t n = size_t((k * (100 + percentRedundancy)) / 100);
+    if (n <= k) n++;
+    if (n >= GF_SIZE) // too big so currently return an error
+    {
+        if (m_debug) { std::cerr << "UDP::ReceiveFEC n >= GF_SIZE\n"; }
+        return -1;
+    }
+
+    struct fec_parms *code  = fec_new(int(k), int(n));
+    // pkt = new gf *[k];
+    std::unique_ptr<gf*[]> pkt = std::make_unique<gf*[]>(k);
+    // index = new int[k];
+    std::unique_ptr<int[]> index = std::make_unique<int[]>(k);
+    size_t j = 0;
+    for (auto &&iter : packetList)
+    {
+        pkt[j] = reinterpret_cast<gf *>(iter.second.text);
+        index[j] = int(iter.first);
+        j++;
+    }
+
+    if (fec_decode(code, pkt.get(), index.get(), udp::kUDPPacketTextSize))
+    {
+        if (m_debug) { std::cerr << "UDP::ReceiveFEC error in fec_decode " << packetList.size() << " packets received " << packet.numUDPPackets << " required\n"; }
+        fec_free(code);
+        return -1;
+    }
+
+    data->clear();
+    data->reserve(udp::kUDPPacketTextSize * k);
+    for (size_t i = 0; i < k; i++)
+    {
+        data->append(reinterpret_cast<const char *>(pkt[i]), udp::kUDPPacketTextSize);
+    }
+    data->resize(packet.totalLength);
+    fec_free(code);
+
+    if (m_debug) { std::cerr << "ReceiveFEC read " << packet.totalLength << " bytes successfully\n"; }
+    return int(packet.totalLength);
 }
+
 
 // check whether there is anything waiting to be received
 // set timeout to 0 if want immediate response
-int UDP::CheckReceiver(long usecTimeout)
+int UDP::CheckReceiver(uint64_t usecTimeout)
 {
     fd_set fds;
-    int n;
     struct timeval tv;
 
     // set up the file descriptor set
@@ -483,17 +379,57 @@ int UDP::CheckReceiver(long usecTimeout)
     FD_SET(m_RecSockfd, &fds);
 
     // set up the struct timeval for the timeout
-    tv.tv_sec = usecTimeout / 1000000;
-    tv.tv_usec = usecTimeout % 1000000;
+    tv.tv_sec = long(usecTimeout / 1000000);
+    tv.tv_usec = long(usecTimeout % 1000000);
 
     // wait until timeout or data received
     // note 1st parameter is ignored on Windows
-    n = select(int(m_RecSockfd + 1), &fds, nullptr, nullptr, &tv);
-#ifdef UDP_DEBUG
-        std::cerr << "UDP::CheckReceiver\n";
-        std::cerr << "n = " << n << " m_RecSockfd = " << m_RecSockfd << "\n";
-#endif
+    int n = select(int(m_RecSockfd + 1), &fds, nullptr, nullptr, &tv);
+    if (m_debug) { std::cerr << "UDP::CheckReceiver n = " << n << " m_RecSockfd = " << m_RecSockfd << "\n"; }
     return n; // 0 if nothing ready, 1 if something there, -1 on error
 }
 
+void UDP::setDebug(bool debug)
+{
+    m_debug = debug;
+}
+
+UDPUpDown::UDPUpDown()
+{
+#if defined(_WIN32) || defined(WIN32)
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    int err;
+    /* Use the MAKEWORD(lowbyte, highbyte) macro declared in Windef.h */
+    wVersionRequested = MAKEWORD(2, 2);
+    err = WSAStartup(wVersionRequested, &wsaData);
+    if (err != 0)
+    {
+        std::cerr << "Error in TCP::TCP: Unable to find a usable Winsock DLL " << err;
+        m_status = 1;
+        return;
+    }
+    if (LOBYTE(wsaData.wVersion) != 2|| HIBYTE(wsaData.wVersion) != 2)
+    {
+       WSACleanup();
+       std::cerr << "Error in TCP::TCP: Version mismatch in Winsock DLL " << err;
+       m_status = 2;
+       return;
+    }
+#endif
+    m_status = 0;
+    return;
+}
+
+UDPUpDown::~UDPUpDown()
+{
+#if defined(_WIN32) || defined(WIN32)
+    WSACleanup();
+#endif
+}
+
+int UDPUpDown::status() const
+{
+    return m_status;
+}
 

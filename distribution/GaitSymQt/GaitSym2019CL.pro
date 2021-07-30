@@ -18,7 +18,7 @@ CONFIG += object_parallel_to_source # this is important to stop obj files overwr
 
 QT -= gui
 
-CONFIG += c++14 console
+CONFIG += c++17 console
 CONFIG -= app_bundle
 
 macx {
@@ -45,7 +45,6 @@ macx {
         -framework Accelerate
     HEADERS +=
     OBJECTIVE_SOURCES +=
-    CONFIG += c++14
     ICON = GaitSymQt.icns
 }
 
@@ -76,16 +75,21 @@ win32 {
     LIBS += -lGdi32 -lUser32 -lAdvapi32 -lWs2_32 -lWinmm
     HEADERS +=
         win32-msvc {
-        QMAKE_CXXFLAGS += -std:c++14 -bigobj
-        QMAKE_LFLAGS_RELEASE += -LTCG
+        QMAKE_CXXFLAGS += -bigobj
         # QMAKE_CXXFLAGS += -openmp
-        # QMAKE_CXXFLAGS_DEBUG += -Od -RTCsu
-        # QMAKE_CXXFLAGS_RELEASE += -Ox -fp:fast -GL
-    }
+        # -Od set the debugging options on, -RTCsu enables a lot of run time checks
+        QMAKE_CXXFLAGS_DEBUG += -Od -RTCsu
+        # -O2 is maximise speed, -fp:fast is allow non IEEE math to increase speed (like gcc -fast-math), -GL is global optimisations
+        # -GL likes to have -LTCG as linker flags
+        # QMAKE_CXXFLAGS_RELEASE += -O2 -fp:fast -GL
+        QMAKE_CXXFLAGS_RELEASE += -O2 -GL
+        QMAKE_LFLAGS_RELEASE += -LTCG
+        }
         win32-g++ | win32-clang-g++ {
         DEFINES += exprtk_disable_enhanced_features
         QMAKE_CXXFLAGS += -Wa,-mbig-obj
-    }
+        }
+
 }
 
 unix:!macx {
@@ -106,9 +110,8 @@ unix:!macx {
         ../rapidxml-1.13 \
         ../src \
         ../tinyply
-    LIBS += -lX11 -lXxf86vm
+    LIBS += -lX11 # -lXxf86vm
     HEADERS +=
-    QMAKE_CXXFLAGS += -std=c++14
     QMAKE_CXXFLAGS_RELEASE += -O3 -ffast-math
 }
 
@@ -332,6 +335,7 @@ SOURCES += \
     ../src/SwingClearanceAbortReporter.cpp \
     ../src/TCP.cpp \
     ../src/TegotaeDriver.cpp \
+    ../src/ThreadedUDP.cpp \
     ../src/ThreeHingeJointDriver.cpp \
     ../src/TorqueReporter.cpp \
     ../src/TrimeshGeom.cpp \
@@ -593,6 +597,7 @@ HEADERS += \
     ../src/TCP.h \
     ../src/TCPIPMessage.h \
     ../src/TegotaeDriver.h \
+    ../src/ThreadedUDP.h \
     ../src/ThreeHingeJointDriver.h \
     ../src/TorqueReporter.h \
     ../src/TrimeshGeom.h \
@@ -605,6 +610,7 @@ HEADERS += \
 
 
 DISTFILES += \
+    ../Ideas.txt \
     ../makefile \
     ../ode-0.15/ode/src/Makefile.am \
     ../scripts/apply_genome.py \
@@ -612,8 +618,23 @@ DISTFILES += \
     ../scripts/convert_obj_to_sac.py \
     ../scripts/convert_obj_to_tri.py \
     ../scripts/convert_old_model.py \
+    ../scripts/extract_muscles_by_joint.py \
     ../scripts/movies_to_ppt_compatible_mp4.py \
-    ../scripts/strip_ifdef.py
+    ../scripts/strip_ifdef.py \
+    DeferredRenderer/final_gl2.frag \
+    DeferredRenderer/final_gl2.vert \
+    DeferredRenderer/final_gl3.frag \
+    DeferredRenderer/final_gl3.vert \
+    DeferredRenderer/geometry_gl2.frag \
+    DeferredRenderer/geometry_gl2.vert \
+    DeferredRenderer/geometry_gl3.frag \
+    DeferredRenderer/geometry_gl3.vert \
+    astyle_project.txt \
+    opengl/fragment_shader.glsl \
+    opengl/fragment_shader_2.glsl \
+    opengl/vertex_shader.glsl \
+    opengl/vertex_shader_2.glsl
+
 
 
 

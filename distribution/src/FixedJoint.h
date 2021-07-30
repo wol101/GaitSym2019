@@ -91,10 +91,15 @@ class FixedJoint: public Joint
     bool CalculatePixmapNeeded();
     const std::vector<unsigned char> &pixMap() const;
 
+    bool lateFix() const;
+    void setLateFix(bool lateFix);
+
 private:
 
     void CalculateStress();
     static std::vector<unsigned char> AsciiToBitMap(const std::string &buffer, size_t width, size_t height, char setChar, bool reverseY);
+
+    bool m_lateFix = false;
 
     // these are used for the stress/strain calculations
     std::vector<unsigned char> m_stiffness;

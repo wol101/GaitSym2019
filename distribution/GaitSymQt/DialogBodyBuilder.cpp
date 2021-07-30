@@ -16,6 +16,7 @@
 #include <QProgressDialog>
 #include <QThread>
 #include <QValidator>
+#include <QMessageBox>
 
 
 DialogBodyBuilder::DialogBodyBuilder(QWidget *parent) :
@@ -169,6 +170,15 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
 {
     qDebug() << "DialogBodyBuilder::accept()";
 
+    dMass mass;
+    dMassSetParameters(&mass, ui->lineEditMass->value(), 0, 0, 0, ui->lineEditI11->value(), ui->lineEditI22->value(), ui->lineEditI33->value(), ui->lineEditI12->value(), ui->lineEditI13->value(), ui->lineEditI23->value());
+    std::string massError = Body::MassCheck(&mass);
+    if (massError.size())
+    {
+        QMessageBox::warning(this, tr("Calculate Mass Properties"), tr("Current mass properties are invalid:\n%1").arg(massError.c_str()));
+        return;
+    }
+
     Body *bodyPtr;
     if (m_inputBody) bodyPtr = m_inputBody;
     else
@@ -190,15 +200,6 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
     m_simulation->GetGlobal()->MeshSearchPathAddToFront(head);
     bodyPtr->setSimulation(m_simulation);
 
-    dMass mass;
-    mass.c[0] = mass.c[1] = mass.c[2] = 0;
-    mass.mass = ui->lineEditMass->value();
-    mass.I[0 * 4 + 0] = ui->lineEditI11->value();
-    mass.I[1 * 4 + 1] = ui->lineEditI22->value();
-    mass.I[2 * 4 + 2] = ui->lineEditI33->value();
-    mass.I[0 * 4 + 1] = ui->lineEditI12->value();
-    mass.I[0 * 4 + 2] = ui->lineEditI13->value();
-    mass.I[1 * 4 + 2] = ui->lineEditI23->value();
     bodyPtr->SetMass(&mass);
     bodyPtr->SetConstructionDensity(ui->lineEditDensity->value());
     dVector3 constructionPosition;
@@ -318,6 +319,12 @@ void DialogBodyBuilder::calculate()
     double density = ui->lineEditDensity->text().toDouble();
     bool clockwise = false;
     m_referenceObject->CalculateMassProperties(&mass, density, clockwise);
+    std::string massError = Body::MassCheck(&mass);
+    if (massError.size())
+    {
+        QMessageBox::warning(this, tr("Calculate Mass Properties"), tr("Valid mass properties cannot be calculated from this mesh:\n%1").arg(massError.c_str()));
+        return;
+    }
     ui->lineEditMass->setValue(mass.mass);
     ui->lineEditX->setValue(mass.c[0]);
     ui->lineEditY->setValue(mass.c[1]);

@@ -28,46 +28,6 @@ Global::~Global()
 {
 }
 
-// assignment operator function
-//Global& Global::operator=(const Global &global)
-//{
-//    if (this != &global)
-//    {
-//        m_FitnessType = global.m_FitnessType;
-//        m_StepType = global.m_StepType;
-//        m_AllowConnectedCollisions = global.m_AllowConnectedCollisions;
-//        m_AllowInternalCollisions = global.m_AllowInternalCollisions;
-//        m_Gravity = global.m_Gravity;
-//        m_BMR = global.m_BMR;
-//        m_CFM = global.m_CFM;
-//        m_ContactMaxCorrectingVel = global.m_ContactMaxCorrectingVel;
-//        m_ContactSurfaceLayer = global.m_ContactSurfaceLayer;
-//        m_DampingConstant = global.m_DampingConstant;
-//        m_ERP = global.m_ERP;
-//        m_MechanicalEnergyLimit = global.m_MechanicalEnergyLimit;
-//        m_MetabolicEnergyLimit = global.m_MetabolicEnergyLimit;
-//        m_SpringConstant = global.m_SpringConstant;
-//        m_StepSize = global.m_StepSize;
-//        m_TimeLimit = global.m_TimeLimit;
-//        m_WarehouseDecreaseThresholdFactor = global.m_WarehouseDecreaseThresholdFactor;
-//        m_WarehouseFailDistanceAbort = global.m_WarehouseFailDistanceAbort;
-//        m_WarehouseUnitIncreaseDistanceThreshold = global.m_WarehouseUnitIncreaseDistanceThreshold;
-//        m_LinearDamping = global.m_LinearDamping;
-//        m_AngularDamping = global.m_AngularDamping;
-//        m_CurrentWarehouseFile = global.m_CurrentWarehouseFile;
-//        m_DistanceTravelledBodyIDName = global.m_DistanceTravelledBodyIDName;
-//        m_OutputModelStateFile = global.m_OutputModelStateFile;
-//        m_MeshSearchPath = global.m_MeshSearchPath;
-//        setSize1(global.size1());
-//        setSize2(global.size2());
-//        setSize3(global.size3());
-//        setColour1(global.colour1());
-//        setColour2(global.colour2());
-//        setColour3(global.colour3());
-//    }
-//    return *this;
-//}
-
 double Global::SpringConstant() const
 {
     return m_SpringConstant;
@@ -175,12 +135,16 @@ std::string *Global::createFromAttributes()
     // set the simulation integration step size
     if (findAttribute("IntegrationStepSize", &buf) == nullptr) return lastErrorPtr();
     m_StepSize = GSUtil::Double(buf);
+    if (m_StepSize <= 0.0) { setLastError("Error: GLOBAL IntegrationStepSize must be > 0"s); return lastErrorPtr(); }
+
 
     // can specify ERP & CFM; SpringConstant & DampingConstant; SpringConstant & ERP; SpringConstant & CFM; DampingConstant & ERP; DampingConstant & CFM
     if (findAttribute("ERP", &buf) && findAttribute("CFM", &buf2))
     {
         m_ERP = GSUtil::Double(buf);
         m_CFM = GSUtil::Double(buf2);
+        if (m_ERP <= 0.0) { setLastError("Error: GLOBAL ERP must be > 0"s); return lastErrorPtr(); }
+        if (m_CFM <= 0.0) { setLastError("Error: GLOBAL CFM must be > 0"s); return lastErrorPtr(); }
         m_SpringConstant = m_ERP / (m_CFM * m_StepSize);
         m_DampingConstant = (1.0 - m_ERP) / m_CFM;
     }
@@ -188,6 +152,8 @@ std::string *Global::createFromAttributes()
     {
         m_ERP = GSUtil::Double(buf);
         m_SpringConstant = GSUtil::Double(buf2);
+        if (m_ERP <= 0.0) { setLastError("Error: GLOBAL ERP must be > 0"s); return lastErrorPtr(); }
+        if (m_SpringConstant <= 0.0) { setLastError("Error: GLOBAL SpringConstant must be > 0"s); return lastErrorPtr(); }
         m_DampingConstant = m_StepSize * (m_SpringConstant / m_ERP - m_SpringConstant);
         m_CFM = 1.0/(m_StepSize * m_SpringConstant + m_DampingConstant);
     }
@@ -195,6 +161,8 @@ std::string *Global::createFromAttributes()
     {
         m_ERP = GSUtil::Double(buf);
         m_DampingConstant = GSUtil::Double(buf2);
+        if (m_ERP <= 0.0) { setLastError("Error: GLOBAL ERP must be > 0"s); return lastErrorPtr(); }
+        if (m_DampingConstant <= 0.0) { setLastError("Error: GLOBAL DampingConstant must be > 0"s); return lastErrorPtr(); }
         m_SpringConstant = m_DampingConstant / (m_StepSize / m_ERP - m_StepSize);
         m_CFM = 1.0/(m_StepSize * m_SpringConstant + m_DampingConstant);
     }
@@ -202,6 +170,8 @@ std::string *Global::createFromAttributes()
     {
         m_CFM = GSUtil::Double(buf);
         m_DampingConstant = GSUtil::Double(buf2);
+        if (m_CFM <= 0.0) { setLastError("Error: GLOBAL CFM must be > 0"s); return lastErrorPtr(); }
+        if (m_DampingConstant <= 0.0) { setLastError("Error: GLOBAL DampingConstant must be > 0"s); return lastErrorPtr(); }
         m_SpringConstant = (1.0 / m_CFM - m_DampingConstant) / m_StepSize;
         m_ERP = m_StepSize * m_SpringConstant/(m_StepSize * m_SpringConstant + m_DampingConstant);
     }
@@ -209,6 +179,8 @@ std::string *Global::createFromAttributes()
     {
         m_CFM = GSUtil::Double(buf);
         m_SpringConstant = GSUtil::Double(buf2);
+        if (m_CFM <= 0.0) { setLastError("Error: GLOBAL CFM must be > 0"s); return lastErrorPtr(); }
+        if (m_SpringConstant <= 0.0) { setLastError("Error: GLOBAL SpringConstant must be > 0"s); return lastErrorPtr(); }
         m_DampingConstant = 1.0 / m_CFM - m_StepSize * m_SpringConstant;
         m_ERP = m_StepSize * m_SpringConstant/(m_StepSize * m_SpringConstant + m_DampingConstant);
     }
@@ -227,10 +199,11 @@ std::string *Global::createFromAttributes()
 
     if (findAttribute("ContactMaxCorrectingVel", &buf) == nullptr) return lastErrorPtr();
     m_ContactMaxCorrectingVel = GSUtil::Double(buf);
+    if (m_ContactMaxCorrectingVel < 0.0) { setLastError("Error: GLOBAL ContactMaxCorrectingVel must be >= 0"s); return lastErrorPtr(); }
 
     if (findAttribute("ContactSurfaceLayer", &buf) == nullptr) return lastErrorPtr();
     m_ContactSurfaceLayer = GSUtil::Double(buf);
-
+    if (m_ContactSurfaceLayer < 0.0) { setLastError("Error: GLOBAL ContactSurfaceLayer must be >= 0"s); return lastErrorPtr(); }
 
     // get the stepper required
     // WorldStep, accurate but slow
@@ -289,6 +262,9 @@ std::string *Global::createFromAttributes()
         return lastErrorPtr();
     }
 
+    if (findAttribute("PermittedNumericalErrors", &buf)) m_PermittedNumericalErrors = GSUtil::Int(buf);
+    if (findAttribute("NumericalErrorsScore", &buf)) m_NumericalErrorsScore = GSUtil::Double(buf);
+
     findAttribute("WarehouseFailDistanceAbort", &buf);
     if (buf.size()) m_WarehouseFailDistanceAbort = GSUtil::Double(buf);
 
@@ -327,7 +303,6 @@ void Global::appendToAttributes()
     NamedObject::appendToAttributes();
     std::string buf;
 
-    // generated using regexp r'.*m_(.*);' to r'setAttribute("\1", *GSUtil::ToString(m_\1, &buf));'
     setAttribute("AllowConnectedCollisions", *GSUtil::ToString(m_AllowConnectedCollisions, &buf));
     setAttribute("AllowInternalCollisions", *GSUtil::ToString(m_AllowInternalCollisions, &buf));
     setAttribute("BMR", *GSUtil::ToString(m_BMR, &buf));
@@ -345,6 +320,8 @@ void Global::appendToAttributes()
     setAttribute("MetabolicEnergyLimit", *GSUtil::ToString(m_MetabolicEnergyLimit, &buf));
     setAttribute("StepType", stepTypeStrings(m_StepType));
     setAttribute("TimeLimit", *GSUtil::ToString(m_TimeLimit, &buf));
+    setAttribute("NumericalErrorsScore", *GSUtil::ToString(m_NumericalErrorsScore, &buf));
+    setAttribute("PermittedNumericalErrors", *GSUtil::ToString(m_PermittedNumericalErrors, &buf));
     setAttribute("CurrentWarehouse", m_CurrentWarehouseFile);
     setAttribute("WarehouseDecreaseThresholdFactor", *GSUtil::ToString(m_WarehouseDecreaseThresholdFactor, &buf));
     setAttribute("WarehouseFailDistanceAbort", *GSUtil::ToString(m_WarehouseFailDistanceAbort, &buf));
@@ -431,6 +408,26 @@ std::string Global::percentDecode(const std::string &input)
         i += 2;
     }
     return output;
+}
+
+int Global::PermittedNumericalErrors() const
+{
+    return m_PermittedNumericalErrors;
+}
+
+void Global::setPermittedNumericalErrors(int PermittedNumericalErrors)
+{
+    m_PermittedNumericalErrors = PermittedNumericalErrors;
+}
+
+double Global::NumericalErrorsScore() const
+{
+    return m_NumericalErrorsScore;
+}
+
+void Global::setNumericalErrorsScore(double NumericalErrorsScore)
+{
+    m_NumericalErrorsScore = NumericalErrorsScore;
 }
 
 Global::FitnessType Global::fitnessType() const

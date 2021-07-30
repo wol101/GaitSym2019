@@ -12,6 +12,9 @@
 #else
 #include <netinet/in.h>
 #endif
+
+#include <stdint.h>
+
 class Genome;
 class TCP;
 
@@ -20,6 +23,9 @@ class TCP
 public:
     TCP();
     virtual ~TCP();
+
+    static int OneOffInitialisation();
+    static void OneOffCleanup();
 
     int StartServer(int MYPORT);
     void StopServer();
@@ -44,14 +50,63 @@ public:
     int GetSocket() { return m_Sockfd; }
 #endif
 
+    // these versions change from network order to local order
+    void GetSenderAddress(uint32_t *address, uint32_t *port);
+    void GetMyAddress(uint32_t *address, uint32_t *port);
+
 private:
 
-    struct sockaddr_in m_myAddress; // my address information
-    struct sockaddr_in m_senderAddress; // my address information
+    struct sockaddr_in m_myAddress = {}; // my address information
+    struct sockaddr_in m_senderAddress = {}; // my address information
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-    SOCKET m_Sockfd;
+    SOCKET m_Sockfd = INVALID_SOCKET;
 #else
-    int m_Sockfd;
+    int m_Sockfd = -1;
 #endif
+};
+
+class TCPStopServerGuard
+{
+public:
+    TCPStopServerGuard(TCP *tcp) { m_tcp = tcp; }
+    ~TCPStopServerGuard() { m_tcp->StopServer(); }
+private:
+    TCP *m_tcp;
+};
+
+class TCPStopClientGuard
+{
+public:
+    TCPStopClientGuard(TCP *tcp) { m_tcp = tcp; }
+    ~TCPStopClientGuard() { m_tcp->StopClient(); }
+private:
+    TCP *m_tcp;
+};
+
+class TCPStopAcceptorGuard
+{
+public:
+    TCPStopAcceptorGuard(TCP *tcp) { m_tcp = tcp; }
+    ~TCPStopAcceptorGuard() { m_tcp->StopAcceptor(); }
+private:
+    TCP *m_tcp;
+};
+
+class TCPUpDown
+{
+public:
+   TCPUpDown()
+   {
+      m_status = TCP::OneOffInitialisation();
+   }
+   ~TCPUpDown()
+   {
+      TCP::OneOffCleanup();
+   }
+
+   int status() const { return m_status; }
+
+private:
+   int m_status = 0;
 };
 

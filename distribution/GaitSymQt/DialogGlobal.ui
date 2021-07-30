@@ -31,6 +31,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="pushButtonDefaults">
+        <property name="text">
+         <string>Defaults</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -82,19 +89,6 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="checkBoxSpringDamping">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Spring &amp;&amp; Damping Constant Mode</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBoxAllowInternalCollisions">
         <property name="minimumSize">
@@ -108,12 +102,31 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_3">
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="checkBoxSpringDamping">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="text">
-         <string/>
+         <string>Spring &amp;&amp; Damping Constant Mode</string>
         </property>
        </widget>
+      </item>
+      <item row="3" column="0">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -395,6 +408,9 @@
           <height>0</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Integration engine to use</string>
+        </property>
        </widget>
       </item>
       <item row="3" column="1">
@@ -405,7 +421,11 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="LineEditDouble" name="lineEditCFM"/>
+       <widget class="LineEditDouble" name="lineEditCFM">
+        <property name="toolTip">
+         <string>Constraint Force Mixing parameter (typically 1e-10)</string>
+        </property>
+       </widget>
       </item>
       <item row="0" column="0">
        <spacer name="horizontalSpacer_2">
@@ -421,7 +441,11 @@
        </spacer>
       </item>
       <item row="3" column="2">
-       <widget class="LineEditDouble" name="lineEditERP"/>
+       <widget class="LineEditDouble" name="lineEditERP">
+        <property name="toolTip">
+         <string>Error Reduction Parameter (typically 0.1 for soft and 0.8 for hard simulations)</string>
+        </property>
+       </widget>
       </item>
       <item row="0" column="1">
        <widget class="QLabel" name="label_9">
@@ -438,7 +462,11 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="LineEditDouble" name="lineEditStepSize"/>
+       <widget class="LineEditDouble" name="lineEditStepSize">
+        <property name="toolTip">
+         <string>Integration step size (typical values 1e-3 to 1e-5)</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -465,13 +493,6 @@
       <string>Extras</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_7">
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_14">
-        <property name="text">
-         <string>Linear Damping</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <spacer name="horizontalSpacer_9">
         <property name="orientation">
@@ -485,10 +506,10 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_15">
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_14">
         <property name="text">
-         <string>Angular Damping</string>
+         <string>Linear Damping</string>
         </property>
        </widget>
       </item>
@@ -508,6 +529,13 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Angular Damping</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="2">
        <widget class="LineEditDouble" name="lineEditAngularDamping">
         <property name="sizePolicy">
@@ -519,9 +547,33 @@
        </widget>
       </item>
       <item row="2" column="1">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Error Score</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="LineEditDouble" name="lineEditNumericalErrorScore">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string/>
+         <string>Permitted Errors</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QSpinBox" name="spinBoxPermittedErrorCount">
+        <property name="maximum">
+         <number>999999</number>
         </property>
        </widget>
       </item>
@@ -584,7 +636,7 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="LineEditDouble" name="lineEditERPContactSurfaceLayer">
+       <widget class="LineEditDouble" name="lineEditContactSurfaceLayer">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -619,7 +671,7 @@
   <tabstop>comboBoxFitnessType</tabstop>
   <tabstop>comboBoxDistanceTravelledBodyIDName</tabstop>
   <tabstop>lineEditContactMaxCorrectingVel</tabstop>
-  <tabstop>lineEditERPContactSurfaceLayer</tabstop>
+  <tabstop>lineEditContactSurfaceLayer</tabstop>
   <tabstop>lineEditTimeLimit</tabstop>
   <tabstop>lineEditMechanicalEnergyLimit</tabstop>
   <tabstop>lineEditMetabolicEnergyLimit</tabstop>

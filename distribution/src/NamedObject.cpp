@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 #include <typeinfo>
 
 #ifdef __GNUG__
@@ -194,16 +195,13 @@ std::string NamedObject::dumpHelper(std::initializer_list<std::string> values)
 std::string NamedObject::dumpHelper(std::initializer_list<double> values)
 {
     std::stringstream ss;
-    std::unique_ptr<char []> buffer = std::make_unique<char []>(32);
     auto &&it = values.begin();
     if (it != values.end())
     {
-        sprintf(buffer.get(), "%.17g", *it++);
-        ss << buffer.get();
+        ss << std::setprecision(18) << *it++; // this defaults to %.18g format if neither fixed nor scientific is set
         for (; it != values.end(); it++)
         {
-            sprintf(buffer.get(), "\t%.17g", *it);
-            ss << buffer.get();
+            ss << std::setprecision(18) << *it++;
         }
     }
     ss << "\n";

@@ -20,19 +20,6 @@
       <string>Geom</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="4" column="1" rowspan="2">
-       <widget class="LineEditDouble" name="lineEditBounce"/>
-      </item>
-      <item row="2" column="1">
-       <widget class="LineEditDouble" name="lineEditSpring"/>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Abort</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
@@ -40,32 +27,15 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="LineEditUniqueName" name="lineEditGeomID"/>
+      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Marker</string>
         </property>
        </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Damp</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="LineEditDouble" name="lineEditMu"/>
-      </item>
-      <item row="5" column="0" rowspan="2">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Mu</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="LineEditUniqueName" name="lineEditGeomID"/>
       </item>
       <item row="1" column="1">
        <widget class="QComboBox" name="comboBoxGeomMarker"/>
@@ -77,10 +47,53 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="1">
+       <widget class="LineEditDouble" name="lineEditSpring"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Damp</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="LineEditDouble" name="lineEditDamp"/>
+      </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>Bounce</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="LineEditDouble" name="lineEditBounce"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Mu</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="LineEditDouble" name="lineEditMu"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>Rho</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="LineEditDouble" name="lineEditRho"/>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Abort</string>
         </property>
        </widget>
       </item>
@@ -90,9 +103,6 @@
          <string/>
         </property>
        </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="LineEditDouble" name="lineEditDamp"/>
       </item>
       <item row="8" column="0">
        <widget class="QLabel" name="label_18">
@@ -398,7 +408,10 @@
   <tabstop>lineEditDamp</tabstop>
   <tabstop>lineEditBounce</tabstop>
   <tabstop>lineEditMu</tabstop>
+  <tabstop>lineEditRho</tabstop>
   <tabstop>checkBoxAbort</tabstop>
+  <tabstop>checkBoxAdhesion</tabstop>
+  <tabstop>spinBoxNExcludedGeoms</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>lineEditSphereRadius</tabstop>
   <tabstop>lineEditCapsuleRadius</tabstop>
@@ -406,6 +419,7 @@
   <tabstop>lineEditBoxLengthX</tabstop>
   <tabstop>lineEditBoxLengthY</tabstop>
   <tabstop>lineEditBoxLengthZ</tabstop>
+  <tabstop>pushButtonProperties</tabstop>
   <tabstop>pushButtonOK</tabstop>
   <tabstop>pushButtonCancel</tabstop>
  </tabstops>

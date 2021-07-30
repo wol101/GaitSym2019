@@ -70,7 +70,7 @@ ObjectiveMainENET::ObjectiveMainENET(int argc, const char **argv)
     m_argparse.AddArgument("-wd"s, "--warehouseFailDistanceAbort"s, "Abort the simulation when the warehouse distance fails"s, "0"s, 1, false, ArgParse::Bool);
     m_argparse.AddArgument("-de"s, "--debug"s, "Turn debugging on"s);
 
-    m_argparse.AddArgument("-ol"s, "-outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
+    m_argparse.AddArgument("-ol"s, "--outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
 
     m_argparse.AddArgument("-hl"s, "--hostsList"s, "List of hosts "s, "localhost:8086"s, 1, MAX_ARGS, true, ArgParse::String);
     m_argparse.AddArgument("-to"s, "--timeout"s, "The timeout value in milliseconds"s, "100000"s, 1, false, ArgParse::Int);
@@ -190,6 +190,7 @@ int ObjectiveMainENET::Run()
 
             finishedFlag = true;
             status = WriteOutput();
+            m_simulation.reset();
             if (m_peer)
             {
                 // enet_peer_disconnect_now(m_peer, 0);
@@ -266,7 +267,7 @@ int ObjectiveMainENET::ReadModel()
     // request a new genome from the server
     TCPIPMessage message = {};
     strcpy(message.text, "reqjob");
-    message.length = 0;
+    message.genomeLength = 0;
     message.runID = 0;
     std::copy(std::begin(m_MD5), std::end(m_MD5), std::begin(message.md5));
     message.senderIP = m_client->address.host;

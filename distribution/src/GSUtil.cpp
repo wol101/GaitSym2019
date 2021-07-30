@@ -25,9 +25,11 @@
 #include <limits>
 #include <regex>
 #include <cinttypes>
+#include <cstdarg>
 
 #if !defined(_WIN32) && !defined(WIN32)
 #include <sys/time.h>
+#include <arpa/inet.h>
 #endif
 
 using namespace std::string_literals;
@@ -992,6 +994,42 @@ std::string GSUtil::ToString(uint32_t address, uint16_t port)
 {
     std::string output;
     return *ToString(address, port, &output);
+}
+
+// convert to string using printf style formatting and variable numbers of arguments
+std::string GSUtil::ToString(const char * const printfFormatString, ...)
+{
+    // initialize use of the variable argument array
+    va_list vaArgs;
+    va_start(vaArgs, printfFormatString);
+
+    // reliably acquire the size
+    // from a copy of the variable argument array
+    // and a functionally reliable call to mock the formatting
+    va_list vaArgsCopy;
+    va_copy(vaArgsCopy, vaArgs);
+    const int iLen = std::vsnprintf(NULL, 0, printfFormatString, vaArgsCopy);
+    va_end(vaArgsCopy);
+
+    // return a formatted string without risking memory mismanagement
+    // and without assuming any compiler or platform specific behavior
+    std::unique_ptr<char[]> zc = std::make_unique<char[]>(iLen + 1);
+    std::vsnprintf(zc.get(), iLen + 1, printfFormatString, vaArgs);
+    va_end(vaArgs);
+    return std::string(zc.get(), iLen);
+}
+
+std::string GSUtil::ConvertIPAddressToString(uint32_t address, bool networkOrder)
+{
+    if (networkOrder)
+    {
+        address = ntohl(address);
+    }
+    std::string hostURL = (std::to_string(address & 0xff) + "."s +
+                           std::to_string((address >> 8) & 0xff) + "."s +
+                           std::to_string((address >> 16) & 0xff) + "."s +
+                           std::to_string(address >> 24));
+    return hostURL;
 }
 
 #if defined(__APPLE__)

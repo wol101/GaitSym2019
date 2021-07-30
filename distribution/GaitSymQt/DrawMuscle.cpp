@@ -242,9 +242,9 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
         CylinderWrapStrap *cylinderWrapStrap = dynamic_cast<CylinderWrapStrap *>(m_muscle->GetStrap());
         if (cylinderWrapStrap)
         {
-            if (cylinderWrapStrap->GetNumWrapSegments() != m_strapCylinderWrapSegments)
+            if (cylinderWrapStrap->GetNumWrapSegments() != int(m_strapCylinderWrapSegments))
             {
-                cylinderWrapStrap->SetNumWrapSegments(m_strapCylinderWrapSegments);
+                cylinderWrapStrap->SetNumWrapSegments(int(m_strapCylinderWrapSegments));
                 cylinderWrapStrap->Calculate();
             }
             std::vector<pgd::Vector3> polyline = *cylinderWrapStrap->GetPathCoordinates();

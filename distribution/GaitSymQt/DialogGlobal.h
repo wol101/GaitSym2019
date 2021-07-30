@@ -40,6 +40,7 @@ public slots:
     virtual void reject() Q_DECL_OVERRIDE;
     void properties();
     void checkBoxSpringDampingStateChanged(int state);
+    void setDefaults();
 
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
@@ -49,12 +50,15 @@ private:
                                 double integration_stepsize, double *cfm, double *erp);
     static void ConvertToSpringAndDampingConstants(double erp, double cfm, double integration_stepsize,
                                                    double *spring_constant, double *damping_constant);
+    void updateUI(const Global *globalPtr);
+    void initialiseDefaultGlobal();
 
     Ui::DialogGlobal *ui;
 
     const Global *m_inputGlobal = nullptr;
     std::unique_ptr<Global> m_outputGlobal;
     const std::map<std::string, std::unique_ptr<Body>> *m_existingBodies = nullptr;
+    Global m_defaultGlobal;
 
     QMap<QString, SettingsItem> m_properties;
 

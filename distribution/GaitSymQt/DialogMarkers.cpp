@@ -30,6 +30,7 @@ DialogMarkers::DialogMarkers(QWidget *parent) :
     restoreGeometry(Preferences::valueQByteArray("DialogMarkersGeometry"));
 
     QString mirrorAxis = Preferences::valueQString("DialogMarkersMirrorAxis");
+    if (mirrorAxis != "X" && mirrorAxis != "Y" && mirrorAxis != "Z") mirrorAxis = "X";
     ui->radioButtonX->setChecked(mirrorAxis == "X");
     ui->radioButtonY->setChecked(mirrorAxis == "Y");
     ui->radioButtonZ->setChecked(mirrorAxis == "Z");
@@ -145,7 +146,7 @@ void DialogMarkers::accept() // this catches OK and return/enter
     markerPtr->saveToAttributes();
     markerPtr->createFromAttributes();
 
-    QString mirrorAxis;
+    QString mirrorAxis = "X";
     if (ui->radioButtonX->isChecked()) mirrorAxis = "X";
     else if (ui->radioButtonY->isChecked()) mirrorAxis = "Y";
     else if (ui->radioButtonZ->isChecked()) mirrorAxis = "Z";
@@ -157,7 +158,7 @@ void DialogMarkers::accept() // this catches OK and return/enter
 void DialogMarkers::reject() // this catches cancel, close and escape key
 {
     qDebug() << "DialogMarkers::reject()";
-    QString mirrorAxis;
+    QString mirrorAxis = "X";
     if (ui->radioButtonX->isChecked()) mirrorAxis = "X";
     else if (ui->radioButtonY->isChecked()) mirrorAxis = "Y";
     else if (ui->radioButtonZ->isChecked()) mirrorAxis = "Z";

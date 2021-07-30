@@ -53,11 +53,11 @@
  * stuff used for testing purposes only
  */
 
-#ifdef	TEST
+#ifdef  TEST
 #define DEB(x)
 #define DDB(x) x
-#define	DEBUG	0	/* minimal debugging */
-#ifdef	MSDOS
+#define DEBUG   0       /* minimal debugging */
+#ifdef  MSDOS
 #include <time.h>
 struct timeval {
     unsigned long ticks;
@@ -69,21 +69,21 @@ typedef unsigned short u_short ;
 #else /* typically, unix systems */
 #include <sys/time.h>
 #define DIFF_T(a,b) \
-        (1+ 1000000*(a.tv_sec - b.tv_sec) + (a.tv_usec - b.tv_usec) )
+    (1+ 1000000*(a.tv_sec - b.tv_sec) + (a.tv_usec - b.tv_usec) )
 #endif
 
 #define TICK(t) \
-        {struct timeval x ; \
-        gettimeofday(&x, NULL) ; \
-        t = x.tv_usec + 1000000* (x.tv_sec & 0xff ) ; \
-        }
+{struct timeval x ; \
+    gettimeofday(&x, NULL) ; \
+    t = x.tv_usec + 1000000* (x.tv_sec & 0xff ) ; \
+    }
 #define TOCK(t) \
-        { u_long t1 ; TICK(t1) ; \
-          if (t1 < t) t = 256000000 + t1 - t ; \
-          else t = t1 - t ; \
-          if (t == 0) t = 1 ;}
+{ u_long t1 ; TICK(t1) ; \
+    if (t1 < t) t = 256000000 + t1 - t ; \
+    else t = t1 - t ; \
+    if (t == 0) t = 1 ;}
 
-u_long ticks[10];	/* vars for timekeeping */
+u_long ticks[10];       /* vars for timekeeping */
 #else
 #define DEB(x)
 #define DDB(x)
@@ -96,40 +96,40 @@ u_long ticks[10];	/* vars for timekeeping */
  * Primitive polynomials - see Lin & Costello, Appendix A,
  * and  Lee & Messerschmitt, p. 453.
  */
-static const char *allPp[] = {    /* GF_BITS	polynomial		*/
-    NULL,		    /*  0	no code			*/
-    NULL,		    /*  1	no code			*/
-    "111",		    /*  2	1+x+x^2			*/
-    "1101",		    /*  3	1+x+x^3			*/
-    "11001",		    /*  4	1+x+x^4			*/
-    "101001",		    /*  5	1+x^2+x^5		*/
-    "1100001",		    /*  6	1+x+x^6			*/
-    "10010001",		    /*  7	1 + x^3 + x^7		*/
-    "101110001",	    /*  8	1+x^2+x^3+x^4+x^8	*/
-    "1000100001",	    /*  9	1+x^4+x^9		*/
-    "10010000001",	    /* 10	1+x^3+x^10		*/
-    "101000000001",	    /* 11	1+x^2+x^11		*/
-    "1100101000001",	    /* 12	1+x+x^4+x^6+x^12	*/
-    "11011000000001",	    /* 13	1+x+x^3+x^4+x^13	*/
-    "110000100010001",	    /* 14	1+x+x^6+x^10+x^14	*/
-    "1100000000000001",	    /* 15	1+x+x^15		*/
-    "11010000000010001"	    /* 16	1+x+x^3+x^12+x^16	*/
-};
+static const char *allPp[] = {    /* GF_BITS    polynomial              */
+                                  NULL,                   /*  0       no code                 */
+                                  NULL,                   /*  1       no code                 */
+                                  "111",                  /*  2       1+x+x^2                 */
+                                  "1101",                 /*  3       1+x+x^3                 */
+                                  "11001",                /*  4       1+x+x^4                 */
+                                  "101001",               /*  5       1+x^2+x^5               */
+                                  "1100001",              /*  6       1+x+x^6                 */
+                                  "10010001",             /*  7       1 + x^3 + x^7           */
+                                  "101110001",            /*  8       1+x^2+x^3+x^4+x^8       */
+                                  "1000100001",           /*  9       1+x^4+x^9               */
+                                  "10010000001",          /* 10       1+x^3+x^10              */
+                                  "101000000001",         /* 11       1+x^2+x^11              */
+                                  "1100101000001",        /* 12       1+x+x^4+x^6+x^12        */
+                                  "11011000000001",       /* 13       1+x+x^3+x^4+x^13        */
+                                  "110000100010001",      /* 14       1+x+x^6+x^10+x^14       */
+                                  "1100000000000001",     /* 15       1+x+x^15                */
+                                  "11010000000010001"     /* 16       1+x+x^3+x^12+x^16       */
+                             };
 
 
 /*
  * To speed up computations, we have tables for logarithm, exponent
  * and inverse of a number. If GF_BITS <= 8, we use a table for
  * multiplication as well (it takes 64K, no big deal even on a PDA,
- * especially because it can be pre-initialized an put into a ROM!),
+ * especially because it can be pre-initialized and put into a ROM!),
  * otherwhise we use a table of logarithms.
  * In any case the macro gf_mul(x,y) takes care of multiplications.
  */
 
-static gf gf_exp[2*GF_SIZE];	/* index->poly form conversion table	*/
-static int gf_log[GF_SIZE + 1];	/* Poly->index form conversion table	*/
-static gf inverse[GF_SIZE+1];	/* inverse of field elem.		*/
-                                /* inv[\alpha**i]=\alpha**(GF_SIZE-i-1)	*/
+static gf gf_exp[2*GF_SIZE];    /* index->poly form conversion table    */
+static int gf_log[GF_SIZE + 1]; /* Poly->index form conversion table    */
+static gf inverse[GF_SIZE+1];   /* inverse of field elem.               */
+/* inv[\alpha**i]=\alpha**(GF_SIZE-i-1) */
 
 /*
  * modnn(x) computes x % GF_SIZE, where GF_SIZE is 2**GF_BITS - 1,
@@ -175,11 +175,11 @@ init_mul_table()
             gf_mul_table[i][j] = gf_exp[modnn(gf_log[i] + gf_log[j]) ] ;
 
     for (j=0; j< GF_SIZE+1; j++)
-            gf_mul_table[0][j] = gf_mul_table[j][0] = 0;
+        gf_mul_table[0][j] = gf_mul_table[j][0] = 0;
 }
-#else	/* GF_BITS > 8 */
+#else   /* GF_BITS > 8 */
 static inline gf
-gf_mul(x,y)
+gf_mul(gf x, gf y)
 {
     if ( (x) == 0 || (y)==0 ) return 0;
 
@@ -195,8 +195,8 @@ gf_mul(x,y)
 /*
  * Generate GF(2**m) from the irreducible polynomial p(X) in p[0]..p[m]
  * Lookup tables:
- *     index->polynomial form		gf_exp[] contains j= \alpha^i;
- *     polynomial form -> index form	gf_log[ j = \alpha^i ] = i
+ *     index->polynomial form           gf_exp[] contains j= \alpha^i;
+ *     polynomial form -> index form    gf_log[ j = \alpha^i ] = i
  * \alpha=x is the primitive element of GF(2^m)
  *
  * For efficiency, gf_exp[] has size 2*GF_SIZE, so that a simple
@@ -216,7 +216,7 @@ generate_gf(void)
     gf mask;
     const char *Pp =  allPp[GF_BITS] ;
 
-    mask = 1;	/* x ** 0 = 1 */
+    mask = 1;   /* x ** 0 = 1 */
     gf_exp[GF_BITS] = 0; /* will be updated at the end of the 1st loop */
     /*
      * first, generate the (polynomial representation of) powers of \alpha,
@@ -256,7 +256,7 @@ generate_gf(void)
     /*
      * log(0) is not defined, so use a special value
      */
-    gf_log[0] =	GF_SIZE ;
+    gf_log[0] = GF_SIZE ;
     /* set the extended gf_exp values for fast multiply */
     for (i = 0 ; i < GF_SIZE ; i++)
         gf_exp[i + GF_SIZE] = gf_exp[i] ;
@@ -323,7 +323,7 @@ addmul1(gf *dst1, gf *src1, gf c, int sz)
     }
 #endif
     lim += UNROLL - 1 ;
-    for (; dst < lim; dst++, src++ )		/* final components */
+    for (; dst < lim; dst++, src++ )            /* final components */
         GF_ADDMULC( *dst , *src );
 }
 
@@ -360,7 +360,7 @@ is_identity(gf *m, int k)
         for (col=0; col<k; col++)
             if ( (row==col && *m != 1) ||
                  (row!=col && *m != 0) )
-                 return 0 ;
+                return 0 ;
             else
                 m++ ;
     return 1 ;
@@ -411,7 +411,7 @@ invert_mat(gf *src, int k)
             if (ipiv[row] != 1) {
                 for (ix = 0 ; ix < k ; ix++) {
                     DEB( pivloops++ ; )
-                    if (ipiv[ix] == 0) {
+                            if (ipiv[ix] == 0) {
                         if (src[row*k + ix] != 0) {
                             irow = row ;
                             icol = ix ;
@@ -454,7 +454,7 @@ found_piv:
              * fruitful, at least in the obvious ways (unrolling)
              */
             DEB( pivswaps++ ; )
-            c = inverse[ c ] ;
+                    c = inverse[ c ] ;
             pivot_row[icol] = 1 ;
             for (ix = 0 ; ix < k ; ix++ )
                 pivot_row[ix] = gf_mul(c, pivot_row[ix] );
@@ -484,11 +484,11 @@ found_piv:
         else if (indxc[col] <0 || indxc[col] >= k)
             fprintf(stderr, "AARGH, indxc[col] %d\n", indxc[col]);
         else
-        if (indxr[col] != indxc[col] ) {
-            for (row = 0 ; row < k ; row++ ) {
-                SWAP( src[row*k + indxr[col]], src[row*k + indxc[col]], gf) ;
+            if (indxr[col] != indxc[col] ) {
+                for (row = 0 ; row < k ; row++ ) {
+                    SWAP( src[row*k + indxr[col]], src[row*k + indxc[col]], gf) ;
+                }
             }
-        }
     }
     error = 0 ;
 fail:
@@ -519,7 +519,7 @@ invert_vdm(gf *src, int k)
     gf *b, *c, *p;
     gf t, xx ;
 
-    if (k == 1) 	/* degenerate case, matrix must be p^0 = 1 */
+    if (k == 1)         /* degenerate case, matrix must be p^0 = 1 */
         return 0 ;
     /*
      * c holds the coefficient of P(x) = Prod (x - p_i), i=0..k-1
@@ -540,7 +540,7 @@ invert_vdm(gf *src, int k)
      * x - p_i generating P_i = x P_{i-1} - p_i P_{i-1}
      * After k steps we are done.
      */
-    c[k-1] = p[0] ;	/* really -p(0), but x = -x in GF(2^m) */
+    c[k-1] = p[0] ;     /* really -p(0), but x = -x in GF(2^m) */
     for (i = 1 ; i < k ; i++ ) {
         gf p_i = p[i] ; /* see above comment */
         for (j = k-1  - ( i - 1 ) ; j < k-1 ; j++ )
@@ -589,13 +589,13 @@ init_fec()
  * and then transforming it into a systematic matrix.
  */
 
-#define FEC_MAGIC	0xFECC0DEC
+#define FEC_MAGIC       0xFECC0DEC
 
 void
 fec_free(struct fec_parms *p)
 {
     if (p==NULL ||
-       p->magic != ( ( (FEC_MAGIC ^ p->k) ^ p->n) ^ (int)((intptr_t)(p->enc_matrix))) ) {
+            p->magic != ( ( (FEC_MAGIC ^ p->k) ^ p->n) ^ (int)((intptr_t)(p->enc_matrix))) ) {
         fprintf(stderr, "bad parameters to fec_free\n");
         return ;
     }
@@ -608,7 +608,7 @@ fec_free(struct fec_parms *p)
  * the encoding matrix.
  */
 struct fec_parms *
-fec_new(int k, int n)
+        fec_new(int k, int n)
 {
     int row, col ;
     gf *p, *tmp_m ;
@@ -659,9 +659,9 @@ fec_new(int k, int n)
     TOCK(ticks[3]);
 
     DDB(fprintf(stderr, "--- %ld us to build encoding matrix\n",
-            ticks[3]);)
+                ticks[3]);)
     DEB(pr_matrix(retval->enc_matrix, n, k, "encoding_matrix");)
-    return retval ;
+            return retval ;
 }
 
 /*
@@ -679,7 +679,7 @@ fec_encode(struct fec_parms *code, gf *src[], gf *fec, int index, int sz)
         sz /= 2 ;
 
     if (index < k)
-         bcopy(src[index], fec, sz*sizeof(gf) ) ;
+        bcopy(src[index], fec, sz*sizeof(gf) ) ;
     else if (index < code->n) {
         p = &(code->enc_matrix[index*k] );
         bzero(fec, sz*sizeof(gf));
@@ -687,7 +687,7 @@ fec_encode(struct fec_parms *code, gf *src[], gf *fec, int index, int sz)
             addmul(fec, src[i], p[i], sz ) ;
     } else
         fprintf(stderr, "Invalid index %d (max %d)\n",
-            index, code->n - 1 );
+                index, code->n - 1 );
 }
 
 /*
@@ -709,14 +709,14 @@ shuffle(gf *pkt[], int index[], int k)
 
             if (index[c] == c) {
                 DEB(fprintf(stderr, "\nshuffle, error at %d\n", i);)
-                return 1 ;
+                        return 1 ;
             }
             SWAP(index[i], index[c], int) ;
             SWAP(pkt[i], pkt[c], gf *) ;
         }
     }
     DEB( /* just test that it works... */
-    for ( i = 0 ; i < k ; i++ ) {
+         for ( i = 0 ; i < k ; i++ ) {
         if (index[i] < k && index[i] != i) {
             fprintf(stderr, "shuffle: after\n");
             for (i=0; i<k ; i++) fprintf(stderr, "%3d ", index[i]);
@@ -747,14 +747,14 @@ build_decode_matrix(struct fec_parms * code, gf * /*pkt*/ [], int index[])
             p[i] = 1 ;
         } else
 #endif
-        if (index[i] < code->n )
-            bcopy( &(code->enc_matrix[index[i]*k]), p, k*sizeof(gf) );
-        else {
-            fprintf(stderr, "decode: invalid index %d (max %d)\n",
-                index[i], code->n - 1 );
-            free(matrix) ;
-            return NULL ;
-        }
+            if (index[i] < code->n )
+                bcopy( &(code->enc_matrix[index[i]*k]), p, k*sizeof(gf) );
+            else {
+                fprintf(stderr, "decode: invalid index %d (max %d)\n",
+                        index[i], code->n - 1 );
+                free(matrix) ;
+                return NULL ;
+            }
     }
     TICK(ticks[9]);
     if (invert_mat(matrix, k)) {
@@ -770,11 +770,11 @@ build_decode_matrix(struct fec_parms * code, gf * /*pkt*/ [], int index[])
  * packets, and produces the correct vector as output.
  *
  * Input:
- *	code: pointer to code descriptor
- *	pkt:  pointers to received packets. They are modified
- *	      to store the output packets (in place)
- *	index: pointer to packet indexes (modified)
- *	sz:    size of each packet
+ *      code: pointer to code descriptor
+ *      pkt:  pointers to received packets. They are modified
+ *            to store the output packets (in place)
+ *      index: pointer to packet indexes (modified)
+ *      sz:    size of each packet
  */
 int
 fec_decode(struct fec_parms *code, gf *pkt[], int index[], int sz)
@@ -786,7 +786,7 @@ fec_decode(struct fec_parms *code, gf *pkt[], int index[], int sz)
     if (GF_BITS > 8)
         sz /= 2 ;
 
-    if (shuffle(pkt, index, k))	/* error if true */
+    if (shuffle(pkt, index, k)) /* error if true */
         return 1 ;
     m_dec = build_decode_matrix(code, pkt, index);
 
@@ -832,11 +832,11 @@ test_gf()
     for (i=0; i<= GF_SIZE; i++) {
         if (gf_exp[gf_log[i]] != i)
             fprintf(stderr, "bad exp/log i %d log %d exp(log) %d\n",
-                i, gf_log[i], gf_exp[gf_log[i]]);
+                    i, gf_log[i], gf_exp[gf_log[i]]);
 
         if (i != 0 && gf_mul(i, inverse[i]) != 1)
             fprintf(stderr, "bad mul/inv i %d inv %d i*inv(i) %d\n",
-                i, inverse[i], gf_mul(i, inverse[i]) );
+                    i, inverse[i], gf_mul(i, inverse[i]) );
         if (gf_mul(0,i) != 0)
             fprintf(stderr, "bad mul table 0,%d\n",i);
         if (gf_mul(i,0) != 0)

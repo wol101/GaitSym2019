@@ -58,6 +58,8 @@ public:
     double GetContactMu() { return m_Mu; }
     void SetContactBounce(double bounce) { m_Bounce = bounce; }
     double GetContactBounce() { return m_Bounce; }
+    void SetRho(double rho) { m_Rho = rho; }
+    double GetRho() { return m_Rho; }
 
     void SetSpringDamp(double springConstant, double dampingConstant, double integrationStep);
     void SetSpringERP(double springConstant, double ERP, double integrationStep);
@@ -99,6 +101,7 @@ private:
     double m_ERP = -1;
     double m_Mu = dInfinity;
     double m_Bounce = -1;
+    double m_Rho = -1;
 
     bool m_Abort = false;
     bool m_Adhesion = false;
