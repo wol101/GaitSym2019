@@ -530,6 +530,7 @@ $(addprefix distribution/src/, $(GAITSYMHEADER)):
 
 gaitsym_distribution_extras:
 	cp -rf ann_1.1.2 distribution/
+	cp -rf asio-1.18.2 distribution/
 	cp -rf exprtk distribution/
 	cp -rf GaitSymQt distribution/
 	cp -rf libgwavi distribution/
