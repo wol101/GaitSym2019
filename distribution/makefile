@@ -49,7 +49,7 @@ ifeq ($(SYSTEM),OSX)
 	-DBYTE_ORDER_LITTLE_ENDIAN -DUSE_UNIX_ERRORS -DHAVE_ALLOCA_H -DMAKEFILE_OSX
 	LDFLAGS =
 	LIBS = -lpthread -lm -framework CoreServices
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include
+	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
 endif
 
 ifeq ($(SYSTEM),LINUX)
@@ -71,7 +71,7 @@ ifdef CC_AVAIL
 endif
 	LIBS = -lpthread -lm
 	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE \
-	-Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include
+	-Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
 endif
 
 ifeq ($(SYSTEM),CYGWIN)
@@ -84,7 +84,7 @@ ifeq ($(SYSTEM),CYGWIN)
 	CXX = g++
 	CC = gcc
 	LIBS = -lpthread -lm
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include
+	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
 endif
 
 ifeq ($(HOST),submitter.itservices.manchester.ac.uk)
@@ -100,7 +100,7 @@ ifeq ($(HOST),submitter.itservices.manchester.ac.uk)
 	CXX = g++
 	CC = gcc
 	LIBS = -lpthread -lm
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include
+	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
 endif
 
 ifeq ($(HOST),l-u-roboticssuite.it.manchester.ac.uk)
@@ -115,7 +115,7 @@ ifeq ($(HOST),l-u-roboticssuite.it.manchester.ac.uk)
 	CXX = g++
 	CC = gcc
 	LIBS = -lpthread -lm
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include
+	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
 endif
 
 # this looks for the substring csf
@@ -129,7 +129,7 @@ ifneq (,$(findstring csf,$(HOST)))
 	CC = gcc
 	LIBS = -lpthread -lm
 	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE \
-	-Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include
+	-Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
 endif
 
 # vpath %.cpp src
@@ -181,6 +181,7 @@ Muscle.cpp\
 NamedObject.cpp\
 NPointStrap.cpp\
 ObjectiveMain.cpp\
+ObjectiveMainASIO.cpp\
 ObjectiveMainENET.cpp\
 ObjectiveMainMPI.cpp\
 ObjectiveMainTCP.cpp\
@@ -387,7 +388,7 @@ ANNOBJ = $(addsuffix .o, $(basename $(ANNSRC) ) )
 PYSTRINGOBJ = $(addsuffix .o, $(basename $(PYSTRINGSRC) ) )
 ENETOBJ = $(addsuffix .o, $(basename $(ENETSRC) ) )
 
-BINARIES = bin/gaitsym_2019 bin/gaitsym_2019_udp bin/gaitsym_2019_enet bin/gaitsym_2019_tcp
+BINARIES = bin/gaitsym_2019_asio bin/gaitsym_2019 bin/gaitsym_2019_udp bin/gaitsym_2019_enet bin/gaitsym_2019_tcp
 
 all: directories binaries
 
@@ -409,6 +410,7 @@ obj:
 	-mkdir obj/ann
 	-mkdir obj/pystring
 	-mkdir obj/enet
+	-mkdir obj/asio
 
 bin:
 	-mkdir bin
@@ -481,6 +483,15 @@ $(addprefix obj/pystring/, $(PYSTRINGOBJ) ) \
 $(addprefix obj/enet/, $(ENETOBJ) )
 	$(CXX) $(LDFLAGS) -o $@ $^ $(UDP_LIBS) $(LIBS)
 
+obj/asio/%.o : src/%.cpp
+	$(CXX) -DUSE_ASIO $(CXXFLAGS) $(INC_DIRS) -c $< -o $@
+
+bin/gaitsym_2019_asio: $(addprefix obj/asio/, $(GAITSYMOBJ) ) $(addprefix obj/libccd/, $(LIBCCDOBJ) ) $(addprefix obj/ode/, $(ODEOBJ) ) \
+$(addprefix obj/odejoints/, $(ODEJOINTSOBJ) ) $(addprefix obj/opcodeice/, $(OPCODEICEOBJ) ) $(addprefix obj/opcode/, $(OPCODEOBJ) ) \
+$(addprefix obj/ann/, $(ANNOBJ) ) \
+$(addprefix obj/pystring/, $(PYSTRINGOBJ) )\
+$(addprefix obj/enet/, $(ENETOBJ) )
+	$(CXX) $(LDFLAGS) -o $@ $^ $(SOCKET_LIBS) $(LIBS)
 
 clean:
 	rm -rf obj bin

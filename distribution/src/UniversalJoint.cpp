@@ -51,11 +51,13 @@ void UniversalJoint::SetUniversalAxis2(double x, double y, double z)
 
 void UniversalJoint::SetStopCFM1(double cfm)
 {
+    m_StopCFM1 = cfm;
     dJointSetUniversalParam (JointID(), dParamStopCFM1, cfm);
 }
 
 void UniversalJoint::SetStopERP1(double erp)
 {
+    m_StopERP1 = erp;
     dJointSetUniversalParam (JointID(), dParamStopERP1, erp);
 }
 
@@ -104,11 +106,13 @@ void UniversalJoint::SetJointStops1(double loStop, double hiStop)
 
 void UniversalJoint::SetStopCFM2(double cfm)
 {
+    m_StopCFM2 = cfm;
     dJointSetUniversalParam (JointID(), dParamStopCFM2, cfm);
 }
 
 void UniversalJoint::SetStopERP2(double erp)
 {
+    m_StopERP2 = erp;
     dJointSetUniversalParam (JointID(), dParamStopERP2, erp);
 }
 
@@ -259,11 +263,11 @@ void UniversalJoint::appendToAttributes()
     setAttribute("HighStop1"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamHiStop1), &buf));
     setAttribute("LowStop2"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamLoStop2), &buf));
     setAttribute("HighStop2"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamHiStop2), &buf));
-    setAttribute("StopCFM1"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamStopCFM1), &buf));
-    setAttribute("StopERP1"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamStopERP1), &buf));
+    if (m_StopCFM1 > 0) setAttribute("StopCFM1"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamStopCFM1), &buf));
+    if (m_StopERP1 > 0) setAttribute("StopERP1"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamStopERP1), &buf));
     setAttribute("StopBounce1"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamBounce1), &buf));
-    setAttribute("StopCFM2"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamStopCFM2), &buf));
-    setAttribute("StopERP2"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamStopERP2), &buf));
+    if (m_StopCFM2 > 0) setAttribute("StopCFM2"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamStopCFM2), &buf));
+    if (m_StopERP2 > 0) setAttribute("StopERP2"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamStopERP2), &buf));
     setAttribute("StopBounce2"s, *GSUtil::ToString(dJointGetUniversalParam(JointID(), dParamBounce2), &buf));
 }
 

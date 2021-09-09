@@ -59,6 +59,12 @@ private:
     double m_StartAngleReference1 = 0;
     double m_StartAngleReference2 = 0;
 
+    // these values are just used for saving and loading
+    double m_StopCFM1 = -1;
+    double m_StopERP1 = -1;
+    double m_StopCFM2 = -1;
+    double m_StopERP2 = -1;
+
 };
 
 

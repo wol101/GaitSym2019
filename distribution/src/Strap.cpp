@@ -226,15 +226,14 @@ std::string Strap::dumpToString()
     if (firstDump())
     {
         setFirstDump(false);
-         ss << "Time";
+         ss << "Time\tLength";
 #pragma warning( suppress : 4189 ) // suppresses 'warning C4189: 'it': local variable is initialized but not referenced' for one line
         for (auto &&it : m_pointForceList) ss << "\tBody\tXP\tYP\tZP\tFX\tFY\tFZ";
 #pragma warning( suppress : 4189 ) // suppresses 'warning C4189: 'it': local variable is initialized but not referenced' for one line
         for (auto &&it : m_torqueMarkerList) ss << "\tMarker\tWTX\tWTY\tWTZ\tMTX\tMTY\tMTZ\tWMAX\tWMAY\tWMAZ\tMMAX\tMMAY\tMMAZ";
         ss << "\n";
     }
-    else
-        ss << simulation()->GetTime();
+    ss << simulation()->GetTime() << "\t" << GetLength();
     for (auto &&it: m_pointForceList)
     {
         ss << "\t" << it->body->name() << "\t" <<

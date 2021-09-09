@@ -5,20 +5,22 @@ import sys
 import os
 import argparse
 import re
-import xml.etree.ElementTree
 import math
+import shutil
 
-def transform_bodies():
+def transform_obj_files():
 
-    parser = argparse.ArgumentParser(description="Transform the bodies in a GaitSym file")
-    parser.add_argument("-i", "--input_xml_file", required=True, help="input GaitSym XML config file")
-    parser.add_argument("-o", "--output_xml_file", required=True, help="output GaitSym XML config file")
+    parser = argparse.ArgumentParser(description="Transform the OBJ files in the list")
+    parser.add_argument("input_obj_files", nargs='+', help="input OBJ files")
     parser.add_argument("-t", "--translation", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="translation vector x y z [0, 0, 0])")
     parser.add_argument("-rc", "--rotation_centre", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="rotation centre x y z [0, 0, 0])")
     parser.add_argument("-r1", "--rotation_angle_axis_1", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
     parser.add_argument("-r2", "--rotation_angle_axis_2", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
     parser.add_argument("-r3", "--rotation_angle_axis_3", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
-    parser.add_argument("-b", "--bodies_list", nargs='*', type=list, default=[], help="only process these bodies if defined []")
+    parser.add_argument("-og", "--output_graphics_folder", default='converted', help="location of the output OBJ files [converted]")
+    parser.add_argument("-mx", "--mirror_x", action="store_true", help="mirror the X axis")
+    parser.add_argument("-my", "--mirror_y", action="store_true", help="mirror the Y axis")
+    parser.add_argument("-mz", "--mirror_z", action="store_true", help="mirror the Z axis")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")
     parser.add_argument("-v", "--verbose", action="store_true", help="write out more information whilst processing")
     args = parser.parse_args()
@@ -26,14 +28,9 @@ def transform_bodies():
     if args.verbose:
         pretty_print_sys_argv(sys.argv)
         pretty_print_argparse_args(args)
-
-    preflight_read_file(args.input_xml_file)
-    preflight_write_file(args.output_xml_file, args.force)
-
-    # read the input XML file
-    input_tree = xml.etree.ElementTree.parse(args.input_xml_file)
-    input_root = input_tree.getroot()
     
+    preflight_write_folder(args.output_graphics_folder)
+
     translation = args.translation
     rotation_centre = args.rotation_centre
     
@@ -53,29 +50,98 @@ def transform_bodies():
     if args.verbose:
         print("rotation %g %g %g %g" % (angle, axis[0], axis[1], axis[2]))
     
-    # loop through bodies
-    for child in input_root:
-        if child.tag == "BODY":
-            if args.bodies_list and not child.attrib["ID"] in args.bodies_list:
-                if args.verbose:
-                    print('Skipping : BODY ID="%s"' % (child.attrib["ID"]))
-                continue
-            if args.verbose:
-                print('Old: BODY ID="%s" Position="%s" Quaternion="%s"' % (child.attrib["ID"], child.attrib["Position"], child.attrib["Quaternion"]))
-            p1 = [float(i) for i in child.attrib["Position"].split()]
-            p2 = Sub3x1(p1, rotation_centre)
-            p3 = QuaternionVectorRotate(rotation, p2)
-            p4 = Add3x1(p3, rotation_centre)
-            p5 = Add3x1(p4, translation)
-            child.attrib["Position"] = " ".join(format(x, ".18e") for x in p5)
-            q1 = [float(i) for i in child.attrib["Quaternion"].split()]
-            q2 = QuaternionQuaternionMultiply(rotation, q1)
-            child.attrib["Quaternion"] = " ".join(format(x, ".18e") for x in q2)
-            if args.verbose:
-                print('New: BODY ID="%s" Position="%s" Quaternion="%s"' % (child.attrib["ID"], child.attrib["Position"], child.attrib["Quaternion"]))
-    with open(args.output_xml_file, "wb") as out_file:
-        out_file.write(xml.etree.ElementTree.tostring(input_root, encoding="utf-8", method="xml"))
+    for input_obj_file in args.input_obj_files:
+        transform_obj_file(input_obj_file, args.output_graphics_folder, rotation_centre, rotation, translation,
+                            args.mirror_x, args.mirror_y, args.mirror_z, args.verbose, args.force)
+    
 
+
+def transform_obj_file(obj_file, output_folder, rotation_centre, rotation, translation,
+                        mirror_x, mirror_y, mirror_z, verbose, force):
+    input_file = obj_file
+    preflight_read_file(input_file)
+    output_file = os.path.join(output_folder, os.path.basename(obj_file))
+    preflight_write_file(output_file, force)
+    (vertices, triangles, objects) = read_obj_file(input_file, verbose)
+    for i in range(0, len(vertices)):
+        p1 = vertices[i]
+        p2 = Sub3x1(p1, rotation_centre)
+        p3 = QuaternionVectorRotate(rotation, p2)
+        p4 = Add3x1(p3, rotation_centre)
+        p5 = Add3x1(p4, translation)
+        reverse = 0
+        if mirror_x:
+            p5[0] = -p5[0]
+            reverse = reverse + 1
+        if mirror_y:
+            p5[1] = -p5[1]
+            reverse = reverse + 1
+        if mirror_z:
+            p5[2] = -p5[2]
+            reverse = reverse + 1
+        vertices[i] = p5
+    if reverse % 2 != 0:
+        new_triangles = []
+        for triangle in triangles:
+            triangle.reverse()
+            new_triangles.append(triangle)
+        write_obj_file(output_file, vertices, new_triangles, objects, verbose)
+    else:
+        write_obj_file(output_file, vertices, triangles, objects, verbose)
+
+def write_obj_file(filename, vertices, triangles, objects, verbose):
+    if verbose:
+        print('Writing "%s"' % (filename))
+    with open(filename, 'w') as f_out:
+        f_out.write('# Generated by convert_obj_to_sac.py\n')
+        f_out.write('# Vertices: %d\n' % (len(vertices)))
+        f_out.write('# Faces: %d\n' % (len(triangles)))
+        for i in range(0, len(vertices)):
+            v = vertices[i]
+            f_out.write('v %f %f %f\n' % (v[0], v[1], v[2]))
+        for i in range(0, len(triangles)):
+            if i in objects:
+                f_out.write('g %s\n' % objects[i])
+                f_out.write('o %s\n' % objects[i])
+            t = triangles[i]
+            f_out.write('f %d %d %d\n' % (t[0] + 1, t[1] + 1, t[2] + 1))
+        f_out.write('# End of file\n')
+        if verbose:
+            print('Written %d vertices and %d triangles' % (len(vertices), len(triangles)))
+
+def read_obj_file(filename, verbose):
+    vertices = []
+    triangles = []
+    objects = {}
+    if verbose:
+        print('Reading "%s"' % (filename))
+    with open(filename) as f_in:
+        lines = f_in.read().splitlines()
+    for line in lines:
+        line = line.strip()
+        if line.startswith('#'):
+            continue
+        tokens = line.split()
+        if len(tokens) == 0:
+            continue
+        if tokens[0] == 'v':
+            if len(tokens) != 4:
+                print('Error in read_obj_file: vertices need 3 coordinates')
+                sys.exit(1)
+            vertices.append([float(i) for i in tokens[1:4]])
+            continue
+        if tokens[0] == 'f':
+            if len(tokens) != 4:
+                print('Error in read_obj_file: only triangular faces supported')
+                sys.exit(1)
+            triangles.append([int(i.split('/')[0]) - 1 for i in tokens[1:4]])
+        if tokens[0] == 'o':
+            objects[len(triangles)] = tokens[1]
+    if verbose:
+        print('Read %d vertices and %d triangles' % (len(vertices), len(triangles)))
+        print('%d objects found' % (len(objects)))
+    return (vertices, triangles, objects)
+    
 # add two vectors
 def Add3x1(a, b):
     c = [0, 0, 0]
@@ -323,6 +389,32 @@ def preflight_write_file(filename, force):
         print("Error: \"%s\" exists. Use --force to overwrite" % (filename))
         sys.exit(1)
 
+def preflight_read_folder(folder):
+    if not os.path.exists(folder):
+        print("Error: \"%s\" not found" % (folder))
+        sys.exit(1)
+    if not os.path.isdir(folder):
+        print("Error: \"%s\" not a folder" % (folder))
+        sys.exit(1)
+
+def preflight_write_folder(folder):
+    if os.path.exists(folder):
+        if not os.path.isdir(folder):
+            print("Error: \"%s\" exists and is not a folder" % (folder))
+            sys.exit(1)
+    else:
+        try:
+            os.makedirs(folder, exist_ok = True)
+        except OSError as error:
+            print('Directory "%s" can not be created' % folder)
+            sys.exit(1)
+
+def is_a_number(string):
+    """checks to see whether a string is a valid number"""
+    if re.match(r'^([+-]?)(?=\d|\.\d)\d*(\.\d*)?([Ee]([+-]?\d+))?$', string.strip()) == None:
+        return False
+    return True
+
 def pretty_print_sys_argv(sys_argv):
     quoted_sys_argv = quoted_if_necessary(sys_argv)
     print((" ".join(quoted_sys_argv)))
@@ -342,4 +434,5 @@ def quoted_if_necessary(input_list):
 # program starts here
 
 if __name__ == '__main__':
-    transform_bodies()
+    transform_obj_files()
+    

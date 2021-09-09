@@ -207,23 +207,29 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
 void Simulation::UpdateSimulation()
 {
     // calculate the warehouse and position matching fitnesses before we move to a new location
-    else if (m_global->fitnessType() == Global::KinematicMatch || m_global->fitnessType() == Global::KinematicMatchMiniMax)
+    while (true)
     {
-        double minScore = DBL_MAX;
-        for (auto &&it : m_DataTargetList)
+        if (m_global->fitnessType() == Global::KinematicMatch || m_global->fitnessType() == Global::KinematicMatchMiniMax)
         {
-            double matchScore;
-            bool matchScoreValid;
-            std::tie(matchScore, matchScoreValid) = it.second->calculateMatchValue(m_SimulationTime);
-            if (matchScoreValid)
+            double minScore = DBL_MAX;
+            for (auto &&it : m_DataTargetList)
             {
-                m_KinematicMatchFitness += matchScore;
-                if (matchScore < minScore)
-                    minScore = matchScore;
+                double matchScore;
+                bool matchScoreValid;
+                std::tie(matchScore, matchScoreValid) = it.second->calculateMatchValue(m_SimulationTime);
+                if (matchScoreValid)
+                {
+                    m_KinematicMatchFitness += matchScore;
+                    if (matchScore < minScore)
+                        minScore = matchScore;
+                }
             }
+            if (minScore < DBL_MAX)
+                m_KinematicMatchMiniMaxFitness += minScore;
+            break;
         }
-        if (minScore < DBL_MAX)
-            m_KinematicMatchMiniMaxFitness += minScore;
+
+        break;
     }
 
     // now start the actual simulation

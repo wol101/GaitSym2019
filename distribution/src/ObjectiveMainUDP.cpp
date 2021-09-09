@@ -68,7 +68,7 @@ ObjectiveMainUDP::ObjectiveMainUDP(int argc, const char **argv)
     m_argparse.AddArgument("-wd"s, "--warehouseFailDistanceAbort"s, "Abort the simulation when the warehouse distance fails"s, "0"s, 1, false, ArgParse::Bool);
     m_argparse.AddArgument("-de"s, "--debug"s, "Turn debugging on"s);
 
-    m_argparse.AddArgument("-ol"s, "-outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
+    m_argparse.AddArgument("-ol"s, "--outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
 
     m_argparse.AddArgument("-rx"s, "--redundancyPercentXML"s, "Percentage redundancy in XML receive"s, ""s, 1, false, ArgParse::Double);
     m_argparse.AddArgument("-rg"s, "--redundancyPercentGenome"s, "Percentage redundancy in genome receive"s, ""s, 1, false, ArgParse::Double);

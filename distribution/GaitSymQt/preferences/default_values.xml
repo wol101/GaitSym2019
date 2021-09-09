@@ -65,7 +65,7 @@
     <SETTING defaultValue="8"
         display="1"
         key="OpenGLMultisample"
-        label="OpenGLMultisample"
+        label="OpenGL samples per pixel"
         maximumValue="1024"
         minimumValue="1"
         order="0"

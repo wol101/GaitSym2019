@@ -145,7 +145,7 @@ def parse_insert(insert_string, genes):
             print('Error parsing genes in %s' % (insert_string))
             sys.exit(1)
         argument_string = insert_string[match.end(): match.end() + closing_bracket]
-        arguments = split_on_unbracketed_comman(argument_string)
+        arguments = split_on_unbracketed_command(argument_string)
         if len(arguments) != 3:
             print('if() requires 3 arguments %s' % (insert_string))
             sys.exit(1)
@@ -176,7 +176,7 @@ def find_unmatched_close_bracket(input_string):
             return i
     return -1
 
-def split_on_unbracketed_comman(input_string):
+def split_on_unbracketed_command(input_string):
     num_brackets = 0
     split_string = []
     last_string_start = 0

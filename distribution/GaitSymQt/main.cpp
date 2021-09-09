@@ -45,22 +45,24 @@ int main(int argc, char *argv[])
 
     QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
     fmt.setRenderableType(QSurfaceFormat::OpenGL);
+    fmt.setVersion(3, 3); // OpenGL 3.3
+    fmt.setProfile(QSurfaceFormat::CoreProfile); // only use the core functions
     fmt.setDepthBufferSize(24);
+#ifndef Q_OS_MACOS // these do nothing on MacOS anyway and cause OpenGL to fail on M1
     fmt.setRedBufferSize(8);
     fmt.setGreenBufferSize(8);
     fmt.setBlueBufferSize(8);
+#endif
     fmt.setAlphaBufferSize(8);
     fmt.setStencilBufferSize(8);
     fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     fmt.setSwapInterval(1);
-    fmt.setSamples(8);
+    fmt.setSamples(Preferences::valueInt("OpenGLMultisample", 8));
 #if QT_VERSION < 0x060000
     fmt.setColorSpace(QSurfaceFormat::sRGBColorSpace);
 #else
     fmt.setColorSpace(QColorSpace(QColorSpace::SRgb));
 #endif
-    fmt.setVersion(3, 3); // OpenGL 3.3
-    fmt.setProfile(QSurfaceFormat::CoreProfile); // only use the core functions
 #ifdef QT_DEBUG
     fmt.setOption(QSurfaceFormat::DebugContext, true);
 #endif

@@ -50,7 +50,7 @@ ObjectiveMain::ObjectiveMain(int argc, const char **argv)
     m_argparse.AddArgument("-wd"s, "--warehouseFailDistanceAbort"s, "Abort the simulation when the warehouse distance fails"s);
     m_argparse.AddArgument("-de"s, "--debug"s, "Turn debugging on"s);
 
-    m_argparse.AddArgument("-ol"s, "-outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
+    m_argparse.AddArgument("-ol"s, "--outputList"s, "List of objects to produce output"s, ""s, 1, MAX_ARGS, false, ArgParse::String);
 
     int err = m_argparse.Parse();
     if (err)
@@ -82,6 +82,7 @@ int ObjectiveMain::Run()
     {
         if (m_simulation->GetBodyList()->find(m_outputList[i]) != m_simulation->GetBodyList()->end()) (*m_simulation->GetBodyList())[m_outputList[i]]->setDump(true);
         if (m_simulation->GetMuscleList()->find(m_outputList[i]) != m_simulation->GetMuscleList()->end()) (*m_simulation->GetMuscleList())[m_outputList[i]]->setDump(true);
+        if (m_simulation->GetStrapList()->find(m_outputList[i]) != m_simulation->GetStrapList()->end()) (*m_simulation->GetStrapList())[m_outputList[i]]->setDump(true);
         if (m_simulation->GetGeomList()->find(m_outputList[i]) != m_simulation->GetGeomList()->end()) (*m_simulation->GetGeomList())[m_outputList[i]]->setDump(true);
         if (m_simulation->GetJointList()->find(m_outputList[i]) != m_simulation->GetJointList()->end()) (*m_simulation->GetJointList())[m_outputList[i]]->setDump(true);
         if (m_simulation->GetDriverList()->find(m_outputList[i]) != m_simulation->GetDriverList()->end()) (*m_simulation->GetDriverList())[m_outputList[i]]->setDump(true);
