@@ -335,6 +335,11 @@ void BallJoint::appendToAttributes()
     }
 }
 
+BallJoint::Mode BallJoint::GetMode() const
+{
+    return m_Mode;
+}
+
 std::string BallJoint::dumpToString()
 {
     std::stringstream ss;

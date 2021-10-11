@@ -48,11 +48,13 @@ public:
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 
+    Mode GetMode() const;
+
 private:
 
-    dJointID m_MotorJointID;
-    dJointFeedback m_MotorJointFeedback;
-    Mode m_Mode;
+    dJointID m_MotorJointID = {};
+    dJointFeedback m_MotorJointFeedback = {};
+    Mode m_Mode = NoStops;
 
 };
 

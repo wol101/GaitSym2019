@@ -308,6 +308,15 @@ void DialogJoints::lateInitialise()
     ui->lineEditFixedStressLimit->setBottom(0);
     ui->lineEditFixedStressCutoffFrequency->setBottom(0);
 
+    ui->lineEditHingeLowStop->setValue(-std::numeric_limits<double>::max());
+    ui->lineEditHingeHighStop->setValue(+std::numeric_limits<double>::max());
+    ui->lineEditFloatingHingeLowStop->setValue(-std::numeric_limits<double>::max());
+    ui->lineEditFloatingHingeHighStop->setValue(+std::numeric_limits<double>::max());
+    ui->lineEditUniversalLowStop1->setValue(-std::numeric_limits<double>::max());
+    ui->lineEditUniversalHighStop1->setValue(+std::numeric_limits<double>::max());
+    ui->lineEditUniversalLowStop2->setValue(-std::numeric_limits<double>::max());
+    ui->lineEditUniversalHighStop2->setValue(+std::numeric_limits<double>::max());
+
     if (!m_inputJoint)
     {
         // set default new name
@@ -354,7 +363,18 @@ void DialogJoints::lateInitialise()
     BallJoint *ballJoint = dynamic_cast<BallJoint *>(m_inputJoint);
     if (ballJoint)
     {
-        ui->comboBoxBallMode->setCurrentText(QString::fromStdString(m_inputJoint->findAttribute("Mode"s)));
+        switch (ballJoint->GetMode())
+        {
+        case BallJoint::NoStops:
+            ui->comboBoxBallMode->setCurrentText("No Stops");
+            break;
+        case BallJoint::AMotorEuler:
+            ui->comboBoxBallMode->setCurrentText("Fixed Euler");
+            break;
+        case BallJoint::AMotorUser:
+            ui->comboBoxBallMode->setCurrentText("User Euler");
+            break;
+        }
         if ((s = m_inputJoint->findAttribute("LowStop0"s)).size()) ui->lineEditBallLowStop0->setValue(pgd::RadiansToDegrees(GSUtil::Double(s)));
         if ((s = m_inputJoint->findAttribute("HighStop0"s)).size()) ui->lineEditBallHighStop0->setValue(pgd::RadiansToDegrees(GSUtil::Double(s)));
         if ((s = m_inputJoint->findAttribute("LowStop1"s)).size()) ui->lineEditBallLowStop1->setValue(pgd::RadiansToDegrees(GSUtil::Double(s)));
