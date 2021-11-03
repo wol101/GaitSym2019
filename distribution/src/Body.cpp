@@ -727,45 +727,45 @@ void Body::ParallelAxis(double x, double y, double z, // transformation from cen
 
 // returns zero if position values are simply mirror images of each other
 // also checks mass properties
-int Body::SanityCheck(Body *otherBody, Simulation::AxisType axis, const std::string & /*sanityCheckLeft */, const std::string & /* sanityCheckRight */)
-{
-    const double epsilon = 1e-10;
-    const double *p1 = this->GetPosition();
-    const double *p2 = otherBody->GetPosition();
+//int Body::SanityCheck(Body *otherBody, Simulation::AxisType axis, const std::string & /*sanityCheckLeft */, const std::string & /* sanityCheckRight */)
+//{
+//    const double epsilon = 1e-10;
+//    const double *p1 = this->GetPosition();
+//    const double *p2 = otherBody->GetPosition();
 
-    switch (axis)
-    {
-    case Simulation::XAxis:
-        if (fabs(p1[0] + p2[0]) > epsilon) return __LINE__;
-        if (fabs(p1[1] - p2[1]) > epsilon) return __LINE__;
-        if (fabs(p1[2] - p2[2]) > epsilon) return __LINE__;
-        break;
+//    switch (axis)
+//    {
+//    case Simulation::XAxis:
+//        if (fabs(p1[0] + p2[0]) > epsilon) return __LINE__;
+//        if (fabs(p1[1] - p2[1]) > epsilon) return __LINE__;
+//        if (fabs(p1[2] - p2[2]) > epsilon) return __LINE__;
+//        break;
 
-    case Simulation::YAxis:
-        if (fabs(p1[0] - p2[0]) > epsilon) return __LINE__;
-        if (fabs(p1[1] + p2[1]) > epsilon) return __LINE__;
-        if (fabs(p1[2] - p2[2]) > epsilon) return __LINE__;
-        break;
+//    case Simulation::YAxis:
+//        if (fabs(p1[0] - p2[0]) > epsilon) return __LINE__;
+//        if (fabs(p1[1] + p2[1]) > epsilon) return __LINE__;
+//        if (fabs(p1[2] - p2[2]) > epsilon) return __LINE__;
+//        break;
 
-    case Simulation::ZAxis:
-        if (fabs(p1[0] - p2[0]) > epsilon) return __LINE__;
-        if (fabs(p1[1] - p2[1]) > epsilon) return __LINE__;
-        if (fabs(p1[2] + p2[2]) > epsilon) return __LINE__;
-        break;
-    }
+//    case Simulation::ZAxis:
+//        if (fabs(p1[0] - p2[0]) > epsilon) return __LINE__;
+//        if (fabs(p1[1] - p2[1]) > epsilon) return __LINE__;
+//        if (fabs(p1[2] + p2[2]) > epsilon) return __LINE__;
+//        break;
+//    }
 
-    int i;
-    dMass mass1, mass2;
-    dBodyGetMass(m_bodyID, &mass1);
-    dBodyGetMass(otherBody->GetBodyID(), &mass2);
+//    int i;
+//    dMass mass1, mass2;
+//    dBodyGetMass(m_bodyID, &mass1);
+//    dBodyGetMass(otherBody->GetBodyID(), &mass2);
 
-    if (fabs(mass1.mass - mass2.mass) > epsilon) return __LINE__;
-    for (i=0; i<3; i++) if (fabs(mass1.I[i] - mass2.I[i]) > epsilon) return __LINE__;
-    for (i=4; i<7; i++) if (fabs(mass1.I[i] - mass2.I[i]) > epsilon) return __LINE__;
-    for (i=8; i<11; i++) if (fabs(mass1.I[i] - mass2.I[i]) > epsilon) return __LINE__;
+//    if (fabs(mass1.mass - mass2.mass) > epsilon) return __LINE__;
+//    for (i=0; i<3; i++) if (fabs(mass1.I[i] - mass2.I[i]) > epsilon) return __LINE__;
+//    for (i=4; i<7; i++) if (fabs(mass1.I[i] - mass2.I[i]) > epsilon) return __LINE__;
+//    for (i=8; i<11; i++) if (fabs(mass1.I[i] - mass2.I[i]) > epsilon) return __LINE__;
 
-    return 0;
-}
+//    return 0;
+//}
 
 std::string Body::MassCheck(const dMass *m)
 {

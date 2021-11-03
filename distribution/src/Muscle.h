@@ -44,7 +44,7 @@ public:
     Strap *GetStrap() const;
     void SetStrap(Strap *strap);
 
-    virtual int SanityCheck(Muscle *otherMuscle, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
+//    virtual int SanityCheck(Muscle *otherMuscle, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
     virtual void LateInitialisation();
     virtual std::string *createFromAttributes();
     virtual void saveToAttributes();

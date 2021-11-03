@@ -441,6 +441,7 @@ bool Simulation::TestForCatastrophy()
     if (m_ContactAbort)
     {
         std::cerr << "Failed due to contact abort\n";
+        for (auto &&it: m_ContactAbortList) { std::cerr << it << "\n"; }
         return true;
     }
 
@@ -448,6 +449,7 @@ bool Simulation::TestForCatastrophy()
     if (m_DataTargetAbort)
     {
         std::cerr << "Failed due to DataTarget abort\n";
+        for (auto &&it: m_DataTargetAbortList) { std::cerr << it << "\n"; }
         return true;
     }
 
@@ -1290,12 +1292,9 @@ void Simulation::AddWarehouse(const std::string &filename)
 
 bool Simulation::ShouldQuit()
 {
-    if (m_global->TimeLimit() > 0)
-        if (m_SimulationTime > m_global->TimeLimit()) return true;
-    if (m_global->MechanicalEnergyLimit() > 0)
-        if (m_MechanicalEnergy > m_global->MechanicalEnergyLimit()) return true;
-    if (m_global->MetabolicEnergyLimit() > 0)
-        if (m_MetabolicEnergy > m_global->MetabolicEnergyLimit()) return true;
+    if (m_global->TimeLimit() > 0 && m_SimulationTime > m_global->TimeLimit()) return true;
+    if (m_global->MechanicalEnergyLimit() > 0 && m_MechanicalEnergy > m_global->MechanicalEnergyLimit()) return true;
+    if (m_global->MetabolicEnergyLimit() > 0 && m_MetabolicEnergy > m_global->MetabolicEnergyLimit()) return true;
     return false;
 }
 
@@ -1389,8 +1388,8 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
     {
         for (size_t i = 0; i < size_t(numc); i++)
         {
-            if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetAbort()) s->SetContactAbort(true);
-            if (reinterpret_cast<Geom *>(dGeomGetData(o2))->GetAbort()) s->SetContactAbort(true);
+            if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetAbort()) s->SetContactAbort(reinterpret_cast<Geom *>(dGeomGetData(o1))->name());
+            if (reinterpret_cast<Geom *>(dGeomGetData(o2))->GetAbort()) s->SetContactAbort(reinterpret_cast<Geom *>(dGeomGetData(o2))->name());
             dJointID c;
             if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetAdhesion() == false && reinterpret_cast<Geom *>(dGeomGetData(o2))->GetAdhesion() == false)
             {

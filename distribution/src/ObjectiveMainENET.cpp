@@ -400,8 +400,8 @@ int ObjectiveMainENET::ReadModel()
 
     // and apply the new genome
     m_XMLConverter.ApplyGenome(int(genomeData.size()), genomeData.data());
-    size_t xmlLen;
-    const char *xmlPtr = m_XMLConverter.GetFormattedXML(&xmlLen);
+    std::string xmlString;
+    m_XMLConverter.GetFormattedXML(&xmlString);
 
     // create the simulation object
     m_simulation = std::make_unique<Simulation>();
@@ -412,7 +412,7 @@ int ObjectiveMainENET::ReadModel()
     if (m_inputWarehouseFilename.size()) m_simulation->AddWarehouse(m_inputWarehouseFilename);
     if (m_outputModelStateAtWarehouseDistance >= 0) m_simulation->SetOutputModelStateAtWarehouseDistance(m_outputModelStateAtWarehouseDistance);
 
-    if (m_simulation->LoadModel(xmlPtr, xmlLen))
+    if (m_simulation->LoadModel(xmlString.c_str(), xmlString.size()))
     {
         m_simulation.reset();
         m_currentHost++;

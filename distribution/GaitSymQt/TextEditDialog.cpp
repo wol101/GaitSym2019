@@ -52,6 +52,7 @@ TextEditDialog::TextEditDialog(QWidget *parent) :
     connect(ui->toolButtonDelete, SIGNAL(clicked()), this, SLOT(attributeMachineDelete()));
     connect(ui->toolButtonMoveUp, SIGNAL(clicked()), this, SLOT(attributeMachineMoveUp()));
     connect(ui->toolButtonMoveDown, SIGNAL(clicked()), this, SLOT(attributeMachineMoveDown()));
+    connect(ui->pushButtonResetPositions, SIGNAL(clicked(bool)), this, SLOT(resetPositions()));
     connect(ui->tableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(attributeMachineItemSelectionChanged()));
     connect(ui->plainTextEdit, SIGNAL(modificationChanged(bool)), this, SLOT(modificationChanged(bool)));
 
@@ -730,6 +731,45 @@ std::string TextEditDialog::attributeMachineArithmetic(const std::string &origin
         newString = ss.str();
     }
     return newString;
+}
+
+void TextEditDialog::resetPositions()
+{
+    bool localModified = ui->plainTextEdit->document()->isModified();
+    std::string *lastError;
+    std::string xml = ui->plainTextEdit->toPlainText().toStdString();
+    std::string rootNodeTag = "GAITSYM2019"s;
+    lastError = m_parseXML.LoadModel(xml.c_str(), xml.size(), rootNodeTag);
+    if (lastError)
+    {
+        QMessageBox::warning(this, "XML parse error", QString("'%1'").arg(QString::fromStdString(*lastError)));
+        return;
+    }
+
+    auto elementList = m_parseXML.elementList();
+    for (auto tagElementIt = elementList->begin(); tagElementIt != elementList->end(); tagElementIt++)
+    {
+        if (tagElementIt->get()->tag == "BODY"s)
+        {
+            auto constructionPosition = tagElementIt->get()->attributes.find("ConstructionPosition"s);
+            auto position = tagElementIt->get()->attributes.find("Position"s);
+            auto quaternion = tagElementIt->get()->attributes.find("Quaternion"s);
+            if (constructionPosition == tagElementIt->get()->attributes.end() || position == tagElementIt->get()->attributes.end() || quaternion == tagElementIt->get()->attributes.end())
+            {
+                auto name = tagElementIt->get()->attributes.find("ID"s);
+                if (name == tagElementIt->get()->attributes.end())
+                    QMessageBox::warning(this, tr("Reset Positions Error"), QString("Unable to find unnamed BODY"));
+                else
+                    QMessageBox::warning(this, tr("Reset Positions Error"), QString("Unable to find BODY:\n%1").arg(name->second.c_str()));
+                return;
+            }
+            position->second = constructionPosition->second;
+            quaternion->second = "1 0 0 0"s;
+        }
+    }
+    std::string newXML = m_parseXML.SaveModel();
+    ui->plainTextEdit->setPlainText(QString::fromStdString(newXML));
+    if (localModified || (xml != newXML)) setModified(true);
 }
 
 std::string *TextEditDialog::validate()

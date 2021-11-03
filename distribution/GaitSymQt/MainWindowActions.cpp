@@ -152,7 +152,7 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
     for (auto &&iter : *m_mainWindow->m_simulation->GetBodyList())
     {
         std::vector<std::string> meshNames = {iter.second->GetGraphicFile1(), iter.second->GetGraphicFile2(), iter.second->GetGraphicFile3()};
-        for (auto meshName : meshNames)
+        for (auto &&meshName : meshNames)
         {
             if (meshName.size() == 0) continue;
             bool fileFound = false;
@@ -225,6 +225,7 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
     // set menu activations for loaded model
     m_mainWindow->m_noName = false;
     if (meshPathChanged) m_mainWindow->setWindowModified(true);
+    else  m_mainWindow->setWindowModified(false);
     enterRunMode();
     m_mainWindow->updateEnable();
 }
@@ -778,13 +779,25 @@ void MainWindowActions::menuImportMeshes()
             body->setName(suggestedName);
 
             // and set the mass
-            dMass mass;
+            dMass mass = {};
             double density = body->GetConstructionDensity();
             bool clockwise = false;
             mesh->CalculateMassProperties(&mass, density, clockwise);
-            body->SetConstructionPosition(mass.c[0], mass.c[1], mass.c[2]);
-            body->SetPosition(mass.c[0], mass.c[1], mass.c[2]);
-            mass.c[0] = mass.c[1] = mass.c[2] = 0;
+            std::string massError = Body::MassCheck(&mass);
+            if (massError.size() == 0)
+            {
+                body->SetConstructionPosition(mass.c[0], mass.c[1], mass.c[2]);
+                body->SetPosition(mass.c[0], mass.c[1], mass.c[2]);
+                mass.c[0] = mass.c[1] = mass.c[2] = 0;
+            }
+            else
+            {
+                QMessageBox::warning(m_mainWindow, tr("Calculate Mass Properties: %1").arg(meshFileName.c_str()), tr("Calculated mass properties are invalid so using defaults:\n%1").arg(massError.c_str()));
+                dMassSetParameters(&mass, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0);
+                pgd::Vector3 boundingBoxCentre = (pgd::Vector3(mesh->upperBound()) + pgd::Vector3(mesh->lowerBound())) / 2;
+                body->SetConstructionPosition(boundingBoxCentre.x, boundingBoxCentre.y, boundingBoxCentre.z);
+                body->SetPosition(boundingBoxCentre.x, boundingBoxCentre.y, boundingBoxCentre.z);
+            }
             body->SetMass(&mass);
 
             // set the default properties
@@ -901,7 +914,7 @@ void MainWindowActions::menuCreateEditJoint(Joint *joint)
                         QMessageBox::warning(m_mainWindow, QString("Error creating ThreeHingeJointDriver \"%1\"").arg(QString::fromStdString(driverIt->first)),
                                              QString("Error message:\n\"%1\"").arg(QString::fromStdString(*lastError)));
                         m_mainWindow->setStatusString(QString("ThreeHingeJointDriver deleted: %1").arg(QString::fromStdString(driverIt->first)), 1);
-                        m_mainWindow->ui->treeWidgetElements->deleteDriver(QString::fromStdString(driverIt->first));
+                        m_mainWindow->deleteExistingDriver(QString::fromStdString(driverIt->first));
                         driverIt = m_mainWindow->m_simulation->GetDriverList()->erase(driverIt);
                     }
                     else { driverIt++; }
@@ -1076,8 +1089,7 @@ void MainWindowActions::menuCreateMuscle()
 void MainWindowActions::menuCreateEditMuscle(Muscle *muscle)
 {
     Q_ASSERT_X(m_mainWindow->m_simulation, "MainWindowActions::menuCreateMuscle", "m_mainWindow->m_simulation undefined");
-    auto bodiesMap = m_mainWindow->m_simulation->GetBodyList();
-    Q_ASSERT_X(bodiesMap->size(), "MainWindowActions::menuCreateEditMarker", "No bodies defined");
+    Q_ASSERT_X(m_mainWindow->m_simulation->GetBodyList()->size(), "MainWindowActions::menuCreateEditMarker", "No bodies defined");
     DialogMuscles dialogMuscles(m_mainWindow);
     dialogMuscles.setSimulation(m_mainWindow->m_simulation);
     dialogMuscles.setInputMuscle(muscle);
@@ -1568,7 +1580,7 @@ void MainWindowActions::elementInfo(const QString &elementType, const QString &e
     }
     std::string text = pystring::join("\n"s, lines);
     dialog.setEditorText(QString::fromStdString(text));
-    dialog.setWindowTitle(QString("%1 ID=\"%2\" Information").arg(elementType).arg(elementName));
+    dialog.setWindowTitle(QString("%1 ID=\"%2\" Information").arg(elementType, elementName));
     int status = dialog.exec();
     if (status == QDialog::Accepted) // write the new settings
     {

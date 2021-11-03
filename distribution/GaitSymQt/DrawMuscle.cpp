@@ -23,6 +23,8 @@
 #include "MAMuscle.h"
 #include "MAMuscleComplete.h"
 #include "GSUtil.h"
+#include "Marker.h"
+#include "TwoCylinderWrapStrap.h"
 
 #include <QString>
 #include <QDir>
@@ -256,18 +258,22 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
             }
 
             // calculate the quaternion that rotates from cylinder coordinates to world coordinates
-            const Body *body;
-            dVector3 pos;
-            dQuaternion qq;
-            double radius;
-            cylinderWrapStrap->GetCylinder(&body, pos, &radius, qq);
-            const double *q = dBodyGetQuaternion(body->GetBodyID());
-            pgd::Quaternion qBody(q[0], q[1], q[2], q[3]);
-            pgd::Quaternion cylinderToWorldQuaternion =  qBody * pgd::Quaternion(qq[0], qq[1], qq[2], qq[3]);
-            pgd::Vector3 cylinderVecWorld = pgd::QVRotate(cylinderToWorldQuaternion, pgd::Vector3(0, 0, m_strapCylinderLength / 2));
-            // calculate the cylinder world position
-            dVector3 position;
-            dBodyGetRelPointPos(body->GetBodyID(), pos[0], pos[1], pos[2], position);
+//            const Body *body;
+//            dVector3 pos;
+//            dQuaternion qq;
+//            double radius;
+//            cylinderWrapStrap->GetCylinder(&body, pos, &radius, qq);
+//            const double *q = dBodyGetQuaternion(body->GetBodyID());
+//            pgd::Quaternion qBody(q[0], q[1], q[2], q[3]);
+//            pgd::Quaternion cylinderToWorldQuaternion =  qBody * pgd::Quaternion(qq[0], qq[1], qq[2], qq[3]);
+//            pgd::Vector3 cylinderVecWorld = pgd::QVRotate(cylinderToWorldQuaternion, pgd::Vector3(0, 0, m_strapCylinderLength / 2));
+//            // calculate the cylinder world position
+//            dVector3 position;
+//            dBodyGetRelPointPos(body->GetBodyID(), pos[0], pos[1], pos[2], position);
+            pgd::Vector3 position = cylinderWrapStrap->GetCylinderMarker()->GetWorldPosition();
+//            pgd::Vector3 cylinderVecWorld = pgd::QVRotate(cylinderWrapStrap->GetCylinderMarker()->GetWorldQuaternion(), pgd::Vector3(0, 0, m_strapCylinderLength / 2));
+            pgd::Vector3 cylinderVecWorld = pgd::QVRotate(cylinderWrapStrap->GetCylinderMarker()->GetWorldQuaternion(), pgd::Vector3(m_strapCylinderLength / 2, 0, 0));
+            double radius = cylinderWrapStrap->cylinderRadius();
             // and draw it
             polyline.clear();
             polyline.push_back(pgd::Vector3(position[0] - cylinderVecWorld.x, position[1] - cylinderVecWorld.y, position[2] - cylinderVecWorld.z));
@@ -275,6 +281,42 @@ void DrawMuscle::initialise(SimulationWidget *simulationWidget)
             m_facetedObject2 = std::make_unique<FacetedPolyline>(&polyline, radius, m_strapCylinderSegments, m_strapCylinderColor, 1);
             m_facetedObject2->setSimulationWidget(simulationWidget);
             m_facetedObjectList.push_back(m_facetedObject2.get());
+            break;
+        }
+        TwoCylinderWrapStrap *twoCylinderWrapStrap = dynamic_cast<TwoCylinderWrapStrap *>(m_muscle->GetStrap());
+        if (twoCylinderWrapStrap)
+        {
+            if (twoCylinderWrapStrap->GetNumWrapSegments() != int(m_strapCylinderWrapSegments))
+            {
+                twoCylinderWrapStrap->SetNumWrapSegments(int(m_strapCylinderWrapSegments));
+                twoCylinderWrapStrap->Calculate();
+            }
+            std::vector<pgd::Vector3> polyline = *twoCylinderWrapStrap->GetPathCoordinates();
+            if (polyline.size())
+            {
+                m_facetedObject1 = std::make_unique<FacetedPolyline>(&polyline, m_strapRadius, m_strapNumSegments, m_strapColor, 1);
+                m_facetedObject1->setSimulationWidget(simulationWidget);
+                m_facetedObjectList.push_back(m_facetedObject1.get());
+            }
+            pgd::Vector3 position = twoCylinderWrapStrap->GetCylinder1Marker()->GetWorldPosition();
+            pgd::Vector3 cylinderVecWorld = pgd::QVRotate(twoCylinderWrapStrap->GetCylinder1Marker()->GetWorldQuaternion(), pgd::Vector3(m_strapCylinderLength / 2, 0, 0));
+            double radius = twoCylinderWrapStrap->Cylinder1Radius();
+            // and draw it
+            polyline.clear();
+            polyline.push_back(pgd::Vector3(position[0] - cylinderVecWorld.x, position[1] - cylinderVecWorld.y, position[2] - cylinderVecWorld.z));
+            polyline.push_back(pgd::Vector3(position[0] + cylinderVecWorld.x, position[1] + cylinderVecWorld.y, position[2] + cylinderVecWorld.z));
+            m_facetedObject2 = std::make_unique<FacetedPolyline>(&polyline, radius, m_strapCylinderSegments, m_strapCylinderColor, 1);
+            m_facetedObject2->setSimulationWidget(simulationWidget);
+            m_facetedObjectList.push_back(m_facetedObject2.get());
+            position = twoCylinderWrapStrap->GetCylinder2Marker()->GetWorldPosition();
+            radius = twoCylinderWrapStrap->Cylinder2Radius();
+            // and draw it
+            polyline.clear();
+            polyline.push_back(pgd::Vector3(position[0] - cylinderVecWorld.x, position[1] - cylinderVecWorld.y, position[2] - cylinderVecWorld.z));
+            polyline.push_back(pgd::Vector3(position[0] + cylinderVecWorld.x, position[1] + cylinderVecWorld.y, position[2] + cylinderVecWorld.z));
+            m_facetedObject3 = std::make_unique<FacetedPolyline>(&polyline, radius, m_strapCylinderSegments, m_strapCylinderColor, 1);
+            m_facetedObject3->setSimulationWidget(simulationWidget);
+            m_facetedObjectList.push_back(m_facetedObject3.get());
             break;
         }
         qDebug() << "Error in DrawMuscle::initialise: Unsupported STRAP type";

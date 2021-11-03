@@ -108,7 +108,7 @@ public:
     const double *GetInitialQuaternion();
 
     LimitTestResult TestLimits();
-    int SanityCheck(Body *otherBody, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
+//    int SanityCheck(Body *otherBody, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
 
     void EnterConstructionMode();
     void EnterRunMode();

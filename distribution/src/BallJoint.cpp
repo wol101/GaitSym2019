@@ -278,6 +278,9 @@ std::string *BallJoint::createFromAttributes()
             double a2Low = GSUtil::GetAngle(buf);
             if (findAttribute("HighStop2"s, &buf) == nullptr) return lastErrorPtr();
             double a2High = GSUtil::GetAngle(buf);
+            if (a0Low >= a0High) { setLastError("Joint ID=\""s + name() +"\" LowStop0 >= HighStop0"s); return lastErrorPtr(); }
+            if (a1Low >= a1High) { setLastError("Joint ID=\""s + name() +"\" LowStop1 >= HighStop1"s); return lastErrorPtr(); }
+            if (a2Low >= a2High) { setLastError("Joint ID=\""s + name() +"\" LowStop2 >= HighStop2"s); return lastErrorPtr(); }
             this->SetStops(a0Low, a0High, a1Low, a1High, a2Low, a2High);
             break;
         }
@@ -295,6 +298,9 @@ std::string *BallJoint::createFromAttributes()
             double a2Low = GSUtil::GetAngle(buf);
             if (findAttribute("HighStop2"s, &buf) == nullptr) return lastErrorPtr();
             double a2High = GSUtil::GetAngle(buf);
+            if (a0Low >= a0High) { setLastError("Joint ID=\""s + name() +"\" LowStop0 >= HighStop0"s); return lastErrorPtr(); }
+            if (a1Low >= a1High) { setLastError("Joint ID=\""s + name() +"\" LowStop1 >= HighStop1"s); return lastErrorPtr(); }
+            if (a2Low >= a2High) { setLastError("Joint ID=\""s + name() +"\" LowStop2 >= HighStop2"s); return lastErrorPtr(); }
             this->SetStops(a0Low, a0High, a1Low, a1High, a2Low, a2High);
             break;
         }

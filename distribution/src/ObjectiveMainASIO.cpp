@@ -150,8 +150,8 @@ int ObjectiveMainASIO::Run()
             // and apply the new genome
             DataMessage *dataMessagePtr = reinterpret_cast<DataMessage *>(m_dataMessageRaw.data());
             m_XMLConverter.ApplyGenome(int(dataMessagePtr->genomeLength), dataMessagePtr->payload.genome);
-            size_t xmlLen;
-            const char *xmlPtr = m_XMLConverter.GetFormattedXML(&xmlLen);
+            std::string xmlString;
+            m_XMLConverter.GetFormattedXML(&xmlString);
 
             // create the simulation object
             m_simulation = std::make_unique<Simulation>();
@@ -162,7 +162,7 @@ int ObjectiveMainASIO::Run()
             if (m_inputWarehouseFilename.size()) m_simulation->AddWarehouse(m_inputWarehouseFilename);
             if (m_outputModelStateAtWarehouseDistance >= 0) m_simulation->SetOutputModelStateAtWarehouseDistance(m_outputModelStateAtWarehouseDistance);
 
-            if (m_simulation->LoadModel(xmlPtr, xmlLen))
+            if (m_simulation->LoadModel(xmlString.c_str(), xmlString.size()))
             {
                 // something is wrong so assume that all my XML files are corrupt and start again
                 m_simulation.reset();

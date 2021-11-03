@@ -37,7 +37,6 @@ int XMLConverter::LoadBaseXMLFile(const char *filename)
 
 void XMLConverter::Clear()
 {
-    m_SmartSubstitutionTextBuffer.clear();
     m_SmartSubstitutionTextComponents.clear();
     m_SmartSubstitutionParserText.clear();
     m_SmartSubstitutionValues.clear();
@@ -47,7 +46,6 @@ void XMLConverter::Clear()
 // load the base XML for smart substitution file
 int XMLConverter::LoadBaseXMLString(const char *dataPtr, size_t length)
 {
-    m_SmartSubstitutionTextBuffer.clear();
     m_SmartSubstitutionTextComponents.clear();
     m_SmartSubstitutionParserText.clear();
     m_SmartSubstitutionValues.clear();
@@ -55,9 +53,11 @@ int XMLConverter::LoadBaseXMLString(const char *dataPtr, size_t length)
 
     const char *ptr1 = dataPtr;
     const char *ptr2 = strstr(ptr1, "[[");
+    m_SmartSubstitutionTextComponentsSize = 0;
     while (ptr2)
     {
         std::string s(ptr1, static_cast<size_t>(ptr2 - ptr1));
+        m_SmartSubstitutionTextComponentsSize += s.size();
         m_SmartSubstitutionTextComponents.push_back(std::move(s));
 
         ptr2 += 2;
@@ -74,8 +74,8 @@ int XMLConverter::LoadBaseXMLString(const char *dataPtr, size_t length)
         ptr2 = strstr(ptr1, "[[");
     }
     std::string s(ptr1);
+    m_SmartSubstitutionTextComponentsSize += s.size();
     m_SmartSubstitutionTextComponents.push_back(std::move(s));
-
 
     // get the vector brackets in the right format for exprtk if necessary
     ConvertVectorBrackets();
@@ -83,24 +83,23 @@ int XMLConverter::LoadBaseXMLString(const char *dataPtr, size_t length)
     return 0;
 }
 
-const char *XMLConverter::GetFormattedXML(size_t *docTxtLen)
+void XMLConverter::GetFormattedXML(std::string *formattedXML)
 {
-    std::ostringstream ss;
-    ss.precision(17);
-    ss.setf(std::ios::scientific);
+    formattedXML->clear();
+    formattedXML->reserve(m_SmartSubstitutionTextComponentsSize + 32 * m_SmartSubstitutionValues.size());
+    char buffer[32];
     for (size_t i = 0; i < m_SmartSubstitutionValues.size(); i++)
     {
-        ss << m_SmartSubstitutionTextComponents[i] << m_SmartSubstitutionValues[i];
+        formattedXML->append(m_SmartSubstitutionTextComponents[i]);
+        int l = snprintf(buffer, sizeof(buffer), "%.18g", m_SmartSubstitutionValues[i]);
+        formattedXML->append(buffer, l);
     }
-    ss << m_SmartSubstitutionTextComponents[m_SmartSubstitutionValues.size()];
-    m_SmartSubstitutionTextBuffer = ss.str();
-    *docTxtLen = m_SmartSubstitutionTextBuffer.size();
-    return m_SmartSubstitutionTextBuffer.data();
+    formattedXML->append(m_SmartSubstitutionTextComponents[m_SmartSubstitutionValues.size()]);
 }
 
 // this needs to be customised depending on how the genome interacts with
 // the XML file specifying the simulation
-int XMLConverter::ApplyGenome(int genomeSize, double *genomeData)
+int XMLConverter::ApplyGenome(int genomeSize, const double *genomeData)
 {
     exprtk::symbol_table<double> *symbol_table;
     exprtk::expression<double> *expression;
@@ -114,7 +113,7 @@ int XMLConverter::ApplyGenome(int genomeSize, double *genomeData)
         expression = new exprtk::expression<double>();
         parser = new exprtk::parser<double>();
 
-        symbol_table->add_vector("g", genomeData, size_t(genomeSize));
+        symbol_table->add_vector("g", const_cast<double *>(genomeData), size_t(genomeSize)); // const_cast is needed because add_vector requires non const (but does not alter the values)
         symbol_table->add_constants();
 
         expression->register_symbol_table(*symbol_table);

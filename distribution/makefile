@@ -182,6 +182,7 @@ NamedObject.cpp\
 NPointStrap.cpp\
 ObjectiveMain.cpp\
 ObjectiveMainASIO.cpp\
+ObjectiveMainASIOAsync.cpp\
 ObjectiveMainENET.cpp\
 ObjectiveMainMPI.cpp\
 ObjectiveMainTCP.cpp\
@@ -388,7 +389,7 @@ ANNOBJ = $(addsuffix .o, $(basename $(ANNSRC) ) )
 PYSTRINGOBJ = $(addsuffix .o, $(basename $(PYSTRINGSRC) ) )
 ENETOBJ = $(addsuffix .o, $(basename $(ENETSRC) ) )
 
-BINARIES = bin/gaitsym_2019_asio bin/gaitsym_2019 bin/gaitsym_2019_udp bin/gaitsym_2019_enet bin/gaitsym_2019_tcp
+BINARIES = bin/gaitsym_2019_asio bin/gaitsym_2019_asio_async bin/gaitsym_2019 bin/gaitsym_2019_udp bin/gaitsym_2019_enet bin/gaitsym_2019_tcp
 
 all: directories binaries
 
@@ -411,6 +412,7 @@ obj:
 	-mkdir obj/pystring
 	-mkdir obj/enet
 	-mkdir obj/asio
+	-mkdir obj/asio_async
 
 bin:
 	-mkdir bin
@@ -487,6 +489,16 @@ obj/asio/%.o : src/%.cpp
 	$(CXX) -DUSE_ASIO $(CXXFLAGS) $(INC_DIRS) -c $< -o $@
 
 bin/gaitsym_2019_asio: $(addprefix obj/asio/, $(GAITSYMOBJ) ) $(addprefix obj/libccd/, $(LIBCCDOBJ) ) $(addprefix obj/ode/, $(ODEOBJ) ) \
+$(addprefix obj/odejoints/, $(ODEJOINTSOBJ) ) $(addprefix obj/opcodeice/, $(OPCODEICEOBJ) ) $(addprefix obj/opcode/, $(OPCODEOBJ) ) \
+$(addprefix obj/ann/, $(ANNOBJ) ) \
+$(addprefix obj/pystring/, $(PYSTRINGOBJ) )\
+$(addprefix obj/enet/, $(ENETOBJ) )
+	$(CXX) $(LDFLAGS) -o $@ $^ $(SOCKET_LIBS) $(LIBS)
+
+obj/asio_async/%.o : src/%.cpp
+	$(CXX) -DUSE_ASIO_ASYNC $(CXXFLAGS) $(INC_DIRS) -c $< -o $@
+
+bin/gaitsym_2019_asio_async: $(addprefix obj/asio_async/, $(GAITSYMOBJ) ) $(addprefix obj/libccd/, $(LIBCCDOBJ) ) $(addprefix obj/ode/, $(ODEOBJ) ) \
 $(addprefix obj/odejoints/, $(ODEJOINTSOBJ) ) $(addprefix obj/opcodeice/, $(OPCODEICEOBJ) ) $(addprefix obj/opcode/, $(OPCODEOBJ) ) \
 $(addprefix obj/ann/, $(ANNOBJ) ) \
 $(addprefix obj/pystring/, $(PYSTRINGOBJ) )\

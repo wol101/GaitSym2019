@@ -69,7 +69,7 @@ std::tuple<double, bool> DataTarget::calculateMatchValue(double time)
     }
     if (m_lastValue < m_abortBelow || m_lastValue > m_abortAbove)
     {
-        simulation()->SetDataTargetAbort(true);
+        simulation()->SetDataTargetAbort(name());
         m_lastValue += m_abortBonus;
     }
     return std::make_tuple(m_lastValue, true);

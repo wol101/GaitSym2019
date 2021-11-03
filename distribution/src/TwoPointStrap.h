@@ -21,17 +21,17 @@ public:
 
     TwoPointStrap();
 
-    void SetOrigin(Body *body, const dVector3 point);
-    void SetInsertion(Body *body, const dVector3 point);
+//    void SetOrigin(Body *body, const dVector3 point);
+//    void SetInsertion(Body *body, const dVector3 point);
     void SetOrigin(Marker *originMarker);
     void SetInsertion(Marker *insertionMarker);
 
-    void GetOrigin(const Body **body, dVector3 origin) const;
-    void GetInsertion(const Body **body, dVector3 insertion) const;
+//    void GetOrigin(const Body **body, dVector3 origin) const;
+//    void GetInsertion(const Body **body, dVector3 insertion) const;
 
     virtual void Calculate();
 
-    virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
+//    virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
@@ -41,10 +41,10 @@ public:
 
 private:
 
-    Body *m_originBody = nullptr;
-    dVector3 m_origin;
-    Body *m_insertionBody = nullptr;
-    dVector3 m_insertion;
+//    Body *m_originBody = nullptr;
+//    dVector3 m_origin;
+//    Body *m_insertionBody = nullptr;
+//    dVector3 m_insertion;
 
     Marker *m_originMarker = nullptr;
     Marker *m_insertionMarker = nullptr;

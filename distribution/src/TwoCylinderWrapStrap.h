@@ -20,29 +20,29 @@ public:
     TwoCylinderWrapStrap();
     virtual ~TwoCylinderWrapStrap();
 
-    void SetOrigin(Body *body, const dVector3 point);
-    void SetInsertion(Body *body, const dVector3 point);
+//    void SetOrigin(Body *body, const dVector3 point);
+//    void SetInsertion(Body *body, const dVector3 point);
     void SetOrigin(Marker *originMarker);
     void SetInsertion(Marker *insertionMarker);
 
-    void SetCylinder1Body(Body *body);
+//    void SetCylinder1Body(Body *body);
     void SetCylinder1Radius(double radius);
-    void SetCylinder1Position(double x, double y, double z);
-    void SetCylinderQuaternion(double q0, double q1, double q2, double q3);
-    void SetCylinderAxis(double x, double y, double z);
+//    void SetCylinder1Position(double x, double y, double z);
+//    void SetCylinderQuaternion(double q0, double q1, double q2, double q3);
+//    void SetCylinderAxis(double x, double y, double z);
     void SetCylinder1(Marker *cylinder1Marker);
-    void SetCylinder2Body(Body *body);
+//    void SetCylinder2Body(Body *body);
     void SetCylinder2Radius(double radius);
-    void SetCylinder2Position(double x, double y, double z);
+//    void SetCylinder2Position(double x, double y, double z);
     void SetCylinder2(Marker *cylinder2Marker);
     void SetNumWrapSegments(int numWrapSegments);
 
     virtual void Calculate();
 
-    void GetOrigin(const Body **body, dVector3 pos) const;
-    void GetInsertion(const Body **body, dVector3 pos) const;
-    void GetCylinder1(const Body **body, dVector3 pos, double *radius, dQuaternion q) const;
-    void GetCylinder2(const Body **body, dVector3 pos, double *radius, dQuaternion q) const;
+//    void GetOrigin(const Body **body, dVector3 pos) const;
+//    void GetInsertion(const Body **body, dVector3 pos) const;
+//    void GetCylinder1(const Body **body, dVector3 pos, double *radius, dQuaternion q) const;
+//    void GetCylinder2(const Body **body, dVector3 pos, double *radius, dQuaternion q) const;
 
     Marker *GetOriginMarker() const;
     Marker *GetInsertionMarker() const;
@@ -50,8 +50,9 @@ public:
     Marker *GetCylinder2Marker() const;
 
     const std::vector<pgd::Vector3> *GetPathCoordinates();
+    int GetNumWrapSegments();
 
-    virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
+//    virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight);
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
@@ -77,17 +78,17 @@ private:
     double vector_distance3d(pgd::Vector3 &v1, pgd::Vector3 &v2);
     void vector_with_magnitude(pgd::Vector3 &v1, pgd::Vector3 &v2, double magnitude, pgd::Vector3 &v);
 
-    Body *m_originBody = nullptr;
-    pgd::Vector3 m_originPosition;
-    Body *m_insertionBody = nullptr;
-    pgd::Vector3 m_insertionPosition;
+//    Body *m_originBody = nullptr;
+//    pgd::Vector3 m_originPosition;
+//    Body *m_insertionBody = nullptr;
+//    pgd::Vector3 m_insertionPosition;
 
-    Body *m_cylinder1Body = nullptr;
-    pgd::Vector3 m_cylinder1Position;
-    pgd::Quaternion m_cylinderQuaternion;
+//    Body *m_cylinder1Body = nullptr;
+//    pgd::Vector3 m_cylinder1Position;
+//    pgd::Quaternion m_cylinderQuaternion;
     double m_cylinder1Radius = 1;
-    Body *m_cylinder2Body = nullptr;
-    pgd::Vector3 m_cylinder2Position;
+//    Body *m_cylinder2Body = nullptr;
+//    pgd::Vector3 m_cylinder2Position;
     double m_cylinder2Radius = 1;
     int m_numWrapSegments = 0;
 

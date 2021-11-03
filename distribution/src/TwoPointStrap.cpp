@@ -29,68 +29,88 @@ TwoPointStrap::TwoPointStrap()
 {
 }
 
-void TwoPointStrap::SetOrigin(Body *body, const dVector3 point)
-{
-    m_originBody = body;
-    m_origin[0] = point[0];
-    m_origin[1] = point[1];
-    m_origin[2] = point[2];
-    if (GetPointForceList()->size() == 0)
-    {
-        std::unique_ptr<PointForce> origin = std::make_unique<PointForce>();
-        origin->body = m_originBody;
-        GetPointForceList()->push_back(std::move(origin));
-    }
-    else
-    {
-        GetPointForceList()->at(0)->body = m_originBody;
-    }
-}
+//void TwoPointStrap::SetOrigin(Body *body, const dVector3 point)
+//{
+//    m_originBody = body;
+//    m_origin[0] = point[0];
+//    m_origin[1] = point[1];
+//    m_origin[2] = point[2];
+//    if (GetPointForceList()->size() == 0)
+//    {
+//        std::unique_ptr<PointForce> origin = std::make_unique<PointForce>();
+//        origin->body = m_originBody;
+//        GetPointForceList()->push_back(std::move(origin));
+//    }
+//    else
+//    {
+//        GetPointForceList()->at(0)->body = m_originBody;
+//    }
+//}
 
-void TwoPointStrap::SetInsertion(Body *body, const dVector3 point)
-{
-    m_insertionBody = body;
-    m_insertion[0] = point[0];
-    m_insertion[1] = point[1];
-    m_insertion[2] = point[2];
-    if (GetPointForceList()->size() <= 1)
-    {
-        std::unique_ptr<PointForce> insertion = std::make_unique<PointForce>();
-        insertion->body = m_insertionBody;
-        GetPointForceList()->push_back(std::move(insertion));
-    }
-    else
-    {
-        GetPointForceList()->at(1)->body = m_insertionBody;
-    }
-}
+//void TwoPointStrap::SetInsertion(Body *body, const dVector3 point)
+//{
+//    m_insertionBody = body;
+//    m_insertion[0] = point[0];
+//    m_insertion[1] = point[1];
+//    m_insertion[2] = point[2];
+//    if (GetPointForceList()->size() <= 1)
+//    {
+//        std::unique_ptr<PointForce> insertion = std::make_unique<PointForce>();
+//        insertion->body = m_insertionBody;
+//        GetPointForceList()->push_back(std::move(insertion));
+//    }
+//    else
+//    {
+//        GetPointForceList()->at(1)->body = m_insertionBody;
+//    }
+//}
 
-void TwoPointStrap::GetOrigin(const Body **body, dVector3 origin) const
-{
-    *body = m_originBody;
-    origin[0] = m_origin[0];
-    origin[1] = m_origin[1];
-    origin[2] = m_origin[2];
-}
+//void TwoPointStrap::GetOrigin(const Body **body, dVector3 origin) const
+//{
+//    *body = m_originBody;
+//    origin[0] = m_origin[0];
+//    origin[1] = m_origin[1];
+//    origin[2] = m_origin[2];
+//}
 
-void TwoPointStrap::GetInsertion(const Body **body, dVector3 insertion) const
-{
-    *body = m_insertionBody;
-    insertion[0] = m_insertion[0];
-    insertion[1] = m_insertion[1];
-    insertion[2] = m_insertion[2];
-}
+//void TwoPointStrap::GetInsertion(const Body **body, dVector3 insertion) const
+//{
+//    *body = m_insertionBody;
+//    insertion[0] = m_insertion[0];
+//    insertion[1] = m_insertion[1];
+//    insertion[2] = m_insertion[2];
+//}
 
 void TwoPointStrap::SetOrigin(Marker *originMarker)
 {
     m_originMarker = originMarker;
-    this->SetOrigin(originMarker->GetBody(), originMarker->GetPosition().data());
+//    this->SetOrigin(originMarker->GetBody(), originMarker->GetPosition().data());
+    if (GetPointForceList()->size() == 0)
+    {
+        std::unique_ptr<PointForce> origin = std::make_unique<PointForce>();
+        origin->body = m_originMarker->GetBody();
+        GetPointForceList()->push_back(std::move(origin));
+    }
+    else
+    {
+        GetPointForceList()->at(0)->body = m_originMarker->GetBody();
+    }
 }
 
 void TwoPointStrap::SetInsertion(Marker *insertionMarker)
 {
     m_insertionMarker = insertionMarker;
-    this->SetInsertion(insertionMarker->GetBody(), insertionMarker->GetPosition().data());
+//    this->SetInsertion(insertionMarker->GetBody(), insertionMarker->GetPosition().data());
+    if (GetPointForceList()->size() <= 1)
+    {
+        std::unique_ptr<PointForce> insertion = std::make_unique<PointForce>();
+        insertion->body = m_insertionMarker->GetBody();
+        GetPointForceList()->push_back(std::move(insertion));
+    }
+    else
+    {
+        GetPointForceList()->at(1)->body =  m_insertionMarker->GetBody();
+    }
 }
 
 void TwoPointStrap::Calculate()
@@ -149,58 +169,58 @@ void TwoPointStrap::Calculate()
     }
 }
 
-int TwoPointStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight)
-{
-    const double epsilon = DBL_EPSILON;
+//int TwoPointStrap::SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight)
+//{
+//    const double epsilon = DBL_EPSILON;
 
-    TwoPointStrap *other = dynamic_cast<TwoPointStrap *>(otherStrap);
-    if (other == nullptr) return __LINE__;
+//    TwoPointStrap *other = dynamic_cast<TwoPointStrap *>(otherStrap);
+//    if (other == nullptr) return __LINE__;
 
-    // first check attachment errors
-    switch (axis)
-    {
-    case Simulation::XAxis:
-        if (fabs(this->m_origin[0] + other->m_origin[0]) > epsilon) return __LINE__;
-        if (fabs(this->m_origin[1] - other->m_origin[1]) > epsilon) return __LINE__;
-        if (fabs(this->m_origin[2] - other->m_origin[2]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[0] + other->m_insertion[0]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[1] - other->m_insertion[1]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[2] - other->m_insertion[2]) > epsilon) return __LINE__;
-        break;
+//    // first check attachment errors
+//    switch (axis)
+//    {
+//    case Simulation::XAxis:
+//        if (fabs(this->m_origin[0] + other->m_origin[0]) > epsilon) return __LINE__;
+//        if (fabs(this->m_origin[1] - other->m_origin[1]) > epsilon) return __LINE__;
+//        if (fabs(this->m_origin[2] - other->m_origin[2]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[0] + other->m_insertion[0]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[1] - other->m_insertion[1]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[2] - other->m_insertion[2]) > epsilon) return __LINE__;
+//        break;
 
-    case Simulation::YAxis:
-        if (fabs(this->m_origin[0] - other->m_origin[0]) > epsilon) return __LINE__;
-        if (fabs(this->m_origin[1] + other->m_origin[1]) > epsilon) return __LINE__;
-        if (fabs(this->m_origin[2] - other->m_origin[2]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[0] - other->m_insertion[0]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[1] + other->m_insertion[1]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[2] - other->m_insertion[2]) > epsilon) return __LINE__;
-        break;
+//    case Simulation::YAxis:
+//        if (fabs(this->m_origin[0] - other->m_origin[0]) > epsilon) return __LINE__;
+//        if (fabs(this->m_origin[1] + other->m_origin[1]) > epsilon) return __LINE__;
+//        if (fabs(this->m_origin[2] - other->m_origin[2]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[0] - other->m_insertion[0]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[1] + other->m_insertion[1]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[2] - other->m_insertion[2]) > epsilon) return __LINE__;
+//        break;
 
-    case Simulation::ZAxis:
-        if (fabs(this->m_origin[0] - other->m_origin[0]) > epsilon) return __LINE__;
-        if (fabs(this->m_origin[1] - other->m_origin[1]) > epsilon) return __LINE__;
-        if (fabs(this->m_origin[2] + other->m_origin[2]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[0] - other->m_insertion[0]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[1] - other->m_insertion[1]) > epsilon) return __LINE__;
-        if (fabs(this->m_insertion[2] + other->m_insertion[2]) > epsilon) return __LINE__;
-        break;
-    }
+//    case Simulation::ZAxis:
+//        if (fabs(this->m_origin[0] - other->m_origin[0]) > epsilon) return __LINE__;
+//        if (fabs(this->m_origin[1] - other->m_origin[1]) > epsilon) return __LINE__;
+//        if (fabs(this->m_origin[2] + other->m_origin[2]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[0] - other->m_insertion[0]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[1] - other->m_insertion[1]) > epsilon) return __LINE__;
+//        if (fabs(this->m_insertion[2] + other->m_insertion[2]) > epsilon) return __LINE__;
+//        break;
+//    }
 
-    // now check for left to right crossover errors
-    if (this->name().find(sanityCheckLeft) != std::string::npos)
-    {
-        if (m_originBody->name().find(sanityCheckRight) != std::string::npos) return __LINE__;
-        if (m_insertionBody->name().find(sanityCheckRight) != std::string::npos) return __LINE__;
-    }
-    if (this->name().find(sanityCheckRight) != std::string::npos)
-    {
-        if (m_originBody->name().find(sanityCheckLeft) != std::string::npos) return __LINE__;
-        if (m_insertionBody->name().find(sanityCheckLeft) != std::string::npos) return __LINE__;
-    }
+//    // now check for left to right crossover errors
+//    if (this->name().find(sanityCheckLeft) != std::string::npos)
+//    {
+//        if (m_originBody->name().find(sanityCheckRight) != std::string::npos) return __LINE__;
+//        if (m_insertionBody->name().find(sanityCheckRight) != std::string::npos) return __LINE__;
+//    }
+//    if (this->name().find(sanityCheckRight) != std::string::npos)
+//    {
+//        if (m_originBody->name().find(sanityCheckLeft) != std::string::npos) return __LINE__;
+//        if (m_insertionBody->name().find(sanityCheckLeft) != std::string::npos) return __LINE__;
+//    }
 
-    return 0;
-}
+//    return 0;
+//}
 
 std::string *TwoPointStrap::createFromAttributes()
 {

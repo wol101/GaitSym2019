@@ -24,8 +24,8 @@ public:
 
     int LoadBaseXMLFile(const char *filename);
     int LoadBaseXMLString(const char *dataPtr, size_t length);
-    int ApplyGenome(int genomeSize, double *genomeData);
-    const char* GetFormattedXML(size_t *docTxtLen);
+    int ApplyGenome(int genomeSize, const double *genomeData);
+    void GetFormattedXML(std::string *formattedXML);
 
     const std::string &BaseXMLString() const;
 
@@ -39,7 +39,7 @@ private:
     std::vector<std::string> m_SmartSubstitutionTextComponents;
     std::vector<std::string> m_SmartSubstitutionParserText;
     std::vector<double> m_SmartSubstitutionValues;
-    std::string m_SmartSubstitutionTextBuffer;
+    size_t m_SmartSubstitutionTextComponentsSize = 0;
 };
 
 

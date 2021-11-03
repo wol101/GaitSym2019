@@ -51,6 +51,7 @@ private slots:
     void attributeMachineSave();
     void attributeMachineLoad();
     void attributeMachineApply();
+    void resetPositions();
     void modificationChanged(bool changed);
 
 private:

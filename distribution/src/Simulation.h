@@ -125,8 +125,8 @@ public:
     bool TestForCatastrophy();
     double CalculateInstantaneousFitness();
     bool ShouldQuit();
-    void SetContactAbort(bool contactAbort) { m_ContactAbort = contactAbort; }
-    void SetDataTargetAbort(bool dataTargetAbort) { m_DataTargetAbort = dataTargetAbort; }
+    void SetContactAbort(const std::string &contactID) { m_ContactAbort = true;  m_ContactAbortList.push_back(contactID); }
+    void SetDataTargetAbort(const std::string &dataTargetID) { m_DataTargetAbort = true; m_DataTargetAbortList.push_back(dataTargetID); }
     int m_numericalErrorCount = 0;
 
     std::string SaveToXML();
@@ -214,6 +214,8 @@ private:
     bool m_WarehouseUsePCA = true;
     bool m_DataTargetAbort = false;
     bool m_ContactAbort = false;
+    std::vector<std::string> m_DataTargetAbortList;
+    std::vector<std::string> m_ContactAbortList;
 
     // for fitness calculations
     double m_KinematicMatchFitness = 0;

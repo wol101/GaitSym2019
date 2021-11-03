@@ -1,5 +1,5 @@
 /*
- *  ObjectiveMainASIO.h
+ *  ObjectiveMainASIOAsync.h
  *  GaitSym2019
  *
  *  Created by Bill Sellers on 24/12/2019.
@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef OBJECTIVEMAINASIO_H
-#define OBJECTIVEMAINASIO_H
+#ifndef OBJECTIVEMAINASIOASYNC_H
+#define OBJECTIVEMAINASIOASYNC_H
 
 
 #include "XMLConverter.h"
@@ -24,6 +24,7 @@
 #include <memory>
 #include <iostream>
 #include <system_error>
+#include <mutex>
 
 class Simulation;
 
@@ -194,46 +195,18 @@ private:
     std::size_t m_resultN = 0;
 };
 
-class ObjectiveMainASIO
+class ObjectiveMainASIOAsync
 {
 public:
-    ObjectiveMainASIO(int argc, const char **argv);
+    ObjectiveMainASIOAsync(int argc, const char **argv);
 
     int Run();
-    int ReadGenome();
-    int ReadXML();
-    int WriteOutput();
 
     static std::string encode(const std::string &input);
     static std::string decode(const std::string &input);
+    static bool hashEqual(const uint32_t *hash1, const uint32_t *hash2, size_t hashSize);
 
 private:
-    std::vector<std::string> m_outputList;
-
-    std::unique_ptr<Simulation> m_simulation;
-    double m_runTimeLimit = 0;
-    double m_simulationTime = 0;
-    double m_IOTime = 0;
-    double m_outputModelStateAtTime = -1;
-    double m_outputModelStateAtCycle = -1;
-    double m_outputModelStateAtWarehouseDistance = -1;
-    double m_simulationTimeLimit = -1;
-    double m_warehouseFailDistanceAbort = 0;
-
-    std::string m_configFilename;
-    std::string m_outputWarehouseFilename;
-    std::string m_outputModelStateFilename;
-    std::string m_inputWarehouseFilename;
-    std::string m_scoreFilename;
-
-    XMLConverter m_XMLConverter;
-    ArgParse m_argparse;
-
-    struct Host
-    {
-        std::string host;
-        int port;
-    };
 
     struct DataMessage
     {
@@ -260,21 +233,44 @@ private:
         double score;
     };
 
-    std::vector<Host> m_hosts;
-    size_t m_currentHost = 0;
+    int ReadGenome(std::string host, uint16_t port, std::string *rawMessage);
+    int ReadXML(std::string host, uint16_t port, std::string *rawMessage);
+    int WriteOutput(std::string host, uint16_t port, uint32_t runID, double score);
+    void DoSimulation(const char *xmlPtr, size_t xmlLen, double *score, double *computeTime);
+
+    std::vector<std::string> m_outputList;
+
+    std::unique_ptr<Simulation> m_simulation;
+    double m_runTimeLimit = 0;
+    double m_outputModelStateAtTime = -1;
+    double m_outputModelStateAtCycle = -1;
+    double m_outputModelStateAtWarehouseDistance = -1;
+    double m_simulationTimeLimit = -1;
+    double m_warehouseFailDistanceAbort = 0;
+
+    std::string m_configFilename;
+    std::string m_outputWarehouseFilename;
+    std::string m_outputModelStateFilename;
+    std::string m_inputWarehouseFilename;
+    std::string m_scoreFilename;
+
+    XMLConverter m_XMLConverter;
+    ArgParse m_argparse;
+
+    std::string m_host;
+    uint16_t m_port;
     int m_sleepTime = 0;
+
+    bool m_scoreToSend = false;
+    double m_lastScore = 0;
+    uint32_t m_lastRunID = 0;
+    std::string m_lastGenomeDataMessageRaw;
+    bool m_lastGenomeValid = false;
+    int m_statusDoSimulation = {};
+    std::vector<uint32_t> m_hash = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
 
     AsioClient m_asioClient;
     std::chrono::steady_clock::duration m_timeout;
-
-    std::map<std::vector<uint32_t>, std::string> m_cachedConfigFiles;
-    std::deque<std::vector<uint32_t>> m_cachedConfigFilesQueue;
-    std::vector<uint32_t> m_hash = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-    size_t m_cachedConfigFilesLimit = 10;
-    DataMessage m_dataMessage = {};
-    RequestMessage m_requestMessage = {};
-    std::vector<char> m_dataMessageRaw;
-    bool m_xmlMissing = true;
 
     std::mt19937_64 m_gen;
     std::uniform_real_distribution<double> m_distrib;
@@ -284,4 +280,4 @@ private:
 
 
 
-#endif // OBJECTIVEMAINASIO_H
+#endif // OBJECTIVEMAINASIOASYNC_H

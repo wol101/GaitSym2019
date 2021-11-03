@@ -44,7 +44,7 @@ public:
 
     virtual void Calculate() = 0;
 
-    virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight) = 0;
+//    virtual int SanityCheck(Strap *otherStrap, Simulation::AxisType axis, const std::string &sanityCheckLeft, const std::string &sanityCheckRight) = 0;
 
     virtual std::string dumpToString();
 
