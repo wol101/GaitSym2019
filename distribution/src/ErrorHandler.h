@@ -12,20 +12,36 @@
 
 #include <cstdarg>
 #include <string>
+#include <functional>
+
+// this is glue to allow a C++ function (even a member function) to be called as a C callback
+template <typename T>
+struct Callback;
+
+template <typename Ret, typename... Params>
+struct Callback<Ret(Params...)> {
+    template <typename... Args>
+    static Ret callback(Args... args) { return func(args...); }
+    static std::function<Ret(Params...)> func;
+};
+
+// Initialize the static member.
+template <typename Ret, typename... Params>
+std::function<Ret(Params...)> Callback<Ret(Params...)>::func;
 
 class ErrorHandler
 {
 public:
-    static void ODEMessageTrap(int num, const char *msg, va_list ap);
-    static bool IsMessage();
-    static std::string GetLastMessage();
-    static int GetLastMessageNumber();
-    static void ClearMessage();
+    void ODEMessageTrap(int num, const char *msg, va_list ap);
+    bool IsMessage();
+    std::string GetLastMessage();
+    int GetLastMessageNumber();
+    void ClearMessage();
 
 private:
-    static std::string m_messageText;
-    static int m_messageNumber;
-    static bool m_messageFlag;
+    std::string m_messageText;
+    int m_messageNumber = 0;
+    bool m_messageFlag = false;
 };
 
 #endif

@@ -782,12 +782,16 @@ void MainWindowActions::menuImportMeshes()
             dMass mass = {};
             double density = body->GetConstructionDensity();
             bool clockwise = false;
-            mesh->CalculateMassProperties(&mass, density, clockwise);
+            pgd::Vector3 translation;
+            mesh->CalculateMassProperties(&mass, density, clockwise, translation.data());
             std::string massError = Body::MassCheck(&mass);
             if (massError.size() == 0)
             {
                 body->SetConstructionPosition(mass.c[0], mass.c[1], mass.c[2]);
                 body->SetPosition(mass.c[0], mass.c[1], mass.c[2]);
+                // now recalculate the inertial tensor arount the centre of mass
+                translation.Set(-mass.c[0], -mass.c[1], -mass.c[2]);
+                mesh->CalculateMassProperties(&mass, density, clockwise, translation.data());
                 mass.c[0] = mass.c[1] = mass.c[2] = 0;
             }
             else
@@ -1356,6 +1360,7 @@ void MainWindowActions::menuExportMarkers()
     Q_ASSERT_X(m_mainWindow->m_simulation, "MainWindowActions::menuExportMarkers", "m_mainWindow->m_simulation undefined");
     DialogMarkerImportExport dialogMarkerImportExport(m_mainWindow);
     dialogMarkerImportExport.setSimulation(m_mainWindow->m_simulation);
+    dialogMarkerImportExport.setAllowImport(m_mainWindow->m_mode == MainWindow::constructionMode);
     std::vector<std::unique_ptr<Marker>> markerList;
     dialogMarkerImportExport.setMarkerList(&markerList);
     int status = dialogMarkerImportExport.exec();

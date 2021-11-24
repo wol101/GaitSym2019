@@ -18,6 +18,7 @@
 
 #include <string>
 #include <algorithm>
+#include <limits>
 
 using namespace std::string_literals;
 

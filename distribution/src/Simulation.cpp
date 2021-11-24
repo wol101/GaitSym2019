@@ -40,7 +40,6 @@
 #include "FluidSacIncompressible.h"
 #include "PlaneGeom.h"
 #include "Contact.h"
-#include "ErrorHandler.h"
 #include "NPointStrap.h"
 #include "FixedJoint.h"
 #include "TrimeshGeom.h"
@@ -78,6 +77,7 @@
 #include <algorithm>
 #include <locale>
 #include <codecvt>
+#include <functional>
 
 using namespace std::string_literals;
 
@@ -91,10 +91,21 @@ Simulation::Simulation()
     m_WorldID = dWorldCreate();
     m_SpaceID = dHashSpaceCreate(nullptr); // FIX ME hash space is a compromise but this should probably be user controlled
     m_ContactGroup = dJointGroupCreate(0);
-    dSetMessageHandler(ErrorHandler::ODEMessageTrap);
-    dSetErrorHandler(ErrorHandler::ODEMessageTrap);
-    dSetDebugHandler(ErrorHandler::ODEMessageTrap);
-//    std::cerr << "dGetMessageHandler() = " << size_t(dGetMessageHandler()) << "\n";
+
+    // glue for calling a C++ callback
+    // Store member function and the instance using std::bind.
+    Callback<void(int, const char *, va_list)>::func = std::bind(&ErrorHandler::ODEMessageTrap, &m_errorHandler, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    // Convert callback-function to c-pointer.
+    void (*c_func)(int, const char *, va_list) = static_cast<decltype(c_func)>(Callback<void(int, const char *, va_list)>::callback);
+
+    // c_func is now the required function pointer
+    dSetMessageHandler(c_func);
+    dSetErrorHandler(c_func);
+    dSetDebugHandler(c_func);
+//    dSetMessageHandler(ErrorHandler::ODEMessageTrap);
+//    dSetErrorHandler(ErrorHandler::ODEMessageTrap);
+//    dSetDebugHandler(ErrorHandler::ODEMessageTrap);
+    //    std::cerr << "dGetMessageHandler() = " << size_t(dGetMessageHandler()) << "\n";
 }
 
 //----------------------------------------------------------------------------
@@ -353,7 +364,7 @@ void Simulation::UpdateSimulation()
     }
 
     // test for penalties
-    if (ErrorHandler::IsMessage()) m_KinematicMatchFitness += m_global->NumericalErrorsScore();
+    if (m_errorHandler.IsMessage()) m_KinematicMatchFitness += m_global->NumericalErrorsScore();
 
     // calculate the energies
     for (auto &&iter1 : m_MuscleList)
@@ -413,10 +424,10 @@ void Simulation::UpdateSimulation()
 bool Simulation::TestForCatastrophy()
 {
     // first of all check to see that ODE is happy
-    if (ErrorHandler::IsMessage())
+    if (m_errorHandler.IsMessage())
     {
-        int num = ErrorHandler::GetLastMessageNumber();
-        std::string messageText = ErrorHandler::GetLastMessage();
+        int num = m_errorHandler.GetLastMessageNumber();
+        std::string messageText = m_errorHandler.GetLastMessage();
         m_numericalErrorCount++;
         if (m_numericalErrorCount > m_global->PermittedNumericalErrors())
         {
@@ -427,7 +438,7 @@ bool Simulation::TestForCatastrophy()
         {
             std::cerr << "t=" << m_SimulationTime << " ODE warning " << num << " " << messageText << "\n";
         }
-        ErrorHandler::ClearMessage();
+        m_errorHandler.ClearMessage();
     }
 
     // check for simulation error

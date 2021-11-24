@@ -17,6 +17,7 @@
 #include "Contact.h"
 #include "ParseXML.h"
 #include "SmartEnum.h"
+#include "ErrorHandler.h"
 
 #include "ode/ode.h"
 
@@ -233,6 +234,7 @@ private:
     // values for dump output
     std::string m_dumpExtension = {".tab"};
     std::map<std::string, std::ofstream> m_dumpFileStreams;
+    ErrorHandler m_errorHandler;
 
 };
 

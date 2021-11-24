@@ -211,6 +211,7 @@ private:
     struct DataMessage
     {
         char text[16];
+        uint64_t evolveIdentifier;
         uint32_t senderIP;
         uint32_t senderPort;
         uint32_t runID;
@@ -227,6 +228,7 @@ private:
     struct RequestMessage
     {
         char text[16];
+        uint64_t evolveIdentifier;
         uint32_t senderIP;
         uint32_t senderPort;
         uint32_t runID;
@@ -235,12 +237,11 @@ private:
 
     int ReadGenome(std::string host, uint16_t port, std::string *rawMessage);
     int ReadXML(std::string host, uint16_t port, std::string *rawMessage);
-    int WriteOutput(std::string host, uint16_t port, uint32_t runID, double score);
+    int WriteOutput(std::string host, uint16_t port, uint64_t evolveIdentifier, uint32_t runID, double score);
     void DoSimulation(const char *xmlPtr, size_t xmlLen, double *score, double *computeTime);
 
     std::vector<std::string> m_outputList;
 
-    std::unique_ptr<Simulation> m_simulation;
     double m_runTimeLimit = 0;
     double m_outputModelStateAtTime = -1;
     double m_outputModelStateAtCycle = -1;
@@ -264,6 +265,7 @@ private:
     bool m_scoreToSend = false;
     double m_lastScore = 0;
     uint32_t m_lastRunID = 0;
+    uint64_t m_lastEvolveIdentifier = 0;
     std::string m_lastGenomeDataMessageRaw;
     bool m_lastGenomeValid = false;
     int m_statusDoSimulation = {};

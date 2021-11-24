@@ -29,6 +29,8 @@ public:
 
     std::vector<std::unique_ptr<Marker> > *markerList() const;
 
+    void setAllowImport(bool newAllowImport);
+
 public slots:
     virtual void accept() Q_DECL_OVERRIDE;
     virtual void reject() Q_DECL_OVERRIDE;
@@ -43,6 +45,7 @@ private:
 
     Simulation *m_simulation = nullptr;
     std::vector<std::unique_ptr<Marker>> *m_markerList = nullptr;
+    bool m_allowImport = false;
 
     void SetUIElementsFromPreferences();
     void SaveUIElementsToPreferences();

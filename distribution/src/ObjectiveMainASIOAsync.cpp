@@ -122,11 +122,13 @@ int ObjectiveMainASIOAsync::Run()
         // construct the new thread and run it
         double score = 0;
         uint32_t runID = 0;
+        uint64_t evolveIdentifier = 0;
         std::string xmlCopy;
         if (m_lastGenomeValid && m_XMLConverter.BaseXMLString().size())
         {
             runID = reinterpret_cast<const DataMessage *>(m_lastGenomeDataMessageRaw.data())->runID;
-            if (m_debug) std::cerr <<  "Run runID = " << runID << "\n";
+            evolveIdentifier = reinterpret_cast<const DataMessage *>(m_lastGenomeDataMessageRaw.data())->evolveIdentifier;
+            if (m_debug) std::cerr <<  "Run runID = " << runID << " evolveIdentifier = " << evolveIdentifier << "\n";
             m_XMLConverter.ApplyGenome(int(reinterpret_cast<const DataMessage *>(m_lastGenomeDataMessageRaw.data())->genomeLength), reinterpret_cast<const DataMessage *>(m_lastGenomeDataMessageRaw.data())->payload.genome);
             m_XMLConverter.GetFormattedXML(&xmlCopy);
         }
@@ -136,7 +138,7 @@ int ObjectiveMainASIOAsync::Run()
         // while the simulation is running send off the last result and get the new task
         if (m_scoreToSend)
         {
-            status = WriteOutput(m_host, m_port, m_lastRunID, m_lastScore);
+            status = WriteOutput(m_host, m_port, m_lastEvolveIdentifier, m_lastRunID, m_lastScore);
             if (status && m_debug) std::cerr << "Failed to write output score\n";
             m_scoreToSend = false;
         }
@@ -149,7 +151,8 @@ int ObjectiveMainASIOAsync::Run()
             {
                 std::string rawMessage;
                 ReadXML(m_host, m_port, &rawMessage);
-                if (hashEqual(reinterpret_cast<const DataMessage *>(rawMessage.data())->md5, reinterpret_cast<const DataMessage *>(m_lastGenomeDataMessageRaw.data())->md5, m_hash.size()))
+                if (hashEqual(reinterpret_cast<const DataMessage *>(rawMessage.data())->md5, reinterpret_cast<const DataMessage *>(m_lastGenomeDataMessageRaw.data())->md5, m_hash.size())
+                        && reinterpret_cast<const DataMessage *>(rawMessage.data())->evolveIdentifier == reinterpret_cast<const DataMessage *>(m_lastGenomeDataMessageRaw.data())->evolveIdentifier)
                 {
                     for (size_t i = 0; i < m_hash.size(); i++) { m_hash[i] = reinterpret_cast<const DataMessage *>(rawMessage.data())->md5[i]; }
                     m_XMLConverter.LoadBaseXMLString(reinterpret_cast<const DataMessage *>(rawMessage.data())->payload.xml, reinterpret_cast<const DataMessage *>(rawMessage.data())->xmlLength);
@@ -168,6 +171,7 @@ int ObjectiveMainASIOAsync::Run()
             m_scoreToSend = true;
             m_lastScore = score;
             m_lastRunID = runID;
+            m_lastEvolveIdentifier = evolveIdentifier;
         }
         else
         {
@@ -193,46 +197,46 @@ void ObjectiveMainASIOAsync::DoSimulation(const char *xmlPtr, size_t xmlLen, dou
 
     double startTime = GSUtil::GetTime();
 
-    // create the simulation object
-    m_simulation = std::make_unique<Simulation>();
-    if (m_outputWarehouseFilename.size()) m_simulation->SetOutputWarehouseFile(m_outputWarehouseFilename);
-    if (m_outputModelStateFilename.size()) m_simulation->SetOutputModelStateFile(m_outputModelStateFilename);
-    if (m_outputModelStateAtTime >= 0) m_simulation->SetOutputModelStateAtTime(m_outputModelStateAtTime);
-    if (m_outputModelStateAtCycle >= 0) m_simulation->SetOutputModelStateAtCycle(m_outputModelStateAtCycle);
-    if (m_inputWarehouseFilename.size()) m_simulation->AddWarehouse(m_inputWarehouseFilename);
-    if (m_outputModelStateAtWarehouseDistance >= 0) m_simulation->SetOutputModelStateAtWarehouseDistance(m_outputModelStateAtWarehouseDistance);
+    // create the simulation object locally so delete happens before the next one is create otherwise we get problems with ODE error tracking
+    std::unique_ptr<Simulation> simulation = std::make_unique<Simulation>();
+    if (m_outputWarehouseFilename.size()) simulation->SetOutputWarehouseFile(m_outputWarehouseFilename);
+    if (m_outputModelStateFilename.size()) simulation->SetOutputModelStateFile(m_outputModelStateFilename);
+    if (m_outputModelStateAtTime >= 0) simulation->SetOutputModelStateAtTime(m_outputModelStateAtTime);
+    if (m_outputModelStateAtCycle >= 0) simulation->SetOutputModelStateAtCycle(m_outputModelStateAtCycle);
+    if (m_inputWarehouseFilename.size()) simulation->AddWarehouse(m_inputWarehouseFilename);
+    if (m_outputModelStateAtWarehouseDistance >= 0) simulation->SetOutputModelStateAtWarehouseDistance(m_outputModelStateAtWarehouseDistance);
 
-    if (m_simulation->LoadModel(xmlPtr, xmlLen))
+    if (simulation->LoadModel(xmlPtr, xmlLen))
     {
         m_statusDoSimulation = __LINE__;
         return;
     }
 
     // late initialisation options
-    if (m_simulationTimeLimit >= 0) m_simulation->SetTimeLimit(m_simulationTimeLimit);
-    if (m_warehouseFailDistanceAbort != 0) m_simulation->SetWarehouseFailDistanceAbort(m_warehouseFailDistanceAbort);
+    if (m_simulationTimeLimit >= 0) simulation->SetTimeLimit(m_simulationTimeLimit);
+    if (m_warehouseFailDistanceAbort != 0) simulation->SetWarehouseFailDistanceAbort(m_warehouseFailDistanceAbort);
     for (size_t i = 0; i < m_outputList.size(); i++)
     {
-        if (m_simulation->GetBodyList()->find(m_outputList[i]) != m_simulation->GetBodyList()->end()) (*m_simulation->GetBodyList())[m_outputList[i]]->setDump(true);
-        if (m_simulation->GetMuscleList()->find(m_outputList[i]) != m_simulation->GetMuscleList()->end()) (*m_simulation->GetMuscleList())[m_outputList[i]]->setDump(true);
-        if (m_simulation->GetGeomList()->find(m_outputList[i]) != m_simulation->GetGeomList()->end()) (*m_simulation->GetGeomList())[m_outputList[i]]->setDump(true);
-        if (m_simulation->GetJointList()->find(m_outputList[i]) != m_simulation->GetJointList()->end()) (*m_simulation->GetJointList())[m_outputList[i]]->setDump(true);
-        if (m_simulation->GetDriverList()->find(m_outputList[i]) != m_simulation->GetDriverList()->end()) (*m_simulation->GetDriverList())[m_outputList[i]]->setDump(true);
-        if (m_simulation->GetDataTargetList()->find(m_outputList[i]) != m_simulation->GetDataTargetList()->end()) (*m_simulation->GetDataTargetList())[m_outputList[i]]->setDump(true);
-        if (m_simulation->GetReporterList()->find(m_outputList[i]) != m_simulation->GetReporterList()->end()) (*m_simulation->GetReporterList())[m_outputList[i]]->setDump(true);
+        if (simulation->GetBodyList()->find(m_outputList[i]) != simulation->GetBodyList()->end()) (*simulation->GetBodyList())[m_outputList[i]]->setDump(true);
+        if (simulation->GetMuscleList()->find(m_outputList[i]) != simulation->GetMuscleList()->end()) (*simulation->GetMuscleList())[m_outputList[i]]->setDump(true);
+        if (simulation->GetGeomList()->find(m_outputList[i]) != simulation->GetGeomList()->end()) (*simulation->GetGeomList())[m_outputList[i]]->setDump(true);
+        if (simulation->GetJointList()->find(m_outputList[i]) != simulation->GetJointList()->end()) (*simulation->GetJointList())[m_outputList[i]]->setDump(true);
+        if (simulation->GetDriverList()->find(m_outputList[i]) != simulation->GetDriverList()->end()) (*simulation->GetDriverList())[m_outputList[i]]->setDump(true);
+        if (simulation->GetDataTargetList()->find(m_outputList[i]) != simulation->GetDataTargetList()->end()) (*simulation->GetDataTargetList())[m_outputList[i]]->setDump(true);
+        if (simulation->GetReporterList()->find(m_outputList[i]) != simulation->GetReporterList()->end()) (*simulation->GetReporterList())[m_outputList[i]]->setDump(true);
     }
 
-    while (m_simulation->ShouldQuit() == false)
+    while (simulation->ShouldQuit() == false)
     {
-        m_simulation->UpdateSimulation();
-        if (m_simulation->TestForCatastrophy()) break;
+        simulation->UpdateSimulation();
+        if (simulation->TestForCatastrophy()) break;
     }
-    *score = m_simulation->CalculateInstantaneousFitness();
-    std::cerr << "Simulation Time: " << m_simulation->GetTime() <<
-                 " Steps: " << m_simulation->GetStepCount() <<
+    *score = simulation->CalculateInstantaneousFitness();
+    std::cerr << "Simulation Time: " << simulation->GetTime() <<
+                 " Steps: " << simulation->GetStepCount() <<
                  " Score: " << *score <<
-                 " Mechanical Energy: " << m_simulation->GetMechanicalEnergy() <<
-                 " Metabolic Energy: " << m_simulation->GetMetabolicEnergy() <<
+                 " Mechanical Energy: " << simulation->GetMechanicalEnergy() <<
+                 " Metabolic Energy: " << simulation->GetMetabolicEnergy() <<
                  "\n";
     *computeTime += (GSUtil::GetTime() - startTime);
 }
@@ -259,7 +263,7 @@ int ObjectiveMainASIOAsync::ReadGenome(std::string host, uint16_t port, std::str
     RequestMessage m_requestMessage = {};
     m_requestMessage.senderIP = m_asioClient.socket().local_endpoint().address().to_v4().to_uint();
     m_requestMessage.senderPort = m_asioClient.socket().local_endpoint().port();
-    strcpy(m_requestMessage.text, "req_gen_");
+    strncpy(m_requestMessage.text, "req_gen_", sizeof(m_requestMessage.text));
     try
     {
         std::string encodedLine = encode(std::string(reinterpret_cast<char *>(&m_requestMessage), sizeof(RequestMessage)));
@@ -292,6 +296,7 @@ int ObjectiveMainASIOAsync::ReadGenome(std::string host, uint16_t port, std::str
     if (m_debug) std::cerr << "ReadGenome " << dataMessagePtr->text << " received\n"
                            << "senderIP = " << dataMessagePtr->senderIP
                            << " senderPort = " << dataMessagePtr->senderPort
+                           << " evolveIdentifier = " << dataMessagePtr->evolveIdentifier
                            << " runID = " << dataMessagePtr->runID
                            << " genomeLength = " << dataMessagePtr->genomeLength
                            << " xmlLength = " << dataMessagePtr->xmlLength
@@ -325,7 +330,7 @@ int ObjectiveMainASIOAsync::ReadXML(std::string host, uint16_t port, std::string
     RequestMessage requestMessage = {};
     requestMessage.senderIP = m_asioClient.socket().local_endpoint().address().to_v4().to_uint();
     requestMessage.senderPort = m_asioClient.socket().local_endpoint().port();
-    strcpy(requestMessage.text, "req_xml_");
+    strncpy(requestMessage.text, "req_xml_", sizeof(requestMessage.text));
     try
     {
         std::string encodedLine = encode(std::string(reinterpret_cast<char *>(&requestMessage), sizeof(RequestMessage)));
@@ -367,7 +372,7 @@ int ObjectiveMainASIOAsync::ReadXML(std::string host, uint16_t port, std::string
 
 // returns 0 if continuing
 // returns 1 if exit requested
-int ObjectiveMainASIOAsync::WriteOutput(std::string host, uint16_t port, uint32_t runID, double score)
+int ObjectiveMainASIOAsync::WriteOutput(std::string host, uint16_t port, uint64_t evolveIdentifier, uint32_t runID, double score)
 {
     m_timeout = std::chrono::milliseconds(int(100000 * m_distrib(m_gen)));
     try
@@ -384,9 +389,10 @@ int ObjectiveMainASIOAsync::WriteOutput(std::string host, uint16_t port, uint32_
     RequestMessage requestMessage = {};
     requestMessage.senderIP = m_asioClient.socket().local_endpoint().address().to_v4().to_uint();
     requestMessage.senderPort = m_asioClient.socket().local_endpoint().port();
-    strcpy(requestMessage.text, "score___");
+    strncpy(requestMessage.text, "score___", sizeof(requestMessage.text));
     requestMessage.score = score;
     requestMessage.runID = runID;
+    requestMessage.evolveIdentifier = evolveIdentifier;
     try
     {
         std::string encodedString = encode(std::string(reinterpret_cast<char *>(&requestMessage), sizeof(RequestMessage)));

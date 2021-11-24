@@ -150,12 +150,34 @@ double DataTargetMarkerCompare::calculateError(size_t index)
             break;
         }
         pgd::Vector3 axis1, axis2;
-        if (m_marker1Comparison == XAD) axis1 = m_marker1->GetAxis(Marker::X);
-        else if (m_marker1Comparison == YAD) axis1 = m_marker1->GetAxis(Marker::Y);
-        else if (m_marker1Comparison == ZAD) axis1 = m_marker1->GetAxis(Marker::Z);
-        if (m_marker2Comparison == XAD) axis2 = m_marker2->GetAxis(Marker::X);
-        else if (m_marker2Comparison == YAD) axis2 = m_marker2->GetAxis(Marker::Y);
-        else if (m_marker2Comparison == ZAD) axis2 = m_marker2->GetAxis(Marker::Z);
+        switch (m_marker1Comparison)
+        {
+        case XAD:
+            axis1 = m_marker1->GetWorldAxis(Marker::X);
+            break;
+        case YAD:
+            axis1 = m_marker1->GetWorldAxis(Marker::Y);
+            break;
+        case ZAD:
+            axis1 = m_marker1->GetWorldAxis(Marker::Z);
+            break;
+        default:
+            break;
+        }
+        switch (m_marker2Comparison)
+        {
+        case XAD:
+            axis2 = m_marker2->GetWorldAxis(Marker::X);
+            break;
+        case YAD:
+            axis2 = m_marker2->GetWorldAxis(Marker::Y);
+            break;
+        case ZAD:
+            axis2 = m_marker2->GetWorldAxis(Marker::Z);
+            break;
+        default:
+            break;
+        }
         // for two vectors
         // angle = acos(v1 dot v2)
         // axis = norm(v1 cross v2)

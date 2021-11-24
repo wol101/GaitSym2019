@@ -1731,8 +1731,10 @@ void FacetedObject::CalculateTrimesh(float **vertices, int *numVertices, int *ve
 #define SQR(x)          ((x)*(x))                       //!< Returns x square
 #define CUBE(x)         ((x)*(x)*(x))                   //!< Returns x cube
 
+// the mass properties are calculated around the world origin
+// these can be moved to around the centroid if wanted using the parallel axes rules
 
-void FacetedObject::CalculateMassProperties(dMass *m, double density, bool clockwise)
+void FacetedObject::CalculateMassProperties(dMass *m, double density, bool clockwise, double *translation)
 {
     dMassSetZero (m);
 
@@ -1760,18 +1762,18 @@ void FacetedObject::CalculateMassProperties(dMass *m, double density, bool clock
         {
             for (j = 0; j < 3; j++)
             {
-                v[j][0] = m_vertexList[i * 9 + j * 3];
-                v[j][1] = m_vertexList[i * 9 + j * 3 + 1];
-                v[j][2] = m_vertexList[i * 9 + j * 3 + 2];
+                v[j][0] = m_vertexList[i * 9 + j * 3] + translation[0];
+                v[j][1] = m_vertexList[i * 9 + j * 3 + 1] + translation[1];
+                v[j][2] = m_vertexList[i * 9 + j * 3 + 2] + translation[2];
             }
         }
         else
         {
             for (j = 0; j < 3; j++)
             {
-                v[j][2] = m_vertexList[i * 9 + j * 3];
-                v[j][1] = m_vertexList[i * 9 + j * 3 + 1];
-                v[j][0] = m_vertexList[i * 9 + j * 3 + 2];
+                v[j][2] = m_vertexList[i * 9 + j * 3] + translation[0];
+                v[j][1] = m_vertexList[i * 9 + j * 3 + 1] + translation[1];
+                v[j][0] = m_vertexList[i * 9 + j * 3 + 2] + translation[2];
             }
         }
 

@@ -73,6 +73,25 @@ void DialogMarkerImportExport::closeEvent(QCloseEvent *event)
     QDialog::closeEvent(event);
 }
 
+void DialogMarkerImportExport::setAllowImport(bool newAllowImport)
+{
+    m_allowImport = newAllowImport;
+    if (m_allowImport)
+    {
+        ui->radioButtonExport->setEnabled(true);
+        ui->radioButtonExport->setChecked(false);
+        ui->radioButtonImport->setEnabled(true);
+        ui->radioButtonImport->setChecked(true);
+    }
+    else
+    {
+        ui->radioButtonExport->setEnabled(true);
+        ui->radioButtonExport->setChecked(true);
+        ui->radioButtonImport->setEnabled(false);
+        ui->radioButtonImport->setChecked(false);
+    }
+}
+
 std::vector<std::unique_ptr<Marker> > *DialogMarkerImportExport::markerList() const
 {
     return m_markerList;

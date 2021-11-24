@@ -28,6 +28,7 @@
 #include <cassert>
 #include <algorithm>
 #include <utility>
+#include <limits>
 
 using namespace std::string_literals;
 

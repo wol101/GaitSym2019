@@ -11,10 +11,11 @@
 
 #include <stdio.h>
 #include <vector>
+#include <functional>
 
-std::string ErrorHandler::m_messageText;
-int ErrorHandler::m_messageNumber = 0;
-bool ErrorHandler::m_messageFlag = false;
+//std::string ErrorHandler::m_messageText;
+//int ErrorHandler::m_messageNumber = 0;
+//bool ErrorHandler::m_messageFlag = false;
 
 void ErrorHandler::ODEMessageTrap(int num, const char *msg, va_list ap)
 {

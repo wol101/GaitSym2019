@@ -104,7 +104,7 @@ public:
     // ODE link
     void CalculateTrimesh(double **vertices, int *numVertices, int *vertexStride, dTriIndex **triIndexes, int *numTriIndexes, int *triStride);
     void CalculateTrimesh(float **vertices, int *numVertices, int *vertexStride, dTriIndex **triIndexes, int *numTriIndexes, int *triStride);
-    void CalculateMassProperties(dMass *m, double density, bool clockwise);
+    void CalculateMassProperties(dMass *m, double density, bool clockwise, double *translation);
 
     double *lowerBound();
     double *upperBound();

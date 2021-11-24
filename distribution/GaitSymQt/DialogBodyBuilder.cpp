@@ -318,7 +318,8 @@ void DialogBodyBuilder::calculate()
     dMass mass;
     double density = ui->lineEditDensity->text().toDouble();
     bool clockwise = false;
-    m_referenceObject->CalculateMassProperties(&mass, density, clockwise);
+    pgd::Vector3 translation;
+    m_referenceObject->CalculateMassProperties(&mass, density, clockwise, translation.data());
     std::string massError = Body::MassCheck(&mass);
     if (massError.size())
     {
@@ -329,6 +330,9 @@ void DialogBodyBuilder::calculate()
     ui->lineEditX->setValue(mass.c[0]);
     ui->lineEditY->setValue(mass.c[1]);
     ui->lineEditZ->setValue(mass.c[2]);
+    // now recalculate the inertial tensor arount the centre of mass
+    translation.Set(-mass.c[0], -mass.c[1], -mass.c[2]);
+    m_referenceObject->CalculateMassProperties(&mass, density, clockwise, translation.data());
 // #define _I(i,j) I[(i)*4+(j)]
 // regex _I\(([0-9]+),([0-9]+)\) to I[(\1)*4+(\2)]
 //    mass->_I(0,0) = I11;
