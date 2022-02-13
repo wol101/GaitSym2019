@@ -33,9 +33,20 @@
 
 DrawJoint::DrawJoint()
 {
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    m_objectCountAtCreation = m_objectCount++;
+    std::cerr << m_objectCountAtCreation << " " << className() << " constructed\n";;
+#endif
     m_jointAxisSize = Preferences::valueDouble("JointAxesSize");
     m_jointColor = Preferences::valueQColor("JointColour");
     m_jointSegments = size_t(Preferences::valueInt("JointSegments"));
+}
+
+DrawJoint::~DrawJoint()
+{
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    std::cerr << m_objectCountAtCreation << " " << className() << " destructed\n";;
+#endif
 }
 
 std::string DrawJoint::name()

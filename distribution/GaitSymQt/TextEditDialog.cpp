@@ -495,7 +495,7 @@ void TextEditDialog::attributeMachineApply()
                 tokens[5].toStdString(), tokens[6].toStdString(), tokens[7].toStdString(), tokens[8].toStdString());
     }
 
-    std::string newXML = m_parseXML.SaveModel();
+    std::string newXML = m_parseXML.SaveModel("Created from TextEditDialog::attributeMachineApply"s);
     ui->plainTextEdit->setPlainText(QString::fromStdString(newXML));
     if (localModified || (xml != newXML)) setModified(true);
 }
@@ -767,7 +767,7 @@ void TextEditDialog::resetPositions()
             quaternion->second = "1 0 0 0"s;
         }
     }
-    std::string newXML = m_parseXML.SaveModel();
+    std::string newXML = m_parseXML.SaveModel("Created from TextEditDialog::resetPositions"s);
     ui->plainTextEdit->setPlainText(QString::fromStdString(newXML));
     if (localModified || (xml != newXML)) setModified(true);
 }

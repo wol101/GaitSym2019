@@ -78,6 +78,7 @@
 #include <locale>
 #include <codecvt>
 #include <functional>
+#include <numeric>
 
 using namespace std::string_literals;
 
@@ -201,6 +202,20 @@ std::string *Simulation::LoadModel(const char *buffer, size_t length)
     // for the time being just set the current warehouse to the first one in the list
     if (m_global->CurrentWarehouseFile().length() == 0 && m_WarehouseList.size() > 0) m_global->setCurrentWarehouseFile(m_WarehouseList.begin()->first);
 
+    // and we need to set the cycle time
+    // currently just using the maximum value but some sort of fuzzy lowest common multiple might be better
+    // the easiest way to do that is to mutiply by an appropriate power of 10 with nearest number rounding (int(v * 10000 + 0.5)) to make the numbers into integers and then use an integer formula and convert back
+    // using std::lcm from numeric with accumulate so it works on a container (a std::set makes sense for longer lists perhas)
+    // std::vector<int> v{4, 6, 10};
+    // auto lcm = std::accumulate(v.begin(), v.end(), 1, [](auto & a, auto & b) { return std::lcm(a, b); });
+    m_CycleTime = 0;
+    for (auto &&driver : m_DriverList)
+    {
+        CyclicDriver *cyclicDriver = dynamic_cast<CyclicDriver*>(driver.second.get());
+        if (cyclicDriver) m_CycleTime = std::max(cyclicDriver->GetCycleTime(), m_CycleTime);
+        StackedBoxcarDriver *stackedBoxcarDriver = dynamic_cast<StackedBoxcarDriver*>(driver.second.get());
+        if (stackedBoxcarDriver) m_CycleTime = std::max(stackedBoxcarDriver->GetCycleTime(), m_CycleTime);
+    }
 #ifdef OUTPUTS_AFTER_SIMULATION_STEP
     if (m_OutputModelStateAtTime == 0.0 || m_OutputModelStateAtCycle == 0)
     {
@@ -1246,7 +1261,13 @@ std::string Simulation::SaveToXML()
     for (auto &&it : m_DriverList) { it.second->saveToAttributes(); m_parseXML.AddElement("DRIVER"s, it.second->attributeMap()); }
     for (auto &&it : m_DataTargetList) { it.second->saveToAttributes(); m_parseXML.AddElement("DATATARGET"s, it.second->attributeMap()); }
 
-    return m_parseXML.SaveModel();
+    std::stringstream comment;
+    comment << "Simulation Time: " << m_SimulationTime <<
+               " Steps: " << m_StepCount <<
+               " Score: " << CalculateInstantaneousFitness() <<
+               " Mechanical Energy: " << m_MechanicalEnergy <<
+               " Metabolic Energy: " << m_MetabolicEnergy;
+    return m_parseXML.SaveModel(comment.str());
 }
 
 // output the simulation state in an XML format that can be re-read

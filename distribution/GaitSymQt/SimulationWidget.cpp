@@ -799,16 +799,16 @@ int SimulationWidget::WriteCADFrame(const QString &pathname)
     {
         if (QDir().mkdir(pathname) == false)
         {
-            QMessageBox::warning(nullptr, "Snapshot Error", QString("Could not create folder '%1' for OBJ files\n").arg(pathname), "Click button to return to simulation");
+            QMessageBox::warning(nullptr, "Snapshot Error", QString("Could not create folder '%1' for OBJ files\nClick button to return to simulation").arg(pathname));
             return __LINE__;
         }
     }
     QDir::setCurrent(pathname);
 
     int meshCount = 0;
-    for (auto drawableIter : m_drawables)
+    for (auto &&drawableIter : m_drawables)
     {
-        for (auto facetedObjectIter : drawableIter->facetedObjectList())
+        for (auto &&facetedObjectIter : drawableIter->facetedObjectList())
         {
             if (facetedObjectIter->GetNumVertices())
             {
@@ -852,8 +852,7 @@ bool SimulationWidget::DeleteDrawBody(const std::string &bodyName)
 {
     auto drawBodyMapIter = m_drawBodyMap.find(bodyName);
     if (drawBodyMapIter == m_drawBodyMap.end()) return false;
-    delete drawBodyMapIter->second;
-    drawBodyMapIter = m_drawBodyMap.erase(drawBodyMapIter);
+    m_drawBodyMap.erase(drawBodyMapIter);
     return true;
 }
 
@@ -868,21 +867,19 @@ void SimulationWidget::drawModel()
         auto found = bodyList->find(drawBodyMapIter->first);
         if (found == bodyList->end() || found->second->redraw() == true)
         {
-            delete drawBodyMapIter->second;
             drawBodyMapIter = m_drawBodyMap.erase(drawBodyMapIter);
         }
         else drawBodyMapIter++;
     }
     for (auto &&iter : *bodyList)
     {
-        std::map<std::string, DrawBody *>::iterator it = m_drawBodyMap.find(iter.first);
+        auto it = m_drawBodyMap.find(iter.first);
         if (it == m_drawBodyMap.end() || it->second->body() != iter.second.get())
         {
-            if (it != m_drawBodyMap.end()) delete it->second;
-            DrawBody *drawBody = new DrawBody();
+            auto drawBody = std::make_unique<DrawBody>();
             drawBody->setBody(iter.second.get());
             drawBody->initialise(this);
-            m_drawBodyMap[iter.first] = drawBody;
+            m_drawBodyMap[iter.first] = std::move(drawBody);
             it = m_drawBodyMap.find(iter.first);
         }
         it->second->updateEntityPose();
@@ -900,21 +897,19 @@ void SimulationWidget::drawModel()
         auto found = jointList->find(drawJointMapIter->first);
         if (found == jointList->end() || found->second->redraw() == true)
         {
-            delete drawJointMapIter->second;
             drawJointMapIter = m_drawJointMap.erase(drawJointMapIter);
         }
         else drawJointMapIter++;
     }
     for (auto &&iter : *jointList)
     {
-        std::map<std::string, DrawJoint *>::iterator it = m_drawJointMap.find(iter.first);
+        auto it = m_drawJointMap.find(iter.first);
         if (it == m_drawJointMap.end() || it->second->joint() != iter.second.get())
         {
-            if (it != m_drawJointMap.end()) delete it->second;
-            DrawJoint *drawJoint = new DrawJoint();
+            auto drawJoint = std::make_unique<DrawJoint>();
             drawJoint->setJoint(iter.second.get());
             drawJoint->initialise(this);
-            m_drawJointMap[iter.first] = drawJoint;
+            m_drawJointMap[iter.first] = std::move(drawJoint);
             it = m_drawJointMap.find(iter.first);
         }
         it->second->updateEntityPose();
@@ -929,7 +924,6 @@ void SimulationWidget::drawModel()
         auto found = geomList->find(drawGeomMapIter->first);
         if (found == geomList->end() || found->second->redraw() == true)
         {
-            delete drawGeomMapIter->second;
             drawGeomMapIter = m_drawGeomMap.erase(drawGeomMapIter);
         }
         else drawGeomMapIter++;
@@ -939,11 +933,10 @@ void SimulationWidget::drawModel()
         auto it = m_drawGeomMap.find(iter.first);
         if (it == m_drawGeomMap.end() || it->second->geom() != iter.second.get())
         {
-            if (it != m_drawGeomMap.end()) delete it->second;
-            DrawGeom *drawGeom = new DrawGeom();
+            auto drawGeom = std::make_unique<DrawGeom>();
             drawGeom->setGeom(iter.second.get());
             drawGeom->initialise(this);
-            m_drawGeomMap[iter.first] = drawGeom;
+            m_drawGeomMap[iter.first] = std::move(drawGeom);
             it = m_drawGeomMap.find(iter.first);
         }
         it->second->updateEntityPose();
@@ -958,7 +951,6 @@ void SimulationWidget::drawModel()
         auto found = markerList->find(drawMarkerMapIter->first);
         if (found == markerList->end() || found->second->redraw() == true)
         {
-            delete drawMarkerMapIter->second;
             drawMarkerMapIter = m_drawMarkerMap.erase(drawMarkerMapIter);
         }
         else drawMarkerMapIter++;
@@ -968,11 +960,10 @@ void SimulationWidget::drawModel()
         auto it = m_drawMarkerMap.find(iter.first);
         if (it == m_drawMarkerMap.end() || it->second->marker() != iter.second.get())
         {
-            if (it != m_drawMarkerMap.end()) delete it->second;
-            DrawMarker *drawMarker = new DrawMarker();
+            auto drawMarker = std::make_unique<DrawMarker>();
             drawMarker->setMarker(iter.second.get());
             drawMarker->initialise(this);
-            m_drawMarkerMap[iter.first] = drawMarker;
+            m_drawMarkerMap[iter.first] = std::move(drawMarker);
             it = m_drawMarkerMap.find(iter.first);
         }
         it->second->updateEntityPose();
@@ -987,7 +978,6 @@ void SimulationWidget::drawModel()
         auto found = muscleList->find(drawMuscleMapIter->first);
         if (found == muscleList->end() || found->second->redraw() == true || found->second->GetStrap()->redraw() == true)
         {
-            delete drawMuscleMapIter->second;
             drawMuscleMapIter = m_drawMuscleMap.erase(drawMuscleMapIter);
         }
         else drawMuscleMapIter++;
@@ -997,11 +987,10 @@ void SimulationWidget::drawModel()
         auto it = m_drawMuscleMap.find(iter.first);
         if (it == m_drawMuscleMap.end() || it->second->muscle() != iter.second.get())
         {
-            if (it != m_drawMuscleMap.end()) delete it->second;
-            DrawMuscle *drawMuscle = new DrawMuscle();
+            auto drawMuscle = std::make_unique<DrawMuscle>();
             drawMuscle->setMuscle(iter.second.get());
             drawMuscle->initialise(this);
-            m_drawMuscleMap[iter.first] = drawMuscle;
+            m_drawMuscleMap[iter.first] = std::move(drawMuscle);
             it = m_drawMuscleMap.find(iter.first);
         }
         it->second->setVisible(iter.second->visible());
@@ -1015,7 +1004,6 @@ void SimulationWidget::drawModel()
         auto found = fluidSacList->find(drawFluidSacMapIter->first);
         if (found == fluidSacList->end() || found->second->redraw() == true)
         {
-            delete drawFluidSacMapIter->second;
             drawFluidSacMapIter = m_drawFluidSacMap.erase(drawFluidSacMapIter);
         }
         else drawFluidSacMapIter++;
@@ -1025,11 +1013,10 @@ void SimulationWidget::drawModel()
         auto it = m_drawFluidSacMap.find(iter.first);
         if (it == m_drawFluidSacMap.end() || it->second->fluidSac() != iter.second.get())
         {
-            if (it != m_drawFluidSacMap.end()) delete it->second;
-            DrawFluidSac *drawFluidSac = new DrawFluidSac();
+            auto drawFluidSac = std::make_unique<DrawFluidSac>();
             drawFluidSac->setFluidSac(iter.second.get());
             drawFluidSac->initialise(this);
-            m_drawFluidSacMap[iter.first] = drawFluidSac;
+            m_drawFluidSacMap[iter.first] = std::move(drawFluidSac);
             it = m_drawFluidSacMap.find(iter.first);
         }
         it->second->setVisible(iter.second->visible());
@@ -1037,12 +1024,12 @@ void SimulationWidget::drawModel()
     }
 
     m_drawables.clear();
-    for (auto &&it : m_drawBodyMap) m_drawables.push_back(it.second);
-    for (auto &&it : m_drawJointMap) m_drawables.push_back(it.second);
-    for (auto &&it : m_drawGeomMap) m_drawables.push_back(it.second);
-    for (auto &&it : m_drawMarkerMap) m_drawables.push_back(it.second);
-    for (auto &&it : m_drawMuscleMap) m_drawables.push_back(it.second);
-    for (auto &&it : m_drawFluidSacMap) m_drawables.push_back(it.second);
+    for (auto &&it : m_drawBodyMap) m_drawables.push_back(it.second.get());
+    for (auto &&it : m_drawJointMap) m_drawables.push_back(it.second.get());
+    for (auto &&it : m_drawGeomMap) m_drawables.push_back(it.second.get());
+    for (auto &&it : m_drawMarkerMap) m_drawables.push_back(it.second.get());
+    for (auto &&it : m_drawMuscleMap) m_drawables.push_back(it.second.get());
+    for (auto &&it : m_drawFluidSacMap) m_drawables.push_back(it.second.get());
 }
 
 const IntersectionHits *SimulationWidget::getClosestHit() const
@@ -1176,24 +1163,13 @@ bool SimulationWidget::intersectModel(float winX, float winY)
         }
     }
 
-#ifdef QT_DEBUG
+#if defined(GAITSYM_DEBUG_BUILD)
     qDebug() << "SimulationWidget::intersectModel m_hits.size() = " << m_hits.size();
     qDebug() << "SimulationWidget::intersectModel unsorted";
     for (size_t i = 0; i < m_hits.size(); i++)
     {
         std::stringstream ss;
-        if (dynamic_cast<DrawBody *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " body " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawFluidSac *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " fluidSac " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawGeom *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " geom " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawJoint *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " joint " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawMarker *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " marker " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawMuscle *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " " << m_hits[i]->drawable()->name();
+        ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " " << m_hits[i]->drawable()->className() << " " << m_hits[i]->drawable()->name();
         qDebug() << ss.str().c_str();
     }
 #endif
@@ -1207,56 +1183,45 @@ bool SimulationWidget::intersectModel(float winX, float winY)
     // and using the comparison on mhits means that m_hitsIndexByZ gets sorted in the order of m_hits
     std::stable_sort(m_hitsIndexByZ.begin(), m_hitsIndexByZ.end(), [this](const size_t i1, const size_t i2) { return m_hits[i1]->screenLocation().z < m_hits[i2]->screenLocation().z; });
 
-    #ifdef QT_DEBUG
+#if defined(GAITSYM_DEBUG_BUILD)
     qDebug() << "SimulationWidget::intersectModel sorted";
     for (size_t j = 0; j < m_hits.size(); j++)
     {
         std::stringstream ss;
         size_t i = m_hitsIndexByZ[j];
-        if (dynamic_cast<DrawBody *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " body " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawFluidSac *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " fluidSac " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawGeom *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " geom " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawJoint *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " joint " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawMarker *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " marker " << m_hits[i]->drawable()->name();
-        if (dynamic_cast<DrawMuscle *>(m_hits[i]->drawable()))
-            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " " << m_hits[i]->drawable()->name();
+        ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " " << m_hits[i]->drawable()->className() << " " << m_hits[i]->drawable()->name();
         qDebug() << ss.str().c_str();
     }
 #endif
     return (m_hits.size() != 0);
 }
 
-std::map<std::string, DrawMarker *> *SimulationWidget::getDrawMarkerMap()
+std::map<std::string, std::unique_ptr<DrawMarker>> *SimulationWidget::getDrawMarkerMap()
 {
     return &m_drawMarkerMap;
 }
 
-std::map<std::string, DrawFluidSac *> *SimulationWidget::getDrawFluidSacMap()
+std::map<std::string, std::unique_ptr<DrawFluidSac>> *SimulationWidget::getDrawFluidSacMap()
 {
     return &m_drawFluidSacMap;
 }
 
-std::map<std::string, DrawMuscle *> *SimulationWidget::getDrawMuscleMap()
+std::map<std::string, std::unique_ptr<DrawMuscle>> *SimulationWidget::getDrawMuscleMap()
 {
     return &m_drawMuscleMap;
 }
 
-std::map<std::string, DrawGeom *> *SimulationWidget::getDrawGeomMap()
+std::map<std::string, std::unique_ptr<DrawGeom>> *SimulationWidget::getDrawGeomMap()
 {
     return &m_drawGeomMap;
 }
 
-std::map<std::string, DrawJoint *> *SimulationWidget::getDrawJointMap()
+std::map<std::string, std::unique_ptr<DrawJoint>> *SimulationWidget::getDrawJointMap()
 {
     return &m_drawJointMap;
 }
 
-std::map<std::string, DrawBody *> *SimulationWidget::getDrawBodyMap()
+std::map<std::string, std::unique_ptr<DrawBody>> *SimulationWidget::getDrawBodyMap()
 {
     return &m_drawBodyMap;
 }

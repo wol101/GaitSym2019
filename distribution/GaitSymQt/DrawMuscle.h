@@ -27,6 +27,7 @@ class DrawMuscle : public Drawable
 {
 public:
     DrawMuscle();
+    virtual ~DrawMuscle();
 
     virtual void initialise(SimulationWidget *simulationWidget);
     virtual void Draw();

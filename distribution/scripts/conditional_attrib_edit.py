@@ -14,7 +14,7 @@ def conditional_attrib_edit():
     parser.add_argument("-o", "--output_xml_file", required=True, help="the output GaitSym2019 XML config file")
     parser.add_argument("-ct", "--condition_tag", required=True, help="the tag to match to allow change (regex search)")
     parser.add_argument("-ca", "--condition_attrib", required=True, help="the attribute to match to allow change (regex search)")
-    parser.add_argument("-cav", "--condition_attrib_value", required=True, help="the attribute to match to allow change (regex search)")
+    parser.add_argument("-cav", "--condition_attrib_value", required=True, help="the attribute value to match to allow change (regex search)")
     parser.add_argument("-ac", "--attrib_to_change", required=True, help="the attribute to change or create (exact)")
     parser.add_argument("-av", "--attrib_new_value", required=True, help="the attribute new value (exact)")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")

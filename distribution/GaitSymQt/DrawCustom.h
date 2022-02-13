@@ -9,6 +9,7 @@ class DrawCustom : public Drawable
 {
 public:
     DrawCustom();
+    virtual ~DrawCustom();
 
     virtual void initialise(SimulationWidget *simulationWidget);
     virtual void Draw();

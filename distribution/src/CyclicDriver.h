@@ -31,6 +31,8 @@ public:
     std::vector<double> durationList() const;
     void setDurationList(const std::vector<double> &durationList);
 
+    double GetCycleTime() const;
+
 private:
 
     std::vector<double> m_valueList;

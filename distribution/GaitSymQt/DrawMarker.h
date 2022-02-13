@@ -21,6 +21,7 @@ class DrawMarker : public Drawable
 {
 public:
     DrawMarker();
+    virtual ~DrawMarker();
 
     virtual void initialise(SimulationWidget *simulationWidget);
     virtual void Draw();

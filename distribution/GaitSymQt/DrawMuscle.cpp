@@ -32,6 +32,10 @@
 
 DrawMuscle::DrawMuscle()
 {
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    m_objectCountAtCreation = m_objectCount++;
+    std::cerr << m_objectCountAtCreation << " " << className() << " constructed\n";;
+#endif
     m_strapRadius = Preferences::valueDouble("StrapRadius");
     m_strapNumSegments = size_t(Preferences::valueInt("StrapSegments"));
     m_strapCylinderLength = Preferences::valueDouble("StrapCylinderLength");
@@ -44,6 +48,13 @@ DrawMuscle::DrawMuscle()
     m_strapColor = Preferences::valueQColor("StrapColour");
     m_strapCylinderColor = Preferences::valueQColor("StrapCylinderColour");
     m_strapColourMap = Colour::ColourMap(Preferences::valueInt("StrapColourMap"));
+}
+
+DrawMuscle::~DrawMuscle()
+{
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    std::cerr << m_objectCountAtCreation << " " << className() << " destructed\n";;
+#endif
 }
 
 std::string DrawMuscle::name()

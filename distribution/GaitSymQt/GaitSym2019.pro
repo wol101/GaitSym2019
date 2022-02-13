@@ -125,10 +125,11 @@ unix:!macx {
 
 CONFIG(debug, debug|release) {
     message(Debug build)
+    DEFINES += GAITSYM_DEBUG_BUILD
 }
 CONFIG(release, debug|release) {
     message(Release build)
-    DEFINES += dNODEBUG NDEBUG
+    DEFINES += dNODEBUG NDEBUG GAITSYM_RELEASE_BUILD
 }
 
 SOURCES += \

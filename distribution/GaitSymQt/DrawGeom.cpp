@@ -34,11 +34,22 @@
 
 DrawGeom::DrawGeom()
 {
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    m_objectCountAtCreation = m_objectCount++;
+    std::cerr << m_objectCountAtCreation << " " << className() << " constructed\n";;
+#endif
     m_geomColor1 = Preferences::valueQColor("GeomColour1");
     m_geomColor2 = Preferences::valueQColor("GeomColour2");
     m_geomSegments = size_t(Preferences::valueInt("GeomSegments"));
     m_geomSize1 = Preferences::valueDouble("GeomSize1");
     m_geomSize2 = Preferences::valueDouble("GeomSize2");
+}
+
+DrawGeom::~DrawGeom()
+{
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    std::cerr << m_objectCountAtCreation << " " << className() << " destructed\n";;
+#endif
 }
 
 std::string DrawGeom::name()

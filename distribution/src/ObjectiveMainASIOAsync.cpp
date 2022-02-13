@@ -121,7 +121,7 @@ int ObjectiveMainASIOAsync::Run()
     {
         // construct the new thread and run it
         double score = 0;
-        uint32_t runID = 0;
+        uint32_t runID = std::numeric_limits<uint32_t>::max() - 1;
         uint64_t evolveIdentifier = 0;
         std::string xmlCopy;
         if (m_lastGenomeValid && m_XMLConverter.BaseXMLString().size())
@@ -292,6 +292,11 @@ int ObjectiveMainASIOAsync::ReadGenome(std::string host, uint16_t port, std::str
         std::cerr << "ReadGenome reply.size() < sizeof(DataMessage)\n";
         return __LINE__;
     }
+    if (strncmp(reply.data(), "genome", 16) != 0)
+    {
+        std::cerr << "ReadGenome strncmp(reply.data(), \"genome\", 16) != 0\n";
+        return __LINE__;
+    }
     const DataMessage *dataMessagePtr = reinterpret_cast<const DataMessage *>(reply.data());
     if (m_debug) std::cerr << "ReadGenome " << dataMessagePtr->text << " received\n"
                            << "senderIP = " << dataMessagePtr->senderIP
@@ -363,6 +368,11 @@ int ObjectiveMainASIOAsync::ReadXML(std::string host, uint16_t port, std::string
     if (reply.size() < sizeof(DataMessage) + dataMessagePtr->xmlLength * sizeof(char))
     {
         std::cerr << "ReadXML reply.size() < sizeof(DataMessage) + dataMessagePtr->xmlLength * sizeof(char)\n";
+        return __LINE__;
+    }
+    if (strncmp(reply.data(), "xml", 16) != 0)
+    {
+        std::cerr << "ReadXML strncmp(reply.data(), \"xml\", 16) != 0\n";
         return __LINE__;
     }
 

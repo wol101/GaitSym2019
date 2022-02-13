@@ -137,3 +137,14 @@ void CyclicDriver::setDurationList(const std::vector<double> &durationList)
 {
     m_durationList = durationList;
 }
+
+double CyclicDriver::GetCycleTime() const
+{
+    double cycleTime = 0;
+    for (auto &&duration : m_durationList)
+    {
+        cycleTime += duration;
+    }
+    return cycleTime;
+}
+

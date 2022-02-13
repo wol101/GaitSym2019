@@ -23,13 +23,13 @@
 #include <QColorSpace>
 #endif
 
-#if defined(QT_DEBUG) && defined(Q_OS_WIN)
+#if defined(GAITSYM_DEBUG_BUILD) && defined(Q_OS_WIN)
 #include <crtdbg.h>
 #endif
 
 int main(int argc, char *argv[])
 {
-#if defined(QT_DEBUG) && defined(Q_OS_WIN)
+#if defined(GAITSYM_DEBUG_BUILD) && defined(Q_OS_WIN)
 //    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
 //    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_1024_DF);
 #endif
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 #else
     fmt.setColorSpace(QColorSpace(QColorSpace::SRgb));
 #endif
-#ifdef QT_DEBUG
+#if defined(GAITSYM_DEBUG_BUILD)
     fmt.setOption(QSurfaceFormat::DebugContext, true);
 #endif
     QSurfaceFormat::setDefaultFormat(fmt);

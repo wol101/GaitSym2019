@@ -25,6 +25,7 @@ class DrawFluidSac : public Drawable
 {
 public:
     DrawFluidSac();
+    ~DrawFluidSac();
 
     virtual void initialise(SimulationWidget *simulationWidget);
     virtual void Draw();

@@ -20,18 +20,15 @@
 
 #include <cfloat>
 
+#if QT_VERSION < 0x060000
+#define QMetaType(x) (x)
+#endif
+
 const QString Preferences::applicationName("GaitSym2019");
 const QString Preferences::organizationName("AnimalSimulationLaboratory");
-QSettings *Preferences::m_qtSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, Preferences::organizationName, Preferences::applicationName);
+QSettings g_qtSettings(QSettings::IniFormat, QSettings::UserScope, Preferences::getOrganizationName(), Preferences::getApplicationName());
+QSettings *Preferences::m_qtSettings = &g_qtSettings;
 QMap<QString, SettingsItem> Preferences::m_settings;
-
-Preferences::Preferences()
-{
-}
-
-Preferences::~Preferences()
-{
-}
 
 void Preferences::Write()
 {
@@ -82,7 +79,11 @@ void Preferences::Export(const QString &filename)
         setting.setAttribute("display", QString::number(item.display));
         setting.setAttribute("label", item.label);
 
+#if QT_VERSION < 0x060000
         QMetaType::Type type = static_cast<QMetaType::Type>(item.value.type());
+#else
+        QMetaType::Type type = static_cast<QMetaType::Type>(item.value.typeId());
+#endif
         switch (type)
         {
         case QMetaType::QByteArray:
@@ -170,7 +171,6 @@ void Preferences::ParseQDomElement(const QDomElement &docElem)
     }
 
     SettingsItem item;
-    QString key;
     QDomNode n = docElem.firstChild();
     while (!n.isNull())
     {
@@ -181,7 +181,11 @@ void Preferences::ParseQDomElement(const QDomElement &docElem)
             {
                 item.key = e.attribute("key");
                 QString typeName = e.attribute("type");
+#if QT_VERSION < 0x060000
                 item.type = static_cast<QMetaType::Type>(QVariant::nameToType(typeName.toUtf8()));
+#else
+                item.type = static_cast<QMetaType::Type>(QMetaType::fromName(typeName.toUtf8()).id());
+#endif
                 item.display = toBool(e.attribute("display"));
                 item.label = e.attribute("label");
                 switch (item.type)
@@ -235,10 +239,10 @@ void Preferences::ParseQDomElement(const QDomElement &docElem)
                     else item.minimumValue = -FLT_MAX;
                     if (e.hasAttribute("maximumValue")) item.maximumValue = e.attribute("maximumValue");
                     else item.maximumValue = FLT_MAX;
-                    item.value.convert(item.type);
-                    item.defaultValue.convert(item.type);
-                    item.minimumValue.convert(item.type);
-                    item.maximumValue.convert(item.type);
+                    item.value.convert(QMetaType(item.type));
+                    item.defaultValue.convert(QMetaType(item.type));
+                    item.minimumValue.convert(QMetaType(item.type));
+                    item.maximumValue.convert(QMetaType(item.type));
                     break;
                 case QMetaType::Double:
                     item.value = e.attribute("value");
@@ -247,10 +251,10 @@ void Preferences::ParseQDomElement(const QDomElement &docElem)
                     else item.minimumValue = -DBL_MAX;
                     if (e.hasAttribute("maximumValue")) item.maximumValue = e.attribute("maximumValue");
                     else item.maximumValue = DBL_MAX;
-                    item.value.convert(item.type);
-                    item.defaultValue.convert(item.type);
-                    item.minimumValue.convert(item.type);
-                    item.maximumValue.convert(item.type);
+                    item.value.convert(QMetaType(item.type));
+                    item.defaultValue.convert(QMetaType(item.type));
+                    item.minimumValue.convert(QMetaType(item.type));
+                    item.maximumValue.convert(QMetaType(item.type));
                     break;
                 case QMetaType::Int:
                     item.value = e.attribute("value");
@@ -259,16 +263,16 @@ void Preferences::ParseQDomElement(const QDomElement &docElem)
                     else item.minimumValue = INT_MIN;
                     if (e.hasAttribute("maximumValue")) item.maximumValue = e.attribute("maximumValue");
                     else item.maximumValue = INT_MAX;
-                    item.value.convert(item.type);
-                    item.defaultValue.convert(item.type);
-                    item.minimumValue.convert(item.type);
-                    item.maximumValue.convert(item.type);
+                    item.value.convert(QMetaType(item.type));
+                    item.defaultValue.convert(QMetaType(item.type));
+                    item.minimumValue.convert(QMetaType(item.type));
+                    item.maximumValue.convert(QMetaType(item.type));
                     break;
                 default:
                     item.value = e.attribute("value");
                     item.defaultValue = e.attribute("defaultValue");
-                    item.value.convert(item.type);
-                    item.defaultValue.convert(item.type);
+                    item.value.convert(QMetaType(item.type));
+                    item.defaultValue.convert(QMetaType(item.type));
                 }
                 m_settings[item.key] = item;
             }
@@ -352,6 +356,62 @@ const QVector3D Preferences::valueQVector3D(const QString &key)
     QVector3D v;
     if (m_settings.contains(key)) v = qvariant_cast<QVector3D>(m_settings.value(key).value);
     else insert(key, v);
+    return v;
+}
+
+const QVariant Preferences::valueQVariant(const QString &key, QVariant defaultValue)
+{
+    QVariant v = defaultValue;
+    if (m_settings.contains(key)) v = m_settings.value(key).value;
+    else insert(key, v, defaultValue);
+    return v;
+}
+
+const QString Preferences::valueQString(const QString &key, QString defaultValue)
+{
+    QString v = defaultValue;
+    if (m_settings.contains(key)) v = m_settings.value(key).value.toString();
+    else insert(key, v, defaultValue);
+    return v;
+}
+
+const QColor Preferences::valueQColor(const QString &key, QColor defaultValue)
+{
+    QColor v = defaultValue;
+    if (m_settings.contains(key)) v = qvariant_cast<QColor>(m_settings.value(key).value);
+    else insert(key, v, defaultValue);
+    return v;
+}
+
+const QFont Preferences::valueQFont(const QString &key, QFont defaultValue)
+{
+    QFont v = defaultValue;
+    if (m_settings.contains(key)) v = qvariant_cast<QFont>(m_settings.value(key).value);
+    else insert(key, v, defaultValue);
+    return v;
+}
+
+const QByteArray Preferences::valueQByteArray(const QString &key, QByteArray defaultValue)
+{
+    QByteArray v = defaultValue;
+    if (m_settings.contains(key)) v = qvariant_cast<QByteArray>(m_settings.value(key).value);
+    else insert(key, v, defaultValue);
+    return v;
+}
+
+const QVector2D Preferences::valueQVector2D(const QString &key, QVector2D defaultValue)
+{
+    QVector2D v = defaultValue;
+    if (m_settings.contains(key)) v = qvariant_cast<QVector2D>(m_settings.value(key).value);
+    else insert(key, v, defaultValue);
+    return v;
+}
+
+const QVector3D Preferences::valueQVector3D(const QString &key, QVector3D defaultValue)
+{
+    QVector3D v = defaultValue;
+    if (m_settings.contains(key)) v = qvariant_cast<QVector3D>(m_settings.value(key).value);
+    else insert(key, v, defaultValue);
     return v;
 }
 
@@ -446,14 +506,19 @@ void Preferences::insert(const QString &key, const QVariant &value)
     }
     else
     {
-        if (static_cast<QMetaType::Type>(value.type()) != QMetaType::QByteArray)
+#if QT_VERSION < 0x060000
+        auto typeID = value.type();
+#else
+        auto typeID = value.typeId();
+#endif
+        if (static_cast<QMetaType::Type>(typeID) != QMetaType::QByteArray)
             qDebug("Preferences::value %s \"%s\" missing", value.typeName(), qUtf8Printable(key));
         item.key = key;
         item.display = false;
         item.label = key;
         item.value = value;
-        item.type = static_cast<QMetaType::Type>(value.type());
-        item.defaultValue = QVariant(value.type());
+        item.type = static_cast<QMetaType::Type>(typeID);
+        item.defaultValue = QVariant(typeID);
         switch (item.type)
         {
         case QMetaType::Double:
@@ -488,11 +553,16 @@ void Preferences::insert(const QString &key, const QVariant &value, const QVaria
     }
     else
     {
+#if QT_VERSION < 0x060000
+        auto typeID = value.type();
+#else
+        auto typeID = value.typeId();
+#endif
         item.key = key;
         item.display = false;
         item.label = key;
         item.value = value;
-        item.type = static_cast<QMetaType::Type>(value.type());
+        item.type = static_cast<QMetaType::Type>(typeID);
         item.defaultValue = defaultValue;
         switch (item.type)
         {
@@ -519,8 +589,8 @@ void Preferences::insert(const QString &key, const QVariant &value, const QVaria
 void Preferences::setQtValue(const QString &key, const QVariant &value)
 {
     Q_ASSERT(m_qtSettings);
-    QString newKey1 = QString("%1_key_%2").arg(applicationName).arg(key);
-    QString newKey2 = QString("%1_type_%2").arg(applicationName).arg(key);
+    QString newKey1 = QString("%1_key_%2").arg(applicationName, key);
+    QString newKey2 = QString("%1_type_%2").arg(applicationName, key);
     m_qtSettings->setValue(newKey1, value);
     m_qtSettings->setValue(newKey2, value.typeName()); // we have to do this because some settings formats lose the explicit type
 }
@@ -529,15 +599,19 @@ QVariant Preferences::qtValue(const QString &key, const QVariant &defaultValue)
 {
     Q_ASSERT(m_qtSettings);
     QVariant variant = defaultValue;
-    QString newKey1 = QString("%1_key_%2").arg(applicationName).arg(key);
-    QString newKey2 = QString("%1_type_%2").arg(applicationName).arg(key);
+    QString newKey1 = QString("%1_key_%2").arg(applicationName, key);
+    QString newKey2 = QString("%1_type_%2").arg(applicationName, key);
     if (m_qtSettings->contains(newKey1))
     {
         variant = m_qtSettings->value(newKey1);
         if (m_qtSettings->contains(newKey2))
         {
             QString typeName = m_qtSettings->value(newKey2).toString();
+#if QT_VERSION < 0x060000
             variant.convert(QVariant::nameToType(typeName.toUtf8())); // convert to the type stored in the settings
+#else
+            variant.convert(QMetaType::fromName(typeName.toUtf8())); // convert to the type stored in the settings
+#endif
         }
         else
         {
@@ -583,4 +657,14 @@ QString Preferences::fileName()
 {
     Q_ASSERT(m_qtSettings);
     return m_qtSettings->fileName();
+}
+
+const QString &Preferences::getApplicationName()
+{
+    return applicationName;
+}
+
+const QString &Preferences::getOrganizationName()
+{
+    return organizationName;
 }

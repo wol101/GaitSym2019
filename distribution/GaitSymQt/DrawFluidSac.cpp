@@ -19,12 +19,23 @@
 
 DrawFluidSac::DrawFluidSac()
 {
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    m_objectCountAtCreation = m_objectCount++;
+    std::cerr << m_objectCountAtCreation << " " << className() << " constructed\n";;
+#endif
     m_fluidSacColour = Preferences::valueQColor("FluidSacColour");
     m_fluidSacForceColour = Preferences::valueQColor("FluidSacForceColour");
     m_displayFluidSacForces = Preferences::valueBool("DisplayFluidSacForces");
     m_fluidSacForceScale = Preferences::valueDouble("FluidSacForceScale");
     m_fluidSacForceRadius = Preferences::valueDouble("FluidSacForceRadius");
     m_fluidSacForceSegments = size_t(Preferences::valueInt("FluidSacForceSegments"));
+}
+
+DrawFluidSac::~DrawFluidSac()
+{
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    std::cerr << m_objectCountAtCreation << " " << className() << " destructed\n";;
+#endif
 }
 
 std::string DrawFluidSac::name()

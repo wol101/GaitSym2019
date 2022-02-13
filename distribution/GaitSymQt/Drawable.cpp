@@ -18,14 +18,25 @@
 #include <cxxabi.h>
 #endif
 
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+uint64_t Drawable::m_objectCount = 0;
+#endif
+
 Drawable::Drawable()
 {
-
+//    this doesn't work because during the constructor we know nothing about derived classes
+//#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+//    m_objectCountAtCreation = m_objectCount++;
+//    std::cerr << m_objectCountAtCreation << " " << className() << " constructed\n";;
+//#endif
 }
 
 Drawable::~Drawable()
 {
-
+//    this doesn't work because during the destructor we know nothing about derived classes
+//#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+//    std::cerr << m_objectCountAtCreation << " " << className() << " destructed\n";;
+//#endif
 }
 
 void Drawable::SetDisplayPosition(double x, double y, double z)

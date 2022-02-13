@@ -18,11 +18,22 @@
 
 DrawBody::DrawBody()
 {
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    m_objectCountAtCreation = m_objectCount++;
+    std::cerr << m_objectCountAtCreation << " " << className() << " constructed\n";;
+#endif
     m_meshSearchPath.append(".");
     m_bodyAxesSize = Preferences::valueDouble("BodyAxesSize");
     m_bodyColour1 = Preferences::valueQColor("BodyColour1");
     m_bodyColour2 = Preferences::valueQColor("BodyColour2");
     m_bodyColour3 = Preferences::valueQColor("BodyColour3");
+}
+
+DrawBody::~DrawBody()
+{
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    std::cerr << m_objectCountAtCreation << " " << className() << " destructed\n";;
+#endif
 }
 
 std::string DrawBody::name()

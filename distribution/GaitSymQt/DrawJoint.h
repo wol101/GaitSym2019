@@ -25,6 +25,7 @@ class DrawJoint : public Drawable
 {
 public:
     DrawJoint();
+    virtual ~DrawJoint();
 
     virtual void initialise(SimulationWidget *simulationWidget);
     virtual void Draw();

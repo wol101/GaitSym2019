@@ -89,14 +89,25 @@ std::string *ParseXML::LoadModel(const char *buffer, size_t length, const std::s
     return nullptr;
 }
 
-std::string ParseXML::SaveModel()
+std::string ParseXML::SaveModel(const std::string &comment)
 {
+    std::string xmlString;
     m_ouputConfigDoc.clear();
+
     // declaration first
     rapidxml::xml_node<char> *declarationNode = m_ouputConfigDoc.allocate_node(rapidxml::node_declaration);
     m_ouputConfigDoc.append_node(declarationNode); // must append the node before we start creating attributes
     CreateXMLAttribute(declarationNode, "version"s, "1.0"s, false); // note important that these are kept in this order
     CreateXMLAttribute(declarationNode, "encoding"s, "UTF-8"s, false);
+    rapidxml::print(std::back_inserter(xmlString), *declarationNode);
+
+    // now add the comment
+    if (comment.size())
+    {
+        xmlString.append("<!--");
+        xmlString.append(comment);
+        xmlString.append("-->\n");
+    }
 
     // create the root node
     rapidxml::xml_node<char> *rootNode = CreateXMLNode(&m_ouputConfigDoc, "GAITSYM2019"s);
@@ -112,8 +123,7 @@ std::string ParseXML::SaveModel()
     }
 
     // convert to string and output
-    std::string xmlString;
-    rapidxml::print(std::back_inserter(xmlString), m_ouputConfigDoc, rapidxml::print_lf_after_attrib | rapidxml::print_indent_with_spaces);
+    rapidxml::print(std::back_inserter(xmlString), *rootNode, rapidxml::print_lf_after_attrib | rapidxml::print_indent_with_spaces);
     return xmlString;
 }
 

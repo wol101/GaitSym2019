@@ -38,8 +38,12 @@ public:
     const std::vector<FacetedObject *> &facetedObjectList() const;
 
 protected:
-
     std::vector<FacetedObject *> m_facetedObjectList;
+
+#if defined(GAITSYM_DEBUG_BUILD) && defined(GAITSYM_MEMORY_ALLOCATION_DEBUG)
+    static uint64_t m_objectCount;
+    uint64_t m_objectCountAtCreation = 0;
+#endif
 };
 
 #endif // DRAWABLE_H

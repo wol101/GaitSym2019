@@ -42,9 +42,6 @@ struct SettingsItem
 class Preferences
 {
 public:
-    Preferences();
-    virtual ~Preferences();
-
     static void Read();
     static void Write();
     static void Export(const QString &filename);
@@ -63,6 +60,13 @@ public:
     static float valueFloat(const QString &key);
     static int valueInt(const QString &key);
     static bool valueBool(const QString &key);
+    static const QVariant valueQVariant(const QString &key, QVariant defaultValue);
+    static const QString valueQString(const QString &key, QString defaultValue);
+    static const QColor valueQColor(const QString &key, QColor defaultValue);
+    static const QFont valueQFont(const QString &key, QFont defaultValue);
+    static const QByteArray valueQByteArray(const QString &key, QByteArray defaultValue);
+    static const QVector2D valueQVector2D(const QString &key, QVector2D defaultValue);
+    static const QVector3D valueQVector3D(const QString &key, QVector3D defaultValue);
     static double valueDouble(const QString &key, double defaultValue);
     static float valueFloat(const QString &key, float defaultValue);
     static int valueInt(const QString &key, int defaultValue);
@@ -71,21 +75,13 @@ public:
     static void insert(const SettingsItem &item);
     static void insert(const QString &key, const QVariant &value);
     static void insert(const QString &key, const QVariant &value, const QVariant &defaultValue);
-//    static void value(const QString &key, QVariant *value);
-//    static void value(const QString &key, QString *value);
-//    static void value(const QString &key, QColor *value);
-//    static void value(const QString &key, QFont *value);
-//    static void value(const QString &key, QByteArray *value);
-//    static void value(const QString &key, QVector2D *value);
-//    static void value(const QString &key, QVector3D *value);
-//    static void value(const QString &key, double *value);
-//    static void value(const QString &key, float *value);
-//    static void value(const QString &key, int *value);
-//    static void value(const QString &key, bool *value);
 
     static bool contains(const QString &key);
     static QStringList keys();
     static QString fileName();
+
+    static const QString &getApplicationName();
+    static const QString &getOrganizationName();
 
 private:
 

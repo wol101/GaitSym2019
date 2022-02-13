@@ -4,6 +4,13 @@
 #include "PGDMath.h"
 #include "StrokeFont.h"
 #include "IntersectionHits.h"
+#include "DrawBody.h"
+#include "DrawJoint.h"
+#include "DrawMuscle.h"
+#include "DrawMarker.h"
+#include "DrawFluidSac.h"
+#include "DrawGeom.h"
+
 
 #include <QOpenGLWidget>
 #include <QElapsedTimer>
@@ -21,12 +28,6 @@ class Simulation;
 class FacetedObject;
 class Trackball;
 class AVIWriter;
-class DrawBody;
-class DrawJoint;
-class DrawMuscle;
-class DrawMarker;
-class DrawFluidSac;
-class DrawGeom;
 class MainWindow;
 class FacetedSphere;
 class Drawable;
@@ -166,12 +167,12 @@ public:
 
     QString getLastMenuItem() const;
 
-    std::map<std::string, DrawBody *> *getDrawBodyMap();
-    std::map<std::string, DrawJoint *> *getDrawJointMap();
-    std::map<std::string, DrawGeom *> *getDrawGeomMap();
-    std::map<std::string, DrawMuscle *> *getDrawMuscleMap();
-    std::map<std::string, DrawFluidSac *> *getDrawFluidSacMap();
-    std::map<std::string, DrawMarker *> *getDrawMarkerMap();
+    std::map<std::string, std::unique_ptr<DrawBody>> *getDrawBodyMap();
+    std::map<std::string, std::unique_ptr<DrawJoint>> *getDrawJointMap();
+    std::map<std::string, std::unique_ptr<DrawGeom>> *getDrawGeomMap();
+    std::map<std::string, std::unique_ptr<DrawMuscle>> *getDrawMuscleMap();
+    std::map<std::string, std::unique_ptr<DrawFluidSac>> *getDrawFluidSacMap();
+    std::map<std::string, std::unique_ptr<DrawMarker>> *getDrawMarkerMap();
 
 public slots:
     void cleanup();
@@ -265,12 +266,12 @@ private:
     int m_aviQuality = 80;
     unsigned int m_fps = 25;
 
-    std::map<std::string, DrawBody *> m_drawBodyMap;
-    std::map<std::string, DrawJoint *> m_drawJointMap;
-    std::map<std::string, DrawGeom *> m_drawGeomMap;
-    std::map<std::string, DrawMuscle *> m_drawMuscleMap;
-    std::map<std::string, DrawFluidSac *> m_drawFluidSacMap;
-    std::map<std::string, DrawMarker *> m_drawMarkerMap;
+    std::map<std::string, std::unique_ptr<DrawBody>> m_drawBodyMap;
+    std::map<std::string, std::unique_ptr<DrawJoint>> m_drawJointMap;
+    std::map<std::string, std::unique_ptr<DrawGeom>> m_drawGeomMap;
+    std::map<std::string, std::unique_ptr<DrawMuscle>> m_drawMuscleMap;
+    std::map<std::string, std::unique_ptr<DrawFluidSac>> m_drawFluidSacMap;
+    std::map<std::string, std::unique_ptr<DrawMarker>> m_drawMarkerMap;
     std::vector<Drawable *> m_drawables;
     bool m_drawBodyMesh1 = true;
     bool m_drawBodyMesh2 = false;

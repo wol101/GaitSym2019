@@ -192,7 +192,7 @@ void DialogCreateMirrorElements::apply()
 
     applyMirrorCreate(fromString, toString, axis);
 
-    std::string newXML = m_parseXML.SaveModel();
+    std::string newXML = m_parseXML.SaveModel("Created from DialogCreateMirrorElements::apply"s);
     ui->plainTextEdit->setPlainText(QString::fromStdString(newXML));
     if (localModified || (xml != newXML)) setModified(true);
 }

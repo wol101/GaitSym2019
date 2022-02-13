@@ -24,6 +24,7 @@ class DrawGeom : public Drawable
 {
 public:
     DrawGeom();
+    virtual ~DrawGeom();
 
     virtual void initialise(SimulationWidget *simulationWidget);
     virtual void Draw();

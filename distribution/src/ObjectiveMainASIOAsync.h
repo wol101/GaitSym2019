@@ -264,7 +264,7 @@ private:
 
     bool m_scoreToSend = false;
     double m_lastScore = 0;
-    uint32_t m_lastRunID = 0;
+    uint32_t m_lastRunID = std::numeric_limits<uint32_t>::max() - 2;
     uint64_t m_lastEvolveIdentifier = 0;
     std::string m_lastGenomeDataMessageRaw;
     bool m_lastGenomeValid = false;

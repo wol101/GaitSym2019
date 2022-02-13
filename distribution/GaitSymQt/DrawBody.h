@@ -25,6 +25,7 @@ class DrawBody : public Drawable
 {
 public:
     DrawBody();
+    virtual ~DrawBody();
 
     virtual void initialise(SimulationWidget *simulationWidget);
     virtual void Draw();
