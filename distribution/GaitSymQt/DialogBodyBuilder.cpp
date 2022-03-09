@@ -124,14 +124,14 @@ void DialogBodyBuilder::lateInitialise()
         ui->lineEditEulerX->setValue(eulerAngles.x);
         ui->lineEditEulerY->setValue(eulerAngles.y);
         ui->lineEditEulerZ->setValue(eulerAngles.z);
-        const double *velocity = m_inputBody->GetLinearVelocity();
-        ui->lineEditVX->setValue(velocity[0]);
-        ui->lineEditVY->setValue(velocity[1]);
-        ui->lineEditVZ->setValue(velocity[2]);
-        const double *angularV = m_inputBody->GetAngularVelocity();
-        ui->lineEditAVX->setValue(angularV[0]);
-        ui->lineEditAVY->setValue(angularV[1]);
-        ui->lineEditAVZ->setValue(angularV[2]);
+        const double *angularlinear = m_inputBody->GetLinearVelocity();
+        ui->lineEditVX->setValue(angularlinear[0]);
+        ui->lineEditVY->setValue(angularlinear[1]);
+        ui->lineEditVZ->setValue(angularlinear[2]);
+        const double *angularVelocity = m_inputBody->GetAngularVelocity();
+        ui->lineEditAVX->setValue(angularVelocity[0]);
+        ui->lineEditAVY->setValue(angularVelocity[1]);
+        ui->lineEditAVZ->setValue(angularVelocity[2]);
         const double *positionHighBound = m_inputBody->GetPositionHighBound();
         ui->lineEditHighX->setValue(positionHighBound[0]);
         ui->lineEditHighY->setValue(positionHighBound[1]);
@@ -140,14 +140,22 @@ void DialogBodyBuilder::lateInitialise()
         ui->lineEditLowX->setValue(positionLowBound[0]);
         ui->lineEditLowY->setValue(positionLowBound[1]);
         ui->lineEditLowZ->setValue(positionLowBound[2]);
-        const double *velocityHighBound = m_inputBody->GetLinearVelocityHighBound();
-        ui->lineEditHighVX->setValue(velocityHighBound[0]);
-        ui->lineEditHighVY->setValue(velocityHighBound[1]);
-        ui->lineEditHighVZ->setValue(velocityHighBound[2]);
-        const double *velocityLowBound = m_inputBody->GetLinearVelocityLowBound();
-        ui->lineEditLowVX->setValue(velocityLowBound[0]);
-        ui->lineEditLowVY->setValue(velocityLowBound[1]);
-        ui->lineEditLowVZ->setValue(velocityLowBound[2]);
+        const double *linearVelocityHighBound = m_inputBody->GetLinearVelocityHighBound();
+        ui->lineEditHighVX->setValue(linearVelocityHighBound[0]);
+        ui->lineEditHighVY->setValue(linearVelocityHighBound[1]);
+        ui->lineEditHighVZ->setValue(linearVelocityHighBound[2]);
+        const double *linearVelocityLowBound = m_inputBody->GetLinearVelocityLowBound();
+        ui->lineEditLowVX->setValue(linearVelocityLowBound[0]);
+        ui->lineEditLowVY->setValue(linearVelocityLowBound[1]);
+        ui->lineEditLowVZ->setValue(linearVelocityLowBound[2]);
+        const double *angularVelocityHighBound = m_inputBody->GetAngularVelocityHighBound();
+        ui->lineEditHighAVX->setValue(angularVelocityHighBound[0]);
+        ui->lineEditHighAVY->setValue(angularVelocityHighBound[1]);
+        ui->lineEditHighAVZ->setValue(angularVelocityHighBound[2]);
+        const double *angularVelocityLowBound = m_inputBody->GetAngularVelocityLowBound();
+        ui->lineEditLowAVX->setValue(angularVelocityLowBound[0]);
+        ui->lineEditLowAVY->setValue(angularVelocityLowBound[1]);
+        ui->lineEditLowAVZ->setValue(angularVelocityLowBound[2]);
 
         std::string completePath = DialogBodyBuilder::findCompletePath(m_inputBody->GetGraphicFile1());
         if (completePath.size()) ui->lineEditMesh1->setText(QString::fromStdString(completePath));
@@ -217,16 +225,26 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
     positionLowBound[1] = ui->lineEditLowY->value();
     positionLowBound[2] = ui->lineEditLowZ->value();
     bodyPtr->SetPositionLowBound(positionLowBound[0], positionLowBound[1], positionLowBound[2]);
-    dVector3 velocityHighBound;
-    velocityHighBound[0] = ui->lineEditHighVX->value();
-    velocityHighBound[1] = ui->lineEditHighVY->value();
-    velocityHighBound[2] = ui->lineEditHighVZ->value();
-    bodyPtr->SetLinearVelocityHighBound(velocityHighBound[0], velocityHighBound[1], velocityHighBound[2]);
-    dVector3 velocityLowBound;
-    velocityLowBound[0] = ui->lineEditLowVX->value();
-    velocityLowBound[1] = ui->lineEditLowVY->value();
-    velocityLowBound[2] = ui->lineEditLowVZ->value();
-    bodyPtr->SetLinearVelocityLowBound(velocityLowBound[0], velocityLowBound[1], velocityLowBound[2]);
+    dVector3 linearVelocityHighBound;
+    linearVelocityHighBound[0] = ui->lineEditHighVX->value();
+    linearVelocityHighBound[1] = ui->lineEditHighVY->value();
+    linearVelocityHighBound[2] = ui->lineEditHighVZ->value();
+    bodyPtr->SetLinearVelocityHighBound(linearVelocityHighBound[0], linearVelocityHighBound[1], linearVelocityHighBound[2]);
+    dVector3 linearVelocityLowBound;
+    linearVelocityLowBound[0] = ui->lineEditLowVX->value();
+    linearVelocityLowBound[1] = ui->lineEditLowVY->value();
+    linearVelocityLowBound[2] = ui->lineEditLowVZ->value();
+    bodyPtr->SetLinearVelocityLowBound(linearVelocityLowBound[0], linearVelocityLowBound[1], linearVelocityLowBound[2]);
+    dVector3 angularVelocityHighBound;
+    angularVelocityHighBound[0] = ui->lineEditHighAVX->value();
+    angularVelocityHighBound[1] = ui->lineEditHighAVY->value();
+    angularVelocityHighBound[2] = ui->lineEditHighAVZ->value();
+    bodyPtr->SetAngularVelocityHighBound(angularVelocityHighBound[0], angularVelocityHighBound[1], angularVelocityHighBound[2]);
+    dVector3 angularVelocityLowBound;
+    angularVelocityLowBound[0] = ui->lineEditLowAVX->value();
+    angularVelocityLowBound[1] = ui->lineEditLowAVY->value();
+    angularVelocityLowBound[2] = ui->lineEditLowAVZ->value();
+    bodyPtr->SetAngularVelocityLowBound(angularVelocityLowBound[0], angularVelocityLowBound[1], angularVelocityLowBound[2]);
 
     // and because we are in construction mode we set the position to the construction position/quaternion
     // and the initial position to the desired position/quaternion
@@ -242,16 +260,16 @@ void DialogBodyBuilder::accept() // this catches OK and return/enter
     pgd::Quaternion q = pgd::MakeQFromEulerAngles(ex, ey, ez);
     bodyPtr->SetInitialQuaternion(q.n, q.x, q.y, q.z);
     // but the velocities can just be set
-    dVector3 velocity;
-    velocity[0] = ui->lineEditVX->value();
-    velocity[1] = ui->lineEditVY->value();
-    velocity[2] = ui->lineEditVZ->value();
-    bodyPtr->SetLinearVelocity(velocity[0], velocity[1], velocity[2]);
-    dVector3 angularV;
-    angularV[0] = ui->lineEditAVX->value();
-    angularV[1] = ui->lineEditAVY->value();
-    angularV[2] = ui->lineEditAVZ->value();
-    bodyPtr->SetAngularVelocity(angularV[0], angularV[1], angularV[2]);
+    dVector3 linearVelocity;
+    linearVelocity[0] = ui->lineEditVX->value();
+    linearVelocity[1] = ui->lineEditVY->value();
+    linearVelocity[2] = ui->lineEditVZ->value();
+    bodyPtr->SetLinearVelocity(linearVelocity[0], linearVelocity[1], linearVelocity[2]);
+    dVector3 angularVelocity;
+    angularVelocity[0] = ui->lineEditAVX->value();
+    angularVelocity[1] = ui->lineEditAVY->value();
+    angularVelocity[2] = ui->lineEditAVZ->value();
+    bodyPtr->SetAngularVelocity(angularVelocity[0], angularVelocity[1], angularVelocity[2]);
 
     if (m_inputBody)
     {

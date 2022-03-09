@@ -26,29 +26,11 @@ public:
 
     virtual void LateInitialisation();
 
-    SMART_ENUM(LimitTestResult, limitTestResultStrings, limitTestResultCount, WithinLimits, XPosError, YPosError, ZPosError,
-               XVelError, YVelError, ZVelError, NumericalError);
-//    enum LimitTestResult
-//    {
-//        WithinLimits = 0,
-//        XPosError = 1,
-//        YPosError = 2,
-//        ZPosError = 3,
-//        XVelError = 4,
-//        YVelError = 5,
-//        ZVelError = 6,
-//        NumericalError = 7
-//    };
+    SMART_ENUM(LimitTestResult, limitTestResultStrings, limitTestResultCount,
+               WithinLimits, XPosError, YPosError, ZPosError, XVelError, YVelError, ZVelError, XAVelError, YAVelError, ZAVelError, NumericalError);
 
-    SMART_ENUM(DragControl, dragControlStrings, dragControlCount,  NoDrag, DragCoefficients, DragCylinderX, DragCylinderY, DragCylinderZ);
-//    enum DragControl
-//    {
-//        NoDrag = 0,
-//        DragCoefficients = 1,
-//        DragCylinderX = 2,
-//        DragCylinderY = 3,
-//        DragCylinderZ = 4
-//    };
+    SMART_ENUM(DragControl, dragControlStrings, dragControlCount,
+               NoDrag, DragCoefficients, DragCylinderX, DragCylinderY, DragCylinderZ);
 
     void SetConstructionPosition(double x, double y, double z) { m_constructionPosition[0] = x; m_constructionPosition[1] = y; m_constructionPosition[2] = z; }
     const double *GetConstructionPosition() const { return m_constructionPosition; }
@@ -72,10 +54,14 @@ public:
     void SetPositionHighBound(double x, double y, double z) { m_positionHighBound[0] = x; m_positionHighBound[1] = y; m_positionHighBound[2] = z; }
     void SetLinearVelocityLowBound(double x, double y, double z) { m_linearVelocityLowBound[0] = x; m_linearVelocityLowBound[1] = y; m_linearVelocityLowBound[2] = z; }
     void SetLinearVelocityHighBound(double x, double y, double z) { m_linearVelocityHighBound[0] = x; m_linearVelocityHighBound[1] = y; m_linearVelocityHighBound[2] = z; }
+    void SetAngularVelocityLowBound(double x, double y, double z) { m_angularVelocityLowBound[0] = x; m_angularVelocityLowBound[1] = y; m_angularVelocityLowBound[2] = z; }
+    void SetAngularVelocityHighBound(double x, double y, double z) { m_angularVelocityHighBound[0] = x; m_angularVelocityHighBound[1] = y; m_angularVelocityHighBound[2] = z; }
     const double *GetPositionLowBound() const { return m_positionLowBound; }
     const double *GetPositionHighBound() const { return m_positionHighBound; }
     const double *GetLinearVelocityLowBound() const { return m_linearVelocityLowBound; }
     const double *GetLinearVelocityHighBound() const { return m_linearVelocityHighBound; }
+    const double *GetAngularVelocityLowBound() const { return m_angularVelocityLowBound; }
+    const double *GetAngularVelocityHighBound() const { return m_angularVelocityHighBound; }
 
     void SetLinearDamping(double linearDamping);
     void SetAngularDamping(double angularDamping);
@@ -150,6 +136,8 @@ private:
     dVector3 m_positionHighBound = {DBL_MAX, DBL_MAX, DBL_MAX, 0};
     dVector3 m_linearVelocityLowBound = {-DBL_MAX, -DBL_MAX, -DBL_MAX, 0};
     dVector3 m_linearVelocityHighBound = {DBL_MAX, DBL_MAX, DBL_MAX, 0};
+    dVector3 m_angularVelocityLowBound = {-DBL_MAX, -DBL_MAX, -DBL_MAX, 0};
+    dVector3 m_angularVelocityHighBound = {DBL_MAX, DBL_MAX, DBL_MAX, 0};
 
     dVector3 m_initialPosition = {0, 0, 0, 0};
     dQuaternion m_initialQuaternion = {1, 0, 0, 0};

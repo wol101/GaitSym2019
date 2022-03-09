@@ -102,7 +102,7 @@ std::string SwingClearanceAbortReporter::dumpToString()
 
     pgd::Vector3 p = GetWorldPosition();
     // pgd::Quaternion q = GetWorldQuaternion();
-    pgd::Vector3 v = GetWorldVelocity();
+    pgd::Vector3 v = GetWorldLinearVelocity();
     ShouldAbort(); // this is needed because otherwise these values are out of sync
 
     ss << simulation()->GetTime() << "\t" << p.x << "\t" << p.y << "\t" << p.z <<

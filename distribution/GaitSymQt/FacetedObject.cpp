@@ -70,6 +70,8 @@ int FacetedObject::ParseMeshFile(const std::string &filename)
 
 // parse an OBJ file to a FacetedObject
 // returns 0 on success
+// this tries to be quite fast and not very flexible
+// it might be worth rewriting to use std::from_char and std::to_char
 int FacetedObject::ParseOBJFile(const std::string &filename)
 {
     m_filename = filename;

@@ -1169,7 +1169,10 @@ bool SimulationWidget::intersectModel(float winX, float winY)
     for (size_t i = 0; i < m_hits.size(); i++)
     {
         std::stringstream ss;
-        ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " " << m_hits[i]->drawable()->className() << " " << m_hits[i]->drawable()->name();
+        if (m_hits[i]->drawable())
+            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " " << m_hits[i]->drawable()->className() << " " << m_hits[i]->drawable()->name();
+        else
+            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation();
         qDebug() << ss.str().c_str();
     }
 #endif
@@ -1189,7 +1192,10 @@ bool SimulationWidget::intersectModel(float winX, float winY)
     {
         std::stringstream ss;
         size_t i = m_hitsIndexByZ[j];
-        ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " " << m_hits[i]->drawable()->className() << " " << m_hits[i]->drawable()->name();
+        if (m_hits[i]->drawable())
+            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation() << " " << m_hits[i]->drawable()->className() << " " << m_hits[i]->drawable()->name();
+        else
+            ss << i << " " << m_hits[i]->screenLocation() << " " << m_hits[i]->worldLocation();
         qDebug() << ss.str().c_str();
     }
 #endif

@@ -560,6 +560,14 @@ Body::LimitTestResult Body::TestLimits()
     if (OUTSIDERANGE(v[1], m_linearVelocityLowBound[1], m_linearVelocityHighBound[1])) return YVelError;
     if (OUTSIDERANGE(v[2], m_linearVelocityLowBound[2], m_linearVelocityHighBound[2])) return ZVelError;
 
+    const double *a = dBodyGetAngularVel(m_bodyID);
+    if (std::fpclassify(a[0]) != FP_NORMAL && std::fpclassify(a[0]) != FP_ZERO) return NumericalError;
+    if (std::fpclassify(a[1]) != FP_NORMAL && std::fpclassify(a[1]) != FP_ZERO) return NumericalError;
+    if (std::fpclassify(a[2]) != FP_NORMAL && std::fpclassify(a[2]) != FP_ZERO) return NumericalError;
+    if (OUTSIDERANGE(a[0], m_angularVelocityLowBound[0], m_angularVelocityHighBound[0])) return XAVelError;
+    if (OUTSIDERANGE(a[1], m_angularVelocityLowBound[1], m_angularVelocityHighBound[1])) return YAVelError;
+    if (OUTSIDERANGE(a[2], m_angularVelocityLowBound[2], m_angularVelocityHighBound[2])) return ZAVelError;
+
     return WithinLimits;
 }
 
@@ -922,6 +930,16 @@ std::string *Body::createFromAttributes()
         GSUtil::Double(buf, 3, doubleList);
         this->SetLinearVelocityHighBound(doubleList[0], doubleList[1], doubleList[2]);
     }
+    if (findAttribute("AngularVelocityLowBound"s, &buf))
+    {
+        GSUtil::Double(buf, 3, doubleList);
+        this->SetAngularVelocityLowBound(doubleList[0], doubleList[1], doubleList[2]);
+    }
+    if (findAttribute("AngularVelocityHighBound"s, &buf))
+    {
+        GSUtil::Double(buf, 3, doubleList);
+        this->SetAngularVelocityHighBound(doubleList[0], doubleList[1], doubleList[2]);
+    }
 
     if (findAttribute("ConstructionDensity"s, &buf) == nullptr) return lastErrorPtr();
     this->SetConstructionDensity(GSUtil::Double(buf));
@@ -998,6 +1016,8 @@ void Body::appendToAttributes()
     setAttribute("PositionHighBound"s, *GSUtil::ToString(m_positionHighBound, 3, &buf));
     setAttribute("LinearVelocityLowBound"s, *GSUtil::ToString(m_linearVelocityLowBound, 3, &buf));
     setAttribute("LinearVelocityHighBound"s, *GSUtil::ToString(m_linearVelocityHighBound, 3, &buf));
+    setAttribute("AngularVelocityLowBound"s, *GSUtil::ToString(m_angularVelocityLowBound, 3, &buf));
+    setAttribute("AngularVelocityHighBound"s, *GSUtil::ToString(m_angularVelocityHighBound, 3, &buf));
 
     setAttribute("GraphicFile1"s, m_graphicFile1);
     setAttribute("GraphicFile2"s, m_graphicFile2);

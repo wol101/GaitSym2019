@@ -114,16 +114,7 @@ void DialogJoints::accept() // this catches OK and return/enter
         joint->SetAxes(x.x, x.y, x.z, y.x, y.y, y.z, z.x, z.y, z.z, static_cast<int>(iMode));
         if (ui->lineEditCFM->text().size()) joint->setCFM(ui->lineEditCFM->value());
         if (ui->lineEditERP->text().size()) joint->setERP(ui->lineEditERP->value());
-        if (mode == "Fixed Euler")
-        {
-            joint->SetStops(pgd::DegreesToRadians(ui->lineEditBallLowStop0->value()),
-                            pgd::DegreesToRadians(ui->lineEditBallHighStop0->value()),
-                            pgd::DegreesToRadians(ui->lineEditBallLowStop1->value()),
-                            pgd::DegreesToRadians(ui->lineEditBallHighStop1->value()),
-                            pgd::DegreesToRadians(ui->lineEditBallLowStop2->value()),
-                            pgd::DegreesToRadians(ui->lineEditBallHighStop2->value()));
-        }
-        else if (mode == "User Euler")
+        if (iMode == BallJoint::AMotorEuler || iMode == BallJoint::AMotorUser)
         {
             joint->SetStops(pgd::DegreesToRadians(ui->lineEditBallLowStop0->value()),
                             pgd::DegreesToRadians(ui->lineEditBallHighStop0->value()),

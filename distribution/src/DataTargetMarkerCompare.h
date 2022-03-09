@@ -20,7 +20,7 @@ class DataTargetMarkerCompare : public DataTarget
 public:
     DataTargetMarkerCompare();
 
-    SMART_ENUM(Comparison, comparisonStrings, comparisonCount, XWP, YWP, ZWP, XAD, YAD, ZAD, Distance, Angle);
+    SMART_ENUM(Comparison, comparisonStrings, comparisonCount, XWP, YWP, ZWP, XAD, YAD, ZAD, Distance, Angle, LinearVelocity, AngularVelocity);
 
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();

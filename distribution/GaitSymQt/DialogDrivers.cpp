@@ -336,7 +336,7 @@ void DialogDrivers::lateInitialise()
         for (int i = 0; i < steps; i++)
         {
             ui->tableWidgetCyclic->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(durationList[i])));
-            ui->tableWidgetCyclic->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(valueList[i])));
+            ui->tableWidgetCyclic->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(valueList[i])));
         }
         ui->tabWidget->setCurrentIndex(tabNames.indexOf("Cyclic"));
     }

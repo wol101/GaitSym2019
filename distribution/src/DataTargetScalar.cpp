@@ -149,15 +149,15 @@ double DataTargetScalar::calculateError(size_t index)
             m_errorScore = (pv.z - m_ValueList[size_t(index)]);
             break;
         case XV:
-            pv = marker->GetWorldVelocity();
+            pv = marker->GetWorldLinearVelocity();
             m_errorScore = (pv.x - m_ValueList[size_t(index)]);
             break;
         case YV:
-            pv = marker->GetWorldVelocity();
+            pv = marker->GetWorldLinearVelocity();
             m_errorScore = (pv.y - m_ValueList[size_t(index)]);
             break;
         case ZV:
-            pv = marker->GetWorldVelocity();
+            pv = marker->GetWorldLinearVelocity();
             m_errorScore = (pv.z - m_ValueList[size_t(index)]);
             break;
         default:
@@ -464,15 +464,15 @@ double DataTargetScalar::calculateError(double time)
             m_errorScore = (pv.z - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case XV:
-            pv = marker->GetWorldVelocity();
+            pv = marker->GetWorldLinearVelocity();
             m_errorScore = (pv.x - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case YV:
-            pv = marker->GetWorldVelocity();
+            pv = marker->GetWorldLinearVelocity();
             m_errorScore = (pv.y - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         case ZV:
-            pv = marker->GetWorldVelocity();
+            pv = marker->GetWorldLinearVelocity();
             m_errorScore = (pv.z - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         default:

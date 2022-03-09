@@ -81,6 +81,18 @@ double DataTargetMarkerCompare::calculateError(double time)
             m_errorScore = (angle - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
         }
+        if (m_marker1Comparison == LinearVelocity && m_marker2Comparison == LinearVelocity)
+        {
+            double linearVelocity = (m_marker1->GetWorldLinearVelocity() - m_marker2->GetWorldLinearVelocity()).Magnitude();
+            m_errorScore = (linearVelocity - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
+            break;
+        }
+        if (m_marker1Comparison == AngularVelocity && m_marker2Comparison == AngularVelocity)
+        {
+            double angularVelocity = (m_marker1->GetWorldAngularVelocity() - m_marker2->GetWorldAngularVelocity()).Magnitude();
+            m_errorScore = (angularVelocity - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
+            break;
+        }
         pgd::Vector3 axis1, axis2;
         while (true)
         {
@@ -147,6 +159,18 @@ double DataTargetMarkerCompare::calculateError(size_t index)
         {
             double angle = pgd::FindAngle(m_marker1->GetWorldQuaternion(), m_marker2->GetWorldQuaternion());
             m_errorScore = (angle - m_ValueList[size_t(index)]);
+            break;
+        }
+        if (m_marker1Comparison == LinearVelocity && m_marker2Comparison == LinearVelocity)
+        {
+            double linearVelocity = (m_marker1->GetWorldLinearVelocity() - m_marker2->GetWorldLinearVelocity()).Magnitude();
+            m_errorScore = (linearVelocity - m_ValueList[size_t(index)]);
+            break;
+        }
+        if (m_marker1Comparison == AngularVelocity && m_marker2Comparison == AngularVelocity)
+        {
+            double angularVelocity = (m_marker1->GetWorldAngularVelocity() - m_marker2->GetWorldAngularVelocity()).Magnitude();
+            m_errorScore = (angularVelocity - m_ValueList[size_t(index)]);
             break;
         }
         pgd::Vector3 axis1, axis2;
@@ -252,6 +276,8 @@ std::string *DataTargetMarkerCompare::createFromAttributes()
         if (m_marker1Comparison == ZWP && m_marker2Comparison == ZWP) break;
         if (m_marker1Comparison == Distance && m_marker2Comparison == Distance) break;
         if (m_marker1Comparison == Angle && m_marker2Comparison == Angle) break;
+        if (m_marker1Comparison == LinearVelocity && m_marker2Comparison == LinearVelocity) break;
+        if (m_marker1Comparison == AngularVelocity && m_marker2Comparison == AngularVelocity) break;
         if ((m_marker1Comparison == XAD || m_marker1Comparison == YAD || m_marker1Comparison == ZAD) &&
             (m_marker2Comparison == XAD || m_marker2Comparison == YAD || m_marker2Comparison == ZAD)) break;
         setLastError("DataTargetMarkerCompare ID=\""s + name() + "\" Marker1Comparison "s + comparisonStrings(m_marker1Comparison) + " not compatible with Marker2Comparison "s + comparisonStrings(m_marker2Comparison));

@@ -391,7 +391,7 @@ pgd::Quaternion Marker::GetQuaternion(const pgd::Quaternion &worldQuaternion) co
     return (~GetWorldQuaternion()) * worldQuaternion;
 }
 
-pgd::Vector3 Marker::GetWorldVelocity()
+pgd::Vector3 Marker::GetWorldLinearVelocity()
 {
     if (m_body)
     {
@@ -413,6 +413,13 @@ pgd::Vector3 Marker::GetWorldVelocity()
     {
         return pgd::Vector3();
     }
+}
+
+pgd::Vector3 Marker::GetWorldAngularVelocity()
+{
+    pgd::Vector3 worldAngularVelocity;
+    if (m_body) { worldAngularVelocity.Set(m_body->GetAngularVelocity()); }
+    return worldAngularVelocity;
 }
 
 pgd::Quaternion Marker::GetWorldQuaternion() const

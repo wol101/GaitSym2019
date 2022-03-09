@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>817</width>
-    <height>633</height>
+    <width>908</width>
+    <height>705</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -356,6 +356,44 @@
       <item row="3" column="3">
        <widget class="LineEditDouble" name="lineEditHighVZ"/>
       </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Ang. Vel. Low</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="LineEditDouble" name="lineEditLowAVX"/>
+      </item>
+      <item row="4" column="2">
+       <widget class="LineEditDouble" name="lineEditLowAVY"/>
+      </item>
+      <item row="4" column="3">
+       <widget class="LineEditDouble" name="lineEditLowAVZ"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_19">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Ang. Vel. High</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="LineEditDouble" name="lineEditHighAVX"/>
+      </item>
+      <item row="5" column="2">
+       <widget class="LineEditDouble" name="lineEditHighAVY"/>
+      </item>
+      <item row="5" column="3">
+       <widget class="LineEditDouble" name="lineEditHighAVZ"/>
+      </item>
      </layout>
     </widget>
    </item>
@@ -457,6 +495,18 @@
   <tabstop>lineEditX</tabstop>
   <tabstop>lineEditY</tabstop>
   <tabstop>lineEditZ</tabstop>
+  <tabstop>lineEditRunX</tabstop>
+  <tabstop>lineEditRunY</tabstop>
+  <tabstop>lineEditRunZ</tabstop>
+  <tabstop>lineEditEulerX</tabstop>
+  <tabstop>lineEditEulerY</tabstop>
+  <tabstop>lineEditEulerZ</tabstop>
+  <tabstop>lineEditVX</tabstop>
+  <tabstop>lineEditVY</tabstop>
+  <tabstop>lineEditVZ</tabstop>
+  <tabstop>lineEditAVX</tabstop>
+  <tabstop>lineEditAVY</tabstop>
+  <tabstop>lineEditAVZ</tabstop>
   <tabstop>lineEditMass</tabstop>
   <tabstop>lineEditI11</tabstop>
   <tabstop>lineEditI22</tabstop>
@@ -476,6 +526,17 @@
   <tabstop>lineEditHighVX</tabstop>
   <tabstop>lineEditHighVY</tabstop>
   <tabstop>lineEditHighVZ</tabstop>
+  <tabstop>lineEditLowAVX</tabstop>
+  <tabstop>lineEditLowAVY</tabstop>
+  <tabstop>lineEditLowAVZ</tabstop>
+  <tabstop>lineEditHighAVX</tabstop>
+  <tabstop>lineEditHighAVY</tabstop>
+  <tabstop>lineEditHighAVZ</tabstop>
+  <tabstop>pushButtonProperties</tabstop>
+  <tabstop>pushButtonCalculate</tabstop>
+  <tabstop>checkBoxMoveMarkers</tabstop>
+  <tabstop>pushButtonOK</tabstop>
+  <tabstop>pushButtonCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>

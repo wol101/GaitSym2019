@@ -244,6 +244,12 @@ std::string *BallJoint::createFromAttributes()
 {
     if (Joint::createFromAttributes()) return lastErrorPtr();
     std::string buf;
+    if (findAttribute("Mode"s, &buf) == nullptr) return lastErrorPtr();
+    else if (buf == "NoStops") m_Mode = BallJoint::NoStops;
+    else if (buf == "AMotorUser") m_Mode = BallJoint::AMotorUser;
+    else if (buf == "AMotorEuler") m_Mode = BallJoint::AMotorEuler;
+    else { setLastError("Joint ID=\""s + name() +"\" unrecognised Mode"s); return lastErrorPtr(); }
+
     pgd::Vector3 position = body1Marker()->GetWorldPosition();
     this->SetBallAnchor(position.x, position.y, position.z);
     pgd::Vector3 x, y, z;
@@ -252,13 +258,6 @@ std::string *BallJoint::createFromAttributes()
     this->SetAxes(x.x, x.y, x.z, y.x, y.y, y.z, z.x, z.y, z.z, axisMode);
     if (CFM() >= 0) dJointSetBallParam (JointID(), dParamCFM, CFM());
     if (ERP() >= 0) dJointSetBallParam (JointID(), dParamERP, ERP());
-
-
-    if (findAttribute("Mode"s, &buf) == nullptr) return lastErrorPtr();
-    else if (buf == "NoStops") m_Mode = BallJoint::NoStops;
-    else if (buf == "AMotorUser") m_Mode = BallJoint::AMotorUser;
-    else if (buf == "AMotorEuler") m_Mode = BallJoint::AMotorEuler;
-    else { setLastError("Joint ID=\""s + name() +"\" unrecognised Mode"s); return lastErrorPtr(); }
 
     switch (m_Mode)
     {

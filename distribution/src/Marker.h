@@ -46,7 +46,8 @@ public:
     pgd::Quaternion GetWorldQuaternion() const;
     pgd::Vector3 GetWorldAxis(Marker::Axis axis) const;
     void GetWorldBasis(pgd::Vector3 *x, pgd::Vector3 *y, pgd::Vector3 *z);
-    pgd::Vector3 GetWorldVelocity();
+    pgd::Vector3 GetWorldLinearVelocity();
+    pgd::Vector3 GetWorldAngularVelocity();
 
     // these functions get things into and out of marker based coordinates
     pgd::Vector3 GetPosition(const pgd::Vector3 &worldCoordinates) const;
