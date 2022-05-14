@@ -422,8 +422,12 @@ void FixedJoint::SetCutoffFrequency(double cutoffFrequency)
     m_lowPassType = Butterworth2ndOrderLowPass;
     m_filteredStress.clear();
     m_filteredStress.reserve(m_nActivePixels);
+#ifdef NON_THREAD_SAFE_OK
     for (size_t i = 0; i < m_nActivePixels; i++) m_filteredStress.push_back(std::make_unique<SharedButterworthFilter>());
     SharedButterworthFilter::CalculateCoefficients(cutoffFrequency, samplingFrequency);
+#else
+    for (size_t i = 0; i < m_nActivePixels; i++) m_filteredStress.push_back(std::make_unique<ButterworthFilter>(cutoffFrequency, samplingFrequency));
+#endif
 }
 
 bool FixedJoint::CheckStressAbort()

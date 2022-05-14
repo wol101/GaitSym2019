@@ -201,7 +201,7 @@ std::string NamedObject::dumpHelper(std::initializer_list<double> values)
         ss << std::setprecision(18) << *it++; // this defaults to %.18g format if neither fixed nor scientific is set
         for (; it != values.end(); it++)
         {
-            ss << std::setprecision(18) << *it++;
+            ss << std::setprecision(18) << "\t" << *it;
         }
     }
     ss << "\n";

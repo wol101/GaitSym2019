@@ -32,6 +32,7 @@
  * OF SUCH DAMAGE.
  */
 
+#ifdef NON_THREAD_SAFE_OK
 #include "FEC.h"
 
 #include <stdio.h>
@@ -844,3 +845,4 @@ test_gf()
     }
 }
 #endif /* TEST */
+#endif

@@ -310,6 +310,7 @@ SOURCES += \
     ../src/MAMuscleComplete.cpp \
     ../src/MD5.cpp \
     ../src/Marker.cpp \
+    ../src/MarkerPositionDriver.cpp \
     ../src/MovingAverage.cpp \
     ../src/Muscle.cpp \
     ../src/NPointStrap.cpp \
@@ -568,6 +569,7 @@ HEADERS += \
     ../src/MD5.h \
     ../src/MPIStuff.h \
     ../src/Marker.h \
+    ../src/MarkerPositionDriver.h \
     ../src/MovingAverage.h \
     ../src/Muscle.h \
     ../src/NPointStrap.h \

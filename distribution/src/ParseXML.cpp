@@ -10,6 +10,7 @@
 #include "ParseXML.h"
 #include "GSUtil.h"
 
+#include "rapidxml.hpp"
 #include "rapidxml_print.hpp"
 #include "pystring.h"
 
@@ -23,7 +24,7 @@ ParseXML::~ParseXML()
 {
 }
 
-std::string *ParseXML::LoadModel(const char *buffer, size_t length, const std::string &rootNodeTag)
+std::string *ParseXML::LoadModel(const char *buffer, size_t length, const std::string &rootNodeTag) // note buffer must be a null terminated string (total length length + 1)
 {
     m_inputConfigDoc.clear();
     m_elementList.clear();
@@ -49,9 +50,7 @@ std::string *ParseXML::LoadModel(const char *buffer, size_t length, const std::s
     catch (const rapidxml::parse_error& e)
     {
         std::string whereString(e.where<char>());
-        std::vector<std::string> lines;
-        pystring::splitlines(whereString, lines);
-        setLastError("Error: Simulation::LoadModel parse error:"s + std::string() + "\n"s + lines[0].substr(0, 256));
+        setLastError("Error: Simulation::LoadModel parse error: "s + std::string(e.what()) + "\n"s + whereString.substr(0, 256));
         return lastErrorPtr();
     }
     catch (const std::exception& e)

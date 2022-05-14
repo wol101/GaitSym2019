@@ -317,7 +317,6 @@ SOURCES += \
     ../src/Drivable.cpp \
     ../src/Driver.cpp \
     ../src/ErrorHandler.cpp \
-    ../src/FEC.cpp \
     ../src/Filter.cpp \
     ../src/FixedDriver.cpp \
     ../src/FixedJoint.cpp \
@@ -335,15 +334,12 @@ SOURCES += \
     ../src/MAMuscleComplete.cpp \
     ../src/MD5.cpp \
     ../src/Marker.cpp \
+    ../src/MarkerPositionDriver.cpp \
     ../src/MovingAverage.cpp \
     ../src/Muscle.cpp \
     ../src/NPointStrap.cpp \
     ../src/NamedObject.cpp \
     ../src/ObjectiveMain.cpp \
-    ../src/ObjectiveMainENET.cpp \
-    ../src/ObjectiveMainMPI.cpp \
-    ../src/ObjectiveMainTCP.cpp \
-    ../src/ObjectiveMainUDP.cpp \
     ../src/PCA.cpp \
     ../src/PIDErrorInController.cpp \
     ../src/PIDMuscleLengthController.cpp \
@@ -358,15 +354,12 @@ SOURCES += \
     ../src/StepDriver.cpp \
     ../src/Strap.cpp \
     ../src/SwingClearanceAbortReporter.cpp \
-    ../src/TCP.cpp \
     ../src/TegotaeDriver.cpp \
-    ../src/ThreadedUDP.cpp \
     ../src/ThreeHingeJointDriver.cpp \
     ../src/TorqueReporter.cpp \
     ../src/TrimeshGeom.cpp \
     ../src/TwoCylinderWrapStrap.cpp \
     ../src/TwoPointStrap.cpp \
-    ../src/UDP.cpp \
     ../src/UniversalJoint.cpp \
     ../src/Warehouse.cpp \
     ../src/XMLConverter.cpp \
@@ -641,7 +634,6 @@ HEADERS += \
     ../src/Drivable.h \
     ../src/Driver.h \
     ../src/ErrorHandler.h \
-    ../src/FEC.h \
     ../src/Filter.h \
     ../src/FixedDriver.h \
     ../src/FixedJoint.h \
@@ -660,15 +652,12 @@ HEADERS += \
     ../src/MD5.h \
     ../src/MPIStuff.h \
     ../src/Marker.h \
+    ../src/MarkerPositionDriver.h \
     ../src/MovingAverage.h \
     ../src/Muscle.h \
     ../src/NPointStrap.h \
     ../src/NamedObject.h \
     ../src/ObjectiveMain.h \
-    ../src/ObjectiveMainENET.h \
-    ../src/ObjectiveMainMPI.h \
-    ../src/ObjectiveMainTCP.h \
-    ../src/ObjectiveMainUDP.h \
     ../src/PCA.h \
     ../src/PGDMath.h \
     ../src/PIDErrorInController.h \
@@ -686,16 +675,12 @@ HEADERS += \
     ../src/StepDriver.h \
     ../src/Strap.h \
     ../src/SwingClearanceAbortReporter.h \
-    ../src/TCP.h \
-    ../src/TCPIPMessage.h \
     ../src/TegotaeDriver.h \
-    ../src/ThreadedUDP.h \
     ../src/ThreeHingeJointDriver.h \
     ../src/TorqueReporter.h \
     ../src/TrimeshGeom.h \
     ../src/TwoCylinderWrapStrap.h \
     ../src/TwoPointStrap.h \
-    ../src/UDP.h \
     ../src/UniversalJoint.h \
     ../src/Warehouse.h \
     ../src/XMLConverter.h \

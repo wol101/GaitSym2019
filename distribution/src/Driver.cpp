@@ -93,6 +93,11 @@ std::string *Driver::createFromAttributes()
     if (findAttribute("TargetIDList"s, &buf) == nullptr) return lastErrorPtr();
     std::vector<std::string> targetNames;
     pystring::split(buf, targetNames);
+//    if (targetNames.size() == 0)
+//    {
+//        setLastError("Driver ID=\""s + name() +"\" TargetIDList is empty"s);
+//        return lastErrorPtr();
+//    }
     m_targetList.clear();
     std::vector<NamedObject *> upstreamObjects;
     upstreamObjects.reserve(targetNames.size());

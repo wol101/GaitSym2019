@@ -31,18 +31,18 @@ void CyclicDriver::Update()
     assert(simulation()->GetStepCount() == lastStepCount() + 1);
     setLastStepCount(simulation()->GetStepCount());
 
-    if (m_index >= m_valueList.size())
-    {
-        std::cerr << "Error in StepDriver::Update(): m_index should not be >= m_valueList.size()\n";
-        return;
-    }
-
     // account for phase
     // m_PhaseDelay is a relative value (0 to 1) but the time offset needs to be positive
     double cycleTime = m_changeTimes[m_changeTimes.size() - 2];
     double timeOffset = cycleTime * m_PhaseDelay;
     double time = simulation()->GetTime() + timeOffset;
     time = std::fmod(time, cycleTime);
+
+    if (m_index > m_changeTimes.size() - 2) // this should probably never happen
+    {
+        std::cerr << "Error in CyclicDriver::Update(): m_index should not be > m_changeTimes.size() - 2 m_index = " << m_index << "\n";
+        return;
+    }
 
     // this is an optimisation that assumes this routine gets called a lot of times with the same index
     // which it usually does because the integration step size is small
@@ -61,14 +61,14 @@ void CyclicDriver::Update()
         if (m_index < m_valueList.size())
             setValue(m_valueList[m_index]);
         else
-            setValue(*m_valueList.end());
+            setValue(m_valueList.back());
     }
     else
     {
         if (m_index < m_valueList.size() - 1)
             setValue(((time - m_changeTimes[m_index]) / (m_changeTimes[m_index + 1] - m_changeTimes[m_index])) * (m_valueList[m_index + 1] - m_valueList[m_index]) + m_valueList[m_index]);
         else
-            setValue(*m_valueList.end());
+            setValue(m_valueList.back());
     }
 }
 
@@ -90,7 +90,7 @@ std::string *CyclicDriver::createFromAttributes()
     GSUtil::Double(buf, &durations);
     if (values.size() != durations.size())
     {
-        setLastError("StepDriver ID=\""s + name() + "\" number of values ("s + std::to_string(values.size()) + ") must match number of durations ("s + std::to_string(durations.size()) + ")"s);
+        setLastError("CyclicDriver ID=\""s + name() + "\" number of values ("s + std::to_string(values.size()) + ") must match number of durations ("s + std::to_string(durations.size()) + ")"s);
         return lastErrorPtr();
     }
     m_valueList = values;

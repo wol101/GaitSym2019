@@ -36,17 +36,11 @@ void StepDriver::Update()
 {
     assert(simulation()->GetStepCount() == lastStepCount() + 1);
     setLastStepCount(simulation()->GetStepCount());
-
-    if (m_index >= m_valueList.size())
-    {
-        std::cerr << "Error in StepDriver::Update(): m_index should not be >= m_valueList.size()\n";
-        return;
-    }
-
     double time = simulation()->GetTime();
+
     // this is an optimisation that assumes this routine gets called a lot of times with the same index
     // which it usually does because the integration step size is small
-    if (time >= m_changeTimes[m_index + 1] || time < m_changeTimes[m_index])
+    if (m_index < m_changeTimes.size() - 1 && (time >= m_changeTimes[m_index + 1] || time < m_changeTimes[m_index]))
     {
         // m_changeTimes starts at 0 and ends at DBL_MAX
         // when time >= 0 and time < m_changeTimes[1] upper_bound will return 1
@@ -61,14 +55,14 @@ void StepDriver::Update()
         if (m_index < m_valueList.size())
             setValue(m_valueList[m_index]);
         else
-            setValue(*m_valueList.end());
+            setValue(m_valueList.back());
     }
     else
     {
         if (m_index < m_valueList.size() - 1)
             setValue(((time - m_changeTimes[m_index]) / (m_changeTimes[m_index + 1] - m_changeTimes[m_index])) * (m_valueList[m_index + 1] - m_valueList[m_index]) + m_valueList[m_index]);
         else
-            setValue(*m_valueList.end());
+            setValue(m_valueList.back());
     }
 }
 

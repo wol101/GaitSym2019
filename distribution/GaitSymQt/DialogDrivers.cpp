@@ -20,6 +20,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QScrollArea>
+#include <QDebug>
 
 DialogDrivers::DialogDrivers(QWidget *parent) :
     QDialog(parent),
@@ -269,6 +270,8 @@ void DialogDrivers::lateInitialise()
             if (initialNameCount >= 999) break; // only do this for the first 999 markers
         }
         ui->lineEditDriverID->setText(initialName);
+        spinBoxChangedTargets(1);
+        spinBoxChangedBoxcarStackSize(1);
         return;
     }
 
@@ -300,90 +303,102 @@ void DialogDrivers::lateInitialise()
     ui->lineEditMaximum->setValue(m_inputDriver->MaxValue());
     ui->checkBoxInterpolate->setChecked(m_inputDriver->Interp());
 
-    FixedDriver *fixedDriver = dynamic_cast<FixedDriver *>(m_inputDriver);
-    if (fixedDriver)
+    while (true)
     {
-        if ((s = fixedDriver->findAttribute("Value"s)).size()) ui->lineEditFixedValue->setValue(GSUtil::Double(s));
-        ui->tabWidget->setCurrentIndex(tabNames.indexOf("Fixed"));
-    }
-
-    StepDriver *stepDriver = dynamic_cast<StepDriver *>(m_inputDriver);
-    if (stepDriver)
-    {
-        std::vector<double> valueList = stepDriver->valueList();
-        std::vector<double> durationList = stepDriver->durationList();
-        int steps = int(std::min(valueList.size(), durationList.size()));
-        ui->spinBoxSteps->setValue(steps);
-        ui->tableWidgetStep->setRowCount(steps);
-        ui->tableWidgetStep->setColumnCount(2);
-        for (int i = 0; i < steps; i++)
+        FixedDriver *fixedDriver = dynamic_cast<FixedDriver *>(m_inputDriver);
+        if (fixedDriver)
         {
-            ui->tableWidgetStep->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(durationList[i])));
-            ui->tableWidgetStep->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(valueList[i])));
+            if ((s = fixedDriver->findAttribute("Value"s)).size()) ui->lineEditFixedValue->setValue(GSUtil::Double(s));
+            ui->tabWidget->setCurrentIndex(tabNames.indexOf("Fixed"));
+            spinBoxChangedBoxcarStackSize(1);
+            break;
         }
-        ui->tabWidget->setCurrentIndex(tabNames.indexOf("Step"));
-    }
 
-    CyclicDriver *cyclicDriver = dynamic_cast<CyclicDriver *>(m_inputDriver);
-    if (cyclicDriver)
-    {
-        std::vector<double> valueList = cyclicDriver->valueList();
-        std::vector<double> durationList = cyclicDriver->durationList();
-        int steps = int(std::min(valueList.size(), durationList.size()));
-        ui->spinBoxStepsPerCycle->setValue(steps);
-        ui->tableWidgetCyclic->setRowCount(steps);
-        ui->tableWidgetCyclic->setColumnCount(2);
-        for (int i = 0; i < steps; i++)
+        StepDriver *stepDriver = dynamic_cast<StepDriver *>(m_inputDriver);
+        if (stepDriver)
         {
-            ui->tableWidgetCyclic->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(durationList[i])));
-            ui->tableWidgetCyclic->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(valueList[i])));
+            std::vector<double> valueList = stepDriver->valueList();
+            std::vector<double> durationList = stepDriver->durationList();
+            int steps = int(std::min(valueList.size(), durationList.size()));
+            ui->spinBoxSteps->setValue(steps);
+            ui->tableWidgetStep->setRowCount(steps);
+            ui->tableWidgetStep->setColumnCount(2);
+            for (int i = 0; i < steps; i++)
+            {
+                ui->tableWidgetStep->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(durationList[i])));
+                ui->tableWidgetStep->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(valueList[i])));
+            }
+            ui->tabWidget->setCurrentIndex(tabNames.indexOf("Step"));
+            spinBoxChangedBoxcarStackSize(1);
+            break;
         }
-        ui->tabWidget->setCurrentIndex(tabNames.indexOf("Cyclic"));
-    }
 
-    StackedBoxcarDriver *stackedBoxcarDriver = dynamic_cast<StackedBoxcarDriver *>(m_inputDriver);
-    if (stackedBoxcarDriver)
-    {
-        int stackSize = GSUtil::Int(stackedBoxcarDriver->findAttribute("StackSize"s));
-        std::vector<double> delays(static_cast<size_t>(stackSize));
-        std::vector<double> widths(static_cast<size_t>(stackSize));
-        std::vector<double> heights(static_cast<size_t>(stackSize));
-        GSUtil::Double(stackedBoxcarDriver->findAttribute("Delays"s), stackSize, delays.data());
-        GSUtil::Double(stackedBoxcarDriver->findAttribute("Widths"s), stackSize, widths.data());
-        GSUtil::Double(stackedBoxcarDriver->findAttribute("Heights"s), stackSize, heights.data());
-        for (int i = 0; i < stackSize; i++)
+        CyclicDriver *cyclicDriver = dynamic_cast<CyclicDriver *>(m_inputDriver);
+        if (cyclicDriver)
         {
-            QLabel *label = new QLabel();
-            label->setText(QString("Delay %1").arg(i + 1));
-            m_boxcarGridLayout->addWidget(label, i, 0, Qt::AlignTop);
-            m_boxcarLabelList.push_back(label);
-            LineEditDouble *lineEditDelay = new LineEditDouble();
-            lineEditDelay->setValue(delays[size_t(i)]);
-            m_boxcarGridLayout->addWidget(lineEditDelay, i, 1, Qt::AlignTop);
-            m_boxcarLineEditDoubleList.push_back(lineEditDelay);
-            label = new QLabel();
-            label->setText(QString("Width %1").arg(i + 1));
-            m_boxcarGridLayout->addWidget(label, i, 2, Qt::AlignTop);
-            m_boxcarLabelList.push_back(label);
-            LineEditDouble *lineEditWidth = new LineEditDouble();
-            lineEditWidth->setValue(widths[size_t(i)]);
-            m_boxcarGridLayout->addWidget(lineEditWidth, i, 3, Qt::AlignTop);
-            m_boxcarLineEditDoubleList.push_back(lineEditWidth);
-            label = new QLabel();
-            label->setText(QString("Height %1").arg(i + 1));
-            m_boxcarGridLayout->addWidget(label, i, 4, Qt::AlignTop);
-            m_boxcarLabelList.push_back(label);
-            LineEditDouble *lineEditHeight = new LineEditDouble();
-            lineEditHeight->setValue(heights[size_t(i)]);
-            m_boxcarGridLayout->addWidget(lineEditHeight, i, 5, Qt::AlignTop);
-            m_boxcarLineEditDoubleList.push_back(lineEditHeight);
+            std::vector<double> valueList = cyclicDriver->valueList();
+            std::vector<double> durationList = cyclicDriver->durationList();
+            int steps = int(std::min(valueList.size(), durationList.size()));
+            ui->spinBoxStepsPerCycle->setValue(steps);
+            ui->tableWidgetCyclic->setRowCount(steps);
+            ui->tableWidgetCyclic->setColumnCount(2);
+            for (int i = 0; i < steps; i++)
+            {
+                ui->tableWidgetCyclic->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(durationList[i])));
+                ui->tableWidgetCyclic->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(valueList[i])));
+            }
+            ui->tabWidget->setCurrentIndex(tabNames.indexOf("Cyclic"));
+            spinBoxChangedBoxcarStackSize(1);
+            break;
         }
-        m_boxcarGridSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        m_boxcarGridLayout->addItem(m_boxcarGridSpacer, stackSize, 0);
 
-        ui->spinBoxBoxcarStackSize->setValue(stackSize);
-        ui->lineEditBoxcarCycleTime->setValue(GSUtil::Double(stackedBoxcarDriver->findAttribute("CycleTime"s)));
-        ui->tabWidget->setCurrentIndex(tabNames.indexOf("Boxcar"));
+        StackedBoxcarDriver *stackedBoxcarDriver = dynamic_cast<StackedBoxcarDriver *>(m_inputDriver);
+        if (stackedBoxcarDriver)
+        {
+            int stackSize = GSUtil::Int(stackedBoxcarDriver->findAttribute("StackSize"s));
+            std::vector<double> delays(static_cast<size_t>(stackSize));
+            std::vector<double> widths(static_cast<size_t>(stackSize));
+            std::vector<double> heights(static_cast<size_t>(stackSize));
+            GSUtil::Double(stackedBoxcarDriver->findAttribute("Delays"s), stackSize, delays.data());
+            GSUtil::Double(stackedBoxcarDriver->findAttribute("Widths"s), stackSize, widths.data());
+            GSUtil::Double(stackedBoxcarDriver->findAttribute("Heights"s), stackSize, heights.data());
+            for (int i = 0; i < stackSize; i++)
+            {
+                QLabel *label = new QLabel();
+                label->setText(QString("Delay %1").arg(i + 1));
+                m_boxcarGridLayout->addWidget(label, i, 0, Qt::AlignTop);
+                m_boxcarLabelList.push_back(label);
+                LineEditDouble *lineEditDelay = new LineEditDouble();
+                lineEditDelay->setValue(delays[size_t(i)]);
+                m_boxcarGridLayout->addWidget(lineEditDelay, i, 1, Qt::AlignTop);
+                m_boxcarLineEditDoubleList.push_back(lineEditDelay);
+                label = new QLabel();
+                label->setText(QString("Width %1").arg(i + 1));
+                m_boxcarGridLayout->addWidget(label, i, 2, Qt::AlignTop);
+                m_boxcarLabelList.push_back(label);
+                LineEditDouble *lineEditWidth = new LineEditDouble();
+                lineEditWidth->setValue(widths[size_t(i)]);
+                m_boxcarGridLayout->addWidget(lineEditWidth, i, 3, Qt::AlignTop);
+                m_boxcarLineEditDoubleList.push_back(lineEditWidth);
+                label = new QLabel();
+                label->setText(QString("Height %1").arg(i + 1));
+                m_boxcarGridLayout->addWidget(label, i, 4, Qt::AlignTop);
+                m_boxcarLabelList.push_back(label);
+                LineEditDouble *lineEditHeight = new LineEditDouble();
+                lineEditHeight->setValue(heights[size_t(i)]);
+                m_boxcarGridLayout->addWidget(lineEditHeight, i, 5, Qt::AlignTop);
+                m_boxcarLineEditDoubleList.push_back(lineEditHeight);
+            }
+            m_boxcarGridSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+            m_boxcarGridLayout->addItem(m_boxcarGridSpacer, stackSize, 0);
+
+            ui->spinBoxBoxcarStackSize->setValue(stackSize);
+            ui->lineEditBoxcarCycleTime->setValue(GSUtil::Double(stackedBoxcarDriver->findAttribute("CycleTime"s)));
+            ui->tabWidget->setCurrentIndex(tabNames.indexOf("Boxcar"));
+            break;
+        }
+        qDebug() << "Unsupported DRIVER";
+        break;
     }
 }
 
@@ -446,15 +461,33 @@ void DialogDrivers::spinBoxChangedTargets(int /* value */)
 
     updateActivation();
 }
-void DialogDrivers::spinBoxChangedSteps(int /* value */)
+void DialogDrivers::spinBoxChangedSteps(int value)
 {
-    ui->tableWidgetStep->setRowCount(ui->spinBoxSteps->value());
+    if (ui->tableWidgetStep->rowCount() > value)
+    {
+        ui->tableWidgetStep->setRowCount(value);
+    }
+    else
+    {
+        ui->tableWidgetStep->setRowCount(value);
+        ui->tableWidgetStep->setItem(value - 1, 0, new QTableWidgetItem(QString("1")));
+        ui->tableWidgetStep->setItem(value - 1, 1, new QTableWidgetItem(QString("0")));
+    }
     updateActivation();
 }
 
-void DialogDrivers::spinBoxChangedStepsPerCycle(int /* value */)
+void DialogDrivers::spinBoxChangedStepsPerCycle(int value)
 {
-    ui->tableWidgetCyclic->setRowCount(ui->spinBoxStepsPerCycle->value());
+    if (ui->tableWidgetCyclic->rowCount() > value)
+    {
+        ui->tableWidgetCyclic->setRowCount(value);
+    }
+    else
+    {
+        ui->tableWidgetCyclic->setRowCount(value);
+        ui->tableWidgetCyclic->setItem(value - 1, 0, new QTableWidgetItem(QString("1")));
+        ui->tableWidgetCyclic->setItem(value - 1, 1, new QTableWidgetItem(QString("0")));
+    }
     updateActivation();
 }
 
@@ -531,6 +564,8 @@ void DialogDrivers::updateActivation()
     QString textCopy = ui->lineEditDriverID->text();
     int pos = ui->lineEditDriverID->cursorPosition();
     if (ui->lineEditDriverID->validator()->validate(textCopy, pos) != QValidator::Acceptable) okEnable = false;
+    if (ui->spinBoxTargets->value() < 1) okEnable = false;
+    if (ui->lineEditMinimum->value() >= ui->lineEditMaximum->value()) okEnable = false;
 
     ui->pushButtonOK->setEnabled(okEnable);
 }

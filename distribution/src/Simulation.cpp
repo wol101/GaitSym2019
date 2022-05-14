@@ -15,6 +15,7 @@
 #include "GSUtil.h"
 #include "CyclicDriver.h"
 #include "StepDriver.h"
+#include "MarkerPositionDriver.h"
 #include "DataTarget.h"
 #include "DataTargetScalar.h"
 #include "DataTargetQuaternion.h"
@@ -139,7 +140,7 @@ Simulation::~Simulation()
 }
 
 //----------------------------------------------------------------------------
-std::string *Simulation::LoadModel(const char *buffer, size_t length)
+std::string *Simulation::LoadModel(const char *buffer, size_t length) // note this requires buffer to be a 0 terminated string of size length + 1
 {
     std::string *ptr = m_parseXML.LoadModel(buffer, length, "GAITSYM2019"s);
     if (ptr) return ptr;
@@ -908,6 +909,10 @@ std::string *Simulation::ParseDriver(const ParseXML::XMLElement *node)
     else if (buf == "ThreeHingeJoint"s)
     {
         driver = std::make_unique<ThreeHingeJointDriver>();
+    }
+    else if (buf == "MarkerPosition"s)
+    {
+        driver = std::make_unique<MarkerPositionDriver>();
     }
     else
     {

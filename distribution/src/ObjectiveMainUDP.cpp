@@ -361,8 +361,8 @@ int ObjectiveMainUDP::ReadXML()
     m_XMLConverter.LoadBaseXMLString(dataMessagePtr->payload.xml, dataMessagePtr->xmlLength);
     std::string xml(dataMessagePtr->payload.xml, dataMessagePtr->xmlLength);
     // check the hash to make sure we have got the right file and that it has not got corrupted
-    uint32_t *checkHash = md5(xml.data(), int(xml.size()));
-    if (std::equal(dataMessagePtr->md5, dataMessagePtr->md5 + 4, checkHash) == false)
+    auto checkHash = md5(xml.data(), int(xml.size()));
+    if (std::equal(dataMessagePtr->md5, dataMessagePtr->md5 + 4, checkHash.data()) == false)
     {
         if (m_debug) std::cerr << "ReadXML local hash does not match\n";
         if (m_debug) std::cerr << xml <<"\n";

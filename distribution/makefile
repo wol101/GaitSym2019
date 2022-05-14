@@ -175,6 +175,7 @@ LMotorJoint.cpp\
 MAMuscleComplete.cpp\
 MAMuscle.cpp\
 Marker.cpp\
+MarkerPositionDriver.cpp\
 MD5.cpp\
 MovingAverage.cpp\
 Muscle.cpp\
@@ -184,7 +185,6 @@ ObjectiveMain.cpp\
 ObjectiveMainASIO.cpp\
 ObjectiveMainASIOAsync.cpp\
 ObjectiveMainENET.cpp\
-ObjectiveMainMPI.cpp\
 ObjectiveMainTCP.cpp\
 ObjectiveMainUDP.cpp\
 ParseXML.cpp\
@@ -553,9 +553,15 @@ gaitsym_distribution_extras:
 	cp -rf tinyply distribution/
 	cp -rf glextrusion distribution/
 	cp -rf scripts distribution/
+	cp -rf python distribution/
 	cp makefile distribution/
 	find distribution -depth -type d -name CVS -print -exec rm -rf {} \;
 	rm -rf distribution/GaitSymQt/GaitSym*.pro.*
+	rm -rf distribution/python/GaitSym*.pro.*
+	rm -rf distribution/python/obj
+	rm -rf distribution/python/*.so
+	rm -rf distribution/python/*.dll
+	rm -rf distribution/python/*.pyd
 	zip -r distribution.zip distribution
 
 

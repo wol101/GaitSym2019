@@ -681,7 +681,7 @@ bool TextEditDialog::attributeMachineMatch(const std::string &refStr, const std:
     }
 
     QRegularExpression regExp(qFindStr, caseSensitive ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
-    QRegularExpressionMatch match = regExp.match(QRegularExpression::anchoredPattern(qRefStr));
+    QRegularExpressionMatch match = regExp.match(qRefStr);
     return match.hasMatch();
 }
 

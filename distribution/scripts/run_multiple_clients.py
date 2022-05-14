@@ -12,10 +12,10 @@ import shutil
 def run_multiple_clients():
 
     parser = argparse.ArgumentParser(description='Run multiple client files')
-    parser.add_argument('-x', '--executable_to_run', default='GaitSym2019ENET.exe', help='the client executable to run [GaitSym2019ENET.exe]')
-    parser.add_argument('-a', '--arguments', default='', help='Command line arguments for executable e.g. -a"-hl localhost:8090" with no space after the -a []')
+    parser.add_argument('-x', '--executable_to_run', default='gaitsym_2019_asio_async', help='the client executable to run [gaitsym_2019_asio_async]')
+    parser.add_argument('-a', '--arguments', default='', help='Command line arguments for executable e.g. -a"-ho localhost:8086" with no space after the -a if the argument starts with - []')
     parser.add_argument('-n', '--number_of_clients', type=int, default=1, help='Number of clients to run [1]')
-    parser.add_argument('-s', '--search_folder', default='', help='Recursively search for the execultable from this folder []')
+    parser.add_argument('-s', '--search_folder', default='.', help='Recursively search for the execultable from this folder [.]')
     parser.add_argument('-v', '--verbose', action='store_true', help='Write out more information whilst processing')
     args = parser.parse_args()
 

@@ -25,6 +25,7 @@ ArgParse::ArgParse()
 
 void ArgParse::Initialise(int argc, const char **argv, const std::string &appHelpText, size_t maxNumEndArguments, size_t minNumEndArguments)
 {
+    m_rawArguments.clear();
     for (size_t i = 1; i < size_t(argc); i++) m_rawArguments.push_back(std::string(argv[i]));
     m_appHelpText = appHelpText;
     m_minNumEndArguments = minNumEndArguments;

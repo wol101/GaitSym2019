@@ -32,6 +32,7 @@
  * OF SUCH DAMAGE.
  */
 
+#ifdef NON_THREAD_SAFE_OK
 /*
  * The following parameter defines how many bits are used for
  * field elements. The code supports any value from 2 to 16
@@ -76,3 +77,4 @@ void fec_encode(struct fec_parms *code, gf *src[], gf *fec, int index, int sz) ;
 int fec_decode(struct fec_parms *code, gf *pkt[], int index[], int sz) ;
 
 /* end of file */
+#endif

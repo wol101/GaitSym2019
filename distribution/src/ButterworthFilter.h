@@ -14,7 +14,7 @@
 
 #include "Filter.h"
 
-class ButterworthFilter : Filter
+class ButterworthFilter : public Filter
 {
 public:
     ButterworthFilter();
@@ -46,6 +46,7 @@ private:
     double m_ynminus2;
 };
 
+#ifdef NON_THREAD_SAFE_OK
 class SharedButterworthFilter : public Filter
 {
 public:
@@ -77,5 +78,6 @@ private:
     double m_ynminus1;
     double m_ynminus2;
 };
+#endif
 
 #endif // BUTTERWORTHFILTER_H

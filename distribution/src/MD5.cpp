@@ -47,27 +47,27 @@ uint32_t rol( uint32_t v, int16_t amt )
     return ((v>>(32-amt)) & msk1) | ((v<<amt) & ~msk1);
 }
 
-uint32_t *md5(const char *msg, int mlen)
+std::vector<uint32_t> md5(const char *msg, int mlen)
 {
-    static Digest h0 = { 0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476 };
-//    static Digest h0 = { 0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210 };
-    static DgstFctn ff[] = { &f0, &f1, &f2, &f3 };
-    static int16_t M[] = { 1, 5, 3, 7 };
-    static int16_t O[] = { 0, 1, 5, 0 };
-    static int16_t rot0[] = { 7,12,17,22};
-    static int16_t rot1[] = { 5, 9,14,20};
-    static int16_t rot2[] = { 4,11,16,23};
-    static int16_t rot3[] = { 6,10,15,21};
-    static int16_t *rots[] = {rot0, rot1, rot2, rot3 };
-    static uint32_t kspace[64];
-    static uint32_t *k;
+    const Digest h0 = { 0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476 };
+//    const Digest h0 = { 0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210 };
+    const DgstFctn ff[] = { &f0, &f1, &f2, &f3 };
+    const int16_t M[] = { 1, 5, 3, 7 };
+    const int16_t O[] = { 0, 1, 5, 0 };
+    const int16_t rot0[] = { 7,12,17,22};
+    const int16_t rot1[] = { 5, 9,14,20};
+    const int16_t rot2[] = { 4,11,16,23};
+    const int16_t rot3[] = { 6,10,15,21};
+    const int16_t *rots[] = {rot0, rot1, rot2, rot3 };
+    uint32_t kspace[64];
+    const uint32_t *k = nullptr;
 
-    static Digest h;
+    std::vector<uint32_t> h(4);
     Digest abcd;
     DgstFctn fctn;
     int16_t m, o, g;
     uint32_t f;
-    int16_t *rotn;
+    const int16_t *rotn;
     union {
         uint32_t w[16];
         int8_t     b[64];
@@ -127,15 +127,32 @@ uint32_t *md5(const char *msg, int mlen)
     return h;
 }
 
-char *hexDigest(const uint32_t *uPtr)
+std::string hexDigest(const uint32_t *md5)
 {
-    static char out[33];
-    char *ptr = out;
-    for (int i = 0; i < 4; i++)
+    std::string out;
+    char buf[33];
+    char *ptr = buf;
+    for (size_t i = 0; i < 4; i++)
     {
-        sprintf(ptr, "%08x", uPtr[i]);
+        sprintf(ptr, "%08x", md5[i]);
         ptr += 8;
     }
+    out.assign(buf, 32);
+    return out;
+}
+
+
+std::string hexDigest(const std::vector<uint32_t> &md5)
+{
+    std::string out;
+    char buf[33];
+    char *ptr = buf;
+    for (size_t i = 0; i < 4; i++)
+    {
+        sprintf(ptr, "%08x", md5[i]);
+        ptr += 8;
+    }
+    out.assign(buf, 32);
     return out;
 }
 

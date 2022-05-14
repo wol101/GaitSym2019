@@ -37,7 +37,9 @@
 
 UDP::UDP()
 {
+#ifdef NON_THREAD_SAFE_OK
     init_fec();
+#endif
     std::random_device randomDevice;
     m_randomNumberGenerator.seed(randomDevice());
 }
@@ -239,6 +241,7 @@ int UDP::ReceiveText(uint64_t matchID, std::string *text, struct sockaddr_in *se
 // redundancy specifies the number of extra packets to send
 int UDP::SendFEC(uint64_t matchID, const struct sockaddr_in &destination, const std::string &data, uint32_t percentRedundancy)
 {
+#ifdef NON_THREAD_SAFE_OK
     // note that gf can be either unsigned char or unsigned short
     // depending on the size of GF_BITS (2 to 16)
     // GF_SIZE is ((1 << GF_BITS) - 1) so for
@@ -288,10 +291,14 @@ int UDP::SendFEC(uint64_t matchID, const struct sockaddr_in &destination, const 
     }
     fec_free(code);
     return int(len);
+#else
+    return 0;
+#endif
 }
 
 int UDP::ReceiveFEC(uint64_t matchID, uint32_t percentRedundancy, std::string *data, struct sockaddr_in *sender)
 {
+#ifdef NON_THREAD_SAFE_OK
     // note that gf can be either unsigned char or unsigned short
     // depending on the size of GF_BITS (2 to 16)
     // GF_SIZE is ((1 << GF_BITS) - 1) so for
@@ -364,6 +371,9 @@ int UDP::ReceiveFEC(uint64_t matchID, uint32_t percentRedundancy, std::string *d
 
     if (m_debug) { std::cerr << "ReceiveFEC read " << packet.totalLength << " bytes successfully\n"; }
     return int(packet.totalLength);
+#else
+    return 0;
+#endif
 }
 
 

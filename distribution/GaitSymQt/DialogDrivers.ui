@@ -86,13 +86,13 @@
          </sizepolicy>
         </property>
         <property name="minimum">
-         <number>0</number>
+         <number>1</number>
         </property>
         <property name="maximum">
          <number>99999</number>
         </property>
         <property name="value">
-         <number>0</number>
+         <number>1</number>
         </property>
        </widget>
       </item>
@@ -257,6 +257,9 @@
          </property>
          <property name="maximum">
           <number>99999</number>
+         </property>
+         <property name="value">
+          <number>1</number>
          </property>
         </widget>
        </item>

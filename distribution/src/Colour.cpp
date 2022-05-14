@@ -162,7 +162,7 @@ std::string Colour::GetHexArgb()
 
 bool Colour::SetColourFromName(const std::string &name, Colour *namedColour)
 {
-    static std::unordered_map<std::string, uint64_t> colourNameMap(
+    const std::unordered_map<std::string, uint64_t> colourNameMap(
     {
         {"snow",0xfffafa},
         {"ghost white",0xf8f8ff},
@@ -943,7 +943,7 @@ bool Colour::SetColourFromName(const std::string &name, Colour *namedColour)
 void Colour::SetColourFromMap(float index, ColourMap m, Colour *mappedColour, bool invert)
 {
 
-    static float grey[256][4] =
+    const float grey[256][4] =
     {
         {0,0,0,1},
         {0.003921569f,0.003921569f,0.003921569f,1},
@@ -1202,7 +1202,7 @@ void Colour::SetColourFromMap(float index, ColourMap m, Colour *mappedColour, bo
         {0.996078431f,0.996078431f,0.996078431f,1},
         {1,1,1,1}
     };
-    static float cool[256][4] =
+    const float cool[256][4] =
     {
         {0,1,1,1},
         {0.0039216f,0.99608f,1,1},
@@ -1461,7 +1461,7 @@ void Colour::SetColourFromMap(float index, ColourMap m, Colour *mappedColour, bo
         {0.99608f,0.0039216f,1,1},
         {1,0,1,1}
     };
-    static float hot[256][4] =
+    const float hot[256][4] =
     {
         {0.010417f,0,0,1},
         {0.020833f,0,0,1},
@@ -1720,7 +1720,7 @@ void Colour::SetColourFromMap(float index, ColourMap m, Colour *mappedColour, bo
         {1,1,0.98438f,1},
         {1,1,1,1}
     };
-    static float hsv[256][4] =
+    const float hsv[256][4] =
     {
         {1,0,0,1},
         {1,0.023438f,0,1},
@@ -1979,7 +1979,7 @@ void Colour::SetColourFromMap(float index, ColourMap m, Colour *mappedColour, bo
         {1,0,0.046875f,1},
         {1,0,0.023438f,1}
     };
-    static float jet[256][4] =
+    const float jet[256][4] =
     {
         {0,0,0.51562f,1},
         {0,0,0.53125f,1},
@@ -2238,7 +2238,7 @@ void Colour::SetColourFromMap(float index, ColourMap m, Colour *mappedColour, bo
         {0.51562f,0,0,1},
         {0.5f,0,0,1}
     };
-    static float parula[256][4] =
+    const float parula[256][4] =
     {
         {0.2081f,0.1663f,0.5292f,1},
         {0.2091f,0.1721f,0.5411f,1},
@@ -2498,7 +2498,7 @@ void Colour::SetColourFromMap(float index, ColourMap m, Colour *mappedColour, bo
         {0.9763f,0.9831f,0.0538f,1}
     };
 
-    float (*mapPtr)[256][4];
+    const float (*mapPtr)[256][4];
     switch (m)
     {
     case GreyColourMap:

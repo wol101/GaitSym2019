@@ -96,6 +96,7 @@ void ButterworthFilter::CalculateCoefficients(double cutoffFrequency, double sam
     m_a2 = -(1.0 - q * ita + ita * ita) * m_b0;
 }
 
+#ifdef NON_THREAD_SAFE_OK
 double SharedButterworthFilter::m_cutoffFrequency;
 double SharedButterworthFilter::m_samplingFrequency;
 double SharedButterworthFilter::m_b0;
@@ -179,5 +180,5 @@ void SharedButterworthFilter::CalculateCoefficients(double cutoffFrequency, doub
     m_a1 = 2.0 * (ita * ita - 1.0) * m_b0;
     m_a2 = -(1.0 - q * ita + ita * ita) * m_b0;
 }
-
+#endif
 
