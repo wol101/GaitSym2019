@@ -94,8 +94,8 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
     // read the whole file into memory
     DataFile theFile;
     if (theFile.ReadFile(filename) == true) return __LINE__;
-    char *ptr = theFile.GetRawData();
-    char *endPtr = ptr + theFile.GetSize();
+    const char *ptr = theFile.GetRawData();
+    const char *endPtr = ptr + theFile.GetSize();
 
     pgd::Vector3 vertex;
     std::vector<pgd::Vector3> vertexList;
@@ -192,11 +192,11 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
             if (ptr >= endPtr) continue;
             if (*ptr == ' ')
             {
-                vertex.x = strtod(ptr, &ptr);
+                vertex.x = GSUtil::fast_a_to_double(ptr, &ptr);
                 if (ptr >= endPtr) continue;
-                vertex.y = strtod(ptr, &ptr);
+                vertex.y = GSUtil::fast_a_to_double(ptr, &ptr);
                 if (ptr >= endPtr) continue;
-                vertex.z = strtod(ptr, &ptr);
+                vertex.z = GSUtil::fast_a_to_double(ptr, &ptr);
                 vertexList.push_back(vertex);
                 if (vertex.x < m_lowerBound[0]) m_lowerBound[0] = vertex.x;
                 if (vertex.y < m_lowerBound[1]) m_lowerBound[1] = vertex.y;
@@ -211,11 +211,11 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
             {
                 ptr++;
                 if (ptr >= endPtr) continue;
-                normal.x = strtod(ptr, &ptr);
+                normal.x = GSUtil::fast_a_to_double(ptr, &ptr);
                 if (ptr >= endPtr) continue;
-                normal.y = strtod(ptr, &ptr);
+                normal.y = GSUtil::fast_a_to_double(ptr, &ptr);
                 if (ptr >= endPtr) continue;
-                normal.z = strtod(ptr, &ptr);
+                normal.z = GSUtil::fast_a_to_double(ptr, &ptr);
                 normalList.push_back(normal);
                 ptr++;
                 continue;
@@ -224,9 +224,9 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
             {
                 ptr++;
                 if (ptr >= endPtr) continue;
-                uv.x = strtod(ptr, &ptr);
+                uv.x = GSUtil::fast_a_to_double(ptr, &ptr);
                 if (ptr >= endPtr) continue;
-                uv.y = strtod(ptr, &ptr);
+                uv.y = GSUtil::fast_a_to_double(ptr, &ptr);
                 uvList.push_back(uv);
                 ptr++;
                 continue;
@@ -247,7 +247,7 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
                 const std::regex vertex_texture_tester("[ \t]*[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+[ \t]*"s);
                 const std::regex vertex_normal_tester("[ \t]*[0-9]+//[0-9]+[ \t]+[0-9]+//[0-9]+[ \t]+[0-9]+//[0-9]+[ \t]*"s);
                 const std::regex vertex_texture_normal_tester("[ \t]*[0-9]+/[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+/[0-9]+[ \t]+[0-9]+/[0-9]+/[0-9]+[ \t]*"s);
-                char *localEndPtr = ptr + 1;
+                const char *localEndPtr = ptr + 1;
                 while (*localEndPtr != '\0' && *localEndPtr != '\r' && *localEndPtr != '\n' && localEndPtr < endPtr) localEndPtr++;
                 std::string testStr(ptr, size_t(localEndPtr - ptr));
                 std::smatch sm;
@@ -260,11 +260,11 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
 
             if (faceFormat == vertex_only)
             {
-                triangle.vertex[0] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[0] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 if (ptr >= endPtr) continue;
-                triangle.vertex[1] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[1] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 if (ptr >= endPtr) continue;
-                triangle.vertex[2] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[2] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 triangle.normal[0] = SIZE_MAX;
                 triangle.normal[1] = SIZE_MAX;
                 triangle.normal[2] = SIZE_MAX;
@@ -286,20 +286,20 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
 
             if (faceFormat == vertex_normal)
             {
-                triangle.vertex[0] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[0] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr += 2;
                 if (ptr >= endPtr) continue;
-                triangle.normal[0] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.normal[0] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 if (ptr >= endPtr) continue;
-                triangle.vertex[1] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[1] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr += 2;
                 if (ptr >= endPtr) continue;
-                triangle.normal[1] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.normal[1] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 if (ptr >= endPtr) continue;
-                triangle.vertex[2] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[2] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr += 2;
                 if (ptr >= endPtr) continue;
-                triangle.normal[2] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.normal[2] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 triangle.uv[0] = SIZE_MAX;
                 triangle.uv[1] = SIZE_MAX;
                 triangle.material = currentMaterial;
@@ -318,22 +318,22 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
 
             if (faceFormat == vertex_texture)
             {
-                triangle.vertex[0] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[0] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.uv[0] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.uv[0] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 if (ptr >= endPtr) continue;
                 triangle.normal[0] = SIZE_MAX;
-                triangle.vertex[1] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[1] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.uv[1] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.uv[1] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 if (ptr >= endPtr) continue;
                 triangle.normal[1] = SIZE_MAX;
-                triangle.vertex[2] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[2] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.uv[2] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.uv[2] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 triangle.normal[2] = SIZE_MAX;
                 triangle.material = currentMaterial;
                 triangleList.push_back(triangle);
@@ -351,29 +351,29 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
 
             if (faceFormat == vertex_texture_normal)
             {
-                triangle.vertex[0] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[0] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.uv[0] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.uv[0] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.normal[0] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.normal[0] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 if (ptr >= endPtr) continue;
-                triangle.vertex[1] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[1] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.uv[1] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.uv[1] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.normal[1] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.normal[1] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 if (ptr >= endPtr) continue;
-                triangle.vertex[2] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.vertex[2] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.uv[2] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.uv[2] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 ptr++;
                 if (ptr >= endPtr) continue;
-                triangle.normal[2] = strtoull(ptr, &ptr, 10) - 1;
+                triangle.normal[2] = GSUtil::fast_a_to_uint64_t(ptr, &ptr) - 1;
                 triangle.material = currentMaterial;
                 triangleList.push_back(triangle);
                 ptr++;
@@ -810,23 +810,23 @@ int FacetedObject::ReadFromMemory(const char *data, size_t len, bool binary, con
     else
     {
         if (data[len]) return __LINE__; // must be null terminated for ASCII case
-        char *endPtr;
-        size_t numTriangles = std::strtoull(data, &endPtr, 0);
-        m_lowerBound[0] = std::strtod(endPtr, &endPtr);
-        m_lowerBound[1] = std::strtod(endPtr, &endPtr);
-        m_lowerBound[2] = std::strtod(endPtr, &endPtr);
-        m_upperBound[0] = std::strtod(endPtr, &endPtr);
-        m_upperBound[1] = std::strtod(endPtr, &endPtr);
-        m_upperBound[2] = std::strtod(endPtr, &endPtr);
+        const char *endPtr;
+        size_t numTriangles = GSUtil::fast_a_to_uint64_t(data, &endPtr);
+        m_lowerBound[0] = GSUtil::fast_a_to_double(endPtr, &endPtr);
+        m_lowerBound[1] = GSUtil::fast_a_to_double(endPtr, &endPtr);
+        m_lowerBound[2] = GSUtil::fast_a_to_double(endPtr, &endPtr);
+        m_upperBound[0] = GSUtil::fast_a_to_double(endPtr, &endPtr);
+        m_upperBound[1] = GSUtil::fast_a_to_double(endPtr, &endPtr);
+        m_upperBound[2] = GSUtil::fast_a_to_double(endPtr, &endPtr);
         size_t numElements = numTriangles * 9;
         m_vertexList.reserve(numElements);
         m_normalList.reserve(numElements);
         m_colourList.reserve(numElements);
         m_uvList.reserve(numTriangles * 6);
-        for (size_t i = 0; i < numElements; i++) m_vertexList.push_back(std::strtod(endPtr, &endPtr));
-        for (size_t i = 0; i < numElements; i++) m_normalList.push_back(std::strtod(endPtr, &endPtr));
-        for (size_t i = 0; i < numElements; i++) m_colourList.push_back(std::strtod(endPtr, &endPtr));
-        for (size_t i = 0; i < numTriangles * 6; i++) m_uvList.push_back(std::strtod(endPtr, &endPtr));
+        for (size_t i = 0; i < numElements; i++) m_vertexList.push_back(GSUtil::fast_a_to_double(endPtr, &endPtr));
+        for (size_t i = 0; i < numElements; i++) m_normalList.push_back(GSUtil::fast_a_to_double(endPtr, &endPtr));
+        for (size_t i = 0; i < numElements; i++) m_colourList.push_back(GSUtil::fast_a_to_double(endPtr, &endPtr));
+        for (size_t i = 0; i < numTriangles * 6; i++) m_uvList.push_back(GSUtil::fast_a_to_double(endPtr, &endPtr));
     }
     m_meshStore.setTargetMemory(Preferences::valueDouble("MeshStoreMemoryFraction"));
     m_meshStore.addMesh(meshName, m_vertexList, m_normalList, m_colourList, m_uvList, m_lowerBound, m_upperBound);

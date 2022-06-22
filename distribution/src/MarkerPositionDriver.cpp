@@ -187,7 +187,7 @@ void MarkerPositionDriver::appendToAttributes()
     setAttribute("ZPositions"s, *GSUtil::ToString(m_zPositionList.data(), m_zPositionList.size(), &buf));
     for (auto &&it : m_targetMarkerList) stringList.push_back(it->name());
     setAttribute("MarkerIDList"s, pystring::join(" "s, stringList));
-    if (m_referenceMarker) setAttribute("ReferenceMarker"s, m_referenceMarker->name());
+    if (m_referenceMarker) setAttribute("ReferenceMarkerID"s, m_referenceMarker->name());
     else setAttribute("ReferenceMarkerID"s, "World"s);
 }
 

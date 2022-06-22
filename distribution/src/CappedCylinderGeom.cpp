@@ -31,16 +31,6 @@ std::string *CappedCylinderGeom::createFromAttributes()
 {
     if (Geom::createFromAttributes()) return lastErrorPtr();
     std::string buf;
-
-    if (findAttribute("MarkerID"s, &buf) == nullptr) return lastErrorPtr();
-    auto markerIterator = simulation()->GetMarkerList()->find(buf);
-    if (markerIterator == simulation()->GetMarkerList()->end())
-    {
-        setLastError("GEOM ID=\""s + name() +"\" Marker not found"s);
-        return lastErrorPtr();
-    }
-    this->setGeomMarker(markerIterator->second.get());
-
     if (findAttribute("Radius"s, &buf) == nullptr) return lastErrorPtr();
     double radius = GSUtil::Double(buf);
     if (findAttribute("Length"s, &buf) == nullptr) return lastErrorPtr();

@@ -258,7 +258,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         {
         case QMessageBox::Ok:
             writeSettings();
-            event->accept();
+            QMainWindow::closeEvent(event);
             break;
         case QMessageBox::Cancel:
             event->ignore();
@@ -272,7 +272,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     else
     {
         writeSettings();
-        event->accept();
+        QMainWindow::closeEvent(event);
     }
 }
 
@@ -389,6 +389,11 @@ void MainWindow::handleTracking()
         }
         ui->widgetSimulation->update();
     }
+}
+
+const QFileInfo &MainWindow::configFile() const
+{
+    return m_configFile;
 }
 
 

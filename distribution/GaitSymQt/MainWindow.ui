@@ -56,9 +56,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
-              <width>254</width>
-              <height>918</height>
+              <y>-270</y>
+              <width>183</width>
+              <height>727</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_10">
@@ -647,7 +647,7 @@
                    <number>6</number>
                   </property>
                   <property name="maximum">
-                   <double>999.000000000000000</double>
+                   <double>99999.000000000000000</double>
                   </property>
                   <property name="singleStep">
                    <double>0.100000000000000</double>
@@ -838,8 +838,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>374</width>
-              <height>467</height>
+              <width>358</width>
+              <height>474</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
@@ -945,8 +945,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>1129</width>
-          <height>273</height>
+          <width>1137</width>
+          <height>306</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
@@ -1012,7 +1012,7 @@
      <x>0</x>
      <y>0</y>
      <width>1157</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

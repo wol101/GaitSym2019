@@ -28,6 +28,7 @@ macx {
         ../ann_1.1.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
+        ../fast_double_parser \
         ../libgwavi \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
@@ -44,6 +45,7 @@ macx {
     HEADERS +=
     OBJECTIVE_SOURCES +=
     ICON = GaitSymQt.icns
+    QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
 }
 
 win32 {
@@ -63,6 +65,7 @@ win32 {
         ../ann_1.1.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
+        ../fast_double_parser \
         ../libgwavi \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
@@ -105,6 +108,7 @@ unix:!macx {
         ../ann_1.1.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
+        ../fast_double_parser \
         ../libgwavi \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
@@ -356,6 +360,7 @@ SOURCES += \
     ../src/SwingClearanceAbortReporter.cpp \
     ../src/TegotaeDriver.cpp \
     ../src/ThreeHingeJointDriver.cpp \
+    ../src/TwoHingeJointDriver.cpp \
     ../src/TorqueReporter.cpp \
     ../src/TrimeshGeom.cpp \
     ../src/TwoCylinderWrapStrap.cpp \
@@ -441,6 +446,7 @@ HEADERS += \
     ../enet-1.3.14/include/enet/utility.h \
     ../enet-1.3.14/include/enet/win32.h \
     ../exprtk/exprtk.hpp \
+    ../fast_double_parser/fast_double_parser.h \
     ../glextrusion/copy.h \
     ../glextrusion/extrude.h \
     ../glextrusion/gle.h \
@@ -677,6 +683,7 @@ HEADERS += \
     ../src/SwingClearanceAbortReporter.h \
     ../src/TegotaeDriver.h \
     ../src/ThreeHingeJointDriver.h \
+    ../src/TwoHingeJointDriver.h \
     ../src/TorqueReporter.h \
     ../src/TrimeshGeom.h \
     ../src/TwoCylinderWrapStrap.h \

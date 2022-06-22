@@ -92,7 +92,7 @@ int ArgParse::Parse()
         if (it.required)
         {
             auto findShort = std::find(arguments.begin(), arguments.end(), it.shortName);
-            if (findShort != arguments.end()) break;
+            if (findShort != arguments.end()) continue;
             auto findLong = std::find(arguments.begin(), arguments.end(), it.longName);
             if (findLong == arguments.end())
             {

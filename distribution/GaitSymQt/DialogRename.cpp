@@ -182,7 +182,7 @@ void DialogRename::apply()
 
     applyRename(fromString, toString);
 
-    std::string newXML = m_parseXML.SaveModel("Created from DialogRename::apply"s);
+    std::string newXML = m_parseXML.SaveModel("GAITSYM2019"s, "Created from DialogRename::apply"s);
     ui->plainTextEdit->setPlainText(QString::fromStdString(newXML));
     if (localModified || (xml != newXML)) setModified(true);
 }

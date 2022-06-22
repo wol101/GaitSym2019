@@ -47,6 +47,7 @@ macx {
     INCLUDEPATH += \
         ../ann_1.1.2/include \
         ../exprtk \
+        ../fast_double_parser \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -77,6 +78,7 @@ win32 {
     INCLUDEPATH += \
         ../ann_1.1.2/include \
         ../exprtk \
+        ../fast_double_parser \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -121,6 +123,7 @@ unix:!macx {
     INCLUDEPATH += \
         ../ann_1.1.2/include \
         ../exprtk \
+        ../fast_double_parser \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -339,6 +342,7 @@ SOURCES += \
     ../src/SwingClearanceAbortReporter.cpp \
     ../src/TegotaeDriver.cpp \
     ../src/ThreeHingeJointDriver.cpp \
+    ../src/TwoHingeJointDriver.cpp \
     ../src/TorqueReporter.cpp \
     ../src/TrimeshGeom.cpp \
     ../src/TwoCylinderWrapStrap.cpp \
@@ -583,6 +587,7 @@ HEADERS += \
     ../src/TCPIPMessage.h \
     ../src/TegotaeDriver.h \
     ../src/ThreeHingeJointDriver.h \
+    ../src/TwoHingeJointDriver.h \
     ../src/TorqueReporter.h \
     ../src/TrimeshGeom.h \
     ../src/TwoCylinderWrapStrap.h \

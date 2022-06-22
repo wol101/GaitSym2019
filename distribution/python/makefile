@@ -49,7 +49,8 @@ ifeq ($(SYSTEM),OSX)
 	-DBYTE_ORDER_LITTLE_ENDIAN -DUSE_UNIX_ERRORS -DHAVE_ALLOCA_H -DMAKEFILE_OSX
 	LDFLAGS =
 	LIBS = -lpthread -lm -framework CoreServices
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
+	INC_DIRS = -I../src -I../rapidxml-1.13 -I../exprtk -I../ode-0.15/ode/src -I../ode-0.15/libccd/src -I../ode-0.15/OPCODE \
+	-I../ode-0.15/include -I../ann_1.1.2/include -I../fast_double_parser -I../pystring -Iinclude -I/usr/include/python3.8
 endif
 
 ifeq ($(SYSTEM),LINUX)
@@ -71,7 +72,7 @@ ifdef CC_AVAIL
 endif
 	LIBS = 
 	INC_DIRS = -I../src -I../rapidxml-1.13 -I../exprtk -I../ode-0.15/ode/src -I../ode-0.15/libccd/src -I../ode-0.15/OPCODE \
-	-I../ode-0.15/include -I../ann_1.1.2/include -I../pystring -Iinclude -I/usr/include/python3.8
+	-I../ode-0.15/include -I../ann_1.1.2/include -I../fast_double_parser -I../pystring -Iinclude -I/usr/include/python3.8
 endif
 
 ifeq ($(SYSTEM),CYGWIN)
@@ -84,7 +85,8 @@ ifeq ($(SYSTEM),CYGWIN)
 	CXX = g++
 	CC = gcc
 	LIBS = -lpthread -lm
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
+	INC_DIRS = -I../src -I../rapidxml-1.13 -I../exprtk -I../ode-0.15/ode/src -I../ode-0.15/libccd/src -I../ode-0.15/OPCODE \
+	-I../ode-0.15/include -I../ann_1.1.2/include -I../fast_double_parser -I../pystring -Iinclude -I/usr/include/python3.8
 endif
 
 ifeq ($(HOST),submitter.itservices.manchester.ac.uk)
@@ -100,7 +102,8 @@ ifeq ($(HOST),submitter.itservices.manchester.ac.uk)
 	CXX = g++
 	CC = gcc
 	LIBS = -lpthread -lm
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
+	INC_DIRS = -I../src -I../rapidxml-1.13 -I../exprtk -I../ode-0.15/ode/src -I../ode-0.15/libccd/src -I../ode-0.15/OPCODE \
+	-I../ode-0.15/include -I../ann_1.1.2/include -I../fast_double_parser -I../pystring -Iinclude -I/usr/include/python3.8
 endif
 
 ifeq ($(HOST),l-u-roboticssuite.it.manchester.ac.uk)
@@ -115,7 +118,8 @@ ifeq ($(HOST),l-u-roboticssuite.it.manchester.ac.uk)
 	CXX = g++
 	CC = gcc
 	LIBS = -lpthread -lm
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
+	INC_DIRS = -I../src -I../rapidxml-1.13 -I../exprtk -I../ode-0.15/ode/src -I../ode-0.15/libccd/src -I../ode-0.15/OPCODE \
+	-I../ode-0.15/include -I../ann_1.1.2/include -I../fast_double_parser -I../pystring -Iinclude -I/usr/include/python3.8
 endif
 
 # this looks for the substring csf
@@ -128,8 +132,8 @@ ifneq (,$(findstring csf,$(HOST)))
 	CXX = g++
 	CC = gcc
 	LIBS = -lpthread -lm
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE \
-	-Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
+	INC_DIRS = -I../src -I../rapidxml-1.13 -I../exprtk -I../ode-0.15/ode/src -I../ode-0.15/libccd/src -I../ode-0.15/OPCODE \
+	-I../ode-0.15/include -I../ann_1.1.2/include -I../fast_double_parser -I../pystring -Iinclude -I/usr/include/python3.8
 endif
 
 # vpath %.cpp src
@@ -196,6 +200,7 @@ Strap.cpp\
 SwingClearanceAbortReporter.cpp\
 TegotaeDriver.cpp\
 ThreeHingeJointDriver.cpp\
+TwoHingeJointDriver.cpp\
 TorqueReporter.cpp\
 TrimeshGeom.cpp\
 TwoCylinderWrapStrap.cpp\

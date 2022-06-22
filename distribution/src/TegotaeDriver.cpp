@@ -272,7 +272,7 @@ std::string *TegotaeDriver::createFromAttributes()
         return lastErrorPtr();
     }
     std::vector <Geom *> contactGeomList;
-    for (auto it : contactGeomNames)
+    for (auto &&it : contactGeomNames)
     {
         Geom *contactGeom = simulation()->GetGeom(it);
         if (!contactGeom)
@@ -414,11 +414,11 @@ void TegotaeDriver::appendToAttributes()
     stringList.reserve(m_targetList2.size());
     for (auto &&it : m_targetList2) stringList.push_back(it.first);
     setAttribute("TargetIDList2"s, pystring::join(" "s, stringList));
-    setAttribute("OmegaDriverID"s, m_omegaDriver ? m_omegaDriver->name() : ""s);
-    setAttribute("SigmaDriverID"s, m_sigmaDriver ? m_sigmaDriver->name() : ""s);
-    setAttribute("ADriverID"s, m_ADriver ? m_ADriver->name() : ""s);
-    setAttribute("AprimeDriverID"s, m_AprimeDriver ? m_AprimeDriver->name() : ""s);
-    setAttribute("BDriverID"s, m_BDriver ? m_BDriver->name() : ""s);
+    if (m_omegaDriver) setAttribute("OmegaDriverID"s, m_omegaDriver->name());
+    if (m_sigmaDriver) setAttribute("SigmaDriverID"s, m_sigmaDriver->name());
+    if (m_ADriver) setAttribute("ADriverID"s, m_ADriver->name());
+    if (m_AprimeDriver) setAttribute("AprimeDriverID"s, m_AprimeDriver->name());
+    if (m_BDriver) setAttribute("BDriverID"s, m_BDriver->name());
 }
 
 pgd::Vector3 TegotaeDriver::worldErrorVector() const

@@ -53,6 +53,14 @@
         path="1"
         type="QString"
         value="Movie" />
+    <SETTING defaultValue="_metadata"
+        display="1"
+        key="MovieMetadataSuffix"
+        label="MovieMetadataSuffix"
+        order="0"
+        path="0"
+        type="QString"
+        value="_metadata" />
     <SETTING defaultValue="100"
         display="1"
         key="MovieSkip"

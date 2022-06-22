@@ -46,6 +46,8 @@ public:
     static void Write();
     static void Export(const QString &filename);
     static void Import(const QString &filename);
+    static QByteArray ExportData();
+    static int ImportData(const QByteArray &xmlData);
     static void LoadDefaults();
 
     static const SettingsItem settingsItem(const QString &key);
@@ -86,7 +88,7 @@ public:
 private:
 
     static QMap<QString, SettingsItem> m_settings;
-    static QSettings *m_qtSettings;
+    static QSettings m_qtSettings;
 
     static const QString applicationName;
     static const QString organizationName;

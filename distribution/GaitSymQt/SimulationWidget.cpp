@@ -46,6 +46,7 @@
 #include <QImage>
 #include <QOpenGLExtraFunctions>
 #include <QPainter>
+#include <QDateTime>
 
 #include <cmath>
 #include <numeric>
@@ -780,6 +781,45 @@ int SimulationWidget::StartAVISave(const QString &filename)
     if (image.sizeInBytes() == 0) return __LINE__; //should always be OK, but you never know. ;)
     m_aviWriter->InitialiseFile(filename, static_cast<unsigned int>(image.size().width()), static_cast<unsigned int>(image.size().height()), m_fps);
     m_aviWriter->WriteAVI(image, m_aviQuality);
+    QDir dir(QFileInfo(filename).path()); // note that the path() function for a QFileInfo gives the parent path which is what is wanted
+    QString metadataFileName = dir.absoluteFilePath(QFileInfo(filename).completeBaseName() + Preferences::valueQString("MovieMetadataSuffix", "_metadata") + ".xml");
+    QFile metadataFile(metadataFileName);
+    if (metadataFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QDomDocument doc;
+        QDomProcessingInstruction pi =  doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
+        doc.appendChild(pi);
+        QDomElement a = doc.createElement("GAITSYM_MOVIE_METADATA");
+        a.setAttribute("movieFile", QFileInfo(filename).canonicalFilePath());
+        a.setAttribute("movieFileMetaData", QFileInfo(metadataFileName).canonicalFilePath());
+        a.setAttribute("timestamp", QDateTime::currentDateTime().toString());
+        a.setAttribute("width", image.size().width());
+        a.setAttribute("height", image.size().height());
+        a.setAttribute("fps", m_fps);
+        a.setAttribute("aviQuality", m_aviQuality);
+        a.setAttribute("cameraDistance", m_cameraDistance);
+        a.setAttribute("FOV", m_FOV);
+        a.setAttribute("frontClip", m_frontClip);
+        a.setAttribute("backClip", m_backClip);
+        a.setAttribute("COIx", m_COIx);
+        a.setAttribute("COIy", m_COIy);
+        a.setAttribute("COIz", m_COIz);
+        a.setAttribute("upX", m_upX);
+        a.setAttribute("upY", m_upY);
+        a.setAttribute("upZ", m_upZ);
+        a.setAttribute("cameraVecX", m_cameraVecX);
+        a.setAttribute("cameraVecY", m_cameraVecY);
+        a.setAttribute("cameraVecZ", m_cameraVecZ);
+        a.setAttribute("orthographicProjection", m_orthographicProjection);
+        a.setAttribute("movieSkip",  Preferences::valueInt("MovieSkip"));
+        a.setAttribute("trackingOffset", Preferences::valueDouble("TrackingOffset"));
+        a.setAttribute("simulationStep", m_simulation ? m_simulation->GetTimeIncrement() : 0.0);
+        a.setAttribute("simulationFile", m_mainWindow ? m_mainWindow->configFile().canonicalFilePath() : "");
+        doc.appendChild(a);
+        QTextStream stream(&metadataFile);
+        stream << doc.toString();
+        metadataFile.close();
+    }
     return 0;
 }
 

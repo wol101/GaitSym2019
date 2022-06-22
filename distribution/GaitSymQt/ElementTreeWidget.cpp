@@ -85,6 +85,9 @@ ElementTreeWidget::ElementTreeWidget(QWidget *parent) : QTreeWidget(parent)
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(menuRequest(QPoint)));
 
+    // I prefer alternating colours - maybe this should be a preference
+    setAlternatingRowColors(true);
+
 #ifdef ELEMENT_TREE_WIDGET_AUTOFIT_COLUMNS
     // sets the header so it allows resizing
     this->header()->setStretchLastSection(false);

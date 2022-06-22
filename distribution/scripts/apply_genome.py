@@ -10,16 +10,17 @@ import re
 # this line means that all the math functions do not require the math. prefix
 from math import *
 
-def apply_genome():
+# doing this makes args a global which is not the worst thing in the world
+parser = argparse.ArgumentParser(description='Apply a genome to a GaitSym XML config file')
+parser.add_argument('-g', '--genome_file', default='', help='the genome file to use (defaults to last BestGenome*.txt)')
+parser.add_argument('-i', '--input_xml_file', default='workingConfig.xml', help='the input GaitSym XML config file (defaults to workingConfig.xml)')
+parser.add_argument('-o', '--output_xml_file', default='', help='the output GaitSym XML config file (defaults to genome_file name with .xml)')
+parser.add_argument('-l', '--recursion_limit', type=int, default=10000, help='set the python recursion limit (defaults to 10000)')
+parser.add_argument('-f', '--force', action='store_true', help='force overwrite of destination file')
+parser.add_argument('-v', '--verbose', action='store_true', help='write out more information whilst processing')
+args = parser.parse_args()
 
-    parser = argparse.ArgumentParser(description='Apply a genome to a GaitSym XML config file')
-    parser.add_argument('-g', '--genome_file', default='', help='the genome file to use (defaults to last BestGenome*.txt)')
-    parser.add_argument('-i', '--input_xml_file', default='workingConfig.xml', help='the input GaitSym XML config file (defaults to workingConfig.xml)')
-    parser.add_argument('-o', '--output_xml_file', default='', help='the output GaitSym XML config file (defaults to genome_file name with .xml)')
-    parser.add_argument('-l', '--recursion_limit', type=int, default=10000, help='set the python recursion limit (defaults to 10000)')
-    parser.add_argument('-f', '--force', action='store_true', help='force overwrite of destination file')
-    parser.add_argument('-v', '--verbose', action='store_true', help='write out more information whilst processing')
-    args = parser.parse_args()
+def apply_genome():
 
     # start by creating any missing arguments
     if not args.genome_file:
@@ -119,7 +120,11 @@ def process_insert(contents, genes, args):
         suffix = ''
     return process_insert('%s%.18e%s' % (prefix, value, suffix), genes, args)
 
-def parse_insert(insert_string, genes):
+def parse_insert(insert_string, genes):    
+    # this routine is a little fragile because exprtk and python do not use quite the same syntax
+    # we try to fix things up in a rather dumb way that won't work in all cases
+    # most of the math functions come from the "from math import *" line so that the
+    # python eval statement can do all the work
 
     # first step is to substitute the genes
     match = re.search(r'g *\(', insert_string)
@@ -161,9 +166,14 @@ def parse_insert(insert_string, genes):
             suffix = ''
         return parse_insert('%s%s%s'% (prefix, result, suffix), genes)
 
-    # we could now handle the other operators in order of precidence unaries, **^, */%, +-, booleans but there are a few gotchas (e.g. identifying unary operators) and python can now handle this
-    # print(insert_string)
-    return eval(insert_string)
+    # exprtk uses ^ when python uses **
+    insert_string = insert_string.replace('^', '**')
+    
+    # we could now handle the other operators in order of precidence unaries, **^, */%, +-, booleans 
+    # but there are a few gotchas (e.g. identifying unary operators) and python can now handle this
+    if args.verbose: print('eval("%s")' % (insert_string))
+    ret_val = eval(insert_string)
+    return ret_val
 
 def find_unmatched_close_bracket(input_string):
     num_brackets = 0

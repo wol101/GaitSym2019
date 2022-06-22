@@ -311,7 +311,8 @@ void CylinderWrapStrap::Calculate()
     m_wrapStatus = CylinderWrap(cylinderOriginPosition, cylinderInsertionPosition, m_cylinderRadius, m_numWrapSegments, M_PI,
                                 theOriginForce, theInsertionForce, theCylinderForce, theCylinderForcePosition,
                                 &length, &m_pathCoordinates);
-    if (m_wrapStatus == -1) { std::cerr << "Warning: wrapping impossible in \"" << name() << "\" - attachment inside cylinder\n"; }
+    if (m_wrapStatus == -1) {
+        std::cerr << "Warning: wrapping impossible in \"" << name() << "\" - attachment inside cylinder\n"; }
     if (Length() >= 0 && simulation() && simulation()->GetTimeIncrement() > 0) setVelocity((length - Length()) / simulation()->GetTimeIncrement());
     else setVelocity(0);
     setLength(length);

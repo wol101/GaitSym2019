@@ -49,7 +49,7 @@ ifeq ($(SYSTEM),OSX)
 	-DBYTE_ORDER_LITTLE_ENDIAN -DUSE_UNIX_ERRORS -DHAVE_ALLOCA_H -DMAKEFILE_OSX
 	LDFLAGS =
 	LIBS = -lpthread -lm -framework CoreServices
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
+	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include -Ifast_double_parser
 endif
 
 ifeq ($(SYSTEM),LINUX)
@@ -71,7 +71,8 @@ ifdef CC_AVAIL
 endif
 	LIBS = -lpthread -lm
 	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE \
-	-Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
+	-Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include \
+	-Ifast_double_parser
 endif
 
 ifeq ($(SYSTEM),CYGWIN)
@@ -100,7 +101,7 @@ ifeq ($(HOST),submitter.itservices.manchester.ac.uk)
 	CXX = g++
 	CC = gcc
 	LIBS = -lpthread -lm
-	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include
+	INC_DIRS = -Irapidxml-1.13 -Iexprtk -Iode-0.15/ode/src -Iode-0.15/libccd/src -Iode-0.15/OPCODE -Iode-0.15/include -Iann_1.1.2/include -Ipystring -Ienet-1.3.14/include -Iasio-1.18.2/include -Ifast_double_parser
 endif
 
 ifeq ($(HOST),l-u-roboticssuite.it.manchester.ac.uk)
@@ -205,6 +206,7 @@ TCP.cpp\
 TegotaeDriver.cpp\
 ThreadedUDP.cpp\
 ThreeHingeJointDriver.cpp\
+TwoHingeJointDriver.cpp\
 TorqueReporter.cpp\
 TrimeshGeom.cpp\
 TwoCylinderWrapStrap.cpp\

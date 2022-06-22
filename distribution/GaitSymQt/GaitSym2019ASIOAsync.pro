@@ -483,6 +483,7 @@ HEADERS += \
     ../enet-1.3.14/include/enet/utility.h \
     ../enet-1.3.14/include/enet/win32.h \
     ../exprtk/exprtk.hpp \
+    ../fast_double_parser/fast_double_parser.h \
     ../ode-0.15/OPCODE/Ice/IceAABB.h \
     ../ode-0.15/OPCODE/Ice/IceAxes.h \
     ../ode-0.15/OPCODE/Ice/IceBoundingSphere.h \

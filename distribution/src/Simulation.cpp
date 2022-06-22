@@ -61,6 +61,7 @@
 #include "PIDErrorInController.h"
 #include "TegotaeDriver.h"
 #include "ThreeHingeJointDriver.h"
+#include "TwoHingeJointDriver.h"
 #include "Filter.h"
 
 #include "ode/ode.h"
@@ -445,7 +446,7 @@ bool Simulation::TestForCatastrophy()
         int num = m_errorHandler.GetLastMessageNumber();
         std::string messageText = m_errorHandler.GetLastMessage();
         m_numericalErrorCount++;
-        if (m_numericalErrorCount > m_global->PermittedNumericalErrors())
+        if (m_global->PermittedNumericalErrors() >= 0 && m_numericalErrorCount > m_global->PermittedNumericalErrors())
         {
             std::cerr << "t=" << m_SimulationTime << " error count=" << m_numericalErrorCount << " Failed due to ODE warning " << num << " " << messageText << "\n";
             return true;
@@ -500,7 +501,13 @@ bool Simulation::TestForCatastrophy()
         case Body::XVelError:
         case Body::YVelError:
         case Body::ZVelError:
-            std::cerr << "Failed due to velocity error " << Body::limitTestResultStrings(p) << " in: " << iter1.second->name() << "\n";
+            std::cerr << "Failed due to linear velocity error " << Body::limitTestResultStrings(p) << " in: " << iter1.second->name() << "\n";
+            return true;
+
+        case Body::XAVelError:
+        case Body::YAVelError:
+        case Body::ZAVelError:
+            std::cerr << "Failed due to angular velocity error " << Body::limitTestResultStrings(p) << " in: " << iter1.second->name() << "\n";
             return true;
 
         case Body::NumericalError:
@@ -910,6 +917,10 @@ std::string *Simulation::ParseDriver(const ParseXML::XMLElement *node)
     {
         driver = std::make_unique<ThreeHingeJointDriver>();
     }
+    else if (buf == "TwoHingeJoint"s)
+    {
+        driver = std::make_unique<TwoHingeJointDriver>();
+    }
     else if (buf == "MarkerPosition"s)
     {
         driver = std::make_unique<MarkerPositionDriver>();
@@ -1272,7 +1283,7 @@ std::string Simulation::SaveToXML()
                " Score: " << CalculateInstantaneousFitness() <<
                " Mechanical Energy: " << m_MechanicalEnergy <<
                " Metabolic Energy: " << m_MetabolicEnergy;
-    return m_parseXML.SaveModel(comment.str());
+    return m_parseXML.SaveModel("GAITSYM2019"s, comment.str());
 }
 
 // output the simulation state in an XML format that can be re-read

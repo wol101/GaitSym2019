@@ -31,7 +31,7 @@
  */
 
 /*
- * Usefull IO functions.
+ * Useful IO functions.
  */
 
 #include <stdio.h>

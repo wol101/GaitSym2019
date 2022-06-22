@@ -20,10 +20,6 @@ ParseXML::ParseXML()
 {
 }
 
-ParseXML::~ParseXML()
-{
-}
-
 std::string *ParseXML::LoadModel(const char *buffer, size_t length, const std::string &rootNodeTag) // note buffer must be a null terminated string (total length length + 1)
 {
     m_inputConfigDoc.clear();
@@ -88,7 +84,7 @@ std::string *ParseXML::LoadModel(const char *buffer, size_t length, const std::s
     return nullptr;
 }
 
-std::string ParseXML::SaveModel(const std::string &comment)
+std::string ParseXML::SaveModel(const std::string &rootNodeTag, const std::string &comment)
 {
     std::string xmlString;
     m_ouputConfigDoc.clear();
@@ -109,7 +105,7 @@ std::string ParseXML::SaveModel(const std::string &comment)
     }
 
     // create the root node
-    rapidxml::xml_node<char> *rootNode = CreateXMLNode(&m_ouputConfigDoc, "GAITSYM2019"s);
+    rapidxml::xml_node<char> *rootNode = CreateXMLNode(&m_ouputConfigDoc, rootNodeTag);
 
     // create all the child nodes
     for (auto &&element : m_elementList)

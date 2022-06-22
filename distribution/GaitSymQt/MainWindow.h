@@ -38,6 +38,8 @@ public:
     Simulation *simulation() const;
     SimulationWidget *simulationWidget() const;
 
+    const QFileInfo &configFile() const;
+
 public slots:
     void processOneThing();
     void handleCommandLineArguments();

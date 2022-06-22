@@ -382,7 +382,8 @@ void TwoCylinderWrapStrap::Calculate()
                     theOriginForce, theInsertionForce, theCylinder1Force, theCylinder1ForcePosition,
                     theCylinder2Force, theCylinder2ForcePosition, &length,
                     &m_pathCoordinates, &m_wrapStatus);
-    if (m_wrapStatus == -1) { std::cerr << "Warning: wrapping impossible in \"" << name() << "\" - attachment inside cylinder\n"; }
+    if (m_wrapStatus == -1) {
+        std::cerr << "Warning: wrapping impossible in \"" << name() << "\" - attachment inside cylinder\n"; }
     if (Length() >= 0 && simulation() && simulation()->GetTimeIncrement() > 0) setVelocity((length - Length()) / simulation()->GetTimeIncrement());
     else setVelocity(0);
     setLength(length);

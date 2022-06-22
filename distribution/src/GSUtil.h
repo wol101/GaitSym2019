@@ -572,6 +572,17 @@ static size_t SplitGeneric(const std::string &line, std::vector<std::string> *to
 
 static std::wstring utf8_to_utf16(const std::string& utf8);
 
+static uint8_t fast_a_to_uint8_t(const char *str);
+static uint16_t fast_a_to_uint16_t(const char *str);
+static uint32_t fast_a_to_uint32_t(const char *str);
+static uint64_t fast_a_to_uint64_t(const char *str);
+static int8_t fast_a_to_int8_t(const char *str);
+static int16_t fast_a_to_int16_t(const char *str);
+static int32_t fast_a_to_int32_t(const char *str);
+static int64_t fast_a_to_int64_t(const char *str);
+static double fast_a_to_double(const char *nptr, const char *endptr[]);
+static uint64_t fast_a_to_uint64_t(const char *nptr, const char *endptr[]);
+
 static double ThreeAxisDecompositionScore(double x[] , void *data);
 static double ThreeAxisDecomposition(const pgd::Quaternion &target, const pgd::Vector3 &ax1, const pgd::Vector3 &ax2, const pgd::Vector3 &ax3, double *ang1, double *ang2, double *ang3);
 static double ThreeAxisDecompositionError(const pgd::Quaternion &target, const pgd::Vector3 &ax1, const pgd::Vector3 &ax2, const pgd::Vector3 &ax3, double ang1, double ang2, double ang3);

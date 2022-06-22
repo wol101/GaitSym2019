@@ -41,20 +41,10 @@ DialogInfo::~DialogInfo()
     delete ui;
 }
 
-void DialogInfo::accept()
+void DialogInfo::closeEvent(QCloseEvent *event)
 {
-    qDebug() << "DialogInfo::accept()";
-
     savePreferences();
-    QDialog::accept();
-}
-
-void DialogInfo::reject() // this catches cancel, close and escape key
-{
-    qDebug() << "DialogInfo::reject()";
-
-    savePreferences();
-    QDialog::reject();
+    QDialog::closeEvent(event);
 }
 
 void DialogInfo::loadPreferences()

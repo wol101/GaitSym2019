@@ -10,7 +10,7 @@ import fnmatch
 
 def fix_iccp_profiles():
 
-    parser = argparse.ArgumentParser(description="Try to convert an OBJ file into a FluidSac definition")
+    parser = argparse.ArgumentParser(description="Fix PNG ICCP profile errors")
     parser.add_argument("item_list", nargs="+", help="a list of files or folders")
     parser.add_argument("-c", "--pngcrush", default="pngcrush -n -q", help="pngcrush command including arguments [pngcrush -n -q]")
     parser.add_argument("-m", "--mogrify", default="mogrify", help="the mogrify command from imagemagick [mogrify]")

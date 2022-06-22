@@ -365,6 +365,7 @@ std::string *Geom::createFromAttributes()
     }
 
     m_ExcludeList.clear();
+    std::vector<NamedObject *> upstreamObjects;
     if (findAttribute("ExcludeIDList"s, &buf))
     {
         std::vector<std::string> geomNames;
@@ -378,10 +379,12 @@ std::string *Geom::createFromAttributes()
                 return lastErrorPtr();
             }
             m_ExcludeList.push_back(geom);
+            upstreamObjects.push_back(geom);
         }
     }
 
-    setUpstreamObjects({m_geomMarker});
+    upstreamObjects.push_back(m_geomMarker);
+    setUpstreamObjects(upstreamObjects);
     return nullptr;
 }
 

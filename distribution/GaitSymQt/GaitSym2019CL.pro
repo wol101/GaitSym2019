@@ -31,6 +31,7 @@ macx {
         ../ann_1.1.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
+        ../fast_double_parser \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -64,6 +65,7 @@ win32 {
         ../ann_1.1.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
+        ../fast_double_parser \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -102,6 +104,7 @@ unix:!macx {
         ../ann_1.1.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
+        ../fast_double_parser \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -370,6 +373,7 @@ HEADERS += \
     ../enet-1.3.14/include/enet/utility.h \
     ../enet-1.3.14/include/enet/win32.h \
     ../exprtk/exprtk.hpp \
+    ../fast_double_parser/fast_double_parser.h \
     ../ode-0.15/OPCODE/Ice/IceAABB.h \
     ../ode-0.15/OPCODE/Ice/IceAxes.h \
     ../ode-0.15/OPCODE/Ice/IceBoundingSphere.h \

@@ -26,39 +26,65 @@
 
 const QString Preferences::applicationName("GaitSym2019");
 const QString Preferences::organizationName("AnimalSimulationLaboratory");
-QSettings g_qtSettings(QSettings::IniFormat, QSettings::UserScope, Preferences::getOrganizationName(), Preferences::getApplicationName());
-QSettings *Preferences::m_qtSettings = &g_qtSettings;
+QSettings Preferences::m_qtSettings(QSettings::IniFormat, QSettings::UserScope, Preferences::getOrganizationName(), Preferences::getApplicationName());
 QMap<QString, SettingsItem> Preferences::m_settings;
 
 void Preferences::Write()
 {
-    Preferences::clear();
-    for (QMap<QString, SettingsItem>::const_iterator i = m_settings.constBegin(); i != m_settings.constEnd(); i++)
-    {
-//        qDebug("%s: %s", qUtf8Printable(i.key()), qUtf8Printable(i.value().value.toString()));
-        Preferences::setQtValue(i.key(), i.value().value);
-    }
+#ifndef dNODEBUG
+    qDebug() << "Writing preferences to \"" << fileName() << "\"\n";
+#endif
+    Preferences::setQtValue("XML", ExportData());
     Preferences::sync();
+
+//    Preferences::clear();
+//    for (QMap<QString, SettingsItem>::const_iterator i = m_settings.constBegin(); i != m_settings.constEnd(); i++)
+//    {
+//        Preferences::setQtValue(i.key(), i.value().value);
+//    }
+//    Preferences::sync();
 }
 
 void Preferences::Read()
 {
-    qDebug() << "Preferences::Read() fileName = " << fileName();
-    LoadDefaults();
-    // check whether the settings are the right ones
-    if (Preferences::qtValue("SettingsCode", QString()) != m_settings["SettingsCode"].value)
-    {
-        Write();
-    }
-    else
-    {
-        QStringList keys = Preferences::allKeys();
-        for (int i = 0; i < keys.size(); i++)
-            insert(keys[i], Preferences::qtValue(keys[i], QVariant()));
-    }
+#ifndef dNODEBUG
+    qDebug() << "Reading preferences from \"" << fileName() << "\"\n";
+#endif
+    QByteArray xmlData = Preferences::qtValue("XML", QByteArray()).toByteArray();
+    int status = __LINE__;
+    if (xmlData.size()) { status = ImportData(xmlData); }
+    if (status) { LoadDefaults(); }
+
+//    LoadDefaults();
+//    // check whether the settings are the right ones
+//    if (Preferences::qtValue("SettingsCode", QString()) != m_settings["SettingsCode"].value)
+//    {
+//        Write();
+//    }
+//    else
+//    {
+//        QStringList keys = Preferences::allKeys();
+//        for (int i = 0; i < keys.size(); i++)
+//            insert(keys[i], Preferences::qtValue(keys[i], QVariant()));
+//    }
 }
 
 void Preferences::Export(const QString &filename)
+{
+    QByteArray xmlData = ExportData();
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qWarning("Unable to open settings export file: %s", qPrintable(filename));
+        return;
+    }
+    // and now the actual xml doc
+    qint64 bytesWritten = file.write(xmlData);
+    if (bytesWritten != xmlData.size()) qWarning("Unable to write to settings export file: %s", qPrintable(filename));
+    file.close();
+}
+
+QByteArray Preferences::ExportData()
 {
     QDomDocument doc("GaitSym2019Preferences");
     doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
@@ -123,42 +149,33 @@ void Preferences::Export(const QString &filename)
             setting.setAttribute("value", item.value.toString());
         }
     }
-
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        qWarning("Unable to open settings export file: %s", qPrintable(filename));
-        return;
-    }
-
-    // and now the actual xml doc
-    QString xmlString = doc.toString();
-    QByteArray xmlData = xmlString.toUtf8();
-    qint64 bytesWritten = file.write(xmlData);
-    if (bytesWritten != xmlData.size()) qWarning("Unable to write to settings export file: %s", qPrintable(filename));
-    file.close();
+    return doc.toByteArray(4);
 }
 
 void Preferences::Import(const QString &filename)
 {
-    m_settings.clear();
-
-    QDomDocument doc("GaitSym2019Preferences");
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
         qWarning("Unable to open settings export file: %s", qPrintable(filename));
         return;
     }
-    if (!doc.setContent(&file))
+    QByteArray xmlData = file.readAll();
+    if (ImportData(xmlData))
     {
-        qWarning("Unable to read settings export file: %s", qPrintable(filename));
+        qWarning("Unable to parse settings export file: %s", qPrintable(filename));
         return;
     }
-    file.close();
+}
 
+int Preferences::ImportData(const QByteArray &xmlData)
+{
+    m_settings.clear();
+    QDomDocument doc("GaitSym2019Preferences");
+    if (!doc.setContent(xmlData)) { return __LINE__; }
     QDomElement docElem = doc.documentElement();
     ParseQDomElement(docElem);
+    return 0;
 }
 
 void Preferences::ParseQDomElement(const QDomElement &docElem)
@@ -588,25 +605,23 @@ void Preferences::insert(const QString &key, const QVariant &value, const QVaria
 
 void Preferences::setQtValue(const QString &key, const QVariant &value)
 {
-    Q_ASSERT(m_qtSettings);
     QString newKey1 = QString("%1_key_%2").arg(applicationName, key);
     QString newKey2 = QString("%1_type_%2").arg(applicationName, key);
-    m_qtSettings->setValue(newKey1, value);
-    m_qtSettings->setValue(newKey2, value.typeName()); // we have to do this because some settings formats lose the explicit type
+    m_qtSettings.setValue(newKey1, value);
+    m_qtSettings.setValue(newKey2, value.typeName()); // we have to do this because some settings formats lose the explicit type
 }
 
 QVariant Preferences::qtValue(const QString &key, const QVariant &defaultValue)
 {
-    Q_ASSERT(m_qtSettings);
     QVariant variant = defaultValue;
     QString newKey1 = QString("%1_key_%2").arg(applicationName, key);
     QString newKey2 = QString("%1_type_%2").arg(applicationName, key);
-    if (m_qtSettings->contains(newKey1))
+    if (m_qtSettings.contains(newKey1))
     {
-        variant = m_qtSettings->value(newKey1);
-        if (m_qtSettings->contains(newKey2))
+        variant = m_qtSettings.value(newKey1);
+        if (m_qtSettings.contains(newKey2))
         {
-            QString typeName = m_qtSettings->value(newKey2).toString();
+            QString typeName = m_qtSettings.value(newKey2).toString();
 #if QT_VERSION < 0x060000
             variant.convert(QVariant::nameToType(typeName.toUtf8())); // convert to the type stored in the settings
 #else
@@ -615,7 +630,7 @@ QVariant Preferences::qtValue(const QString &key, const QVariant &defaultValue)
         }
         else
         {
-            m_qtSettings->setValue(newKey2, defaultValue.typeName());
+            m_qtSettings.setValue(newKey2, defaultValue.typeName());
         }
     }
     else     // if the setting does not exist, create it and set it to the default value
@@ -627,20 +642,17 @@ QVariant Preferences::qtValue(const QString &key, const QVariant &defaultValue)
 
 void Preferences::clear()
 {
-    Q_ASSERT(m_qtSettings);
-    m_qtSettings->clear();
+    m_qtSettings.clear();
 }
 
 void Preferences::sync()
 {
-    Q_ASSERT(m_qtSettings);
-    m_qtSettings->sync();
+    m_qtSettings.sync();
 }
 
 QStringList Preferences::allKeys()
 {
-    Q_ASSERT(m_qtSettings);
-    QStringList keys = m_qtSettings->allKeys();
+    QStringList keys = m_qtSettings.allKeys();
     QStringList newKeys;
     newKeys.reserve(keys.size());
     QString prefix = QString("%1_key_").arg(applicationName);
@@ -655,8 +667,7 @@ QStringList Preferences::allKeys()
 
 QString Preferences::fileName()
 {
-    Q_ASSERT(m_qtSettings);
-    return m_qtSettings->fileName();
+    return m_qtSettings.fileName();
 }
 
 const QString &Preferences::getApplicationName()

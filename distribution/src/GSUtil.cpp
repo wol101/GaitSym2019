@@ -15,6 +15,8 @@
 #include "PGDMath.h"
 
 #include "ode/ode.h"
+#include "fast_double_parser.h"
+
 #include <cmath>
 #include <vector>
 #include <string>
@@ -558,11 +560,13 @@ void GSUtil::FindBoundsCheck(double *list, double x, int *lowBound, int *highBou
     {
         *lowBound = *lowBound - 1;
         *highBound = *lowBound;
+        return;
     }
     if (x > list[*highBound])
     {
         *lowBound = *highBound;
         *highBound = *highBound + 1;
+        return;
     }
     FindBounds(list, x, lowBound, highBound);
 }
@@ -1251,6 +1255,87 @@ std::wstring GSUtil::utf8_to_utf16(const std::string& utf8)
         }
     }
     return utf16;
+}
+
+uint8_t GSUtil::fast_a_to_uint8_t(const char *str)
+{
+    uint8_t val = 0;
+    while(*str) { val = val*10 + (*str++ - '0'); }
+    return val;
+}
+
+uint16_t GSUtil::fast_a_to_uint16_t(const char *str)
+{
+    uint16_t val = 0;
+    while(*str) { val = val*10 + (*str++ - '0'); }
+    return val;
+}
+
+uint32_t GSUtil::fast_a_to_uint32_t(const char *str)
+{
+    uint32_t val = 0;
+    while(*str) { val = val*10 + (*str++ - '0'); }
+    return val;
+}
+
+uint64_t GSUtil::fast_a_to_uint64_t(const char *str)
+{
+    uint64_t val = 0;
+    while(*str) { val = val*10 + (*str++ - '0'); }
+    return val;
+}
+
+int8_t GSUtil::fast_a_to_int8_t(const char *str)
+{
+    int8_t neg = 1;
+    if (*str == '-') { neg = -1; ++str; }
+    int8_t val = 0;
+    while(*str) { val = val*10 + (*str++ - '0'); }
+    return val * neg;
+}
+
+int16_t GSUtil::fast_a_to_int16_t(const char *str)
+{
+    int16_t neg = 1;
+    if (*str == '-') { neg = -1; ++str; }
+    int16_t val = 0;
+    while(*str) { val = val*10 + (*str++ - '0'); }
+    return val * neg;
+}
+
+int32_t GSUtil::fast_a_to_int32_t(const char *str)
+{
+    int32_t neg = 1;
+    if (*str == '-') { neg = -1; ++str; }
+    int32_t val = 0;
+    while(*str) { val = val*10 + (*str++ - '0'); }
+    return val * neg;
+}
+
+int64_t GSUtil::fast_a_to_int64_t(const char *str)
+{
+    int64_t neg = 1;
+    if (*str == '-') { neg = -1; ++str; }
+    int64_t val = 0;
+    while(*str) { val = val*10 + (*str++ - '0'); }
+    return val * neg;
+}
+
+double GSUtil::fast_a_to_double(const char *nptr, const char *endptr[])
+{
+    double x;
+    while (*nptr <= ' ') ++nptr;
+    *endptr = fast_double_parser::parse_number(nptr, &x);
+    return x;
+}
+
+uint64_t GSUtil::fast_a_to_uint64_t(const char *nptr, const char *endptr[])
+{
+    uint64_t val = 0;
+    while (*nptr <= ' ') ++nptr;
+    while(*nptr >= '0' && *nptr <= '9') { val = val*10 + (*nptr++ - '0'); }
+    *endptr = nptr;
+    return val;
 }
 
 double GSUtil::ThreeAxisDecompositionScore(double x[] , void *data)

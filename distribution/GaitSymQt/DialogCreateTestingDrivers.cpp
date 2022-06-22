@@ -187,7 +187,7 @@ void DialogCreateTestingDrivers::apply()
 
     applyCreateTestingDrivers(activationTime, activationValue, suffix);
 
-    std::string newXML = m_parseXML.SaveModel("Created from DialogCreateTestingDrivers::apply"s);
+    std::string newXML = m_parseXML.SaveModel("GAITSYM2019"s, "Created from DialogCreateTestingDrivers::apply"s);
     ui->plainTextEdit->setPlainText(QString::fromStdString(newXML));
     if (localModified || (xml != newXML)) setModified(true);
 }

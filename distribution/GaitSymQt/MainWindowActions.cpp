@@ -49,6 +49,7 @@
 #include "TegotaeDriver.h"
 #include "TextEditDialog.h"
 #include "ThreeHingeJointDriver.h"
+#include "TwoHingeJointDriver.h"
 
 #include "pystring.h"
 
@@ -1172,8 +1173,21 @@ void MainWindowActions::menuCreateEditGeom(Geom *geom)
         {
             std::unique_ptr<Geom> replacementGeom = dialogGeoms.outputGeom();
             std::string replacementGeomName = replacementGeom->name();
-//            m_mainWindow->ui->treeWidgetElements->insertGeom(QString().fromStdString(replacementGeomName), replacementGeom->visible(), replacementGeom->dump());
             (*m_mainWindow->m_simulation->GetGeomList())[replacementGeomName] = std::move(replacementGeom);
+            // handle dependencies
+            std::vector<NamedObject *> objectList = m_mainWindow->m_simulation->GetObjectList();
+            for (auto &&it : objectList)
+            {
+                if (it->isUpstreamObject(geom))  // have to look for the old object because that's what needs to be replaced
+                {
+                    it->saveToAttributes();
+                    it->createFromAttributes();
+                    it->setRedraw(true);
+                    // everything needs a redraw but somethings also need extra work
+                    if (dynamic_cast<Strap *>(it)) dynamic_cast<Strap *>(it)->Calculate();
+                }
+            }
+
             m_mainWindow->setStatusString(QString("Geom edited: %1").arg(QString::fromStdString(replacementGeomName)), 1);
         }
         m_mainWindow->setWindowModified(true);
@@ -1186,6 +1200,8 @@ void MainWindowActions::menuCreateEditGeom(Geom *geom)
     }
 }
 
+
+
 void MainWindowActions::menuCreateDriver()
 {
     menuCreateEditDriver(nullptr);
@@ -1195,9 +1211,9 @@ void MainWindowActions::menuCreateEditDriver(Driver *driver)
 {
     Q_ASSERT_X(m_mainWindow->m_simulation, "MainWindowActions::menuCreateDriver", "m_mainWindow->m_simulation undefined");
     Q_ASSERT_X(m_mainWindow->m_simulation->GetBodyList()->size(), "MainWindowActions::menuCreateEditMarker", "No bodies defined");
-    if (dynamic_cast<TegotaeDriver *>(driver))
+    if (dynamic_cast<TegotaeDriver *>(driver) || dynamic_cast<ThreeHingeJointDriver *>(driver) || dynamic_cast<TwoHingeJointDriver *>(driver))
     {
-        QMessageBox::warning(m_mainWindow, "GUI Based Editing Not Implemented", QString("Tegotae Driver %1 could not be edited").arg(QString::fromStdString(driver->name())));
+        QMessageBox::warning(m_mainWindow, "GUI Based Editing Not Implemented", QString("Driver %1 could not be edited").arg(QString::fromStdString(driver->name())));
         return;
     }
     DialogDrivers dialogDrivers(m_mainWindow);
@@ -1566,8 +1582,9 @@ void MainWindowActions::menuRename()
 
 void MainWindowActions::elementInfo(const QString &elementType, const QString &elementName)
 {
-    DialogInfo dialog(m_mainWindow);
-    dialog.useXMLSyntaxHighlighter();
+    DialogInfo *dialog = new DialogInfo(m_mainWindow);
+    dialog->setAttribute(Qt::WA_DeleteOnClose, true); // needed so I can display this modelessly
+    dialog->useXMLSyntaxHighlighter();
     NamedObject *element = m_mainWindow->m_simulation->GetNamedObject(elementName.toStdString());
     if (!element) return;
     element->saveToAttributes();
@@ -1584,17 +1601,10 @@ void MainWindowActions::elementInfo(const QString &elementType, const QString &e
         lines.push_back("/>"s);
     }
     std::string text = pystring::join("\n"s, lines);
-    dialog.setEditorText(QString::fromStdString(text));
-    dialog.setWindowTitle(QString("%1 ID=\"%2\" Information").arg(elementType, elementName));
-    int status = dialog.exec();
-    if (status == QDialog::Accepted) // write the new settings
-    {
-        m_mainWindow->ui->statusBar->showMessage(tr("Info window OK"));
-    }
-    else
-    {
-        m_mainWindow->ui->statusBar->showMessage(tr("Info window closed"));
-    }
+    dialog->setEditorText(QString::fromStdString(text));
+    dialog->setWindowTitle(QString("%1 ID=\"%2\" Information").arg(elementType, elementName));
+    dialog->setModal(false);
+    dialog->show();
 }
 
 void MainWindowActions::elementHide(const QString &elementType, const QString &elementName)
