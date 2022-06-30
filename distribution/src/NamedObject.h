@@ -62,7 +62,7 @@ public:
     virtual std::string *unserialise(const std::map<std::string, std::string> &serialiseMap);
 
     std::vector<NamedObject *> *upstreamObjects();
-    void setUpstreamObjects(const std::vector<NamedObject *> &upstreamObjects);
+    void setUpstreamObjects(const std::vector<NamedObject *> &&upstreamObjects);
     void allUpstreamObjects(std::vector<NamedObject *> *upstreamObjects);
     bool isUpstreamObject(NamedObject *findObject);
 

@@ -68,6 +68,7 @@ win32 {
         ../asio-1.18.2/include \
         ../enet-1.3.14/include \
         ../exprtk \
+        ../fast_double_parser \
         ../ode-0.15/OPCODE \
         ../ode-0.15/include \
         ../ode-0.15/libccd/src \
@@ -316,6 +317,7 @@ SOURCES += \
     ../src/MAMuscleComplete.cpp \
     ../src/MD5.cpp \
     ../src/Marker.cpp \
+    ../src/MarkerEllipseDriver.cpp \
     ../src/MarkerPositionDriver.cpp \
     ../src/MovingAverage.cpp \
     ../src/Muscle.cpp \
@@ -346,6 +348,7 @@ SOURCES += \
     ../src/TegotaeDriver.cpp \
     ../src/ThreadedUDP.cpp \
     ../src/ThreeHingeJointDriver.cpp \
+    ../src/TwoHingeJointDriver.cpp \
     ../src/TorqueReporter.cpp \
     ../src/TrimeshGeom.cpp \
     ../src/TwoCylinderWrapStrap.cpp \
@@ -683,6 +686,7 @@ HEADERS += \
     ../src/MD5.h \
     ../src/MPIStuff.h \
     ../src/Marker.h \
+    ../src/MarkerEllipseDriver.h \
     ../src/MarkerPositionDriver.h \
     ../src/MovingAverage.h \
     ../src/Muscle.h \
@@ -718,6 +722,7 @@ HEADERS += \
     ../src/TegotaeDriver.h \
     ../src/ThreadedUDP.h \
     ../src/ThreeHingeJointDriver.h \
+    ../src/TwoHingeJointDriver.h \
     ../src/TorqueReporter.h \
     ../src/TrimeshGeom.h \
     ../src/TwoCylinderWrapStrap.h \

@@ -398,7 +398,7 @@ std::string *NPointStrap::createFromAttributes()
     upstreamObjects.push_back(m_originMarker);
     upstreamObjects.push_back(m_insertionMarker);
     for (auto &&it : viaPointMarkerList) upstreamObjects.push_back(it);
-    setUpstreamObjects(upstreamObjects);
+    setUpstreamObjects(std::move(upstreamObjects));
     return nullptr;
 }
 

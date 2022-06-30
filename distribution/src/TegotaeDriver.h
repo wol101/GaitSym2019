@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef QUADRUPEDALTEGOTAECONTROLLER_H
-#define QUADRUPEDALTEGOTAECONTROLLER_H
+#ifndef TEGOTAEDRIVER_H
+#define TEGOTAEDRIVER_H
 
 #include "Driver.h"
 #include "PGDMath.h"
@@ -90,4 +90,4 @@ private:
 
 };
 
-#endif // QUADRUPEDALTEGOTAECONTROLLER_H
+#endif // TEGOTAEDRIVER_H

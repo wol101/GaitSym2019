@@ -44,7 +44,7 @@ CC_AVAIL := $(shell command -v CC 2> /dev/null)
 gpp_AVAIL := $(shell command -v g++ 2> /dev/null)
 
 ifeq ($(SYSTEM),OSX)
-	CXXFLAGS = -Wall -ffast-math -DEXPERIMENTAL -std=c++14 \
+	CXXFLAGS = -Wall -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DUSE_UNIX_ERRORS -DHAVE_ALLOCA_H -DMAKEFILE_OSX
 	LDFLAGS =
@@ -53,7 +53,7 @@ ifeq ($(SYSTEM),OSX)
 endif
 
 ifeq ($(SYSTEM),LINUX)
-	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++14 \
+	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DMAKEFILE_LINUX
 	LDFLAGS = -static
@@ -77,7 +77,7 @@ endif
 
 ifeq ($(SYSTEM),CYGWIN)
 	# cygwin64 gcc version
-	CXXFLAGS = -O3 -g -ffast-math -Wa,-mbig-obj -Dexprtk_disable_enhanced_features -std=c++14 \
+	CXXFLAGS = -O3 -g -ffast-math -Wa,-mbig-obj -Dexprtk_disable_enhanced_features -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DHAVE_ALLOCA_H \
 	-DALLOCA_H_NEEDED -DNEED_BCOPY -DSTRINGS_H_NEEDED -DMAKEFILE_CYGWIN
@@ -90,8 +90,8 @@ endif
 
 ifeq ($(HOST),submitter.itservices.manchester.ac.uk)
 	#CXXFLAGS = -static -ffast-math -O3 -DEXPERIMENTAL \
-	#CXXFLAGS = -static -O2 -DEXPERIMENTAL -std=c++14 \
-	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++14 \
+	#CXXFLAGS = -static -O2 -DEXPERIMENTAL -std=c++17 \
+	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DMAKEFILE_SUBMITTER
 	LDFLAGS = -static
@@ -106,7 +106,7 @@ endif
 
 ifeq ($(HOST),l-u-roboticssuite.it.manchester.ac.uk)
 	#CXXFLAGS = -static -ffast-math -O3 -DEXPERIMENTAL
-	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++14 \
+	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DMAKEFILE_ROBOTICS
 	LDFLAGS = -static
@@ -122,7 +122,7 @@ endif
 # this looks for the substring csf
 ifneq (,$(findstring csf,$(HOST)))
 	# -static libraries are not available on csf
-	CXXFLAGS = -O3 -ffast-math -DEXPERIMENTAL -std=c++14 \
+	CXXFLAGS = -O3 -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DMAKEFILE_CSF
 	LDFLAGS =
@@ -177,6 +177,7 @@ MAMuscleComplete.cpp\
 MAMuscle.cpp\
 Marker.cpp\
 MarkerPositionDriver.cpp\
+MarkerEllipseDriver.cpp\
 MD5.cpp\
 MovingAverage.cpp\
 Muscle.cpp\

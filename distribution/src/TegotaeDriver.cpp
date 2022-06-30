@@ -382,7 +382,7 @@ std::string *TegotaeDriver::createFromAttributes()
     if (m_ADriver) upstreamObjects.push_back(m_ADriver);
     if (m_AprimeDriver) upstreamObjects.push_back(m_AprimeDriver);
     if (m_BDriver) upstreamObjects.push_back(m_BDriver);
-    setUpstreamObjects(upstreamObjects);
+    setUpstreamObjects(std::move(upstreamObjects) );
     return nullptr;
 }
 

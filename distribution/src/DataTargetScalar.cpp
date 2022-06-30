@@ -253,6 +253,30 @@ double DataTargetScalar::calculateError(size_t index)
             geom->GetWorldPosition(result);
             m_errorScore = (result[2] - m_ValueList[size_t(index)]);
             break;
+        case XF:
+            {
+                std::vector<Contact *> *contactList = geom->GetContactList();
+                double force = 0;
+                for (auto &&it : *contactList) force += it->GetJointFeedback()->f1[0];
+                m_errorScore = (force - m_ValueList[size_t(index)]);
+                break;
+            }
+        case YF:
+            {
+                std::vector<Contact *> *contactList = geom->GetContactList();
+                double force = 0;
+                for (auto &&it : *contactList) force += it->GetJointFeedback()->f1[1];
+                m_errorScore = (force - m_ValueList[size_t(index)]);
+                break;
+            }
+        case ZF:
+            {
+                std::vector<Contact *> *contactList = geom->GetContactList();
+                double force = 0;
+                for (auto &&it : *contactList) force += it->GetJointFeedback()->f1[2];
+                m_errorScore = (force - m_ValueList[size_t(index)]);
+                break;
+            }
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
         }
@@ -568,6 +592,30 @@ double DataTargetScalar::calculateError(double time)
             geom->GetWorldPosition(result);
             m_errorScore = (result[2] - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
             break;
+        case XF:
+            {
+                std::vector<Contact *> *contactList = geom->GetContactList();
+                double force = 0;
+                for (auto &&it : *contactList) force += it->GetJointFeedback()->f1[0];
+                m_errorScore = (force - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
+                break;
+            }
+        case YF:
+            {
+                std::vector<Contact *> *contactList = geom->GetContactList();
+                double force = 0;
+                for (auto &&it : *contactList) force += it->GetJointFeedback()->f1[1];
+                m_errorScore = (force - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
+                break;
+            }
+        case ZF:
+            {
+                std::vector<Contact *> *contactList = geom->GetContactList();
+                double force = 0;
+                for (auto &&it : *contactList) force += it->GetJointFeedback()->f1[2];
+                m_errorScore = (force - GSUtil::Interpolate((*targetTimeList())[size_t(index)], m_ValueList[size_t(index)], (*targetTimeList())[indexNext], m_ValueList[indexNext], time));
+                break;
+            }
         default:
             std::cerr << "DataTargetScalar::GetMatchValue error in " << name() << " unknown DataType " << m_DataType << "\n";
         }
@@ -639,187 +687,9 @@ std::string DataTargetScalar::dumpToString()
     if (firstDump())
     {
         setFirstDump(false);
-        ss << "Time\tActualV\tError\n";
+        ss << "Time\tError\n";
     }
-    Body *body;
-    Geom *geom;
-    HingeJoint *hingeJoint;
-    BallJoint *ballJoint;
-    const double *r;
-    double ref = 0;
-    dVector3 result;
-    dQuaternion q;
-    TegotaeDriver *tegotaeDriver;
-
-    if ((body = dynamic_cast<Body *>(GetTarget())) != nullptr)
-    {
-        switch (m_DataType)
-        {
-        case Q0:
-            r = body->GetQuaternion();
-            ref = r[0];
-            break;
-        case Q1:
-            r = body->GetQuaternion();
-            ref = r[1];
-            break;
-        case Q2:
-            r = body->GetQuaternion();
-            ref = r[2];
-            break;
-        case Q3:
-            r = body->GetQuaternion();
-            ref = r[3];
-            break;
-        case XP:
-            r = body->GetPosition();
-            ref = r[0];
-            break;
-        case YP:
-            r = body->GetPosition();
-            ref = r[1];
-            break;
-        case ZP:
-            r = body->GetPosition();
-            ref = r[2];
-            break;
-        case XV:
-            r = body->GetLinearVelocity();
-            ref = r[0];
-            break;
-        case YV:
-            r = body->GetLinearVelocity();
-            ref = r[1];
-            break;
-        case ZV:
-            r = body->GetLinearVelocity();
-            ref = r[2];
-            break;
-        case XRV:
-            r = body->GetAngularVelocity();
-            ref = r[0];
-            break;
-        case YRV:
-            r = body->GetAngularVelocity();
-            ref = r[1];
-            break;
-        case ZRV:
-            r = body->GetAngularVelocity();
-            ref = r[2];
-            break;
-        default:
-            break;
-        }
-    }
-    else if ((hingeJoint = dynamic_cast<HingeJoint *>(GetTarget())) != nullptr)
-    {
-        hingeJoint->GetHingeAnchor(result);
-        switch (m_DataType)
-        {
-        case XP:
-            ref = result[0];
-            break;
-        case YP:
-            ref = result[1];
-            break;
-        case ZP:
-            ref = result[2];
-            break;
-        case Angle:
-            ref = hingeJoint->GetHingeAngle();
-            break;
-        default:
-            break;
-        }
-    }
-    else if ((ballJoint = dynamic_cast<BallJoint *>(GetTarget())) != nullptr)
-    {
-        ballJoint->GetBallAnchor(result);
-        switch (m_DataType)
-        {
-        case XP:
-            ref = result[0];
-            break;
-        case YP:
-            ref = result[1];
-            break;
-        case ZP:
-            ref = result[2];
-            break;
-        default:
-            break;
-        }
-    }
-    else if ((geom = dynamic_cast<Geom *>(GetTarget())) != nullptr)
-    {
-        switch (m_DataType)
-        {
-        case Q0:
-            geom->GetWorldQuaternion(q);
-            ref = q[0];
-            break;
-        case Q1:
-            geom->GetWorldQuaternion(q);
-            ref = q[1];
-            break;
-        case Q2:
-            geom->GetWorldQuaternion(q);
-            ref = q[2];
-            break;
-        case Q3:
-            geom->GetWorldQuaternion(q);
-            ref = q[3];
-            break;
-        case XP:
-            geom->GetWorldPosition(result);
-            ref = result[0];
-            break;
-        case YP:
-            geom->GetWorldPosition(result);
-            ref = result[1];
-            break;
-        case ZP:
-            geom->GetWorldPosition(result);
-            ref = result[2];
-            break;
-        default:
-            break;
-        }
-    }
-    else if ((tegotaeDriver = dynamic_cast<TegotaeDriver *>(GetTarget())) != nullptr)
-    {
-        pgd::Vector3 errorVector;
-        switch (m_DataType)
-        {
-        case DriverError:
-            errorVector = tegotaeDriver->localErrorVector();
-            ref = errorVector.Magnitude();
-        default:
-            break;
-        }
-    }
-    else if (GetTarget() == nullptr)
-    {
-        switch(m_DataType)
-        {
-        case MetabolicEnergy:
-            ref = simulation()->GetMetabolicEnergy();
-            break;
-        case MechanicalEnergy:
-            ref = simulation()->GetMechanicalEnergy();
-            break;
-        case Time:
-            ref = simulation()->GetTime();
-            break;
-        case DeltaTime:
-            ref = simulation()->GetTimeIncrement();
-            break;
-        default:
-            break;
-        }
-    }
-
-    ss << simulation()->GetTime() << "\t" << ref << "\t" << calculateError(simulation()->GetTime()) << "\n";
+    ss << simulation()->GetTime() << m_errorScore << "\n";
     return ss.str();
 }
 

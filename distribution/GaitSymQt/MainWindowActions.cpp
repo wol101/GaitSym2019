@@ -20,10 +20,7 @@
 #include "Marker.h"
 #include "FluidSac.h"
 #include "Driver.h"
-#include "DataTarget.h"
 #include "FacetedObject.h"
-#include "Reporter.h"
-#include "Controller.h"
 #include "Warehouse.h"
 #include "Preferences.h"
 #include "SimulationWidget.h"
@@ -44,12 +41,12 @@
 #include "DialogRename.h"
 #include "DialogInfo.h"
 #include "Colour.h"
-#include "AMotorJoint.h"
-#include "LMotorJoint.h"
 #include "TegotaeDriver.h"
 #include "TextEditDialog.h"
 #include "ThreeHingeJointDriver.h"
 #include "TwoHingeJointDriver.h"
+#include "MarkerPositionDriver.h"
+#include "MarkerEllipseDriver.h"
 
 #include "pystring.h"
 
@@ -754,7 +751,11 @@ void MainWindowActions::menuImportMeshes()
             auto markerList = m_mainWindow->m_simulation->GetMarkerList();
             std::string ext, suggestedName;
             pystring::os::path::splitext(suggestedName, ext, pystring::os::path::basename(meshFileName));
-            std::replace(suggestedName.begin(), suggestedName.end(), ' ', '_');
+            for (size_t i = 0; i < suggestedName.size(); i++)
+            {
+                if (std::isalnum(suggestedName[i]) || suggestedName[i] == '_') continue;
+                suggestedName[i] = '_';
+            }
             std::string suggestedCMMarkerName = suggestedName + "_CM_Marker"s;
             auto suggestedNameIt = bodyList->find(suggestedName);
             auto suggestedMarkerNameIt = markerList->find(suggestedCMMarkerName);
@@ -1211,7 +1212,8 @@ void MainWindowActions::menuCreateEditDriver(Driver *driver)
 {
     Q_ASSERT_X(m_mainWindow->m_simulation, "MainWindowActions::menuCreateDriver", "m_mainWindow->m_simulation undefined");
     Q_ASSERT_X(m_mainWindow->m_simulation->GetBodyList()->size(), "MainWindowActions::menuCreateEditMarker", "No bodies defined");
-    if (dynamic_cast<TegotaeDriver *>(driver) || dynamic_cast<ThreeHingeJointDriver *>(driver) || dynamic_cast<TwoHingeJointDriver *>(driver))
+    if (dynamic_cast<TegotaeDriver *>(driver) || dynamic_cast<ThreeHingeJointDriver *>(driver) || dynamic_cast<TwoHingeJointDriver *>(driver)
+            || dynamic_cast<MarkerPositionDriver *>(driver) || dynamic_cast<MarkerEllipseDriver *>(driver))
     {
         QMessageBox::warning(m_mainWindow, "GUI Based Editing Not Implemented", QString("Driver %1 could not be edited").arg(QString::fromStdString(driver->name())));
         return;

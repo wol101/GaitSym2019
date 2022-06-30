@@ -20,9 +20,7 @@
 #include "LineEditDouble.h"
 #include "Body.h"
 #include "PGDMath.h"
-#include "GSUtil.h"
 #include "Marker.h"
-#include "MainWindow.h"
 
 #include <QDebug>
 #include <QVBoxLayout>
@@ -50,8 +48,8 @@ DialogAssembly::DialogAssembly(QWidget *parent) :
     // make all the labels the same width as the largest
     QList<QLabel *> list = this->findChildren<QLabel *>();
     int maxWidth = INT_MIN;
-    for (auto iter : list) maxWidth = std::max(maxWidth, iter->width());
-    for (auto iter : list) iter->resize(maxWidth, iter->height());
+    for (auto &&iter : list) maxWidth = std::max(maxWidth, iter->width());
+    for (auto &&iter : list) iter->resize(maxWidth, iter->height());
 }
 
 DialogAssembly::~DialogAssembly()
@@ -67,7 +65,7 @@ void DialogAssembly::closeEvent(QCloseEvent *event)
 
 void DialogAssembly::accept() // this catches OK and return/enter
 {
-    for (auto iter = m_simulation->GetJointList()->begin(); iter != m_simulation->GetJointList()->end(); /* no increment */)
+    for (auto &&iter = m_simulation->GetJointList()->begin(); iter != m_simulation->GetJointList()->end(); /* no increment */)
     {
         if (iter->second->group() == "assembly"s)
         {
@@ -76,7 +74,7 @@ void DialogAssembly::accept() // this catches OK and return/enter
         }
         else { iter++; }
     }
-    for (auto iter = m_simulation->GetMarkerList()->begin(); iter != m_simulation->GetMarkerList()->end(); /* no increment */)
+    for (auto &&iter = m_simulation->GetMarkerList()->begin(); iter != m_simulation->GetMarkerList()->end(); /* no increment */)
     {
         if (iter->second->group() == "assembly"s)
         {
@@ -292,7 +290,7 @@ void DialogAssembly::initialise()
     ui->lineEditZR->setValue(0);
 
     std::string bodyName;
-    for (auto iter : assemblyJoints)
+    for (auto &&iter : assemblyJoints)
     {
         LMotorJoint *lMotorJoint = dynamic_cast<LMotorJoint *>(iter.second);
         if (lMotorJoint)
@@ -305,7 +303,7 @@ void DialogAssembly::initialise()
             break;
         }
     }
-    for (auto iter : assemblyJoints)
+    for (auto &&iter : assemblyJoints)
     {
         AMotorJoint *aMotorJoint = dynamic_cast<AMotorJoint *>(iter.second);
         if (aMotorJoint && aMotorJoint->name() == "World"s + bodyName + "Joint"s + m_assemblyAngularMotorSuffix)

@@ -137,7 +137,7 @@ std::string *Driver::createFromAttributes()
         this->setInterp(GSUtil::Bool(buf));
     }
 
-    setUpstreamObjects(upstreamObjects);
+    setUpstreamObjects(std::move(upstreamObjects));
     return nullptr;
 }
 

@@ -313,6 +313,7 @@ SOURCES += \
     ../src/MAMuscleComplete.cpp \
     ../src/MD5.cpp \
     ../src/Marker.cpp \
+    ../src/MarkerEllipseDriver.cpp \
     ../src/MarkerPositionDriver.cpp \
     ../src/MovingAverage.cpp \
     ../src/Muscle.cpp \
@@ -341,6 +342,7 @@ SOURCES += \
     ../src/TegotaeDriver.cpp \
     ../src/ThreadedUDP.cpp \
     ../src/ThreeHingeJointDriver.cpp \
+    ../src/TwoHingeJointDriver.cpp \
     ../src/TorqueReporter.cpp \
     ../src/TrimeshGeom.cpp \
     ../src/TwoCylinderWrapStrap.cpp \
@@ -573,6 +575,7 @@ HEADERS += \
     ../src/MD5.h \
     ../src/MPIStuff.h \
     ../src/Marker.h \
+    ../src/MarkerEllipseDriver.h \
     ../src/MarkerPositionDriver.h \
     ../src/MovingAverage.h \
     ../src/Muscle.h \
@@ -605,6 +608,7 @@ HEADERS += \
     ../src/TegotaeDriver.h \
     ../src/ThreadedUDP.h \
     ../src/ThreeHingeJointDriver.h \
+    ../src/TwoHingeJointDriver.h \
     ../src/TorqueReporter.h \
     ../src/TrimeshGeom.h \
     ../src/TwoCylinderWrapStrap.h \

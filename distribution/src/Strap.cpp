@@ -44,7 +44,7 @@ std::string *Strap::createFromAttributes()
         if (result.size())
         {
             m_torqueMarkerList.reserve(result.size());
-            for (auto it: result)
+            for (auto &&it: result)
             {
                 auto torqueMarker = simulation()->GetMarkerList()->find(it);
                 if (torqueMarker == simulation()->GetMarkerList()->end())
@@ -73,7 +73,7 @@ void Strap::appendToAttributes()
     setAttribute("Length"s, *GSUtil::ToString(m_length, &buf));
     std::vector<std::string> markerNames;
     markerNames.reserve(m_torqueMarkerList.size());
-    for (auto it: m_torqueMarkerList) markerNames.push_back(it->name());
+    for (auto &&it: m_torqueMarkerList) markerNames.push_back(it->name());
     std::string torqueMarkerList = pystring::join(" "s, markerNames);
     setAttribute("TorqueMarkerIDList"s, torqueMarkerList);
     return;
@@ -241,7 +241,7 @@ std::string Strap::dumpToString()
               it->vector[0] * m_tension << "\t" << it->vector[1] * m_tension << "\t" << it->vector[2] * m_tension;
     }
     pgd::Vector3 worldTorque,markerTorque, worldMomentArm, markerMomentArm;
-    for (auto it: m_torqueMarkerList)
+    for (auto &&it: m_torqueMarkerList)
     {
         GetTorque(*it, &worldTorque, &markerTorque, &worldMomentArm, &markerMomentArm);
         ss << "\t" << it->name() << "\t" <<

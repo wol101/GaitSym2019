@@ -402,7 +402,7 @@ int FacetedObject::ParseOBJFile(const std::string &filename)
     m_uvList.clear();
     m_uvList.reserve(triangleList.size() * 6);
     double colour[3] = {m_blendColour.redF(), m_blendColour.greenF(), m_blendColour.blueF() };
-    for (auto it : triangleList)
+    for (auto &&it : triangleList)
     {
         m_vertexList.push_back(vertexList[it.vertex[0]].x);
         m_vertexList.push_back(vertexList[it.vertex[0]].y);

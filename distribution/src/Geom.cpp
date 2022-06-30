@@ -384,7 +384,7 @@ std::string *Geom::createFromAttributes()
     }
 
     upstreamObjects.push_back(m_geomMarker);
-    setUpstreamObjects(upstreamObjects);
+    setUpstreamObjects(std::move(upstreamObjects));
     return nullptr;
 }
 

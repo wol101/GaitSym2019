@@ -44,7 +44,7 @@ CC_AVAIL := $(shell command -v CC 2> /dev/null)
 gpp_AVAIL := $(shell command -v g++ 2> /dev/null)
 
 ifeq ($(SYSTEM),OSX)
-	CXXFLAGS = -Wall -ffast-math -DEXPERIMENTAL -std=c++14 \
+	CXXFLAGS = -Wall -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DUSE_UNIX_ERRORS -DHAVE_ALLOCA_H -DMAKEFILE_OSX
 	LDFLAGS =
@@ -72,12 +72,12 @@ ifdef CC_AVAIL
 endif
 	LIBS = 
 	INC_DIRS = -I../src -I../rapidxml-1.13 -I../exprtk -I../ode-0.15/ode/src -I../ode-0.15/libccd/src -I../ode-0.15/OPCODE \
-	-I../ode-0.15/include -I../ann_1.1.2/include -I../fast_double_parser -I../pystring -Iinclude -I/usr/include/python3.8
+	-I../ode-0.15/include -I../ann_1.1.2/include -I../fast_double_parser -I../pystring -Iinclude -I/usr/include/python3.10
 endif
 
 ifeq ($(SYSTEM),CYGWIN)
 	# cygwin64 gcc version
-	CXXFLAGS = -O3 -g -ffast-math -Wa,-mbig-obj -Dexprtk_disable_enhanced_features -std=c++14 \
+	CXXFLAGS = -O3 -g -ffast-math -Wa,-mbig-obj -Dexprtk_disable_enhanced_features -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DHAVE_ALLOCA_H \
 	-DALLOCA_H_NEEDED -DNEED_BCOPY -DSTRINGS_H_NEEDED -DMAKEFILE_CYGWIN
@@ -91,8 +91,8 @@ endif
 
 ifeq ($(HOST),submitter.itservices.manchester.ac.uk)
 	#CXXFLAGS = -static -ffast-math -O3 -DEXPERIMENTAL \
-	#CXXFLAGS = -static -O2 -DEXPERIMENTAL -std=c++14 \
-	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++14 \
+	#CXXFLAGS = -static -O2 -DEXPERIMENTAL -std=c++17 \
+	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DMAKEFILE_SUBMITTER
 	LDFLAGS = -static
@@ -108,7 +108,7 @@ endif
 
 ifeq ($(HOST),l-u-roboticssuite.it.manchester.ac.uk)
 	#CXXFLAGS = -static -ffast-math -O3 -DEXPERIMENTAL
-	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++14 \
+	CXXFLAGS = -static -O3 -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DMAKEFILE_ROBOTICS
 	LDFLAGS = -static
@@ -125,7 +125,7 @@ endif
 # this looks for the substring csf
 ifneq (,$(findstring csf,$(HOST)))
 	# -static libraries are not available on csf
-	CXXFLAGS = -O3 -ffast-math -DEXPERIMENTAL -std=c++14 \
+	CXXFLAGS = -O3 -ffast-math -DEXPERIMENTAL -std=c++17 \
 	-DdIDEDOUBLE -DTRIMESH_ENABLED -DTRIMESH_OPCODE -DCCD_IDEDOUBLE -DdLIBCCD_ENABLED -DdTHREADING_INTF_DISABLED \
 	-DBYTE_ORDER_LITTLE_ENDIAN -DHAVE_MALLOC_H -DUSE_UNIX_ERRORS -DMAKEFILE_CSF
 	LDFLAGS =
@@ -179,6 +179,7 @@ MAMuscleComplete.cpp\
 MAMuscle.cpp\
 Marker.cpp\
 MarkerPositionDriver.cpp\
+MarkerEllipseDriver.cpp\
 MD5.cpp\
 MovingAverage.cpp\
 Muscle.cpp\
@@ -375,7 +376,31 @@ ANNOBJ = $(addsuffix .o, $(basename $(ANNSRC) ) )
 PYSTRINGOBJ = $(addsuffix .o, $(basename $(PYSTRINGSRC) ) )
 PYBINDOBJ = $(addsuffix .o, $(basename $(PYBINDSRC) ) )
 
-LIBRARY = GaitSym2019.cpython-38-x86_64-linux-gnu.so
+# this is a hack to find the proper extension for linux python libraries
+# it assumes there is a readline shared library in the python folder
+# it will almost certainly break if there are multiple versions of python installed
+ifeq (, $(shell which python ))
+  $(error "PYTHON=$(PYTHON) not found in $(PATH)")
+endif
+python_version_full := $(wordlist 2,4,$(subst ., ,$(shell python3 --version 2>&1)))
+python_version_major := $(word 1,${python_version_full})
+python_version_minor := $(word 2,${python_version_full})
+python_version_patch := $(word 3,${python_version_full})
+
+python_library_example:=$(notdir $(wildcard /usr/lib/python3.*/lib-dynload/readline*.so))
+$(info python_library_example is $(python_library_example))
+python_library_extension:=$(subst readline,,$(python_library_example) )
+$(info python_library_extension is $(python_library_extension))
+gaitsym_basename:=GaitSym2019
+$(info gaitsym_basename is $(gaitsym_basename))
+gaitsym_library_name:=$(gaitsym_basename)$(python_library_extension)
+$(info gaitsym_library_name is $(gaitsym_library_name))
+
+LIBRARY = $(gaitsym_library_name)
+# the result will be something like this probably
+# LIBRARY = GaitSym2019.cpython-38-x86_64-linux-gnu.so
+# LIBRARY = GaitSym2019.cpython-39-x86_64-linux-gnu.so
+# LIBRARY = GaitSym2019.cpython-310-x86_64-linux-gnu.so
 
 all: directories library
 

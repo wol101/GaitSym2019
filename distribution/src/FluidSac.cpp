@@ -97,14 +97,14 @@ bool FluidSac::isGoodMesh(const std::vector<FluidSac::Triangle> &triangleList, c
     // for a water tight mesh edges should be in pairs and the direction should be reversed
     // first store the edges in a multimap using the start vertex as key
     std::multimap <size_t, size_t> edgeList;
-    for (auto it : triangleList)
+    for (auto &&it : triangleList)
     {
         edgeList.insert(std::make_pair(it.v0, it.v1));
         edgeList.insert(std::make_pair(it.v1, it.v2));
         edgeList.insert(std::make_pair(it.v2, it.v0));
     }
     // then iterate through the edges
-    for (auto it : edgeList)
+    for (auto &&it : edgeList)
     {
         // get all the edges that start with the end vertex
         auto matched = edgeList.equal_range(it.second);
@@ -127,7 +127,7 @@ double FluidSac::signedVolumeOfTriangle(pgd::Vector3 p1, pgd::Vector3 p2, pgd::V
 double FluidSac::volumeOfMesh(const std::vector<FluidSac::Triangle> &triangleList, const std::vector<pgd::Vector3> &vectorList)
 {
     double volumeSum = 0;
-    for (auto it : triangleList)
+    for (auto &&it : triangleList)
     {
         volumeSum += signedVolumeOfTriangle(vectorList[it.v0], vectorList[it.v1], vectorList[it.v2]);
     }
@@ -307,7 +307,7 @@ std::string *FluidSac::createFromAttributes()
     std::vector<NamedObject *> upstreamObjects;
     upstreamObjects.reserve(m_markerList.size());
     for (auto &&it : m_markerList) upstreamObjects.push_back(it);
-    setUpstreamObjects(upstreamObjects);
+    setUpstreamObjects(std::move(upstreamObjects));
     return nullptr;
 }
 

@@ -27,7 +27,6 @@
 #include "FacetedSphere.h"
 #include "Preferences.h"
 #include "MainWindow.h"
-#include "GLUtils.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -75,43 +74,9 @@ SimulationWidget::SimulationWidget(QWidget *parent)
     setMouseTracking(true);
 }
 
-SimulationWidget::~SimulationWidget()
-{
-    cleanup();
-}
-
-void SimulationWidget::cleanup()
-{
-    makeCurrent();
-    if (m_facetedObjectShader)
-    {
-        delete m_facetedObjectShader;
-        m_facetedObjectShader = nullptr;
-    }
-    if (m_fixedColourObjectShader)
-    {
-        delete m_fixedColourObjectShader;
-        m_fixedColourObjectShader = nullptr;
-    }
-    if (m_aviWriter)
-    {
-        delete m_aviWriter;
-        m_aviWriter = nullptr;
-    }
-    doneCurrent();
-}
 
 void SimulationWidget::initializeGL()
 {
-    // In this example the widget's corresponding top-level window can change
-    // several times during the widget's lifetime. Whenever this happens, the
-    // QOpenGLWidget's associated context is destroyed and a new one is created.
-    // Therefore we have to be prepared to clean up the resources on the
-    // aboutToBeDestroyed() signal, instead of the destructor. The emission of
-    // the signal will be followed by an invocation of initializeGL() where we
-    // can recreate all resources.
-    connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &SimulationWidget::cleanup);
-
     initializeOpenGLFunctions();
 
     QString versionString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
@@ -130,12 +95,13 @@ void SimulationWidget::initializeGL()
     // implementations this is optional and support may not be present
     // at all. Nonetheless the below code works in all cases and makes
     // sure there is a VAO when one is needed.
-    m_vao.create();
-    QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
+    m_vao = new QOpenGLVertexArrayObject(this);
+    m_vao->create();
+    QOpenGLVertexArrayObject::Binder vaoBinder(m_vao);
 
     glClearColor(GLclampf(m_backgroundColour.redF()), GLclampf(m_backgroundColour.greenF()), GLclampf(m_backgroundColour.blueF()), GLclampf(m_backgroundColour.alphaF()));
 
-    m_facetedObjectShader = new QOpenGLShaderProgram();
+    m_facetedObjectShader = new QOpenGLShaderProgram(this);
     m_facetedObjectShader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/opengl/vertex_shader.glsl");
     m_facetedObjectShader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/opengl/fragment_shader.glsl");
     m_facetedObjectShader->bindAttributeLocation("vertex", 0); // instead of "layout (location = 0)" in shader
@@ -156,7 +122,7 @@ void SimulationWidget::initializeGL()
 
     m_facetedObjectShader->release();
 
-    m_fixedColourObjectShader = new QOpenGLShaderProgram();
+    m_fixedColourObjectShader = new QOpenGLShaderProgram(this);
     m_fixedColourObjectShader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/opengl/vertex_shader_2.glsl");
     m_fixedColourObjectShader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/opengl/fragment_shader_2.glsl");
     m_fixedColourObjectShader->bindAttributeLocation("vertex", 0);
@@ -178,7 +144,7 @@ void SimulationWidget::paintGL()
 
     painter.beginNativePainting();
 
-    QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
+    QOpenGLVertexArrayObject::Binder vaoBinder(m_vao);
 
     glClearColor(GLclampf(m_backgroundColour.redF()), GLclampf(m_backgroundColour.greenF()), GLclampf(m_backgroundColour.blueF()), GLclampf(m_backgroundColour.alphaF()));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -290,9 +256,9 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
         return;
     }
 
-    if (event->buttons() & Qt::LeftButton)
+    while (true)
     {
-        if (event->modifiers() == Qt::NoModifier)
+        if (event->buttons() & Qt::LeftButton && event->modifiers() == Qt::NoModifier)
         {
             int trackballRadius;
             if (width() < height()) trackballRadius = int(float(width()) / 2.2f);
@@ -305,8 +271,9 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             m_trackballFlag = true;
             emit EmitStatusString(tr("Rotate"), 2);
             update();
+            break;
         }
-        else if (event->modifiers() & Qt::ShiftModifier)
+        if (event->buttons() & Qt::LeftButton && event->modifiers() & Qt::ShiftModifier)
         {
             // detect the collision point of the mouse click
             if (m_hits.size() > 0)
@@ -318,11 +285,10 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
                 emit EmitStatusString(QString("3D Cursor %1\t%2\t%3").arg(double(m_cursor3DPosition.x())).arg(double(m_cursor3DPosition.y())).arg(double(m_cursor3DPosition.z())), 2);
                 update();
             }
+            break;
         }
-    }
-    else if (event->buttons() & Qt::MiddleButton)
-    {
-        if (event->modifiers() == Qt::NoModifier)
+
+        if ((event->buttons() & Qt::MiddleButton && event->modifiers() & Qt::NoModifier) || (event->buttons() & Qt::LeftButton && event->modifiers() & Qt::AltModifier))
         {
             m_panStartCOI = QVector3D(m_COIx, m_COIy, m_COIz);
             m_projectPanMatrix = m_proj * m_view; // model would be identity so mvpMatrix isn't needed
@@ -339,21 +305,22 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             {
                 auto closestHit = getClosestHit();
                 m_panStartPoint = QVector3D(float(closestHit->worldLocation().x), float(closestHit->worldLocation().y), float(closestHit->worldLocation().z));
-                QVector3D screenStartPoint = m_projectPanMatrix * m_panStartPoint;
+                QVector3D screenStartPoint = m_projectPanMatrix.map(m_panStartPoint);
                 m_panStartScreenPoint.setZ(screenStartPoint.z());
             }
             else     // this is harder since we don't know the screen Z were are interested in.
             {
                 // generate a screen Z from projecting the COI into screen coordinates (-1 to 1 box)
-                QVector3D screenStartPoint = m_projectPanMatrix * m_panStartCOI;
+                QVector3D screenStartPoint = m_projectPanMatrix.map(m_panStartCOI);
                 m_panStartScreenPoint.setZ(screenStartPoint.z());
                 // now unproject this point to get the pan start point
-                m_panStartPoint = m_unprojectPanMatrix * m_panStartScreenPoint;
+                m_panStartPoint = m_unprojectPanMatrix.map(m_panStartScreenPoint);
             }
             emit EmitStatusString(tr("Pan"), 2);
             update();
+            break;
         }
-        else if (event->modifiers() & Qt::AltModifier)
+        if (event->buttons() & Qt::MiddleButton && event->modifiers() & Qt::AltModifier)
         {
             if (m_hits.size() > 0)
             {
@@ -368,14 +335,14 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
                 emit EmitCOI(worldIntersection.x(), worldIntersection.y(), worldIntersection.z());
                 update();
             }
+            break;
         }
-    }
-    else if (event->buttons() & Qt::RightButton)
-    {
-        if (event->modifiers() == Qt::NoModifier)
+        if ((event->buttons() & Qt::RightButton && event->modifiers() == Qt::NoModifier) || (event->buttons() & Qt::LeftButton && event->modifiers() & Qt::ControlModifier))
         {
             menuRequest(event->pos());
+            break;
         }
+        break;
     }
 }
 
@@ -401,42 +368,48 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
         }
         return;
     }
-    if (event->buttons() & Qt::LeftButton)
+    while (true)
     {
-        if (m_trackballFlag)
+        if (event->buttons() & Qt::LeftButton && event->modifiers() == Qt::NoModifier)
         {
-            pgd::Quaternion pgdRotation;
-            m_trackball->RollTrackballToClick(event->pos().x(), event->pos().y(), &pgdRotation);
-            QQuaternion rotation(float(pgdRotation.n), float(pgdRotation.x), float(pgdRotation.y), float(pgdRotation.z));
-            rotation = rotation.conjugated();
-            QVector3D newCameraVec = rotation * m_trackballStartCameraVec;
-            m_cameraVecX = newCameraVec.x();
-            m_cameraVecY = newCameraVec.y();
-            m_cameraVecZ = newCameraVec.z();
-            QVector3D newUp = rotation *  m_trackballStartUp;
-            m_upX = newUp.x();
-            m_upY = newUp.y();
-            m_upZ = newUp.z();
-            update();
-            emit EmitStatusString(QString("Camera %1 %2 %3 Up %4 %5 %6").arg(double(m_cameraVecX)).arg(double(m_cameraVecY)).arg(double(m_cameraVecZ)).arg(double(m_upX)).arg(double(m_upY)).arg(double(m_upZ)), 2);
+            if (m_trackballFlag)
+            {
+                pgd::Quaternion pgdRotation;
+                m_trackball->RollTrackballToClick(event->pos().x(), event->pos().y(), &pgdRotation);
+                QQuaternion rotation(float(pgdRotation.n), float(pgdRotation.x), float(pgdRotation.y), float(pgdRotation.z));
+                rotation = rotation.conjugated();
+                QVector3D newCameraVec = rotation * m_trackballStartCameraVec;
+                m_cameraVecX = newCameraVec.x();
+                m_cameraVecY = newCameraVec.y();
+                m_cameraVecZ = newCameraVec.z();
+                QVector3D newUp = rotation *  m_trackballStartUp;
+                m_upX = newUp.x();
+                m_upY = newUp.y();
+                m_upZ = newUp.z();
+                update();
+                emit EmitStatusString(QString("Camera %1 %2 %3 Up %4 %5 %6").arg(double(m_cameraVecX)).arg(double(m_cameraVecY)).arg(double(m_cameraVecZ)).arg(double(m_upX)).arg(double(m_upY)).arg(double(m_upZ)), 2);
+            }
+            break;
         }
-    }
-    else if (event->buttons() & Qt::MiddleButton)
-    {
-        if (m_panFlag)
+        if ((event->buttons() & Qt::MiddleButton && event->modifiers() == Qt::NoModifier) || (event->buttons() & Qt::LeftButton && event->modifiers() & Qt::AltModifier))
         {
-            GLfloat winX = (GLfloat(event->pos().x()) / GLfloat(width())) * 2 - 1;
-            GLfloat winY = -1 * ((GLfloat(event->pos().y()) / GLfloat(height())) * 2 - 1);
-            QVector3D screenPoint(winX, winY, m_panStartScreenPoint.z());
-            QVector3D panCurrentPoint = m_unprojectPanMatrix * screenPoint;
-            m_COIx = m_panStartCOI.x() - (panCurrentPoint.x() - m_panStartPoint.x());
-            m_COIy = m_panStartCOI.y() - (panCurrentPoint.y() - m_panStartPoint.y());
-            m_COIz = m_panStartCOI.z() - (panCurrentPoint.z() - m_panStartPoint.z());
-            // qDebug() << "panCurrentPoint=" << panCurrentPoint;
-            emit EmitStatusString(QString("COI %1 %2 %3").arg(double(m_COIx)).arg(double(m_COIy)).arg(double(m_COIz)), 2);
-            emit EmitCOI(m_COIx, m_COIy, m_COIz);
-            update();
+            if (m_panFlag)
+            {
+                GLfloat winX = (GLfloat(event->pos().x()) / GLfloat(width())) * 2 - 1;
+                GLfloat winY = -1 * ((GLfloat(event->pos().y()) / GLfloat(height())) * 2 - 1);
+                QVector3D screenPoint(winX, winY, m_panStartScreenPoint.z());
+                QVector3D panCurrentPoint = m_unprojectPanMatrix.map(screenPoint);
+                m_COIx = m_panStartCOI.x() - (panCurrentPoint.x() - m_panStartPoint.x());
+                m_COIy = m_panStartCOI.y() - (panCurrentPoint.y() - m_panStartPoint.y());
+                m_COIz = m_panStartCOI.z() - (panCurrentPoint.z() - m_panStartPoint.z());
+                // qDebug() << "panCurrentPoint=" << panCurrentPoint;
+                emit EmitStatusString(QString("COI %1 %2 %3").arg(double(m_COIx)).arg(double(m_COIy)).arg(double(m_COIz)), 2);
+                emit EmitCOI(m_COIx, m_COIy, m_COIz);
+                update();
+            }
+            break;
         }
+        break;
     }
 }
 
@@ -514,7 +487,7 @@ void SimulationWidget::menuRequest(const QPoint &pos)
     if (m_hits.size() == 0) return;
 
     QMenu menu;
-    QAction *action = menu.addAction(tr("Centre View"));
+    menu.addAction(tr("Centre View"));
     menu.addSeparator();
 
     Drawable *drawable = getClosestHit()->drawable();
@@ -526,62 +499,62 @@ void SimulationWidget::menuRequest(const QPoint &pos)
         // I want the bit after the Draw
         std::regex elementNameRegEx(".*Draw([A-Za-z]*)");
         std::string elementName = std::regex_replace(className, elementNameRegEx, "$1");
-        action = menu.addAction(QString("Info %1 %2...").arg(QString::fromStdString(elementName)).arg(QString::fromStdString(name)));
-        action = menu.addAction(QString("Hide %1 %2").arg(QString::fromStdString(elementName)).arg(QString::fromStdString(name)));
+        menu.addAction(QString("Info %1 %2...").arg(QString::fromStdString(elementName), QString::fromStdString(name)));
+        menu.addAction(QString("Hide %1 %2").arg(QString::fromStdString(elementName), QString::fromStdString(name)));
     }
 
     while (m_simulation && m_mainWindow->mode() == MainWindow::constructionMode) // use while to prevent nesting of if else statements
     {
-        action = menu.addAction(tr("Create Marker..."));
+        menu.addAction(tr("Create Marker..."));
         menu.addSeparator();
         auto body = dynamic_cast<DrawBody *>(drawable);
         if (body)
         {
-            action = menu.addAction(tr("Edit Body..."));
-            action = menu.addAction(tr("Delete Body..."));
+            menu.addAction(tr("Edit Body..."));
+            menu.addAction(tr("Delete Body..."));
             break;
         }
 //        auto fluisac = dynamic_cast<DrawFluidSac *>(drawable);
 //        if (fluisac)
 //        {
-//            action = menu.addAction(tr("Edit Fluid Sac..."));
-//            action = menu.addAction(tr("Delete Fluid Sac..."));
+//            menu.addAction(tr("Edit Fluid Sac..."));
+//            menu.addAction(tr("Delete Fluid Sac..."));
 //            break;
 //        }
         auto geom = dynamic_cast<DrawGeom *>(drawable);
         if (geom)
         {
-            action = menu.addAction(tr("Edit Geom..."));
-            action = menu.addAction(tr("Delete Geom..."));
+            menu.addAction(tr("Edit Geom..."));
+            menu.addAction(tr("Delete Geom..."));
             break;
         }
         auto joint = dynamic_cast<DrawJoint *>(drawable);
         if (joint)
         {
-            action = menu.addAction(tr("Edit Joint..."));
-            action = menu.addAction(tr("Delete Joint..."));
+            menu.addAction(tr("Edit Joint..."));
+            menu.addAction(tr("Delete Joint..."));
             break;
         }
         auto marker = dynamic_cast<DrawMarker *>(drawable);
         if (marker)
         {
-            action = menu.addAction(tr("Edit Marker..."));
-            action = menu.addAction(tr("Delete Marker..."));
-            action = menu.addAction(tr("Move Marker"));
+            menu.addAction(tr("Edit Marker..."));
+            menu.addAction(tr("Delete Marker..."));
+            menu.addAction(tr("Move Marker"));
             break;
         }
         auto muscle = dynamic_cast<DrawMuscle *>(drawable);
         if (muscle)
         {
-            action = menu.addAction(tr("Edit Muscle..."));
-            action = menu.addAction(tr("Delete Muscle..."));
+            menu.addAction(tr("Edit Muscle..."));
+            menu.addAction(tr("Delete Muscle..."));
             break;
         }
         break;
     }
 
     QPoint gp = this->mapToGlobal(pos);
-    action = menu.exec(gp);
+    QAction *action = menu.exec(gp);
     while (action) // use while to prevent nesting of if else statements
     {
         m_lastMenuItem = action->text();
@@ -736,12 +709,7 @@ void SimulationWidget::setAviQuality(int aviQuality)
 
 AVIWriter *SimulationWidget::aviWriter() const
 {
-    return m_aviWriter;
-}
-
-void SimulationWidget::setAviWriter(AVIWriter *aviWriter)
-{
-    m_aviWriter = aviWriter;
+    return m_aviWriter.get();
 }
 
 QColor SimulationWidget::cursorColour() const
@@ -774,8 +742,7 @@ int SimulationWidget::WriteMovieFrame()
 
 int SimulationWidget::StartAVISave(const QString &filename)
 {
-    if (m_aviWriter) delete m_aviWriter;
-    m_aviWriter = new AVIWriter();
+    m_aviWriter = std::make_unique<AVIWriter>();
     if (m_aviQuality == 0) return __LINE__; // should always be true
     QImage image = grabFramebuffer();
     if (image.sizeInBytes() == 0) return __LINE__; //should always be OK, but you never know. ;)
@@ -825,9 +792,8 @@ int SimulationWidget::StartAVISave(const QString &filename)
 
 int SimulationWidget::StopAVISave()
 {
-    if (m_aviWriter == nullptr) return __LINE__;
-    delete m_aviWriter;
-    m_aviWriter = nullptr;
+    if (!m_aviWriter) return __LINE__;
+    m_aviWriter.reset(nullptr);
     return 0;
 }
 
@@ -1153,9 +1119,9 @@ bool SimulationWidget::intersectModel(float winX, float winY)
                     newHits->setTriangleIndex(intersectionIndexList[i]);
                     newHits->setModelLocation(intersectionCoordList[i]);
                     QVector3D modelIntersection(float(intersectionCoordList[i].x), float(intersectionCoordList[i].y), float(intersectionCoordList[i].z));
-                    QVector3D screenIntersection = mvpMatrix * modelIntersection;
+                    QVector3D screenIntersection = mvpMatrix.map(modelIntersection);
                     if (screenIntersection.z() < -1.0f || screenIntersection.z() > 1.0f) continue; // this means that only visible intersections are allowed
-                    QVector3D worldIntersection = facetedObjectIter->model() * modelIntersection;
+                    QVector3D worldIntersection = facetedObjectIter->model().map(modelIntersection);
                     newHits->setWorldLocation(pgd::Vector3(double(worldIntersection.x()), double(worldIntersection.y()), double(worldIntersection.z())));
                     newHits->setScreenLocation(pgd::Vector3(double(screenIntersection.x()), double(screenIntersection.y()), double(screenIntersection.z())));
                     m_hits.push_back(std::move(newHits));
@@ -1193,9 +1159,9 @@ bool SimulationWidget::intersectModel(float winX, float winY)
                 newHits->setTriangleIndex(intersectionIndexList[i]);
                 newHits->setModelLocation(intersectionCoordList[i]);
                 QVector3D modelIntersection(float(intersectionCoordList[i].x), float(intersectionCoordList[i].y), float(intersectionCoordList[i].z));
-                QVector3D screenIntersection = mvpMatrix * modelIntersection;
+                QVector3D screenIntersection = mvpMatrix.map(modelIntersection);
                 if (screenIntersection.z() < -1.0f || screenIntersection.z() > 1.0f) continue; // this means that only visible intersections are allowed
-                QVector3D worldIntersection = facetedObjectIter->model() * modelIntersection;
+                QVector3D worldIntersection = facetedObjectIter->model().map(modelIntersection);
                 newHits->setWorldLocation(pgd::Vector3(double(worldIntersection.x()), double(worldIntersection.y()), double(worldIntersection.z())));
                 newHits->setScreenLocation(pgd::Vector3(double(screenIntersection.x()), double(screenIntersection.y()), double(screenIntersection.z())));
                 m_hits.push_back(std::move(newHits));

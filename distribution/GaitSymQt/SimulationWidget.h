@@ -51,7 +51,6 @@ class SimulationWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Co
 
 public:
     SimulationWidget(QWidget *parent = nullptr);
-    ~SimulationWidget() Q_DECL_OVERRIDE;
 
     Simulation *simulation() const;
     void setSimulation(Simulation *simulation);
@@ -135,7 +134,6 @@ public:
     bool DeleteDrawBody(const std::string &bodyName);
 
     AVIWriter *aviWriter() const;
-    void setAviWriter(AVIWriter *aviWriter);
 
     int aviQuality() const;
     void setAviQuality(int aviQuality);
@@ -175,7 +173,6 @@ public:
     std::map<std::string, std::unique_ptr<DrawMarker>> *getDrawMarkerMap();
 
 public slots:
-    void cleanup();
     void SetCameraVec(float x, float y, float z);
     void SetCameraVec(double x, double y, double z);
     void menuRequest(const QPoint &pos);
@@ -262,7 +259,7 @@ private:
 
 //    std::map<std::string, std::shared_ptr<FacetedObject>> m_extraObjectsToDrawMap;
 
-    AVIWriter *m_aviWriter = nullptr;
+    std::unique_ptr<AVIWriter> m_aviWriter;
     int m_aviQuality = 80;
     unsigned int m_fps = 25;
 
@@ -287,7 +284,7 @@ private:
     std::vector<size_t> m_hitsIndexByZ;
     QString m_lastMenuItem;
 
-    QOpenGLVertexArrayObject m_vao;
+    QOpenGLVertexArrayObject *m_vao = nullptr;
     QOpenGLShaderProgram *m_facetedObjectShader = nullptr;
     QOpenGLShaderProgram *m_fixedColourObjectShader = nullptr;
     QMatrix4x4 m_proj;

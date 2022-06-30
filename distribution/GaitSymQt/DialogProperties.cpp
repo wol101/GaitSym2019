@@ -54,7 +54,7 @@ void DialogProperties::initialise()
     QVector<SettingsItem> colourSettings;
     QVector<SettingsItem> vector2DSettings;
     QVector<SettingsItem> vector3DSettings;
-    for (auto item : m_inputSettingsItems)
+    for (auto &&item : m_inputSettingsItems)
     {
         if (item.display && item.type == QMetaType::Int) intSettings.push_back(item);
         if (item.display && (item.type == QMetaType::Float || item.type == QMetaType::Double)) fpSettings.push_back(item);

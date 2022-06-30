@@ -213,9 +213,9 @@ std::vector<NamedObject *> *NamedObject::upstreamObjects()
     return &m_upstreamObjects;
 }
 
-void NamedObject::setUpstreamObjects(const std::vector<NamedObject *> &upstreamObjects)
+void NamedObject::setUpstreamObjects(const std::vector<NamedObject *> &&upstreamObjects)
 {
-    m_upstreamObjects = upstreamObjects;
+    m_upstreamObjects = std::move(upstreamObjects);
 }
 
 void NamedObject::allUpstreamObjects(std::vector<NamedObject *> *upstreamObjects)

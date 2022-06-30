@@ -5,7 +5,6 @@ import sys
 import os
 import argparse
 import re
-import tempfile
 import scipy
 import scipy.optimize
 import json
@@ -75,8 +74,8 @@ def scipy_optimize_bind():
     with open(args.input_xml_file, 'r', encoding='utf8') as f_in:
         data = f_in.read()
     (smart_substitution_text_components, smart_substitution_parser_text) = create_smart_substitution(data)
-    if args.verbose: print(len(smart_substitution_text_components))
-    if args.verbose: print(smart_substitution_parser_text)
+    if args.verbose: print(f'{len(smart_substitution_text_components) = }')
+    if args.verbose: print(f'{smart_substitution_parser_text = }')
     
     extra_args = []
     extra_args.append(smart_substitution_text_components)
@@ -551,7 +550,7 @@ def do_differential_evolution(ranges_dict, json_string, extra_args, verbose):
                                                     updating = parameters_dict['updating'],
                                                     workers = parameters_dict['workers'])
     except ValueError as e:
-        print('ValueError in scipy.optimize.basinhopping')
+        print('ValueError in scipy.optimize.differential_evolution')
         print(e)
         sys.exit(1)
     
@@ -788,7 +787,7 @@ def do_shgo(ranges_dict, json_string, extra_args, verbose):
                                   options = parameters_dict['options'],
                                   sampling_method = parameters_dict['sampling_method'])
     except ValueError as e:
-        print('ValueError in scipy.optimize.basinhopping')
+        print('ValueError in scipy.optimize.shgo')
         print(e)
         sys.exit(1)
     
@@ -814,7 +813,7 @@ def do_dual_annealing(ranges_dict, json_string, extra_args, verbose):
         sys.exit(1)
     check_dict(parameters_dict, default_json)
 
-    parameters_dict['local_search_options'] = {}
+    parameters_dict['minimizer_kwargs'] = {}
     parameters_dict['seed'] = None
     parameters_dict['no_local_search'] = False
     parameters_dict['callback'] = None
@@ -823,7 +822,7 @@ def do_dual_annealing(ranges_dict, json_string, extra_args, verbose):
     else:
         parameters_dict['x0'] = None
 
-# scipy.optimize.dual_annealing = dual_annealing(func, bounds, args=(), maxiter=1000, local_search_options={}, initial_temp=5230.0, restart_temp_ratio=2e-05, visit=2.62, accept=-5.0, maxfun=10000000.0, seed=None, no_local_search=False, callback=None, x0=None)
+# scipy.optimize.dual_annealing = dual_annealing(func, bounds, args=(), maxiter=1000, minimizer_kwargs={}, initial_temp=5230.0, restart_temp_ratio=2e-05, visit=2.62, accept=-5.0, maxfun=10000000.0, seed=None, no_local_search=False, callback=None, x0=None)
 #    Find the global minimum of a function using Dual Annealing.
 #
 #    Parameters
@@ -841,7 +840,7 @@ def do_dual_annealing(ranges_dict, json_string, extra_args, verbose):
 #        objective function.
 #    maxiter : int, optional
 #        The maximum number of global search iterations. Default value is 1000.
-#    local_search_options : dict, optional
+#    minimizer_kwargs : dict, optional
 #        Extra keyword arguments to be passed to the local minimizer
 #        (`minimize`). Some important options could be:
 #        ``method`` for the minimizer method to use and ``args`` for
@@ -912,7 +911,7 @@ def do_dual_annealing(ranges_dict, json_string, extra_args, verbose):
                                             bounds = ranges_list,
                                             args = [extra_args],
                                             maxiter = parameters_dict['maxiter'],
-                                            local_search_options = parameters_dict['local_search_options'],
+                                            minimizer_kwargs = parameters_dict['minimizer_kwargs'],
                                             initial_temp = parameters_dict['initial_temp'],
                                             restart_temp_ratio = parameters_dict['restart_temp_ratio'],
                                             visit = parameters_dict['visit'],
@@ -923,7 +922,7 @@ def do_dual_annealing(ranges_dict, json_string, extra_args, verbose):
                                             callback = parameters_dict['callback'],
                                             x0 = parameters_dict['x0'])
     except ValueError as e:
-        print('ValueError in scipy.optimize.basinhopping')
+        print('ValueError in scipy.optimize.dual_annealing')
         print(e)
         sys.exit(1)
     
@@ -938,12 +937,10 @@ def evaluate_fitness(x, args):
     negate_score = args[3]
     output_filename = args[4]
     data_list = [smart_substitution_text_components[0]]
-    # create the globals dictionary
-    g = {}
-    g['g'] = x
-    if verbose: print(g)
     for i in range(0, len(smart_substitution_parser_text)):
-        v = eval(smart_substitution_parser_text[i], g)
+        if verbose: print(f'{smart_substitution_parser_text[i] = }')
+        v = parse_insert(smart_substitution_parser_text[i], x, verbose)
+        # v = eval(smart_substitution_parser_text[i], global_dict)
         data_list.append('%.17e' % (v))
         data_list.append(smart_substitution_text_components[i + 1])
     file_contents = ''.join(data_list)
@@ -974,6 +971,95 @@ def check_dict(input_dict, example_json):
             print('Warning key "%s" not used' % (key))
     return
 
+def parse_insert(insert_string, genes, verbose):    
+    # this routine is a little fragile because exprtk and python do not use quite the same syntax
+    # we try to fix things up in a rather dumb way that won't work in all cases
+    # most of the math functions come from the "from math import *" line so that the
+    # python eval statement can do all the work
+    # but I could probabl;y do something cleverer by spcifying globals and locals to the 
+    # eval statement (but the globals() would be needed for all the math functions)
+
+    # first step is to substitute the genes
+    match = re.search(r'g *\(', insert_string)
+    if match:
+        closing_bracket = find_unmatched_close_bracket(insert_string[match.end():])
+        if closing_bracket == -1:
+            print('Error parsing genes in %s' % (insert_string))
+            sys.exit(1)
+        index = int(0.5 + parse_insert(insert_string[match.end(): match.end() + closing_bracket], genes, verbose))
+        prefix = insert_string[:match.start()]
+        if match.end() + closing_bracket + 1 < len(insert_string):
+            suffix = insert_string[match.end() + closing_bracket + 1:]
+        else:
+            suffix = ''
+        return parse_insert('%s%.18e%s' % (prefix, genes[index], suffix), genes, verbose)
+
+    # second step is to handle functions not understood by python
+    # if(test,result_when_true,result_when_false)
+    match = re.search(r'if *\(', insert_string)
+    if match:
+        closing_bracket = find_unmatched_close_bracket(insert_string[match.end():])
+        if closing_bracket == -1:
+            print('Error parsing genes in %s' % (insert_string))
+            sys.exit(1)
+        argument_string = insert_string[match.end(): match.end() + closing_bracket]
+        arguments = split_on_unbracketed_command(argument_string)
+        if len(arguments) != 3:
+            print('if() requires 3 arguments %s' % (insert_string))
+            sys.exit(1)
+        test_value = parse_insert(arguments[0], genes, verbose)
+        if test_value == 0:
+            result = arguments[2]
+        else:
+            result = arguments[1]
+        prefix = insert_string[:match.start()]
+        if match.end() + closing_bracket + 1 < len(insert_string):
+            suffix = insert_string[match.end() + closing_bracket + 1:]
+        else:
+            suffix = ''
+        return s('%s%s%s'% (prefix, result, suffix), genes, verbose)
+
+    # exprtk uses ^ when python uses **
+    insert_string = insert_string.replace('^', '**')
+    
+    # we could now handle the other operators in order of precidence unaries, **^, */%, +-, booleans 
+    # but there are a few gotchas (e.g. identifying unary operators) and python can now handle this
+    if verbose: print('eval("%s")' % (insert_string))
+    ret_val = eval(insert_string)
+    return ret_val
+
+def find_unmatched_close_bracket(input_string):
+    num_brackets = 0
+    for i in range(0, len(input_string)):
+        if input_string[i] == '(':
+            num_brackets = num_brackets + 1
+        if input_string[i] == ')':
+            num_brackets = num_brackets - 1
+        if num_brackets < 0:
+            return i
+    return -1
+
+def split_on_unbracketed_command(input_string):
+    num_brackets = 0
+    split_string = []
+    last_string_start = 0
+    for i in range(0, len(input_string)):
+        if input_string[i] == '(':
+            num_brackets = num_brackets + 1
+        if input_string[i] == ')':
+            num_brackets = num_brackets - 1
+        if num_brackets < 0:
+            print('Unmatched bracket found in "%s"' % (input_string))
+            sys.exit(1)
+        if num_brackets == 0 and input_string[i] == ',':
+            split_string.append(input_string[last_string_start: i])
+            last_string_start = i + 1
+    if last_string_start >= i:
+        split_string.append('')
+    else:
+        split_string.append(input_string[last_string_start:])
+    return split_string
+
 def create_smart_substitution(data):
     smart_substitution_text_components = []
     smart_substitution_parser_text = []
@@ -998,8 +1084,8 @@ def create_smart_substitution(data):
             break
         ptr2 += ptr1
     smart_substitution_text_components.append(data[ptr1:])
-    for i in range(0, len(smart_substitution_parser_text)):
-        smart_substitution_parser_text[i] = re.sub(r'g\(([0-9]+)\)', r'g[\1]', smart_substitution_parser_text[i])
+    for i in range(0, len(smart_substitution_parser_text)): # convert g[] to g()
+        smart_substitution_parser_text[i] = re.sub(r'g\[(\d+)\]', r'g(\1)', smart_substitution_parser_text[i])
     return (smart_substitution_text_components, smart_substitution_parser_text)
 
 def read_ranges(file_name):

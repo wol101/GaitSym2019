@@ -73,7 +73,7 @@ win32 {
         IGNORE_DLL_API \
         BYTE_ORDER_LITTLE_ENDIAN \
         HAVE_MALLOC_H USE_UNIX_ERRORS NEED_BCOPY \
-        _USE_MATH_DEFINES _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS \
+        _USE_MATH_DEFINES _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS NOMINMAX \
         EXPERIMENTAL
     INCLUDEPATH += \
         ../ann_1.1.2/include \
@@ -322,6 +322,8 @@ SOURCES += \
     ../src/MAMuscleComplete.cpp \
     ../src/MD5.cpp \
     ../src/Marker.cpp \
+    ../src/MarkerEllipseDriver.cpp \
+    ../src/MarkerPositionDriver.cpp \
     ../src/MovingAverage.cpp \
     ../src/Muscle.cpp \
     ../src/NPointStrap.cpp \
@@ -563,6 +565,8 @@ HEADERS += \
     ../src/MD5.h \
     ../src/MPIStuff.h \
     ../src/Marker.h \
+    ../src/MarkerEllipseDriver.h \
+    ../src/MarkerPositionDriver.h \
     ../src/MovingAverage.h \
     ../src/Muscle.h \
     ../src/NPointStrap.h \

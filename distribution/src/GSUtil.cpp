@@ -14,7 +14,6 @@
 #include "GSUtil.h"
 #include "PGDMath.h"
 
-#include "ode/ode.h"
 #include "fast_double_parser.h"
 
 #include <cmath>
@@ -22,12 +21,15 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <iomanip>
+#include <ctime>
 #include <stdint.h>
 #include <limits>
 #include <regex>
 #include <cinttypes>
 #include <cstdarg>
+#include <chrono>
 
 #if !defined(_WIN32) && !defined(WIN32)
 #include <sys/time.h>
@@ -1350,6 +1352,15 @@ double GSUtil::ThreeAxisDecompositionScore(double x[] , void *data)
     double ang3 = x[2];
     double error = GSUtil::ThreeAxisDecompositionError(target, ax1, ax2, ax3, ang1, ang2, ang3);
     return error;
+}
+
+void GSUtil::Logger(const std::string &file, const std::string &message)
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::ofstream logFile(file.c_str(), std::ios_base::out | std::ios_base::app);
+    logFile << std::put_time(std::localtime(&t), "%c") << '\t' << message << '\n'; // consider std::format as a replcement for std::put_time in C++20 since std::localtime is not thread safe
+    logFile.close();
 }
 
 double GSUtil::ThreeAxisDecompositionError(const pgd::Quaternion &target, const pgd::Vector3 &ax1, const pgd::Vector3 &ax2, const pgd::Vector3 &ax3, double ang1, double ang2, double ang3)

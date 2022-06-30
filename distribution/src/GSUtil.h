@@ -583,6 +583,8 @@ static int64_t fast_a_to_int64_t(const char *str);
 static double fast_a_to_double(const char *nptr, const char *endptr[]);
 static uint64_t fast_a_to_uint64_t(const char *nptr, const char *endptr[]);
 
+void Logger(const std::string &file, const std::string &message);
+
 static double ThreeAxisDecompositionScore(double x[] , void *data);
 static double ThreeAxisDecomposition(const pgd::Quaternion &target, const pgd::Vector3 &ax1, const pgd::Vector3 &ax2, const pgd::Vector3 &ax3, double *ang1, double *ang2, double *ang3);
 static double ThreeAxisDecompositionError(const pgd::Quaternion &target, const pgd::Vector3 &ax1, const pgd::Vector3 &ax2, const pgd::Vector3 &ax3, double ang1, double ang2, double ang3);

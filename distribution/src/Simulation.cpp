@@ -43,17 +43,13 @@
 #include "Contact.h"
 #include "NPointStrap.h"
 #include "FixedJoint.h"
-#include "TrimeshGeom.h"
 #include "Marker.h"
 #include "Reporter.h"
-#include "TorqueReporter.h"
 #include "UniversalJoint.h"
 #include "PIDMuscleLengthController.h"
 #include "Controller.h"
-#include "SwingClearanceAbortReporter.h"
 #include "AMotorJoint.h"
 #include "LMotorJoint.h"
-#include "SliderJoint.h"
 #include "BoxGeom.h"
 #include "StackedBoxCarDriver.h"
 #include "Warehouse.h"
@@ -62,9 +58,8 @@
 #include "TegotaeDriver.h"
 #include "ThreeHingeJointDriver.h"
 #include "TwoHingeJointDriver.h"
-#include "Filter.h"
+#include "MarkerEllipseDriver.h"
 
-#include "ode/ode.h"
 #include "pystring.h"
 
 #include <iostream>
@@ -924,6 +919,10 @@ std::string *Simulation::ParseDriver(const ParseXML::XMLElement *node)
     else if (buf == "MarkerPosition"s)
     {
         driver = std::make_unique<MarkerPositionDriver>();
+    }
+    else if (buf == "MarkerEllipse"s)
+    {
+        driver = std::make_unique<MarkerEllipseDriver>();
     }
     else
     {
