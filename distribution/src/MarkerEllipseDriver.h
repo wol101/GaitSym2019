@@ -23,7 +23,7 @@ class MarkerEllipseDriver : public Driver
 public:
     MarkerEllipseDriver();
 
-    void Initialise(double omega, double sigma, double XR, double YR, double phi, Marker *markerEllipseCentre, Marker *markerEllipseRim, DataTarget *phaseControlInput);
+    void Initialise(double omega, double sigma, const pgd::Vector4 &XR, const pgd::Vector4 &YR, double phi, Marker *markerEllipseCentre, Marker *markerEllipseRim, DataTarget *phaseControlInput);
 
     virtual void Update();
     virtual void SendData();
@@ -34,8 +34,8 @@ public:
     double sigma() const;
     double phi() const;
     double phi_dot() const;
-    double XR() const;
-    double YR() const;
+    pgd::Vector4 XR() const;
+    pgd::Vector4 YR() const;
     double X() const;
     double Y() const;
 
@@ -47,8 +47,8 @@ private:
 
     double m_omega = 0;         // rad s-1     intrinsic angular velocity
     double m_sigma = 0;         //             gain for the phase correction
-    double m_XR = 0;            // m           x-direction radius
-    double m_YR = 0;            // m           y-direction radius
+    pgd::Vector4 m_XR;          // m           x-direction radius in 4 quadrants
+    pgd::Vector4 m_YR;          // m           y-direction radius in 4 quadrants
     double m_phi = 0;           // rad         initial (and current) phase on LF leg's oscillator
     double m_phiDot = 0;       // rad/s       the instantaneous change in phi
     double m_X = 0;             // current local X position
@@ -60,8 +60,14 @@ private:
     // these optional drivers allow me to alter the inputs
     Driver *m_omegaDriver = nullptr;
     Driver *m_sigmaDriver = nullptr;
-    Driver *m_XRDriver = nullptr;
-    Driver *m_YRDriver = nullptr;
+    Driver *m_XRDriver0 = nullptr;
+    Driver *m_YRDriver0 = nullptr;
+    Driver *m_XRDriver1 = nullptr;
+    Driver *m_YRDriver1 = nullptr;
+    Driver *m_XRDriver2 = nullptr;
+    Driver *m_YRDriver2 = nullptr;
+    Driver *m_XRDriver3 = nullptr;
+    Driver *m_YRDriver3 = nullptr;
 
     // and this is the phase detection login
     bool m_phaseStateIncreasing = false; // false is decreasing, true is decreasing

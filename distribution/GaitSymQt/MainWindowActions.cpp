@@ -150,8 +150,9 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
     for (auto &&iter : *m_mainWindow->m_simulation->GetBodyList())
     {
         std::vector<std::string> meshNames = {iter.second->GetGraphicFile1(), iter.second->GetGraphicFile2(), iter.second->GetGraphicFile3()};
-        for (auto &&meshName : meshNames)
+        for (size_t nameIndex = 0;  nameIndex < meshNames.size(); nameIndex++)
         {
+            auto &&meshName = meshNames[nameIndex];
             if (meshName.size() == 0) continue;
             bool fileFound = false;
             QString graphicsFile = QString::fromStdString(meshName);
@@ -176,7 +177,20 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
                     if (newFile.isNull() == false)
                     {
                         QFileInfo newFileInfo(newFile);
-                        iter.second->SetGraphicFile1(newFileInfo.fileName().toStdString());
+                        switch (nameIndex)
+                        {
+                        case 0:
+                            iter.second->SetGraphicFile1(newFileInfo.fileName().toStdString());
+                            break;
+                        case 1:
+                            iter.second->SetGraphicFile2(newFileInfo.fileName().toStdString());
+                            break;
+                        case 2:
+                            iter.second->SetGraphicFile3(newFileInfo.fileName().toStdString());
+                            break;
+                        default:
+                            qDebug() << "Error IN MainWindowActions::menuOpen(): invalid nameIndex = " << nameIndex;
+                        }
                         QString newPath = currentDir.relativeFilePath(newFileInfo.absolutePath());
                         if (newPath.size() == 0) newPath = ".";
                         searchPath.append(newPath);
@@ -968,19 +982,26 @@ void MainWindowActions::menuCreateEditBody(Body *body)
             std::unique_ptr<Body> newBody = dialogBodyBuilder.outputBody();
             newBody->LateInitialisation();
             std::string newBodyName = newBody->name();
-//            // insert the new centre of mass marker
-//            std::unique_ptr<Marker> cmMarker = std::make_unique<Marker>(newBody.get());
-//            std::string cmMarkerName = newBodyName + "_CM_Marker"s;
-//            cmMarker->setName(cmMarkerName);
-//            cmMarker->setSimulation(m_mainWindow->m_simulation);
-//            cmMarker->setSize1(Preferences::valueDouble("MarkerSize", 0.01));
-//            m_mainWindow->ui->treeWidgetElements->insertMarker(QString().fromStdString(cmMarkerName), cmMarker->visible(), cmMarker->dump());
-//            (*m_mainWindow->m_simulation->GetMarkerList())[cmMarkerName] = std::move(cmMarker);
-//            m_mainWindow->setStatusString(QString("New marker created: %1").arg(QString::fromStdString(cmMarkerName)), 1);
+            // insert the new centre of mass marker unless it already exists
+            std::string cmMarkerName = newBodyName + "_CM_Marker"s;
+            if (!m_mainWindow->m_simulation->GetMarker(cmMarkerName))
+            {
+                std::unique_ptr<Marker> cmMarker = std::make_unique<Marker>(newBody.get());
+                cmMarker->setName(cmMarkerName);
+                cmMarker->setSimulation(m_mainWindow->m_simulation);
+                cmMarker->setSize1(Preferences::valueDouble("MarkerSize", 0.01));
+                m_mainWindow->ui->treeWidgetElements->insertMarker(QString().fromStdString(cmMarkerName), cmMarker->visible(), cmMarker->dump());
+                (*m_mainWindow->m_simulation->GetMarkerList())[cmMarkerName] = std::move(cmMarker);
+                m_mainWindow->setStatusString(QString("New marker created: %1").arg(QString::fromStdString(cmMarkerName)), 1);
+            }
+            else
+            {
+                m_mainWindow->setStatusString(QString("Unable to create: %1. Marker already exists.").arg(QString::fromStdString(cmMarkerName)), 1);
+            }
             // insert the new body
             m_mainWindow->ui->treeWidgetElements->insertBody(QString().fromStdString(newBodyName), newBody->visible(), newBody->dump());
             (*m_mainWindow->m_simulation->GetBodyList())[newBodyName] = std::move(newBody);
-            m_mainWindow->setStatusString(QString("New body created: %1").arg(QString::fromStdString(newBodyName)), 1);
+            m_mainWindow->setStatusString(QString("New body created: %1").arg(QString::fromStdString(newBodyName)), 0);
             m_mainWindow->updateComboBoxTrackingMarker();
         }
         else // this is an edit so things may have moved and we need to deal with that
@@ -994,6 +1015,18 @@ void MainWindowActions::menuCreateEditBody(Body *body)
                     if (it.second->GetBody() == body)
                         it.second->OffsetPosition(-deltaPosition.x, -deltaPosition.y, -deltaPosition.z);
                 }
+            }
+            // and handle the CM marker if it exists
+            std::string cmMarkerName = body->name() + "_CM_Marker"s;
+            Marker *cmMarker = m_mainWindow->m_simulation->GetMarker(cmMarkerName);
+            if (cmMarker && cmMarker->GetBody()->name() == body->name())
+            {
+                cmMarker->SetPosition(0, 0, 0); // this puts it back at the centre of mass
+            }
+            else
+            {
+                if (cmMarker) m_mainWindow->setStatusString(QString("Unable to move: %1. Marker attached to a different body.").arg(QString::fromStdString(cmMarkerName)), 0);
+                else m_mainWindow->setStatusString(QString("Unable to move: %1. Marker does not exists.").arg(QString::fromStdString(cmMarkerName)), 0);
             }
 //            // completely reloading everything will work but is rather slow
 //            QByteArray xmlData = QByteArray::fromStdString(m_mainWindow->m_simulation->SaveToXML());

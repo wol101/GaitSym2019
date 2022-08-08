@@ -680,6 +680,22 @@ QByteArray MainWindow::readResource(const QString &resource)
 
 void MainWindow::updateEnable()
 {
+#ifndef dNODEBUG
+    qDebug() << "void MainWindow::updateEnable()";
+    qDebug() << "m_simulation = " << m_simulation;
+    qDebug() << "m_mode = " << m_mode;
+    qDebug() << "m_noName = " << m_noName;
+    qDebug() << "isWindowModified() = " << isWindowModified();
+    qDebug() << "m_stepCount = " << m_stepCount;
+    if (m_simulation)
+    {
+        qDebug() << "m_simulation->GetBodyList()->size() = " << m_simulation->GetBodyList()->size();
+        qDebug() << "m_simulation->GetMuscleList()->size() = " << m_simulation->GetMuscleList()->size();
+        qDebug() << "m_simulation->GetMarkerList()->size() = " << m_simulation->GetMarkerList()->size();
+        qDebug() << "m_simulation->GetControllerList()->size() = " << m_simulation->GetControllerList()->size();
+        qDebug() << "m_simulation->HasAssembly() = " << m_simulation->HasAssembly();
+    }
+#endif
     ui->actionOutput->setEnabled(m_simulation != nullptr);
     ui->actionRestart->setEnabled(m_simulation != nullptr && m_mode == runMode && m_noName == false && isWindowModified() == false);
     ui->actionSave->setEnabled(m_simulation != nullptr && m_noName == false && isWindowModified() == true);

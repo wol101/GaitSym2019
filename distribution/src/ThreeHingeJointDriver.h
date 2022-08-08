@@ -71,7 +71,7 @@ private:
     double m_intermediateJointAngleGamma = 1.0;
     double m_distalJointAngleGamma = 1.0;
     double m_tolerance  =1.0e-6;
-    bool m_dumpExtensionCurve = false;
+    bool m_dumpExtensionCurve = true;
 
     double m_proximalJointAngle1 = 0;
     pgd::Vector3 m_proximalJointAxis1;

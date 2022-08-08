@@ -367,17 +367,9 @@ public:
         double xx = std::abs(x);
         double yy = std::abs(y);
         double zz = std::abs(z);
-        double m;
-        if (yy >= xx)
-        {
-            if (zz >= yy) m = zz;
-            else m = yy;
-        }
-        else
-        {
-            if (zz >= xx) m = zz;
-            else m = xx;
-        }
+        double m = xx;
+        if (yy >= m) m = yy;
+        if (zz >= m) m = zz;
         if (m <= DBL_EPSILON) // too small, need to fix up
         {
             x = 1;
@@ -545,6 +537,239 @@ public:
         return u / u.Magnitude();
     }
 
+    //------------------------------------------------------------------------//
+    // Vector4 Class and vector functions
+    //------------------------------------------------------------------------//
+    class Vector4 {
+    public:
+        double x;
+        double y;
+        double z;
+        double w;
+
+        Vector4(void);
+        Vector4(double xi, double yi, double zi, double wi);
+        Vector4(const double *d);
+
+        void Set(double xi, double yi, double zi, double wi);
+        void Set(const double *xyzw);
+
+        double Magnitude(void) const;
+        double Magnitude2(void) const;
+        void  Normalize(void);
+        void  Reverse(void);
+
+        Vector4& operator+=(Vector4 u);   // vector addition
+        Vector4& operator-=(Vector4 u);   // vector subtraction
+        Vector4& operator*=(double s);    // scalar multiply
+        Vector4& operator/=(double s);    // scalar divide
+        Vector4& operator=(double *s);    // assign from POD array
+        double& operator[] (size_t i);    // index operator
+
+        Vector4 operator-(void); // unary negate
+
+        double *data(void);
+        const double *constData(void) const;
+    };
+
+    inline  Vector4 operator+(Vector4 u, Vector4 v);
+    inline  Vector4 operator-(Vector4 u, Vector4 v);
+    inline  Vector4 operator*(double s, Vector4 u);
+    inline  Vector4 operator*(Vector4 u, double s);
+    inline  Vector4 operator/(Vector4 u, double s);
+    inline  Vector4 Normalize(Vector4 u);
+
+    inline Vector4::Vector4(void)
+    {
+        x = 0;
+        y = 0;
+        z = 0;
+        w = 0;
+    }
+
+    inline Vector4::Vector4(double xi, double yi, double zi, double wi)
+    {
+        x = xi;
+        y = yi;
+        z = zi;
+        w = wi;
+    }
+
+    inline Vector4::Vector4(const double *d)
+    {
+        x = d[0];
+        y = d[1];
+        z = d[2];
+        w = d[3];
+    }
+
+    inline void Vector4::Set(double xi, double yi, double zi, double wi)
+    {
+        x = xi;
+        y = yi;
+        z = zi;
+        w = wi;
+    }
+
+    inline void Vector4::Set(const double *xyzw)
+    {
+        x = xyzw[0];
+        y = xyzw[1];
+        z = xyzw[2];
+        w = xyzw[3];
+    }
+
+    inline  double Vector4::Magnitude(void) const
+    {
+        return std::sqrt(x*x + y*y + z*z + w*w);
+    }
+
+    inline  double Vector4::Magnitude2(void) const
+    {
+        return (x*x + y*y + z*z + w*w);
+    }
+
+    inline  void  Vector4::Normalize(void)
+    {
+        // wis - to cope with very small vectors (quite common) we need to divide by the largest magnitude element
+        // to minimise rounding errors. This will make it less good with larger vectors but that's
+        // much less common in this application
+
+        double xx = std::abs(x);
+        double yy = std::abs(y);
+        double zz = std::abs(z);
+        double ww = std::abs(w);
+        double m = xx;
+        if (yy > m) m = yy;
+        if (zz > m) m = zz;
+        if (ww > m) m = ww;
+        if (m <= DBL_EPSILON) // too small, need to fix up
+        {
+            x = 1;
+            y = 0;
+            z = 0;
+            w = 0;
+            return;
+        }
+
+        // divide by maximum element to get all numbers to a sensible size for squaring
+        x /= m;
+        y /= m;
+        z /= m;
+        w /= m;
+
+        // now do the standard normalisation calculation
+        m = std::sqrt(x*x + y*y + z*z + w*w);
+        x /= m;
+        y /= m;
+        z /= m;
+        w /= w;
+    }
+
+    inline  void  Vector4::Reverse(void)
+    {
+        x = -x;
+        y = -y;
+        z = -z;
+        w = -w;
+    }
+
+    inline Vector4& Vector4::operator+=(Vector4 u)
+    {
+        x += u.x;
+        y += u.y;
+        z += u.z;
+        w += u.w;
+        return *this;
+    }
+
+    inline  Vector4& Vector4::operator-=(Vector4 u)
+    {
+        x -= u.x;
+        y -= u.y;
+        z -= u.z;
+        w -= u.w;
+        return *this;
+    }
+
+    inline  Vector4& Vector4::operator*=(double s)
+    {
+        x *= s;
+        y *= s;
+        z *= s;
+        w *= w;
+        return *this;
+    }
+
+    inline  Vector4& Vector4::operator/=(double s)
+    {
+        x /= s;
+        y /= s;
+        z /= s;
+        w /= w;
+        return *this;
+    }
+
+    inline  Vector4& Vector4::operator=(double *s)
+    {
+        x = s[0];
+        y = s[1];
+        z = s[2];
+        w = s[3];
+        return *this;
+    }
+
+    inline  double& Vector4::operator[](size_t i)
+    {
+        return reinterpret_cast<double *>(&x)[i];
+    }
+
+
+    inline  Vector4 Vector4::operator-(void)
+    {
+        return Vector4(-x, -y, -z, -w);
+    }
+
+    inline double *Vector4::data(void)
+    {
+        return &x;
+    }
+
+    inline const double *Vector4::constData(void) const
+    {
+        return &x;
+    }
+
+
+    inline Vector4 operator+(Vector4 u, Vector4 v)
+    {
+        return Vector4(u.x + v.x, u.y + v.y, u.z + v.z, u.w + u.w);
+    }
+
+    inline Vector4 operator-(Vector4 u, Vector4 v)
+    {
+        return Vector4(u.x - v.x, u.y - v.y, u.z - v.z, u.w - u.w);
+    }
+
+    inline Vector4 operator*(double s, Vector4 u)
+    {
+        return Vector4(u.x*s, u.y*s, u.z*s, u.w*s);
+    }
+
+    inline Vector4 operator*(Vector4 u, double s)
+    {
+        return Vector4(u.x*s, u.y*s, u.z*s, u.w * s);
+    }
+
+    inline Vector4 operator/(Vector4 u, double s)
+    {
+        return Vector4(u.x/s, u.y/s, u.z/s, u.w/s);
+    }
+
+    inline Vector4 Normalize(Vector4 u)
+    {
+        return u / u.Magnitude();
+    }
     //------------------------------------------------------------------------//
     // Quaternion Class and Quaternion functions
     //------------------------------------------------------------------------//

@@ -17,6 +17,8 @@ class BoxGeom : public Geom
 public:
     BoxGeom(dSpaceID space, double lx, double ly, double lz);
 
+    void GetDimensions(double *lx, double *ly, double *lz);
+
     virtual std::string *createFromAttributes();
     virtual void appendToAttributes();
 

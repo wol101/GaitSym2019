@@ -288,7 +288,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             break;
         }
 
-        if ((event->buttons() & Qt::MiddleButton && event->modifiers() & Qt::NoModifier) || (event->buttons() & Qt::LeftButton && event->modifiers() & Qt::AltModifier))
+        if ((event->buttons() & Qt::MiddleButton && event->modifiers() == Qt::NoModifier) || (event->buttons() & Qt::LeftButton && event->modifiers() & Qt::AltModifier))
         {
             m_panStartCOI = QVector3D(m_COIx, m_COIy, m_COIz);
             m_projectPanMatrix = m_proj * m_view; // model would be identity so mvpMatrix isn't needed

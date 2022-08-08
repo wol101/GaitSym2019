@@ -10,7 +10,9 @@
 #include "DrawMarker.h"
 #include "DrawFluidSac.h"
 #include "DrawGeom.h"
-
+#include "FacetedSphere.h"
+#include "AVIWriter.h"
+#include "TrackBall.h"
 
 #include <QOpenGLWidget>
 #include <QElapsedTimer>
@@ -25,12 +27,7 @@
 #include <map>
 
 class Simulation;
-class FacetedObject;
-class Trackball;
-class AVIWriter;
 class MainWindow;
-class FacetedSphere;
-class Drawable;
 
 struct SimpleLight
 {

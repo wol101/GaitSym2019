@@ -13,6 +13,7 @@ def transform_obj_files():
     parser = argparse.ArgumentParser(description="Transform the OBJ files in the list")
     parser.add_argument("input_obj_files", nargs='+', help="input OBJ files")
     parser.add_argument("-t", "--translation", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="translation vector x y z [0, 0, 0])")
+    parser.add_argument("-s", "--scale", nargs=3, type=float, default=[1.0, 1.0, 1.0], help="scale vector x y z [1, 1, 1])")
     parser.add_argument("-rc", "--rotation_centre", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="rotation centre x y z [0, 0, 0])")
     parser.add_argument("-r1", "--rotation_angle_axis_1", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
     parser.add_argument("-r2", "--rotation_angle_axis_2", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
@@ -33,6 +34,7 @@ def transform_obj_files():
 
     translation = args.translation
     rotation_centre = args.rotation_centre
+    scale = args.scale
     
     axis = args.rotation_angle_axis_1[1:4]
     angle = args.rotation_angle_axis_1[0] * math.pi / 180.0
@@ -51,12 +53,12 @@ def transform_obj_files():
         print("rotation %g %g %g %g" % (angle, axis[0], axis[1], axis[2]))
     
     for input_obj_file in args.input_obj_files:
-        transform_obj_file(input_obj_file, args.output_graphics_folder, rotation_centre, rotation, translation,
+        transform_obj_file(input_obj_file, args.output_graphics_folder, rotation_centre, rotation, translation, scale,
                             args.mirror_x, args.mirror_y, args.mirror_z, args.verbose, args.force)
     
 
 
-def transform_obj_file(obj_file, output_folder, rotation_centre, rotation, translation,
+def transform_obj_file(obj_file, output_folder, rotation_centre, rotation, translation, scale,
                         mirror_x, mirror_y, mirror_z, verbose, force):
     input_file = obj_file
     preflight_read_file(input_file)
@@ -69,17 +71,17 @@ def transform_obj_file(obj_file, output_folder, rotation_centre, rotation, trans
         p3 = QuaternionVectorRotate(rotation, p2)
         p4 = Add3x1(p3, rotation_centre)
         p5 = Add3x1(p4, translation)
+        p6 = Mul3x1(p5, scale)
         reverse = 0
         if mirror_x:
-            p5[0] = -p5[0]
+            p6[0] = -p6[0]
             reverse = reverse + 1
         if mirror_y:
-            p5[1] = -p5[1]
+            p6[1] = -p6[1]
             reverse = reverse + 1
         if mirror_z:
-            p5[2] = -p5[2]
-            reverse = reverse + 1
-        vertices[i] = p5
+            p6[2] = -p6[2]
+        vertices[i] = p6
     if reverse % 2 != 0:
         new_triangles = []
         for triangle in triangles:
@@ -156,6 +158,14 @@ def Sub3x1(a, b):
     c[0] = a[0] - b[0]
     c[1] = a[1] - b[1]
     c[2] = a[2] - b[2]
+    return c
+
+# element by element multiple two vectors
+def Mul3x1(a, b):
+    c = [0, 0, 0]
+    c[0] = a[0] * b[0]
+    c[1] = a[1] * b[1]
+    c[2] = a[2] * b[2]
     return c
 
 # calculate cross product (vector product)

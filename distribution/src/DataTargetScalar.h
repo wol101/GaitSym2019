@@ -26,7 +26,7 @@ public:
 
     SMART_ENUM(DataType, dataTypeStrings, dataTypeCount, XP, YP, ZP, Q0, Q1, Q2, Q3, XV, YV, ZV,
                XRV, YRV, ZRV, Angle, MetabolicEnergy, MechanicalEnergy, DriverError, Time, DeltaTime,
-               XF, YF, ZF);
+               XF, YF, ZF, Force);
 
 
     void SetTarget(NamedObject *target);
@@ -44,6 +44,7 @@ public:
     virtual double calculateError(size_t index) override;
 
 private:
+    double calculateErrorScore(double value);
 
     NamedObject *m_Target = nullptr;
     DataType m_DataType = XP;

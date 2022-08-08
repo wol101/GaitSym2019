@@ -103,6 +103,17 @@ void DrawGeom::initialise(SimulationWidget *simulationWidget)
         return;
     }
 
+    BoxGeom *boxGeom = dynamic_cast<BoxGeom *>(m_geom);
+    if (boxGeom)
+    {
+        double lx, ly, lz;
+        boxGeom->GetDimensions(&lx, &ly, &lz);
+        m_facetedObject = std::make_unique<FacetedBox>(lx, ly, lz, m_geomColor1, 1);
+        m_facetedObject->setSimulationWidget(simulationWidget);
+        m_facetedObjectList.push_back(m_facetedObject.get());
+        return;
+    }
+
     PlaneGeom *planeGeom = dynamic_cast<PlaneGeom *>(m_geom);
     if (planeGeom)
     {

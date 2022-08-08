@@ -379,8 +379,8 @@ PYBINDOBJ = $(addsuffix .o, $(basename $(PYBINDSRC) ) )
 # this is a hack to find the proper extension for linux python libraries
 # it assumes there is a readline shared library in the python folder
 # it will almost certainly break if there are multiple versions of python installed
-ifeq (, $(shell which python ))
-  $(error "PYTHON=$(PYTHON) not found in $(PATH)")
+ifeq (, $(shell which python3 ))
+  $(error "python3 not found on PATH")
 endif
 python_version_full := $(wordlist 2,4,$(subst ., ,$(shell python3 --version 2>&1)))
 python_version_major := $(word 1,${python_version_full})

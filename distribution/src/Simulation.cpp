@@ -1350,8 +1350,9 @@ bool Simulation::ShouldQuit()
 
 void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
 {
-    int numc;
     Simulation *s = reinterpret_cast<Simulation *>(data);
+    Geom *g1 = reinterpret_cast<Geom *>(dGeomGetData(o1));
+    Geom *g2 = reinterpret_cast<Geom *>(dGeomGetData(o2));
 
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
@@ -1367,43 +1368,38 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
 
     if (s->m_global->AllowInternalCollisions() == false)
     {
-        if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetGeomLocation() == reinterpret_cast<Geom *>(dGeomGetData(o2))->GetGeomLocation()) return;
+        if (g1->GetGeomLocation() == g2->GetGeomLocation()) return;
     }
 
-    if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetExcludeList()->size())
+    if (g1->GetExcludeList()->size())
     {
-        std::vector<Geom *> *excludeList = reinterpret_cast<Geom *>(dGeomGetData(o1))->GetExcludeList();
+        std::vector<Geom *> *excludeList = g1->GetExcludeList();
         for (size_t i = 0; i < excludeList->size(); i++)
         {
-            if (excludeList->at(i) == reinterpret_cast<Geom *>(dGeomGetData(o2))) return;
+            if (excludeList->at(i) == g2) return;
         }
     }
-    if (reinterpret_cast<Geom *>(dGeomGetData(o2))->GetExcludeList()->size())
+    if (g2->GetExcludeList()->size())
     {
-        std::vector<Geom *> *excludeList = reinterpret_cast<Geom *>(dGeomGetData(o2))->GetExcludeList();
+        std::vector<Geom *> *excludeList = g2->GetExcludeList();
         for (size_t i = 0; i < excludeList->size(); i++)
         {
-            if (excludeList->at(i) == reinterpret_cast<Geom *>(dGeomGetData(o1))) return;
+            if (excludeList->at(i) == g1) return;
         }
     }
 
     std::unique_ptr<dContact[]> contact = std::make_unique<dContact[]>(size_t(s->m_MaxContacts));
     // the choice of std::max(cfm) and std::min(erp) means that the softest contact should be used
-    double cfm = std::max(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftCFM(),
-                     reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactSoftCFM());
-    double erp = std::min(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftERP(),
-                     reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactSoftERP());
+    double cfm = std::max(g1->GetContactSoftCFM(), g2->GetContactSoftCFM());
+    double erp = std::min(g1->GetContactSoftERP(), g2->GetContactSoftERP());
     // just use the largest for mu, rho and bounce
-    double mu = std::max(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactMu(),
-                    reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactMu());
-    double bounce = std::max(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactBounce(),
-                        reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactBounce());
-    double rho = std::max(reinterpret_cast<Geom *>(dGeomGetData(o1))->GetRho(),
-                        reinterpret_cast<Geom *>(dGeomGetData(o2))->GetRho());
+    double mu = std::max(g1->GetContactMu(), g2->GetContactMu());
+    double bounce = std::max(g1->GetContactBounce(), g2->GetContactBounce());
+    double rho = std::max(g1->GetRho(), g2->GetRho());
     if (erp < 0) // the only one that needs checking because all the others are std::max so values <0 will never be chosen if one value is >0
     {
-        if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftERP() < 0) erp = reinterpret_cast<Geom *>(dGeomGetData(o2))->GetContactSoftERP();
-        else erp = reinterpret_cast<Geom *>(dGeomGetData(o1))->GetContactSoftERP();
+        if (g1->GetContactSoftERP() < 0) erp = g2->GetContactSoftERP();
+        else erp = g1->GetContactSoftERP();
     }
     for (size_t i = 0; i < size_t(s->m_MaxContacts); i++)
     {
@@ -1430,15 +1426,15 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
             contact[i].surface.mode += dContactSoftERP;
         }
     }
-    numc = dCollide(o1, o2, s->m_MaxContacts, &contact[0].geom, sizeof(dContact));
+    int numc = dCollide(o1, o2, s->m_MaxContacts, &contact[0].geom, sizeof(dContact));
     if (numc)
     {
         for (size_t i = 0; i < size_t(numc); i++)
         {
-            if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetAbort()) s->SetContactAbort(reinterpret_cast<Geom *>(dGeomGetData(o1))->name());
-            if (reinterpret_cast<Geom *>(dGeomGetData(o2))->GetAbort()) s->SetContactAbort(reinterpret_cast<Geom *>(dGeomGetData(o2))->name());
+            if (g1->GetAbort()) s->SetContactAbort(g1->name());
+            if (g2->GetAbort()) s->SetContactAbort(g2->name());
             dJointID c;
-            if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetAdhesion() == false && reinterpret_cast<Geom *>(dGeomGetData(o2))->GetAdhesion() == false)
+            if (g1->GetAdhesion() == false && g2->GetAdhesion() == false)
             {
                 c = dJointCreateContact(s->m_WorldID, s->m_ContactGroup, &contact[i]);
                 dJointAttach(c, b1, b2);
@@ -1447,12 +1443,15 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
                 dJointSetFeedback(c, myContact->GetJointFeedback());
                 myContact->SetJointID(c);
                 std::copy_n(contact[i].geom.pos, dV3E__MAX, myContact->GetContactPosition());
-                // only add the contact information once
-                // and add it to the non-environment geom
-                if (reinterpret_cast<Geom *>(dGeomGetData(o1))->GetGeomLocation() == Geom::environment)
-                    reinterpret_cast<Geom *>(dGeomGetData(o2))->AddContact(myContact.get());
-                else
-                    reinterpret_cast<Geom *>(dGeomGetData(o1))->AddContact(myContact.get());
+//                // only add the contact information once
+//                // and add it to the non-environment geom
+//                if (g1->GetGeomLocation() == Geom::environment)
+//                    g2->AddContact(myContact.get());
+//                else
+//                    g1->AddContact(myContact.get());
+                // add the contact information to both geoms
+                g1->AddContact(myContact.get());
+                g2->AddContact(myContact.get());
                 s->m_ContactList.push_back(std::move(myContact));
             }
             else

@@ -19,8 +19,6 @@
 #include "SmartEnum.h"
 #include "ErrorHandler.h"
 
-#include "ode/ode.h"
-
 #include <map>
 #include <string>
 #include <fstream>

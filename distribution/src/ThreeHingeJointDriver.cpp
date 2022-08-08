@@ -499,17 +499,17 @@ std::string ThreeHingeJointDriver::dumpToString()
         setFirstDump(false);
         if (m_dumpExtensionCurve)
         {
-            s += dumpHelper({"AngleFraction", "Length"s});
-            for (int i = 0; i < 1001; i++)
+            s += dumpHelper({"angleFraction"s, "intermediateJointAngle"s, "distalJointAngle"s, "actualLength"s});
+            int nSteps = 1001;
+            for (int i = 0; i < nSteps; i++)
             {
-                double v = double(i) * 0.001;
-                if (i == 1000) v = 1.0; // fix for likely rounding error
-                double le = CalculateLengthDifference(v, this);
-                s +=  dumpHelper({v, le});
+                double angleFraction = double(i) / nSteps;
+                CalculateLength(angleFraction);
+                s +=  dumpHelper({angleFraction, m_intermediateJointAngle, m_distalJointAngle, m_actualLength});
             }
             CalculateLength(m_angleFraction); // neeeded because CalculateLengthDifference changes m_intermediateJointAngle and m_distalJointAngle
         }
-        s += dumpHelper({"Time", "MarkerDistance"s, "DesiredLength"s, "AngleFraction"s, "ProximalAngleFraction1"s,
+        s += dumpHelper({"Time"s, "MarkerDistance"s, "DesiredLength"s, "AngleFraction"s, "ProximalAngleFraction1"s,
                          "ProximalJointAngle1"s, "ProximalJointAngle2"s, "IntermediateJointAngle"s, "DistalJointAngle"s,
                          "proximalJointMarker1Position.x"s, "proximalJointMarker1Position.y"s, "proximalJointMarker1Position.z"s,
                          "intermediateJointMarker1Position.x"s, "intermediateJointMarker1Position.y"s, "intermediateJointMarker1Position.z"s,
@@ -657,6 +657,15 @@ std::string *ThreeHingeJointDriver::createFromAttributes()
         setLastError(message);
         return lastErrorPtr();
     }
+#ifndef NDEBUG
+    CalculateLength(0);
+    double minLength = m_actualLength;
+    CalculateLength(1);
+    double maxLength = m_actualLength;
+    std::cerr << "Driver ID=\"" << name() << "\" minLength=" << minLength << " maxLength=" << maxLength << "\n";
+#endif
+
+    if (findAttribute("DumpExtensionCurve"s, &buf)) m_dumpExtensionCurve = GSUtil::Bool(buf);
 
     // assemble the local copies of bodies, markers and joints
     std::unique_ptr<Body> baseBody = std::make_unique<Body>(nullptr);
@@ -792,8 +801,8 @@ void ThreeHingeJointDriver::appendToAttributes()
     setAttribute("IntermediateJointGamma"s, *GSUtil::ToString(m_intermediateJointAngleGamma, &buf));
     setAttribute("DistalJointGamma"s, *GSUtil::ToString(m_distalJointAngleGamma, &buf));
     setAttribute("Tolerance"s, *GSUtil::ToString(m_tolerance, &buf));
+    setAttribute("DumpExtensionCurve"s, *GSUtil::ToString(m_dumpExtensionCurve, &buf));
 }
-
 
 Marker *ThreeHingeJointDriver::targetMarker() const
 {
