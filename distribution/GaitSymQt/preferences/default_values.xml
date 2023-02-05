@@ -22,12 +22,12 @@
         order="-1"
         path="0"
         type="QString"
-        value="105" />
+        value="107" />
 
     <SETTING defaultValue="0"
         display="1"
         key="StyleCode"
-        label="StyleCode"
+        label="Style Code"
         maximumValue="6"
         minimumValue="0"
         order="0"
@@ -35,10 +35,21 @@
         type="int"
         value="0" />
 
+    <SETTING minimumValue="1"
+        value="20"
+        maximumValue="100"
+        display="1"
+        label="Maximum Number of Recent Files"
+        key="MaxRecentFiles"
+        type="int"
+        defaultValue="20"
+        order="0"
+        path="0" />
+
     <SETTING defaultValue="25"
         display="1"
         key="MovieFramerate"
-        label="MovieFramerate"
+        label="Movie Framerate"
         maximumValue="1000"
         minimumValue="0.001"
         order="0"

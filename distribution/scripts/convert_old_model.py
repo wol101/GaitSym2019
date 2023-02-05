@@ -37,18 +37,19 @@ def convert_old_model():
     if args.original_obj_folder and not os.path.isdir(args.original_obj_folder):
         print("Error: \"%s\" is not a folder" % (args.original_obj_folder))
         sys.exit(1)
-    if args.translated_obj_folder and os.path.exists(args.translated_obj_folder):
-        if not os.path.isdir(args.translated_obj_folder):
-            print("Error: \"%s\" exists and is not a folder" % (args.translated_obj_folder))
-            sys.exit(1)
-        else:
-            onlyfiles = [f for f in os.listdir(args.translated_obj_folder) if os.path.isfile(os.path.join(args.translated_obj_folder, f))]
-            if len(onlyfiles) > 0 and not args.force:
-                print("Error: \"%s\" exists and contains files. Use --force to overwrite" % (args.translated_obj_folder))
+    if args.translated_obj_folder:
+        if os.path.exists(args.translated_obj_folder):
+            if not os.path.isdir(args.translated_obj_folder):
+                print("Error: \"%s\" exists and is not a folder" % (args.translated_obj_folder))
                 sys.exit(1)
-    else:
-        if args.verbose: print('Creating folder "%s"' % (args.translated_obj_folder))
-        os.mkdir(args.translated_obj_folder)
+            else:
+                onlyfiles = [f for f in os.listdir(args.translated_obj_folder) if os.path.isfile(os.path.join(args.translated_obj_folder, f))]
+                if len(onlyfiles) > 0 and not args.force:
+                    print("Error: \"%s\" exists and contains files. Use --force to overwrite" % (args.translated_obj_folder))
+                    sys.exit(1)
+        else:
+            if args.verbose: print('Creating folder "%s"' % (args.translated_obj_folder))
+            os.mkdir(args.translated_obj_folder)
 
     # handle the attributes to add
     add_tags = []
@@ -436,7 +437,12 @@ def convert_joint(joint, marker_list, markers_only):
             new_joint.attrib["StressLimit"] = joint.attrib["StressLimit"]
             new_joint.attrib["StressBitmapDisplayRange"] = joint.attrib["StressBitmapDisplayRange"]
             new_joint.attrib["LowPassType"] = "Butterworth2ndOrderLowPass"
-            new_joint.attrib["CutoffFrequency"] = joint.attrib["StressLimitCutoffFrequency"]
+            if "StressLimitCutoffFrequency" in joint.attrib:
+                new_joint.attrib["CutoffFrequency"] = joint.attrib["StressLimitCutoffFrequency"]
+            else:
+                default_cutoff_frequency = 5
+                print('"StressLimitCutoffFrequency" missing. Setting to %d' % (default_cutoff_frequency))
+                new_joint.attrib["CutoffFrequency"] = str(default_cutoff_frequency)
     else:
         print("Error: joint type \"%s\" unsupported" % (joint.attrib["Type"]))
         sys.exit(1)
@@ -631,6 +637,50 @@ def convert_muscle(muscle, marker_list, markers_only):
         new_strap.attrib["CylinderMarkerID"] = cylinder_marker.attrib["ID"]
         new_strap.attrib["CylinderRadius"] = muscle.attrib["CylinderRadius"]
         new_strap.attrib["Length"] = "-1"
+    elif muscle.attrib["Strap"] == "TwoCylinderWrap":
+        # create the muscle markers
+        origin_marker = xml.etree.ElementTree.Element("MARKER")
+        origin_marker.tail = "\n"
+        origin_marker.attrib["ID"] = muscle.attrib["ID"] + "_Origin_Marker"
+        origin_marker.attrib["BodyID"] = muscle.attrib["OriginBodyID"]
+        origin_marker.attrib["Position"] = "World " + strip_world(muscle.attrib["Origin"])
+        origin_marker.attrib["Quaternion"] = "1 0 0 0"
+        marker_list[origin_marker.attrib["ID"]] = origin_marker
+        insertion_marker = xml.etree.ElementTree.Element("MARKER")
+        insertion_marker.tail = "\n"
+        insertion_marker.attrib["ID"] = muscle.attrib["ID"] + "_Insertion_Marker"
+        insertion_marker.attrib["BodyID"] = muscle.attrib["InsertionBodyID"]
+        insertion_marker.attrib["Position"] = "World " + strip_world(muscle.attrib["Insertion"])
+        insertion_marker.attrib["Quaternion"] = "1 0 0 0"
+        marker_list[insertion_marker.attrib["ID"]] = insertion_marker
+        cylinder1_marker = xml.etree.ElementTree.Element("MARKER")
+        cylinder1_marker.tail = "\n"
+        cylinder1_marker.attrib["ID"] = muscle.attrib["ID"] + "_Cylinder1_Marker_0"
+        cylinder1_marker.attrib["BodyID"] = muscle.attrib["Cylinder1BodyID"]
+        cylinder1_marker.attrib["Position"] = "World " + strip_world(muscle.attrib["Cylinder1Position"])
+        cylinder1_marker.attrib["Quaternion"] = "World " + fix_cylinder_rotation(strip_world(muscle.attrib["CylinderQuaternion"]))
+        marker_list[cylinder1_marker.attrib["ID"]] = cylinder1_marker
+        cylinder2_marker = xml.etree.ElementTree.Element("MARKER")
+        cylinder2_marker.tail = "\n"
+        cylinder2_marker.attrib["ID"] = muscle.attrib["ID"] + "_cylinder2_marker_0"
+        cylinder2_marker.attrib["BodyID"] = muscle.attrib["Cylinder2BodyID"]
+        cylinder2_marker.attrib["Position"] = "World " + strip_world(muscle.attrib["Cylinder2Position"])
+        cylinder2_marker.attrib["Quaternion"] = "World 1 0 0 0"
+        marker_list[cylinder2_marker.attrib["ID"]] = cylinder2_marker
+        if markers_only:
+            return
+        # then the strap
+        new_strap = xml.etree.ElementTree.Element("STRAP")
+        new_strap.tail = "\n"
+        new_strap.attrib["ID"] = muscle.attrib["ID"] + "_Strap"
+        new_strap.attrib["Type"] = muscle.attrib["Strap"]
+        new_strap.attrib["OriginMarkerID"] = origin_marker.attrib["ID"]
+        new_strap.attrib["InsertionMarkerID"] = insertion_marker.attrib["ID"]
+        new_strap.attrib["Cylinder1MarkerID"] = cylinder1_marker.attrib["ID"]
+        new_strap.attrib["Cylinder1Radius"] = muscle.attrib["Cylinder1Radius"]
+        new_strap.attrib["Cylinder2MarkerID"] = cylinder2_marker.attrib["ID"]
+        new_strap.attrib["Cylinder2Radius"] = muscle.attrib["Cylinder2Radius"]
+        new_strap.attrib["Length"] = "-1"
     elif muscle.attrib["Strap"] == "NPoint":
         # create the muscle markers
         origin_marker = xml.etree.ElementTree.Element("MARKER")
@@ -700,6 +750,15 @@ def convert_muscle(muscle, marker_list, markers_only):
             new_muscle.attrib["StartActivation"] = (muscle.attrib["StartActivation"] if "StartActivation" in muscle.attrib else "0")
             new_muscle.attrib["MinimumActivation"] = (muscle.attrib["MinimumActivation"] if "MinimumActivation" in muscle.attrib else "0.0001")
             new_muscle.attrib["StrapID"] = new_strap.attrib["ID"]
+        elif muscle.attrib["Type"] == "MinettiAlexander":
+            required_attributes = ["ActivationK","FibreLength","ForcePerUnitArea","ID","PCA","Type","VMaxFactor"]
+            test_required_attributes(muscle, required_attributes, required_only_flag = False, quiet_flag = True)
+            new_muscle = xml.etree.ElementTree.Element("MUSCLE")
+            new_muscle.tail = "\n"
+            new_muscle.text = "\n"
+            for attribute in required_attributes:
+                new_muscle.attrib[attribute] = muscle.attrib[attribute]
+            new_muscle.attrib["StrapID"] = new_strap.attrib["ID"]
         else:
             print("Error: muscle type \"%s\" unsupported" % (muscle.attrib["Type"]))
             sys.exit(1)
@@ -723,6 +782,9 @@ def convert_driver(driver_element):
                 values.append(tokens[i + 1])
         new_driver.attrib["Durations"] = " ".join(durations)
         new_driver.attrib["Values"] = " ".join(values)
+    if new_driver.attrib["Type"] == "StackedBoxCar":
+          new_driver.attrib["Type"] = "StackedBoxcar"
+          new_driver.attrib["CycleTime"] = new_driver.attrib["CycleTimes"].split()[0]
     new_driver.attrib["TargetIDList"] = new_driver.attrib["TargetID"]
     return new_driver
 

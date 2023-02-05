@@ -20,6 +20,7 @@ class Geom;
 class Driver;
 class MainWindow;
 class NamedObject;
+class QAction;
 
 class MainWindowActions : public QObject
 {
@@ -84,6 +85,8 @@ public slots:
     void menuCreateEditMuscle(Muscle *muscle);
     void menuCreateEditDriver(Driver *driver);
 
+    void menuOpenRecent(QAction *action);
+
     void elementInfo(const QString &elementType, const QString &elementName);
     void elementHide(const QString &elementType, const QString &elementName);
 
@@ -100,6 +103,9 @@ public slots:
 private:
     MainWindow *m_mainWindow = nullptr;
 
+    void updateRecentFiles(const QString &recentFile);
+    QStringList m_recentFileList;
+    int m_maxRecentFiles = 20;
 };
 
 #endif // MAINWINDOWACTIONS_H

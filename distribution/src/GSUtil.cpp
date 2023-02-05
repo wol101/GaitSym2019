@@ -1358,9 +1358,18 @@ void GSUtil::Logger(const std::string &file, const std::string &message)
 {
     auto now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(now);
-    std::ofstream logFile(file.c_str(), std::ios_base::out | std::ios_base::app);
-    logFile << std::put_time(std::localtime(&t), "%c") << '\t' << message << '\n'; // consider std::format as a replcement for std::put_time in C++20 since std::localtime is not thread safe
-    logFile.close();
+    try
+    {
+        std::ofstream logFile;
+        logFile.exceptions(std::ios::failbit|std::ios::badbit);
+        logFile.open(file.c_str(), std::ios_base::out | std::ios_base::app);
+        logFile << std::put_time(std::localtime(&t), "%c") << '\t' << message << '\n'; // consider std::format as a replcement for std::put_time in C++20 since std::localtime is not thread safe
+        logFile.close();
+    }
+    catch (...)
+    {
+        std::cerr << "Error writing log file\n";
+    }
 }
 
 double GSUtil::ThreeAxisDecompositionError(const pgd::Quaternion &target, const pgd::Vector3 &ax1, const pgd::Vector3 &ax2, const pgd::Vector3 &ax3, double ang1, double ang2, double ang3)

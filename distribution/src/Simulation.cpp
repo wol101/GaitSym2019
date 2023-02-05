@@ -1592,15 +1592,30 @@ void Simulation::DumpObject(NamedObject *namedObject)
         if (namedObject->firstDump())
         {
             std::ofstream output;
+            output.exceptions(std::ios::failbit|std::ios::badbit);
+            try
+            {
 #if defined _WIN32 && defined _MSC_VER // required because windows and visual studio require wstring for full filename support
-            output.open(DataFile::ConvertUTF8ToWide(namedObject->name() + m_dumpExtension));
+                output.open(DataFile::ConvertUTF8ToWide(namedObject->name() + m_dumpExtension));
 #else
-            output.open(namedObject->name() + m_dumpExtension);
+                output.open(namedObject->name() + m_dumpExtension);
 #endif
+            }
+            catch (...)
+            {
+                std::cerr << "Error opening dump file\n";
+            }
             m_dumpFileStreams[namedObject->name()] = std::move(output);
         }
         auto fileIt = m_dumpFileStreams.find(namedObject->name());
-        if (fileIt != m_dumpFileStreams.end()) fileIt->second << namedObject->dumpToString();
+        try
+        {
+            if (fileIt != m_dumpFileStreams.end()) fileIt->second << namedObject->dumpToString();
+        }
+        catch (...)
+        {
+            std::cerr << "Error writing dump file\n";
+        }
     }
 }
 

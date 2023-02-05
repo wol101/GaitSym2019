@@ -594,13 +594,13 @@ int FacetedObject::ParsePLYFile(const std::string &filename)
     }
     try
     {
+        std::ifstream ss;
+        ss.exceptions(std::ios::failbit|std::ios::badbit|std::ios::eofbit);
 #if (defined(_WIN32) || defined(WIN32)) && !defined(__MINGW32__)
-        std::ifstream ss(DataFile::ConvertUTF8ToWide(filename), std::ios::binary);
+        ss.open(DataFile::ConvertUTF8ToWide(filename), std::ios::binary);
 #else
-        std::ifstream ss(filename, std::ios::binary);
+        ss.open(filename, std::ios::binary);
 #endif
-        if (ss.fail()) throw std::runtime_error("failed to open " + filename);
-
         tinyply::PlyFile file;
         file.parse_header(ss);
 
@@ -1078,13 +1078,22 @@ void FacetedObject::WritePOVRay(std::string filename)
 {
     std::ostringstream objData;
     WritePOVRay(objData);
+    try
+    {
+        std::ofstream f;
+        f.exceptions(std::ios::failbit|std::ios::badbit);
 #if (defined(_WIN32) || defined(WIN32)) && !defined(__MINGW32__)
-    std::ofstream f(DataFile::ConvertUTF8ToWide(filename));
+        f.open(DataFile::ConvertUTF8ToWide(filename));
 #else
-    std::ofstream f(filename);
+        f.open(filename);
 #endif
-    f << objData.str();
-    f.close();
+        f << objData.str();
+        f.close();
+    }
+    catch (...)
+    {
+        std::cerr << "Error writing " << filename << "\n";
+    }
 }
 
 // write the object out as a POVRay string
@@ -1133,13 +1142,22 @@ void FacetedObject::WriteOBJFile(std::string filename)
 {
     std::ostringstream objData;
     WriteOBJFile(objData);
+    try
+    {
+        std::ofstream f;
+        f.exceptions(std::ios::failbit|std::ios::badbit);
 #if (defined(_WIN32) || defined(WIN32)) && !defined(__MINGW32__)
-    std::ofstream f(DataFile::ConvertUTF8ToWide(filename));
+        f.open(DataFile::ConvertUTF8ToWide(filename));
 #else
-    std::ofstream f(filename);
+        f.open(filename);
 #endif
-    f << objData.str();
-    f.close();
+        f << objData.str();
+        f.close();
+    }
+    catch (...)
+    {
+        std::cerr << "Error writing " << filename << "\n";
+    }
 }
 
 const double *FacetedObject::GetDisplayPosition() const

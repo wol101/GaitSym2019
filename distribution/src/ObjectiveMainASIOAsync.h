@@ -259,7 +259,7 @@ private:
     ArgParse m_argparse;
 
     std::string m_host;
-    uint16_t m_port;
+    uint16_t m_port = 0;
     int m_sleepTime = 0;
 
     bool m_scoreToSend = false;
@@ -268,7 +268,7 @@ private:
     uint64_t m_lastEvolveIdentifier = 0;
     std::string m_lastGenomeDataMessageRaw;
     bool m_lastGenomeValid = false;
-    int m_statusDoSimulation = {};
+    int m_statusDoSimulation = 0;
     std::vector<uint32_t> m_hash = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
 
     AsioClient m_asioClient;

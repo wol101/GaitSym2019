@@ -9,7 +9,6 @@
 
 #include "ObjectiveMainASIO.h"
 #include "GSUtil.h"
-#include "DataFile.h"
 #include "Simulation.h"
 #include "Reporter.h"
 #include "DataTarget.h"
@@ -19,7 +18,6 @@
 #include "Body.h"
 #include "Geom.h"
 #include "ArgParse.h"
-#include "MD5.h"
 
 #include "pystring.h"
 
@@ -399,6 +397,7 @@ int ObjectiveMainASIO::WriteOutput()
     strcpy(m_requestMessage.text, "score___");
     m_requestMessage.score = score;
     m_requestMessage.runID = m_dataMessage.runID;
+    m_requestMessage.evolveIdentifier = m_dataMessage.evolveIdentifier;
     try
     {
         std::string encodedString = encode(std::string(reinterpret_cast<char *>(&m_requestMessage), sizeof(RequestMessage)));

@@ -456,6 +456,8 @@ double DataTargetScalar::calculateError(double time)
  *   - the simulation time
  * - error
  *   - the raw error generated
+ * - score
+ *   - the score value generated using the positive function, intersect and slope
  */
 
 std::string DataTargetScalar::dumpToString()
@@ -464,9 +466,9 @@ std::string DataTargetScalar::dumpToString()
     if (firstDump())
     {
         setFirstDump(false);
-        s += dumpHelper({"time", "error"s});
+        s += dumpHelper({"time"s, "error"s, "score"s});
     }
-    s += dumpHelper({simulation()->GetTime(), m_errorScore});
+    s += dumpHelper({simulation()->GetTime(), m_errorScore, lastValue()});
     return s;
 }
 

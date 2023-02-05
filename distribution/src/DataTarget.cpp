@@ -29,6 +29,11 @@ std::vector<double> *DataTarget::targetTimeList()
     return &m_targetTimeList;
 }
 
+double DataTarget::lastValue() const
+{
+    return m_lastValue;
+}
+
 double DataTarget::positiveFunction(double v)
 {
     switch (m_matchType)

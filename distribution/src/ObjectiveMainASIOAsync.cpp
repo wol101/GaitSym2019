@@ -9,7 +9,6 @@
 
 #include "ObjectiveMainASIOAsync.h"
 #include "GSUtil.h"
-#include "DataFile.h"
 #include "Simulation.h"
 #include "Reporter.h"
 #include "DataTarget.h"
@@ -19,7 +18,6 @@
 #include "Body.h"
 #include "Geom.h"
 #include "ArgParse.h"
-#include "MD5.h"
 
 #include "pystring.h"
 
@@ -176,6 +174,9 @@ int ObjectiveMainASIOAsync::Run()
         else
         {
             m_scoreToSend = false;
+            m_lastScore = 0;
+            m_lastRunID = std::numeric_limits<uint32_t>::max() - 1;;
+            m_lastEvolveIdentifier = 0;
         }
 
         runTime = GSUtil::GetTime() - startTime;

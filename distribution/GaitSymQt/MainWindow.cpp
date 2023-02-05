@@ -229,6 +229,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->splitter1->restoreState(Preferences::valueQByteArray("MainWindowSplitter1State"));
     ui->splitter2->restoreState(Preferences::valueQByteArray("MainWindowSplitter2State"));
     Preferences::insert("ElementTreeHeaderState", ui->treeWidgetElements->header()->saveState());
+    log(QString("Window state restored from \"%1\"").arg(Preferences::fileName()));
 
     // Full screen does not work sensibly yet so remove
     if (isFullScreen()) m_mainWindowActions->menuToggleFullScreen();

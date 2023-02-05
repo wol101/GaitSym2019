@@ -8,7 +8,7 @@ import re
 
 def only_keep_last_matching():
     parser = argparse.ArgumentParser(description="Only keep the last matching file")
-    parser.add_argument("folder_list", default=[os.getcwd()], nargs="*", help="The folder to look in [.]")
+    parser.add_argument("folder_list", nargs="+", help="The folders to look in")
     parser.add_argument("-r", "--regular_expression", default="Population_[0-9]+.txt", help="The regular expression to match [Population_[0-9]+.txt]")
     parser.add_argument("-n", "--number_to_keep", type=int, default=1, help="The number of files to keep [1]")
     parser.add_argument("-g", "--genome", action="store_true", help="Replace regular expression with 'BestGenome_[0-9]+.txt'")                     

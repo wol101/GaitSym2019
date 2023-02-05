@@ -552,12 +552,12 @@ std::string *MAMuscleComplete::createFromAttributes()
         m_akTDeactivationB = GSUtil::Double(buf);
         this->SetActivationKinetics(activationKinetics, m_akFastTwitchProportion, m_akTActivationA, m_akTActivationB, m_akTDeactivationA, m_akTDeactivationB);
     }
-    if (findAttribute("InitialFibreLength"s, &buf) == nullptr) return lastErrorPtr();
+    if (findAttribute("InitialFibreLength"s, &buf) == nullptr) return lastErrorPtr(); // FIX ME - InitialFibreLength is currently not used
     m_initialFibreLength = GSUtil::Double(buf);
     this->SetInitialFibreLength(m_initialFibreLength);
     if (findAttribute("ActivationRate"s, &buf) == nullptr) return lastErrorPtr();
     this->SetActivationRate(GSUtil::Double(buf));
-    if (findAttribute("StartActivation"s, &buf) == nullptr) return lastErrorPtr();
+    if (findAttribute("StartActivation"s, &buf) == nullptr) return lastErrorPtr(); // FIX ME - StartActivation is currently not used
     m_startActivation = GSUtil::Double(buf);
     this->SetStartActivation(m_startActivation);
     if (findAttribute("MinimumActivation"s, &buf) == nullptr) return lastErrorPtr();

@@ -38,6 +38,8 @@ public:
     virtual double calculateError(double time) = 0;
     virtual double calculateError(size_t index) = 0;
 
+    double lastValue() const;
+
 protected:
     std::vector<double> *targetTimeList();
 

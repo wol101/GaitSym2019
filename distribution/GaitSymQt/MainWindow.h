@@ -98,7 +98,6 @@ private:
     void updateComboBoxTrackingMarker();
     void handleTracking();
 
-
     Ui::MainWindow *ui = nullptr;
 
     QFileInfo m_configFile; // maybe use windowFilePath() and windowTitle() instead

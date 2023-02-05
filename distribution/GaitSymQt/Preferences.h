@@ -56,19 +56,21 @@ public:
     static const QColor valueQColor(const QString &key);
     static const QFont valueQFont(const QString &key);
     static const QByteArray valueQByteArray(const QString &key);
+    static const QStringList valueQStringList(const QString &key);
     static const QVector2D valueQVector2D(const QString &key);
     static const QVector3D valueQVector3D(const QString &key);
     static double valueDouble(const QString &key);
     static float valueFloat(const QString &key);
     static int valueInt(const QString &key);
     static bool valueBool(const QString &key);
-    static const QVariant valueQVariant(const QString &key, QVariant defaultValue);
-    static const QString valueQString(const QString &key, QString defaultValue);
-    static const QColor valueQColor(const QString &key, QColor defaultValue);
-    static const QFont valueQFont(const QString &key, QFont defaultValue);
-    static const QByteArray valueQByteArray(const QString &key, QByteArray defaultValue);
-    static const QVector2D valueQVector2D(const QString &key, QVector2D defaultValue);
-    static const QVector3D valueQVector3D(const QString &key, QVector3D defaultValue);
+    static const QVariant valueQVariant(const QString &key, const QVariant &defaultValue);
+    static const QString valueQString(const QString &key, const QString &defaultValue);
+    static const QColor valueQColor(const QString &key, const QColor &defaultValue);
+    static const QFont valueQFont(const QString &key, const QFont &defaultValue);
+    static const QByteArray valueQByteArray(const QString &key, const QByteArray &defaultValue);
+    static const QStringList valueQStringList(const QString &key, const QStringList &defaultValue);
+    static const QVector2D valueQVector2D(const QString &key, const QVector2D &defaultValue);
+    static const QVector3D valueQVector3D(const QString &key, const QVector3D &defaultValue);
     static double valueDouble(const QString &key, double defaultValue);
     static float valueFloat(const QString &key, float defaultValue);
     static int valueInt(const QString &key, int defaultValue);
@@ -86,6 +88,9 @@ public:
     static const QString &getOrganizationName();
 
 private:
+
+    static QString serialize(const QStringList &data);
+    static void deserialize(const QString &qString, QStringList *data);
 
     static QMap<QString, SettingsItem> m_settings;
     static QSettings m_qtSettings;

@@ -17,6 +17,7 @@
 #include <QDebug>
 #include <QDomDocument>
 #include <QSettings>
+#include <QDataStream>
 
 #include <cfloat>
 
@@ -112,6 +113,10 @@ QByteArray Preferences::ExportData()
 #endif
         switch (type)
         {
+        case QMetaType::QStringList:
+            setting.setAttribute("defaultValue", serialize(item.defaultValue.toStringList()));
+            setting.setAttribute("value", serialize(item.value.toStringList()));
+            break;
         case QMetaType::QByteArray:
             setting.setAttribute("defaultValue", QString::fromUtf8(item.defaultValue.toByteArray().toBase64(QByteArray::Base64UrlEncoding)));
             setting.setAttribute("value", QString::fromUtf8(item.value.toByteArray().toBase64( QByteArray::Base64UrlEncoding)));
@@ -205,8 +210,15 @@ void Preferences::ParseQDomElement(const QDomElement &docElem)
 #endif
                 item.display = toBool(e.attribute("display"));
                 item.label = e.attribute("label");
+                QStringList stringList;
                 switch (item.type)
                 {
+                case QMetaType::QStringList:
+                    deserialize(QString(e.attribute("value")), &stringList);
+                    item.value = stringList;
+                    deserialize(QString(e.attribute("defaultValue")), &stringList);
+                    item.defaultValue = stringList;
+                    break;
                 case QMetaType::QByteArray:
                     item.value = QByteArray::fromBase64(QString(e.attribute("value")).toUtf8(), QByteArray::Base64UrlEncoding);
                     item.defaultValue = QByteArray::fromBase64(QString(e.attribute("defaultValue")).toUtf8(), QByteArray::Base64UrlEncoding);
@@ -360,6 +372,14 @@ const QByteArray Preferences::valueQByteArray(const QString &key)
     return v;
 }
 
+const QStringList Preferences::valueQStringList(const QString &key)
+{
+    QStringList v;
+    if (m_settings.contains(key)) v = qvariant_cast<QStringList>(m_settings.value(key).value);
+    else insert(key, v);
+    return v;
+}
+
 const QVector2D Preferences::valueQVector2D(const QString &key)
 {
     QVector2D v;
@@ -376,7 +396,7 @@ const QVector3D Preferences::valueQVector3D(const QString &key)
     return v;
 }
 
-const QVariant Preferences::valueQVariant(const QString &key, QVariant defaultValue)
+const QVariant Preferences::valueQVariant(const QString &key, const QVariant &defaultValue)
 {
     QVariant v = defaultValue;
     if (m_settings.contains(key)) v = m_settings.value(key).value;
@@ -384,7 +404,7 @@ const QVariant Preferences::valueQVariant(const QString &key, QVariant defaultVa
     return v;
 }
 
-const QString Preferences::valueQString(const QString &key, QString defaultValue)
+const QString Preferences::valueQString(const QString &key, const QString &defaultValue)
 {
     QString v = defaultValue;
     if (m_settings.contains(key)) v = m_settings.value(key).value.toString();
@@ -392,7 +412,7 @@ const QString Preferences::valueQString(const QString &key, QString defaultValue
     return v;
 }
 
-const QColor Preferences::valueQColor(const QString &key, QColor defaultValue)
+const QColor Preferences::valueQColor(const QString &key, const QColor &defaultValue)
 {
     QColor v = defaultValue;
     if (m_settings.contains(key)) v = qvariant_cast<QColor>(m_settings.value(key).value);
@@ -400,7 +420,7 @@ const QColor Preferences::valueQColor(const QString &key, QColor defaultValue)
     return v;
 }
 
-const QFont Preferences::valueQFont(const QString &key, QFont defaultValue)
+const QFont Preferences::valueQFont(const QString &key, const QFont &defaultValue)
 {
     QFont v = defaultValue;
     if (m_settings.contains(key)) v = qvariant_cast<QFont>(m_settings.value(key).value);
@@ -408,7 +428,7 @@ const QFont Preferences::valueQFont(const QString &key, QFont defaultValue)
     return v;
 }
 
-const QByteArray Preferences::valueQByteArray(const QString &key, QByteArray defaultValue)
+const QByteArray Preferences::valueQByteArray(const QString &key, const QByteArray &defaultValue)
 {
     QByteArray v = defaultValue;
     if (m_settings.contains(key)) v = qvariant_cast<QByteArray>(m_settings.value(key).value);
@@ -416,7 +436,15 @@ const QByteArray Preferences::valueQByteArray(const QString &key, QByteArray def
     return v;
 }
 
-const QVector2D Preferences::valueQVector2D(const QString &key, QVector2D defaultValue)
+const QStringList Preferences::valueQStringList(const QString &key, const QStringList &defaultValue)
+{
+    QStringList v = defaultValue;
+    if (m_settings.contains(key)) v = qvariant_cast<QStringList>(m_settings.value(key).value);
+    else insert(key, v, defaultValue);
+    return v;
+}
+
+const QVector2D Preferences::valueQVector2D(const QString &key, const QVector2D &defaultValue)
 {
     QVector2D v = defaultValue;
     if (m_settings.contains(key)) v = qvariant_cast<QVector2D>(m_settings.value(key).value);
@@ -424,7 +452,7 @@ const QVector2D Preferences::valueQVector2D(const QString &key, QVector2D defaul
     return v;
 }
 
-const QVector3D Preferences::valueQVector3D(const QString &key, QVector3D defaultValue)
+const QVector3D Preferences::valueQVector3D(const QString &key, const QVector3D &defaultValue)
 {
     QVector3D v = defaultValue;
     if (m_settings.contains(key)) v = qvariant_cast<QVector3D>(m_settings.value(key).value);
@@ -678,4 +706,19 @@ const QString &Preferences::getApplicationName()
 const QString &Preferences::getOrganizationName()
 {
     return organizationName;
+}
+
+QString Preferences::serialize(const QStringList &data)
+{
+    QByteArray byteArray;
+    QDataStream out(&byteArray, QIODevice::WriteOnly);
+    out << data;
+    return QString::fromUtf8(byteArray.toBase64( QByteArray::Base64UrlEncoding));
+}
+
+void Preferences::deserialize(const QString &qString, QStringList *data)
+{
+    QByteArray bytes = QByteArray::fromBase64(qString.toUtf8(), QByteArray::Base64UrlEncoding);
+    QDataStream in(&bytes, QIODevice::ReadOnly);
+    in >> *data;
 }

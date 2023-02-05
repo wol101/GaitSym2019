@@ -6,6 +6,7 @@ import os
 import argparse
 import glob
 import re
+import subprocess
 
 # this line means that all the math functions do not require the math. prefix
 from math import *
@@ -19,6 +20,8 @@ def apply_population():
     parser.add_argument('-n', '--genome_number', type=int, default=0, help='the required genome (defaults to 0)')
     parser.add_argument('-r', '--genome_range', nargs=2, type=int, help='the required genome range (defaults to empty)')
     parser.add_argument('-l', '--recursion_limit', type=int, default=10000, help='set the python recursion limit (defaults to 10000)')
+    parser.add_argument('-g', '--gaitsym_executable', default='gaitsym_2019', help='the gaitsym executable to use')
+    parser.add_argument('-e', '--evaluate', action='store_true', help='re-evaluate the fitness using a local copy of gaitsym')
     parser.add_argument('-q', '--query', action='store_true', help='only query the population file by outputting genome number and fitness')
     parser.add_argument('-f', '--force', action='store_true', help='force overwrite of destination file')
     parser.add_argument('-v', '--verbose', action='store_true', help='write out more information whilst processing')
@@ -43,6 +46,8 @@ def apply_population():
         print('Checking files')
     preflight_read_file(args.population_file)
     preflight_read_file(args.input_xml_file)
+    if args.evaluate:
+        preflight_read_file(args.gaitsym_executable)
         
     
     if args.verbose:
@@ -120,6 +125,16 @@ def apply_population():
             print('Writing output XML file "%s"' % (args.output_xml_file))
         with open(args.output_xml_file, 'w') as f:
             f.write(new_contents)
+        
+        if args.evaluate:
+            commands = [args.gaitsym_executable, '-co', args.output_xml_file]
+            result = subprocess.run(commands, capture_output=True)
+            print(f'{result.returncode = }')
+            pretty_print_sys_argv(result.args)
+            stdout_str = result.stdout.decode("utf-8")
+            print(f'{stdout_str = }')
+            stderr_str = result.stderr.decode("utf-8")
+            print(f'{stderr_str = }')
     return
 
 def parse_genome(lines, index, args):

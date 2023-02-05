@@ -238,6 +238,7 @@ private:
     struct DataMessage
     {
         char text[16];
+        uint64_t evolveIdentifier;
         uint32_t senderIP;
         uint32_t senderPort;
         uint32_t runID;
@@ -254,6 +255,7 @@ private:
     struct RequestMessage
     {
         char text[16];
+        uint64_t evolveIdentifier;
         uint32_t senderIP;
         uint32_t senderPort;
         uint32_t runID;

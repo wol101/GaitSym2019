@@ -90,6 +90,7 @@ def preflight_write_folder(folder, verbose):
         try:
             os.makedirs(folder, exist_ok = True)
         except OSError as error:
+            print(error)
             print('Directory "%s" can not be created' % folder)
             sys.exit(1)
 

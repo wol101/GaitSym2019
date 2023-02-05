@@ -55,6 +55,8 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QRegularExpression>
+#include <QMenu>
+#include <QAction>
 
 using namespace std::literals::string_literals;
 
@@ -62,6 +64,10 @@ MainWindowActions::MainWindowActions(QObject *parent) : QObject(parent)
 {
     m_mainWindow = dynamic_cast<MainWindow *>(parent);
     Q_ASSERT_X(m_mainWindow, "MainWindowActions::MainWindowActions", "parent not set to a valid MainWindow");
+
+    m_recentFileList = Preferences::valueQStringList("RecentFileList");
+    m_maxRecentFiles = Preferences::valueInt("MaxRecentFiles", 20);
+    updateRecentFiles("");
 }
 
 void MainWindowActions::menuOpen()
@@ -232,7 +238,9 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
     // put the filename as a title
     //if (canonicalFilePath.size() <= 256) m_mainWindow->setWindowTitle(canonicalFilePath + "[*]");
     //else m_mainWindow->setWindowTitle(QString("...") + canonicalFilePath.right(256) + "[*]");
-    m_mainWindow->setWindowTitle(canonicalFilePath + "[*]");
+    m_mainWindow->setWindowTitle(canonicalFilePath);
+
+    updateRecentFiles(canonicalFilePath);
 
     // set menu activations for loaded model
     m_mainWindow->m_noName = false;
@@ -240,6 +248,7 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
     else  m_mainWindow->setWindowModified(false);
     enterRunMode();
     m_mainWindow->updateEnable();
+    Preferences::Write();
 }
 
 void MainWindowActions::menuRestart()
@@ -290,10 +299,10 @@ void MainWindowActions::menuSaveAs()
         m_mainWindow->setStatusString(fileName + QString(" saved"), 1);
         QDir::setCurrent(m_mainWindow->m_configFile.absolutePath());
         Preferences::insert("LastFileOpened", m_mainWindow->m_configFile.canonicalFilePath());
-        Preferences::Write();
         // if (fileName.size() <= 256) m_mainWindow->setWindowTitle(fileName + "[*]");
         // else m_mainWindow->setWindowTitle(QString("...") + fileName.right(256) + "[*]");
-        m_mainWindow->setWindowTitle(m_mainWindow->m_configFile.canonicalFilePath() + "[*]");
+        m_mainWindow->setWindowTitle(m_mainWindow->m_configFile.canonicalFilePath());
+        updateRecentFiles(m_mainWindow->m_configFile.canonicalFilePath());
         m_mainWindow->m_noName = false;
         m_mainWindow->setWindowModified(false);
         if (m_mainWindow->m_mode == MainWindow::constructionMode)
@@ -302,6 +311,7 @@ void MainWindowActions::menuSaveAs()
             for (auto &&it : *m_mainWindow->m_simulation->GetMuscleList()) it.second->LateInitialisation();
             for (auto &&it : *m_mainWindow->m_simulation->GetFluidSacList()) it.second->LateInitialisation();
         }
+        Preferences::Write();
         m_mainWindow->updateEnable();
     }
     else
@@ -1694,3 +1704,39 @@ void MainWindowActions::selectAll()
     }
 }
 
+void MainWindowActions::updateRecentFiles(const QString &recentFile)
+{
+    // first of all get the internal list up to date
+    for (int i = m_recentFileList.size() - 1; i >= 0; i--)
+    {
+        if (m_recentFileList[i] == recentFile) { m_recentFileList.remove(i); }
+    }
+    if (recentFile.size()) m_recentFileList.push_front(recentFile);
+    if (m_recentFileList.size() >= m_maxRecentFiles) { m_recentFileList.resize(m_maxRecentFiles); }
+    QList<QMenu *>  menuList = m_mainWindow->menuBar()->findChildren<QMenu *>();
+    for (auto && menu: menuList)
+    {
+        if (menu->title() == "Open Recent")
+        {
+            disconnect(menu, SIGNAL(triggered(QAction *)), nullptr, nullptr);
+            menu->clear();
+            for (auto &&file : m_recentFileList) { menu->addAction(file); }
+            menu->addSeparator();
+            menu->addAction("Clear Menu");
+            connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(menuOpenRecent(QAction *)));
+            break;
+        }
+    }
+    Preferences::insert("RecentFileList", m_recentFileList);
+}
+
+void MainWindowActions::menuOpenRecent(QAction *action)
+{
+    if (action->text() == "Clear Menu")
+    {
+        m_recentFileList.clear();
+        updateRecentFiles("");
+        return;
+    }
+    menuOpen(action->text(), nullptr);
+}
