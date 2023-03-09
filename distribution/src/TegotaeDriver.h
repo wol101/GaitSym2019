@@ -88,6 +88,16 @@ private:
     Driver *m_AprimeDriver = nullptr;
     Driver *m_BDriver = nullptr;
 
+    // this value is required when the driver needs to be mirrored
+    // the standard driver moves the robot in the -X direction so
+    // mirroring is required even when the axis marker is rotated
+    // the effect is simply to reverse the sign from
+    // m_phi_dot = m_omega - m_sigma * m_N * std::cos(m_phi);
+    // to
+    // m_phi_dot = m_omega + m_sigma * m_N * std::cos(m_phi);
+    bool m_mirror = false;
+    bool m_allow_negative_phi_dot = false;
+
 };
 
 #endif // TEGOTAEDRIVER_H

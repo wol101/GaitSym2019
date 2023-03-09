@@ -50,7 +50,7 @@ void TegotaeDriver::Initialise(double omega, double sigma, double A, double Apri
     m_contactGeomList = contactGeomList;          // these are the geoms that are used for the contact force feedback
 
     // and set the derived values
-    m_phi_dot = m_omega - m_sigma * m_N * std::cos(m_phi);
+    m_phi_dot = m_omega;
     m_X = m_B * std::cos(m_phi);                   // X (0<= m_phi < 2pi)
     if (m_phi < M_PI) m_Y = m_A * std::sin(m_phi); // Y (0<= m_phi < pi)
     else m_Y = m_Aprime * std::sin(m_phi);         // Y (pi<= m_phi < 2pi)
@@ -91,9 +91,10 @@ void TegotaeDriver::Update()
     if (m_BDriver) m_B = m_BDriver->value();
 
     // main control algorithm
-    m_phi_dot = m_omega - m_sigma * m_N * std::cos(m_phi);
+    if (m_mirror) m_phi_dot = m_omega + m_sigma * m_N * std::cos(m_phi);    // this version follows the normal gaitsym convention of forward being +X
+    else m_phi_dot = m_omega - m_sigma * m_N * std::cos(m_phi);             // this is the version in the paper where -X is forward
     // lets try not letting m_phi_dot be negative
-    if (m_phi_dot < 0) m_phi_dot = 0;
+    if (m_allow_negative_phi_dot == false && m_phi_dot < 0) m_phi_dot = 0;
 
     // leg control
     // +ve X is relative distance forward
@@ -228,6 +229,9 @@ std::string *TegotaeDriver::createFromAttributes()
     B = GSUtil::Double(buf);
     if (findAttribute("Phi"s, &buf) == nullptr) return lastErrorPtr();
     phi = GSUtil::Double(buf);
+
+    if (findAttribute("Mirror"s, &buf)) m_mirror = GSUtil::Double(buf);
+    if (findAttribute("AllowNegativePhiDot"s, &buf)) m_allow_negative_phi_dot = GSUtil::Double(buf);
 
     if (findAttribute("CentreMarkerID"s, &buf) == nullptr) return lastErrorPtr();
     Marker *tegotaeCentre = simulation()->GetMarker(buf);
@@ -398,6 +402,8 @@ void TegotaeDriver::appendToAttributes()
     setAttribute("Aprime"s, *GSUtil::ToString(m_Aprime, &buf));
     setAttribute("B"s, *GSUtil::ToString(m_B, &buf));
     setAttribute("Phi"s, *GSUtil::ToString(m_phi, &buf));
+    setAttribute("Mirror"s, *GSUtil::ToString(m_mirror, &buf));
+    setAttribute("AllowNegativePhiDot"s, *GSUtil::ToString(m_allow_negative_phi_dot, &buf));
     setAttribute("CentreMarkerID"s, m_tegotaeCentre->name());
     setAttribute("RimMarkerID"s, m_tegotaeRim->name());
     setAttribute("ErrorOutputMarkerID"s, m_errorOutput->name());

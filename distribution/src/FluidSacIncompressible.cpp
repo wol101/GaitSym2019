@@ -38,7 +38,10 @@ void FluidSacIncompressible::calculatePressure()
 //        V1 = final volume (m3)
 //    rearranging
 //        p1 = p0 - K(v1 - v0) / v0
-    setPressure(m_startingPressure - m_bulkModulus * (sacVolume() - m_fluidVolume) / m_fluidVolume);
+    double volumeTerm = m_bulkModulus * (sacVolume() - m_fluidVolume) / m_fluidVolume;
+    double dotVolumeTerm = dotSacVolume() * m_bulkModulusDamping / m_fluidVolume;
+    double pressure = m_startingPressure - volumeTerm + dotVolumeTerm; // note that the signs are set because reducing volume increases pressure
+    setPressure(pressure);
 }
 
 std::string *FluidSacIncompressible::createFromAttributes()
@@ -50,6 +53,8 @@ std::string *FluidSacIncompressible::createFromAttributes()
     this->setFluidVolume(GSUtil::Double(buf));
     if (findAttribute("BulkModulus"s, &buf) == nullptr) return lastErrorPtr();
     this->setBulkModulus(GSUtil::Double(buf));
+    if (findAttribute("BulkModulusDamping"s, &buf) == nullptr) return lastErrorPtr();
+    this->setBulkModulusDamping(GSUtil::Double(buf));
     if (findAttribute("StartingPressure"s, &buf) == nullptr) return lastErrorPtr();
     this->setStartingPressure(GSUtil::Double(buf));
 
@@ -63,6 +68,7 @@ void FluidSacIncompressible::appendToAttributes()
     setAttribute("Type"s, "Incompressible"s);
     setAttribute("FluidVolume"s, GSUtil::ToString(m_fluidVolume));
     setAttribute("BulkModulus"s, GSUtil::ToString(m_bulkModulus));
+    setAttribute("BulkModulusDamping"s, GSUtil::ToString(m_bulkModulusDamping));
     setAttribute("StartingPressure"s, GSUtil::ToString(m_startingPressure));
 }
 
@@ -94,5 +100,15 @@ double FluidSacIncompressible::startingPressure() const
 void FluidSacIncompressible::setStartingPressure(double startingPressure)
 {
     m_startingPressure = startingPressure;
+}
+
+double FluidSacIncompressible::bulkModulusDamping() const
+{
+    return m_bulkModulusDamping;
+}
+
+void FluidSacIncompressible::setBulkModulusDamping(double newBulkModulusDamping)
+{
+    m_bulkModulusDamping = newBulkModulusDamping;
 }
 

@@ -12,8 +12,6 @@
 #include "GSUtil.h"
 #include "Body.h"
 
-#include "ode/ode.h"
-
 #include "pystring.h"
 
 #include <map>
@@ -29,7 +27,18 @@ FluidSac::FluidSac()
 void FluidSac::calculateVolume()
 {
     for (size_t i = 0; i < m_markerList.size(); i++) m_vertexList[i] = m_markerList[i]->GetWorldPosition();
-    m_sacVolume = volumeOfMesh(m_triangleList, m_vertexList);
+    double currentVolume = volumeOfMesh(m_triangleList, m_vertexList);
+    double deltaT = simulation()->GetTimeIncrement() / 1e-6;
+    std::vector<pgd::Vector3> deltaList(m_markerList.size());
+    for (size_t i = 0; i < m_markerList.size(); i++) deltaList[i] = m_markerList[i]->GetWorldLinearVelocity() * deltaT; // using the marker velocities gives a semi-implicit solution which should be more stable
+    std::vector<pgd::Vector3> vertexList1 = m_vertexList;
+    std::vector<pgd::Vector3> vertexList2 = m_vertexList;
+    for (size_t i = 0; i < m_markerList.size(); i++) vertexList1[i] -= deltaList[i];
+    for (size_t i = 0; i < m_markerList.size(); i++) vertexList2[i] += deltaList[i];
+    double volume1 = volumeOfMesh(m_triangleList, vertexList1);
+    double volume2 = volumeOfMesh(m_triangleList, vertexList1);
+    setSacVolume(currentVolume);
+    setDotSacVolume((volume2 - volume1) / (2 * deltaT));
 }
 
 
@@ -54,7 +63,7 @@ void FluidSac::calculateLoadsOnMarkers()
         // now we can use the Z=0 triangle formulae
         // the triangle is in the z=0 plane
         // the applied vertical force is F
-        // the reaction reaction forces are R0, R1, R2
+        // the reaction forces are R0, R1, R2
         // the position of the applied force is specified as x, y
         // the positions of the vertices are x0,y0, x1,y1, x2,y2
 
@@ -247,6 +256,7 @@ void FluidSac::triangleVertices(size_t triangleIndex, double vertices[9]) const
 void FluidSac::LateInitialisation()
 {
     this->calculateVolume();
+    // m_lastSacVolume = m_sacVolume;
     this->calculatePressure();
     this->calculateLoadsOnMarkers();
 }
@@ -368,10 +378,27 @@ std::string FluidSac::dumpToString()
 void FluidSac::setSacVolume(double sacVolume)
 {
     m_sacVolume = sacVolume;
+//    double deltaTime = simulation()->GetTime() - m_lastTime;
+//    if (deltaTime != 0) // FIX ME - this is not a good way of calculating the m_dotSacVolume. I should work from the marker velocities directly.
+//    {
+//        m_dotSacVolume = (m_sacVolume - m_lastSacVolume) / deltaTime;
+//        m_lastSacVolume = m_sacVolume;
+//        m_lastTime = simulation()->GetTime();
+//    }
 }
 
 void FluidSac::setPressure(double pressure)
 {
     m_pressure = pressure;
+}
+
+double FluidSac::dotSacVolume() const
+{
+    return m_dotSacVolume;
+}
+
+void FluidSac::setDotSacVolume(double newDotSacVolume)
+{
+    m_dotSacVolume = newDotSacVolume;
 }
 

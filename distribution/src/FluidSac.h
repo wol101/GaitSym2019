@@ -46,6 +46,7 @@ public:
     virtual void LateInitialisation();
 
     double sacVolume() const;
+    double dotSacVolume() const;
     double pressure() const;
     const std::vector<PointForce> &pointForceList() const;
     const std::vector<FluidSac::Triangle> &triangleList() const;
@@ -59,6 +60,7 @@ public:
 
     void setSacVolume(double sacVolume);
     void setPressure(double pressure);
+    void setDotSacVolume(double newDotSacVolume);
 
 private:
     std::vector<FluidSac::Triangle> m_triangleList;
@@ -68,6 +70,9 @@ private:
 
     double m_sacVolume = 0;
     double m_pressure = 0;
+    // double m_lastSacVolume = 0;
+    // double m_lastTime = 0;
+    double m_dotSacVolume = 0;
 };
 
 #endif // FluidSac_H

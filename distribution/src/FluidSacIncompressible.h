@@ -31,10 +31,14 @@ public:
     double startingPressure() const;
     void setStartingPressure(double startingPressure);
 
+    double bulkModulusDamping() const;
+    void setBulkModulusDamping(double newBulkModulusDamping);
+
 private:
     double m_fluidVolume = {0};
     double m_startingPressure = {0};
     double m_bulkModulus = {0};
+    double m_bulkModulusDamping = {0};
 };
 
 #endif // FLUIDSACINCOMPRESSIBLE_H
