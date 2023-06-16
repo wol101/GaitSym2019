@@ -1,0 +1,417 @@
+\hypertarget{classGSUtil}{}\doxysection{GSUtil Class Reference}
+\label{classGSUtil}\index{GSUtil@{GSUtil}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classGSUtil_a1d0b844ba25143e9ec465d99bc8bfe06}\label{classGSUtil_a1d0b844ba25143e9ec465d99bc8bfe06}} 
+void {\bfseries Logger} (const std\+::string \&file, const std\+::string \&message)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classGSUtil_a0050fa598ca344fdaf404afee3a5edf3}\label{classGSUtil_a0050fa598ca344fdaf404afee3a5edf3}} 
+static void {\bfseries Cross\+Product3x1} (const double $\ast$a, const double $\ast$b, double $\ast$c)
+\item 
+\mbox{\Hypertarget{classGSUtil_a72b7df0b7ef75961108d32b5dc38c1d6}\label{classGSUtil_a72b7df0b7ef75961108d32b5dc38c1d6}} 
+static double {\bfseries Dot\+Product3x1} (const double $\ast$a, const double $\ast$b)
+\item 
+\mbox{\Hypertarget{classGSUtil_adc5b443189768a07874a7bde927851b0}\label{classGSUtil_adc5b443189768a07874a7bde927851b0}} 
+static double {\bfseries Magnitude3x1} (const double $\ast$a)
+\item 
+\mbox{\Hypertarget{classGSUtil_add9f1977d8c13987be1083ba262a5190}\label{classGSUtil_add9f1977d8c13987be1083ba262a5190}} 
+static double {\bfseries Distance3x1} (const double $\ast$a, const double $\ast$b)
+\item 
+\mbox{\Hypertarget{classGSUtil_a2b4ff49cdace8997a4cbaf79468d6544}\label{classGSUtil_a2b4ff49cdace8997a4cbaf79468d6544}} 
+static void {\bfseries Unit3x1} (double $\ast$a)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab2d7102606d639b8af2ba62a80ecafb2}\label{classGSUtil_ab2d7102606d639b8af2ba62a80ecafb2}} 
+static void {\bfseries Add3x1} (const double $\ast$a, const double $\ast$b, double $\ast$c)
+\item 
+\mbox{\Hypertarget{classGSUtil_acf40e0b6a761f36d949df216e8702cb4}\label{classGSUtil_acf40e0b6a761f36d949df216e8702cb4}} 
+static void {\bfseries Subtract3x1} (const double $\ast$a, const double $\ast$b, double $\ast$c)
+\item 
+\mbox{\Hypertarget{classGSUtil_aec00627e00acbdd097a39adcea785cd0}\label{classGSUtil_aec00627e00acbdd097a39adcea785cd0}} 
+static void {\bfseries Scalar\+Multiply3x1} (const double scalar, const double $\ast$a, double $\ast$c)
+\item 
+\mbox{\Hypertarget{classGSUtil_ad0bab9b299c8cb0616fb59b7ea45a48e}\label{classGSUtil_ad0bab9b299c8cb0616fb59b7ea45a48e}} 
+static void {\bfseries Copy3x1} (const double $\ast$a, double $\ast$b)
+\item 
+\mbox{\Hypertarget{classGSUtil_a55f52513433e3c2027e868190ac4cb5c}\label{classGSUtil_a55f52513433e3c2027e868190ac4cb5c}} 
+static void {\bfseries ZPlane\+Rotate} (double theta, double $\ast$location)
+\item 
+\mbox{\Hypertarget{classGSUtil_a97809adbedfb7aac3e6f199a8302ad30}\label{classGSUtil_a97809adbedfb7aac3e6f199a8302ad30}} 
+static bool {\bfseries Out\+Range} (double v, double l, double h)
+\item 
+\mbox{\Hypertarget{classGSUtil_ae2509f59e9235bcad05668dbcb8cb5a1}\label{classGSUtil_ae2509f59e9235bcad05668dbcb8cb5a1}} 
+{\footnotesize template$<$typename T $>$ }\\static T {\bfseries Clamp} (const T \&n, const T \&lower, const T \&upper)
+\item 
+\mbox{\Hypertarget{classGSUtil_ac0fda6cb270536a141bcb8256eb7eedc}\label{classGSUtil_ac0fda6cb270536a141bcb8256eb7eedc}} 
+static double {\bfseries Double} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a4bafc86ae60a778f5896394b9a294161}\label{classGSUtil_a4bafc86ae60a778f5896394b9a294161}} 
+static double {\bfseries Double} (const char $\ast$buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a68b090ef0751c15b97dc721a2121537c}\label{classGSUtil_a68b090ef0751c15b97dc721a2121537c}} 
+static double {\bfseries Double} (const unsigned char $\ast$buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_ae1fdb8d19e6f71080b9d90263efbaf0e}\label{classGSUtil_ae1fdb8d19e6f71080b9d90263efbaf0e}} 
+static double $\ast$ {\bfseries Double} (const char $\ast$buf, int n, double $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_ae485726f8b773a5576a55353ee0d6221}\label{classGSUtil_ae485726f8b773a5576a55353ee0d6221}} 
+static double $\ast$ {\bfseries Double} (const unsigned char $\ast$buf, int n, double $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_aa2521577b5b9e470f6de17c766208ea3}\label{classGSUtil_aa2521577b5b9e470f6de17c766208ea3}} 
+static double $\ast$ {\bfseries Double} (const std\+::string \&buf, int n, double $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_a9ff89c6d9da1ae9a0248f7c18acca811}\label{classGSUtil_a9ff89c6d9da1ae9a0248f7c18acca811}} 
+static std\+::vector$<$ double $>$ $\ast$ {\bfseries Double} (const std\+::string \&buf, std\+::vector$<$ double $>$ $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_abcb1dc3a4e9f0364376dbaa3981b4e6d}\label{classGSUtil_abcb1dc3a4e9f0364376dbaa3981b4e6d}} 
+static int {\bfseries Int} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab668e39acadd492b10896f3452c02918}\label{classGSUtil_ab668e39acadd492b10896f3452c02918}} 
+static int {\bfseries Int} (const char $\ast$buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a829c87677e151b2461b3555cd0fc7fdc}\label{classGSUtil_a829c87677e151b2461b3555cd0fc7fdc}} 
+static int {\bfseries Int} (const unsigned char $\ast$buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a8ba6788b868b5882fffa886ae512f48b}\label{classGSUtil_a8ba6788b868b5882fffa886ae512f48b}} 
+static int $\ast$ {\bfseries Int} (const char $\ast$buf, int n, int $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_a5487b6997d7fd3051087d3586c7faf1f}\label{classGSUtil_a5487b6997d7fd3051087d3586c7faf1f}} 
+static int $\ast$ {\bfseries Int} (unsigned char $\ast$buf, int n, int $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_aa7504f6d96ac6a5955337d41469d9519}\label{classGSUtil_aa7504f6d96ac6a5955337d41469d9519}} 
+static int $\ast$ {\bfseries Int} (const std\+::string \&buf, int n, int $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_a5a1126af5246774be1e38e4865c2ca56}\label{classGSUtil_a5a1126af5246774be1e38e4865c2ca56}} 
+static std\+::vector$<$ int $>$ $\ast$ {\bfseries Int} (const std\+::string \&buf, std\+::vector$<$ int $>$ $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_ac6796d6b9dbed7c67c863b8ab6aa90e6}\label{classGSUtil_ac6796d6b9dbed7c67c863b8ab6aa90e6}} 
+static bool {\bfseries Bool} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a0958815528b149e1049a303a0f852911}\label{classGSUtil_a0958815528b149e1049a303a0f852911}} 
+static bool {\bfseries Bool} (const char $\ast$cbuf)
+\item 
+\mbox{\Hypertarget{classGSUtil_aac2d98bf224668c879154eaef55bd1cd}\label{classGSUtil_aac2d98bf224668c879154eaef55bd1cd}} 
+static bool {\bfseries Bool\+No\+Strip} (const char $\ast$cbuf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a29420deef521c7c45b691ff6f8ca73e1}\label{classGSUtil_a29420deef521c7c45b691ff6f8ca73e1}} 
+static bool {\bfseries Bool} (const unsigned char $\ast$cbuf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a5a7eef09f2156b59cd8d6daf940b8194}\label{classGSUtil_a5a7eef09f2156b59cd8d6daf940b8194}} 
+static bool $\ast$ {\bfseries Bool} (char $\ast$buf, int n, bool $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab9b942a972f75ef96beec106639ebe33}\label{classGSUtil_ab9b942a972f75ef96beec106639ebe33}} 
+static bool $\ast$ {\bfseries Bool} (unsigned char $\ast$buf, int n, bool $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_a141851d497f721c82b2257ec3fac8ee1}\label{classGSUtil_a141851d497f721c82b2257ec3fac8ee1}} 
+static bool $\ast$ {\bfseries Bool} (const std\+::string \&buf, int n, bool $\ast$d)
+\item 
+\mbox{\Hypertarget{classGSUtil_a3eaf03d46afab0a9f7b2bf514f549c70}\label{classGSUtil_a3eaf03d46afab0a9f7b2bf514f549c70}} 
+static void {\bfseries Strip} (char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_abfce40b77d5ae860d5b32448b6a3e62b}\label{classGSUtil_abfce40b77d5ae860d5b32448b6a3e62b}} 
+static int {\bfseries Count\+Tokens} (const char $\ast$string)
+\item 
+\mbox{\Hypertarget{classGSUtil_a7ec83f861ee9ae12f73e965a818bd6e7}\label{classGSUtil_a7ec83f861ee9ae12f73e965a818bd6e7}} 
+static int {\bfseries Count\+Tokens} (const unsigned char $\ast$string)
+\item 
+\mbox{\Hypertarget{classGSUtil_ad1bc1b48a0e1a6b1d6b175c6ce3d6988}\label{classGSUtil_ad1bc1b48a0e1a6b1d6b175c6ce3d6988}} 
+static double {\bfseries Interpolate} (double x1, double y1, double x2, double y2, double x)
+\item 
+\mbox{\Hypertarget{classGSUtil_af65592a2b2b2f9c829a302f0faae525f}\label{classGSUtil_af65592a2b2b2f9c829a302f0faae525f}} 
+{\footnotesize template$<$class T $>$ }\\static int {\bfseries Binary\+Search\+Match} (T array\mbox{[}$\,$\mbox{]}, int listlen, T item)
+\item 
+\mbox{\Hypertarget{classGSUtil_a18a6bad69182efe4f26d6aa6b373cd4a}\label{classGSUtil_a18a6bad69182efe4f26d6aa6b373cd4a}} 
+{\footnotesize template$<$class T $>$ }\\static int {\bfseries Binary\+Search\+Range} (const T array\mbox{[}$\,$\mbox{]}, int listlen, T item)
+\item 
+\mbox{\Hypertarget{classGSUtil_a1bc3834b0c64923c5e0125dfb63fa638}\label{classGSUtil_a1bc3834b0c64923c5e0125dfb63fa638}} 
+static void {\bfseries Euler\+Decomposition\+XYZ} (const double $\ast$m\+Rot, double \&thetaX, double \&thetaY, double \&thetaZ)
+\item 
+\mbox{\Hypertarget{classGSUtil_af102fe4fa059b585e49aaf2b1d51f7e3}\label{classGSUtil_af102fe4fa059b585e49aaf2b1d51f7e3}} 
+static void {\bfseries Euler\+Decomposition\+XZY} (const double $\ast$m\+Rot, double \&thetaX, double \&thetaY, double \&thetaZ)
+\item 
+\mbox{\Hypertarget{classGSUtil_a71cea35561c7b75ba2b4fb73e8a72072}\label{classGSUtil_a71cea35561c7b75ba2b4fb73e8a72072}} 
+static void {\bfseries Euler\+Decomposition\+YXZ} (const double $\ast$m\+Rot, double \&thetaX, double \&thetaY, double \&thetaZ)
+\item 
+\mbox{\Hypertarget{classGSUtil_aa552e645bd741df99830dbc5762f553e}\label{classGSUtil_aa552e645bd741df99830dbc5762f553e}} 
+static void {\bfseries Euler\+Decomposition\+YZX} (const double $\ast$m\+Rot, double \&thetaX, double \&thetaY, double \&thetaZ)
+\item 
+\mbox{\Hypertarget{classGSUtil_a25490107bd467115338a24bb35609d13}\label{classGSUtil_a25490107bd467115338a24bb35609d13}} 
+static void {\bfseries Euler\+Decomposition\+ZXY} (const double $\ast$m\+Rot, double \&thetaX, double \&thetaY, double \&thetaZ)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab9fc08673cdbf08015a829c74efcb332}\label{classGSUtil_ab9fc08673cdbf08015a829c74efcb332}} 
+static void {\bfseries Euler\+Decomposition\+ZYX} (const double $\ast$m\+Rot, double \&thetaX, double \&thetaY, double \&thetaZ)
+\item 
+\mbox{\Hypertarget{classGSUtil_a3b505c2cf47dc5071b9ca9d5e39caa61}\label{classGSUtil_a3b505c2cf47dc5071b9ca9d5e39caa61}} 
+static void {\bfseries Find\+Rotation} (const double $\ast$R1, const double $\ast$R2, d\+Matrix3 rot\+Mat)
+\item 
+\mbox{\Hypertarget{classGSUtil_a18b1f756d549d21c260bd27ef8563234}\label{classGSUtil_a18b1f756d549d21c260bd27ef8563234}} 
+static void {\bfseries Dump\+Matrix} (const double $\ast$m\+Rot)
+\item 
+\mbox{\Hypertarget{classGSUtil_a77f430b424ad3a0d00fc268b0597b4a5}\label{classGSUtil_a77f430b424ad3a0d00fc268b0597b4a5}} 
+static void {\bfseries Tokenizer} (const char $\ast$constbuf, std\+::vector$<$ std\+::string $>$ \&tokens, const char $\ast$stop\+List)
+\item 
+\mbox{\Hypertarget{classGSUtil_a8a47c746679769dab3140a0c3e84d0a3}\label{classGSUtil_a8a47c746679769dab3140a0c3e84d0a3}} 
+static double $\ast$ {\bfseries Get\+Quaternion} (char $\ast$buf\+Ptrs\mbox{[}$\,$\mbox{]}, double $\ast$q)
+\item 
+\mbox{\Hypertarget{classGSUtil_aba80d581600f0a8444db93d591372cfa}\label{classGSUtil_aba80d581600f0a8444db93d591372cfa}} 
+static \mbox{\hyperlink{classpgd_1_1Quaternion}{pgd\+::\+Quaternion}} {\bfseries Get\+Quaternion} (const std\+::vector$<$ std\+::string $>$ \&tokens, size\+\_\+t start\+Index)
+\item 
+\mbox{\Hypertarget{classGSUtil_a3e9e185bc7c9ff1a954afa1bff079c4b}\label{classGSUtil_a3e9e185bc7c9ff1a954afa1bff079c4b}} 
+static double {\bfseries Get\+Angle} (const char $\ast$buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a6043c124dd283018301d5b56fe6caf78}\label{classGSUtil_a6043c124dd283018301d5b56fe6caf78}} 
+static double {\bfseries Get\+Angle} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab5f32d79fc2b5a3a145e465e68e28d60}\label{classGSUtil_ab5f32d79fc2b5a3a145e465e68e28d60}} 
+static double {\bfseries Distance\+Between\+Two\+Lines} (\mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p1, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} d1, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p2, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} d2)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab106e84125d3f35e8914f8e3d790b2c8}\label{classGSUtil_ab106e84125d3f35e8914f8e3d790b2c8}} 
+static bool {\bfseries Line\+Line\+Intersect} (\mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p1, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p2, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p3, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p4, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$pa, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$pb, double $\ast$mua, double $\ast$mub)
+\item 
+\mbox{\Hypertarget{classGSUtil_a234333eb5ceef4a619bd3395cd9293aa}\label{classGSUtil_a234333eb5ceef4a619bd3395cd9293aa}} 
+static unsigned char $\ast$ {\bfseries Ascii\+To\+Bit\+Map} (const char $\ast$string, int width, int height, char set\+Char, bool reverseY, unsigned char $\ast$bitmap)
+\item 
+\mbox{\Hypertarget{classGSUtil_a212148c8ad8b33ad55c4c4173031f261}\label{classGSUtil_a212148c8ad8b33ad55c4c4173031f261}} 
+static void {\bfseries Find\+And\+Replace} (std\+::string $\ast$source, const std\+::string \&find, const std\+::string \&replace)
+\item 
+\mbox{\Hypertarget{classGSUtil_a12cc38d9bb251629b0b3bfc4e0d0907a}\label{classGSUtil_a12cc38d9bb251629b0b3bfc4e0d0907a}} 
+static void {\bfseries Find\+Bounds\+Check} (double $\ast$list, double x, int $\ast$low\+Bound, int $\ast$high\+Bound)
+\item 
+\mbox{\Hypertarget{classGSUtil_aae4b6636de61f0bf0171b086594084f7}\label{classGSUtil_aae4b6636de61f0bf0171b086594084f7}} 
+static void {\bfseries Find\+Bounds} (double $\ast$list, double x, int $\ast$low\+Bound, int $\ast$high\+Bound)
+\item 
+\mbox{\Hypertarget{classGSUtil_a16073e0b371d2244cbd8fa46a7248e32}\label{classGSUtil_a16073e0b371d2244cbd8fa46a7248e32}} 
+static double {\bfseries Get\+Time} ()
+\item 
+\mbox{\Hypertarget{classGSUtil_a0b1169afe2d353588a932825094b7225}\label{classGSUtil_a0b1169afe2d353588a932825094b7225}} 
+static int {\bfseries Quick\+Int} (const char $\ast$p)
+\item 
+\mbox{\Hypertarget{classGSUtil_a5950831765685311a2b40987c7ba277b}\label{classGSUtil_a5950831765685311a2b40987c7ba277b}} 
+static double {\bfseries Quick\+Double} (const char $\ast$p)
+\item 
+\mbox{\Hypertarget{classGSUtil_aa566fc8505616f796d4f6c627fa46245}\label{classGSUtil_aa566fc8505616f796d4f6c627fa46245}} 
+static double {\bfseries Quick\+Pow} (double base, int exp)
+\item 
+\mbox{\Hypertarget{classGSUtil_ad50ed7ca08dece856834fa422f41d105}\label{classGSUtil_ad50ed7ca08dece856834fa422f41d105}} 
+static bool {\bfseries Bool\+Regex} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classGSUtil_a3ea9a6174540b6e2a03305e5ca2e8d1a}\label{classGSUtil_a3ea9a6174540b6e2a03305e5ca2e8d1a}} 
+static std\+::string {\bfseries Wrap} (const char $\ast$text, size\+\_\+t line\+\_\+length)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab51035e2d417fc70e887e2e38344de21}\label{classGSUtil_ab51035e2d417fc70e887e2e38344de21}} 
+static std\+::string $\ast$ {\bfseries To\+String} (double v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a83c321fa2792cbefd6f685917a863266}\label{classGSUtil_a83c321fa2792cbefd6f685917a863266}} 
+static std\+::string $\ast$ {\bfseries To\+String} (float v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a523ca33fb4136d639e084cc7c621fef3}\label{classGSUtil_a523ca33fb4136d639e084cc7c621fef3}} 
+static std\+::string $\ast$ {\bfseries To\+String} (int32\+\_\+t v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a7b9933ad4c453956bb8169090ca9818b}\label{classGSUtil_a7b9933ad4c453956bb8169090ca9818b}} 
+static std\+::string $\ast$ {\bfseries To\+String} (uint32\+\_\+t v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a0f06e7f3e02ecb59885c2955e98ce3ce}\label{classGSUtil_a0f06e7f3e02ecb59885c2955e98ce3ce}} 
+static std\+::string $\ast$ {\bfseries To\+String} (int64\+\_\+t v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab2c3f60fe966c7693d45a114562a358b}\label{classGSUtil_ab2c3f60fe966c7693d45a114562a358b}} 
+static std\+::string $\ast$ {\bfseries To\+String} (uint64\+\_\+t v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_ab25d3d0afb0c48daa67f60a221945101}\label{classGSUtil_ab25d3d0afb0c48daa67f60a221945101}} 
+static std\+::string $\ast$ {\bfseries To\+String} (bool v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_ad1164b24678968fa74c753672cf170c5}\label{classGSUtil_ad1164b24678968fa74c753672cf170c5}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const double $\ast$v, size\+\_\+t n, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_aa91f7975dc67a3f80c6b1d7c385d3d37}\label{classGSUtil_aa91f7975dc67a3f80c6b1d7c385d3d37}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const float $\ast$v, size\+\_\+t n, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_af1642bc49954a7187ab487cb54ee6c17}\label{classGSUtil_af1642bc49954a7187ab487cb54ee6c17}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const int32\+\_\+t $\ast$v, size\+\_\+t n, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_aa414e40515771105008cff5cfd47bcbd}\label{classGSUtil_aa414e40515771105008cff5cfd47bcbd}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const uint32\+\_\+t $\ast$v, size\+\_\+t n, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a8b2ea08859c784204b90cf9357599a47}\label{classGSUtil_a8b2ea08859c784204b90cf9357599a47}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const int64\+\_\+t $\ast$v, size\+\_\+t n, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a498f75cda1f1c03b01d74546f165c0ad}\label{classGSUtil_a498f75cda1f1c03b01d74546f165c0ad}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const uint64\+\_\+t $\ast$v, size\+\_\+t n, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a39f69e567e6a46436a347074e4311044}\label{classGSUtil_a39f69e567e6a46436a347074e4311044}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const bool $\ast$v, size\+\_\+t n, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a317cb7cfb8863223caedaf98771dc8c7}\label{classGSUtil_a317cb7cfb8863223caedaf98771dc8c7}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const \mbox{\hyperlink{classpgd_1_1Matrix3x3}{pgd\+::\+Matrix3x3}} \&m, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a49f584d896f0c2a327e79f96879c8bad}\label{classGSUtil_a49f584d896f0c2a327e79f96879c8bad}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const \mbox{\hyperlink{classpgd_1_1Quaternion}{pgd\+::\+Quaternion}} \&v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_af6421432e48d97145a13a5ca7c756687}\label{classGSUtil_af6421432e48d97145a13a5ca7c756687}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_aca1ee2d9f9c3364bc708317fea146de5}\label{classGSUtil_aca1ee2d9f9c3364bc708317fea146de5}} 
+static std\+::string $\ast$ {\bfseries To\+String} (const \mbox{\hyperlink{classpgd_1_1Vector2}{pgd\+::\+Vector2}} \&v, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a1869968224d844ffe8346eeb015268ef}\label{classGSUtil_a1869968224d844ffe8346eeb015268ef}} 
+static std\+::string $\ast$ {\bfseries To\+String} (uint32\+\_\+t address, uint16\+\_\+t port, std\+::string $\ast$output)
+\item 
+\mbox{\Hypertarget{classGSUtil_a53fa727ad3548ab021368b0187c30159}\label{classGSUtil_a53fa727ad3548ab021368b0187c30159}} 
+static std\+::string {\bfseries To\+String} (double v)
+\item 
+\mbox{\Hypertarget{classGSUtil_ad038481fca603a0213d5c0e776454b55}\label{classGSUtil_ad038481fca603a0213d5c0e776454b55}} 
+static std\+::string {\bfseries To\+String} (float v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a321c2328aae156fc0b3c187caf6f4f70}\label{classGSUtil_a321c2328aae156fc0b3c187caf6f4f70}} 
+static std\+::string {\bfseries To\+String} (int32\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a887e63e519ba4cf6247b110870aa3318}\label{classGSUtil_a887e63e519ba4cf6247b110870aa3318}} 
+static std\+::string {\bfseries To\+String} (uint64\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_ae3b26c3d2be5455bcd91ddca345000f1}\label{classGSUtil_ae3b26c3d2be5455bcd91ddca345000f1}} 
+static std\+::string {\bfseries To\+String} (bool v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a5be7d6e68d917bfd97fcf69c0d3c1d9e}\label{classGSUtil_a5be7d6e68d917bfd97fcf69c0d3c1d9e}} 
+static std\+::string {\bfseries To\+String} (const double $\ast$v, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classGSUtil_a90ce0300cd41eae39ec479d5ddca7d2a}\label{classGSUtil_a90ce0300cd41eae39ec479d5ddca7d2a}} 
+static std\+::string {\bfseries To\+String} (const float $\ast$v, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classGSUtil_a5b2b615a855bccd3b4d4194b14d443d6}\label{classGSUtil_a5b2b615a855bccd3b4d4194b14d443d6}} 
+static std\+::string {\bfseries To\+String} (const int32\+\_\+t $\ast$v, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classGSUtil_a7f23c924c6f1981cfdba52dbb31a2539}\label{classGSUtil_a7f23c924c6f1981cfdba52dbb31a2539}} 
+static std\+::string {\bfseries To\+String} (const uint32\+\_\+t $\ast$v, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classGSUtil_ad7e168db04c09e9277889bdfbfd3efb3}\label{classGSUtil_ad7e168db04c09e9277889bdfbfd3efb3}} 
+static std\+::string {\bfseries To\+String} (const int64\+\_\+t $\ast$v, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classGSUtil_a79f6599965832f126e388f134bc24da9}\label{classGSUtil_a79f6599965832f126e388f134bc24da9}} 
+static std\+::string {\bfseries To\+String} (const uint64\+\_\+t $\ast$v, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classGSUtil_a883836ea78b9745606d645bf944e1a27}\label{classGSUtil_a883836ea78b9745606d645bf944e1a27}} 
+static std\+::string {\bfseries To\+String} (const bool $\ast$v, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classGSUtil_a180887c7ad0a1ba2ce3a789c3e3db64b}\label{classGSUtil_a180887c7ad0a1ba2ce3a789c3e3db64b}} 
+static std\+::string {\bfseries To\+String} (const \mbox{\hyperlink{classpgd_1_1Matrix3x3}{pgd\+::\+Matrix3x3}} \&m)
+\item 
+\mbox{\Hypertarget{classGSUtil_a104d25e90b37741f272d2cfd455fb1ba}\label{classGSUtil_a104d25e90b37741f272d2cfd455fb1ba}} 
+static std\+::string {\bfseries To\+String} (const \mbox{\hyperlink{classpgd_1_1Quaternion}{pgd\+::\+Quaternion}} \&v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a5474750b7f35e12e00121ee442d7d39c}\label{classGSUtil_a5474750b7f35e12e00121ee442d7d39c}} 
+static std\+::string {\bfseries To\+String} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a2023fb6cdedf5575df3acfec513585a2}\label{classGSUtil_a2023fb6cdedf5575df3acfec513585a2}} 
+static std\+::string {\bfseries To\+String} (uint32\+\_\+t address, uint16\+\_\+t port)
+\item 
+\mbox{\Hypertarget{classGSUtil_a58eb74dfc82e881805ed4cf2bf7673da}\label{classGSUtil_a58eb74dfc82e881805ed4cf2bf7673da}} 
+static std\+::string {\bfseries To\+String} (const char $\ast$const printf\+Format\+String,...)
+\item 
+\mbox{\Hypertarget{classGSUtil_afb673e972ccdb9f55b205ec78e4c7139}\label{classGSUtil_afb673e972ccdb9f55b205ec78e4c7139}} 
+static std\+::string {\bfseries Convert\+IPAddress\+To\+String} (uint32\+\_\+t address, bool network\+Order)
+\item 
+\mbox{\Hypertarget{classGSUtil_ae2c8d0360ddb0b696267844483c88c0c}\label{classGSUtil_ae2c8d0360ddb0b696267844483c88c0c}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, int8\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a6d753eee7aeb5c139e617d9f72dd2746}\label{classGSUtil_a6d753eee7aeb5c139e617d9f72dd2746}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, uint8\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a938bd71bca984cb4d9616242f3cd69f6}\label{classGSUtil_a938bd71bca984cb4d9616242f3cd69f6}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, int16\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a3931d2e22d84f14117f23106b3a7c5a9}\label{classGSUtil_a3931d2e22d84f14117f23106b3a7c5a9}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, uint16\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a21905538946212d9230227db45675c55}\label{classGSUtil_a21905538946212d9230227db45675c55}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, int32\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_abb2fb96d3e65ba91e61ac82259e4c19f}\label{classGSUtil_abb2fb96d3e65ba91e61ac82259e4c19f}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, uint32\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a78081c783a5eb43d99d7e1a80ae24518}\label{classGSUtil_a78081c783a5eb43d99d7e1a80ae24518}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, int64\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_ae563d589c3f758418b9326eea99f12e2}\label{classGSUtil_ae563d589c3f758418b9326eea99f12e2}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, uint64\+\_\+t v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a704faa1819a241b6d3430c36d6b400d8}\label{classGSUtil_a704faa1819a241b6d3430c36d6b400d8}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, bool v)
+\item 
+\mbox{\Hypertarget{classGSUtil_aab5975ca998bd1a1f6a5efc91e7be451}\label{classGSUtil_aab5975ca998bd1a1f6a5efc91e7be451}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, float v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a8bc4392735e9eed44b13634569357dba}\label{classGSUtil_a8bc4392735e9eed44b13634569357dba}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, double v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a8e8529b2dbf341a2aad5ebce7ce80dc3}\label{classGSUtil_a8e8529b2dbf341a2aad5ebce7ce80dc3}} 
+static void {\bfseries Binary\+Output} (std\+::ostream \&stream, const std\+::string \&v)
+\item 
+\mbox{\Hypertarget{classGSUtil_a21bd70492ae37a509504a8682c46a632}\label{classGSUtil_a21bd70492ae37a509504a8682c46a632}} 
+static size\+\_\+t {\bfseries Split\+Except\+Quoted} (const std\+::string \&line, std\+::vector$<$ std\+::string $>$ $\ast$tokens)
+\item 
+\mbox{\Hypertarget{classGSUtil_a2db26e1055d009973852098118b8e62d}\label{classGSUtil_a2db26e1055d009973852098118b8e62d}} 
+static size\+\_\+t {\bfseries Split\+Generic} (const std\+::string \&line, std\+::vector$<$ std\+::string $>$ $\ast$tokens, char split, bool quoted, bool allow\+Empty)
+\item 
+\mbox{\Hypertarget{classGSUtil_a340ba9a18eef32a7b1ce29f6b927ab02}\label{classGSUtil_a340ba9a18eef32a7b1ce29f6b927ab02}} 
+static std\+::wstring {\bfseries utf8\+\_\+to\+\_\+utf16} (const std\+::string \&utf8)
+\item 
+\mbox{\Hypertarget{classGSUtil_a9f98b76ac16ba26035d1e419274fb750}\label{classGSUtil_a9f98b76ac16ba26035d1e419274fb750}} 
+static uint8\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+uint8\+\_\+t} (const char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_a91c6d48f71771f79c9278cef604357b5}\label{classGSUtil_a91c6d48f71771f79c9278cef604357b5}} 
+static uint16\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+uint16\+\_\+t} (const char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_a6b51d820cc88b49f59f6abb64f398441}\label{classGSUtil_a6b51d820cc88b49f59f6abb64f398441}} 
+static uint32\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+uint32\+\_\+t} (const char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_a1ca358dc0afe6ee170e98e63670e90b9}\label{classGSUtil_a1ca358dc0afe6ee170e98e63670e90b9}} 
+static uint64\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+uint64\+\_\+t} (const char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_aeb4d033bfe4964c07b3cb7b835ec09a5}\label{classGSUtil_aeb4d033bfe4964c07b3cb7b835ec09a5}} 
+static int8\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+int8\+\_\+t} (const char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_aa3211238cf01d968d32fcffae227cf8c}\label{classGSUtil_aa3211238cf01d968d32fcffae227cf8c}} 
+static int16\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+int16\+\_\+t} (const char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_a53ae5243e16f99124f9168f128871c6d}\label{classGSUtil_a53ae5243e16f99124f9168f128871c6d}} 
+static int32\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+int32\+\_\+t} (const char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_a21868f002584e5105dc279338db9654d}\label{classGSUtil_a21868f002584e5105dc279338db9654d}} 
+static int64\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+int64\+\_\+t} (const char $\ast$str)
+\item 
+\mbox{\Hypertarget{classGSUtil_a5c1c008e8cd5220dba3c9cb69e0931b2}\label{classGSUtil_a5c1c008e8cd5220dba3c9cb69e0931b2}} 
+static double {\bfseries fast\+\_\+a\+\_\+to\+\_\+double} (const char $\ast$nptr, const char $\ast$endptr\mbox{[}$\,$\mbox{]})
+\item 
+\mbox{\Hypertarget{classGSUtil_af83d8dad7b1edb832cdf5c7d706de70b}\label{classGSUtil_af83d8dad7b1edb832cdf5c7d706de70b}} 
+static uint64\+\_\+t {\bfseries fast\+\_\+a\+\_\+to\+\_\+uint64\+\_\+t} (const char $\ast$nptr, const char $\ast$endptr\mbox{[}$\,$\mbox{]})
+\item 
+\mbox{\Hypertarget{classGSUtil_a7fc17d3d48c79aa024563dcd61b8e73b}\label{classGSUtil_a7fc17d3d48c79aa024563dcd61b8e73b}} 
+static double {\bfseries Three\+Axis\+Decomposition\+Score} (double x\mbox{[}$\,$\mbox{]}, void $\ast$data)
+\item 
+\mbox{\Hypertarget{classGSUtil_aa8daa3967594bdc0c76b475b3918c39a}\label{classGSUtil_aa8daa3967594bdc0c76b475b3918c39a}} 
+static double {\bfseries Three\+Axis\+Decomposition} (const \mbox{\hyperlink{classpgd_1_1Quaternion}{pgd\+::\+Quaternion}} \&target, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ax1, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ax2, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ax3, double $\ast$ang1, double $\ast$ang2, double $\ast$ang3)
+\item 
+\mbox{\Hypertarget{classGSUtil_afe61cef9978880903c58b5c80ad3586c}\label{classGSUtil_afe61cef9978880903c58b5c80ad3586c}} 
+static double {\bfseries Three\+Axis\+Decomposition\+Error} (const \mbox{\hyperlink{classpgd_1_1Quaternion}{pgd\+::\+Quaternion}} \&target, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ax1, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ax2, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ax3, double ang1, double ang2, double ang3)
+\item 
+\mbox{\Hypertarget{classGSUtil_a62aaf0ef46318f4d2ac8c2769f2a6c86}\label{classGSUtil_a62aaf0ef46318f4d2ac8c2769f2a6c86}} 
+static void {\bfseries nelmin} (double fn(double x\mbox{[}$\,$\mbox{]}, void $\ast$data), void $\ast$data, int n, double start\mbox{[}$\,$\mbox{]}, double xmin\mbox{[}$\,$\mbox{]}, double $\ast$ynewlo, double reqmin, double step\mbox{[}$\,$\mbox{]}, int konvge, int kcount, int $\ast$icount, int $\ast$numres, int $\ast$ifault)
+\item 
+\mbox{\Hypertarget{classGSUtil_ade5d8eac411c46e2de5eace82900d86c}\label{classGSUtil_ade5d8eac411c46e2de5eace82900d86c}} 
+static double {\bfseries zeroin} (double ax, double bx, double($\ast$f)(double x, void $\ast$info), void $\ast$info, double tol)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 47 of file GSUtil.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/GSUtil.\+h\item 
+src/GSUtil.\+cpp\end{DoxyCompactItemize}

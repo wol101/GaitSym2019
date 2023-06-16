@@ -1,0 +1,238 @@
+\hypertarget{classFacetedObject}{}\doxysection{Faceted\+Object Class Reference}
+\label{classFacetedObject}\index{FacetedObject@{FacetedObject}}
+
+
+Inheritance diagram for Faceted\+Object\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structFacetedObject_1_1OBJMaterial}{OBJMaterial}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFacetedObject_af0f2593319b6bac6fe465347ebccbf1a}\label{classFacetedObject_af0f2593319b6bac6fe465347ebccbf1a}} 
+{\bfseries Faceted\+Object} (const \mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} \&)=delete
+\item 
+\mbox{\Hypertarget{classFacetedObject_af64283bfe43686559d55eb75cca156e7}\label{classFacetedObject_af64283bfe43686559d55eb75cca156e7}} 
+{\bfseries Faceted\+Object} (\mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} \&\&)=delete
+\item 
+\mbox{\Hypertarget{classFacetedObject_a57276e9647dfbbdc352d2b2d78bf624b}\label{classFacetedObject_a57276e9647dfbbdc352d2b2d78bf624b}} 
+\mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} \&)=delete
+\item 
+\mbox{\Hypertarget{classFacetedObject_a73b175fa7a27a5e023a1d7e75c41501e}\label{classFacetedObject_a73b175fa7a27a5e023a1d7e75c41501e}} 
+\mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} \& {\bfseries operator=} (\mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} \&\&)=delete
+\item 
+\mbox{\Hypertarget{classFacetedObject_a2ea5153f8e11e9da49e956df0e0e18a1}\label{classFacetedObject_a2ea5153f8e11e9da49e956df0e0e18a1}} 
+virtual void {\bfseries Draw} ()
+\item 
+\mbox{\Hypertarget{classFacetedObject_ab9b06392ccb55695c28cd5c4721f439c}\label{classFacetedObject_ab9b06392ccb55695c28cd5c4721f439c}} 
+int {\bfseries Parse\+Mesh\+File} (const std\+::string \&filename)
+\item 
+\mbox{\Hypertarget{classFacetedObject_aab6ef631bc0f26dcc4c4457a5d995d8a}\label{classFacetedObject_aab6ef631bc0f26dcc4c4457a5d995d8a}} 
+int {\bfseries Parse\+OBJFile} (const std\+::string \&filename)
+\item 
+\mbox{\Hypertarget{classFacetedObject_ad7241c2c2ef10d5eb51ecbfa6825fbe4}\label{classFacetedObject_ad7241c2c2ef10d5eb51ecbfa6825fbe4}} 
+int {\bfseries Parse\+OBJMaterial\+File} (const std\+::string \&filename, std\+::map$<$ std\+::string, \mbox{\hyperlink{structFacetedObject_1_1OBJMaterial}{OBJMaterial}} $>$ $\ast$material\+Map)
+\item 
+\mbox{\Hypertarget{classFacetedObject_ab506ee35aab5893767b478ad8649d407}\label{classFacetedObject_ab506ee35aab5893767b478ad8649d407}} 
+int {\bfseries Parse\+PLYFile} (const std\+::string \&filename)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a411993648103c3352f870a6aafcfeb50}\label{classFacetedObject_a411993648103c3352f870a6aafcfeb50}} 
+int {\bfseries Read\+From\+Memory} (const char $\ast$data, size\+\_\+t len, bool binary, const std\+::string \&mesh\+Name)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a7b71a59ee10b87d9f69546a597369d20}\label{classFacetedObject_a7b71a59ee10b87d9f69546a597369d20}} 
+void {\bfseries Save\+To\+Memory} (std\+::vector$<$ char $>$ $\ast$data, bool binary)
+\item 
+\mbox{\Hypertarget{classFacetedObject_ac5bae9e0439e875a01df75c6e98adead}\label{classFacetedObject_ac5bae9e0439e875a01df75c6e98adead}} 
+int {\bfseries Read\+From\+Resource} (const QString \&resource\+Name)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a1f92be7c98bca76d0b55168f4db3960a}\label{classFacetedObject_a1f92be7c98bca76d0b55168f4db3960a}} 
+virtual void {\bfseries Write\+POVRay} (std\+::ostringstream \&the\+String)
+\item 
+\mbox{\Hypertarget{classFacetedObject_abda49f6a6149102bcf544e04c27d4cbf}\label{classFacetedObject_abda49f6a6149102bcf544e04c27d4cbf}} 
+virtual void {\bfseries Write\+POVRay} (std\+::string filename)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a50e70ae0d9f429aec42c9d407944330c}\label{classFacetedObject_a50e70ae0d9f429aec42c9d407944330c}} 
+virtual void {\bfseries Write\+OBJFile} (std\+::ostringstream \&out)
+\item 
+\mbox{\Hypertarget{classFacetedObject_abd8538af8949c7df0b35ac8b618dd58a}\label{classFacetedObject_abd8538af8949c7df0b35ac8b618dd58a}} 
+virtual void {\bfseries Write\+OBJFile} (std\+::string filename)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a64eb5f4dd2b975a0914006687a635ca9}\label{classFacetedObject_a64eb5f4dd2b975a0914006687a635ca9}} 
+size\+\_\+t {\bfseries Get\+Num\+Vertices} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a54b08830174346d57bdcbd2d534a829e}\label{classFacetedObject_a54b08830174346d57bdcbd2d534a829e}} 
+const double $\ast$ {\bfseries Get\+Vertex} (size\+\_\+t i) const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a6ac7f01457a9450a2fea726fb8febea7}\label{classFacetedObject_a6ac7f01457a9450a2fea726fb8febea7}} 
+const double $\ast$ {\bfseries Get\+Normal} (size\+\_\+t i) const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a8f9ff68a6801ba38205c3af419daae79}\label{classFacetedObject_a8f9ff68a6801ba38205c3af419daae79}} 
+const double $\ast$ {\bfseries Get\+Vertex\+List} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_ad410656463bfa736b126e3587120e2ce}\label{classFacetedObject_ad410656463bfa736b126e3587120e2ce}} 
+const double $\ast$ {\bfseries Get\+Normal\+List} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_aecf75113b3ae897117c71aed052d2cbb}\label{classFacetedObject_aecf75113b3ae897117c71aed052d2cbb}} 
+const double $\ast$ {\bfseries Get\+Colour\+List} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a9bf2c572326d4840c9f24bd65792e6da}\label{classFacetedObject_a9bf2c572326d4840c9f24bd65792e6da}} 
+size\+\_\+t {\bfseries Get\+Num\+Triangles} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a8d5c336b7a718723ca5479bfd673a4d6}\label{classFacetedObject_a8d5c336b7a718723ca5479bfd673a4d6}} 
+const double $\ast$ {\bfseries Get\+Triangle} (size\+\_\+t i) const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a72b0b011c1b9db71b9a0b526a80aa656}\label{classFacetedObject_a72b0b011c1b9db71b9a0b526a80aa656}} 
+const double $\ast$ {\bfseries Get\+Display\+Position} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_ae4637a42e41967b5e0bec1f2e6650ad1}\label{classFacetedObject_ae4637a42e41967b5e0bec1f2e6650ad1}} 
+const double $\ast$ {\bfseries Get\+Display\+Rotation} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a165e29ab748aec0a97ce0bc32032c055}\label{classFacetedObject_a165e29ab748aec0a97ce0bc32032c055}} 
+const double $\ast$ {\bfseries Get\+Display\+Scale} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_afde73276023808ab776271c91e7c98cb}\label{classFacetedObject_afde73276023808ab776271c91e7c98cb}} 
+void {\bfseries Add\+Polygon} (const double $\ast$vertices, size\+\_\+t n\+Sides, const double $\ast$normals=nullptr, const double $\ast$UVs=nullptr)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a29ffd48ce4050b2339f9adf54a8c5088}\label{classFacetedObject_a29ffd48ce4050b2339f9adf54a8c5088}} 
+void {\bfseries Add\+Triangle} (const double $\ast$vertices, const double $\ast$normals=nullptr, const double $\ast$UVs=nullptr)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a0fdfef54381269ea76396838b6a7d65d}\label{classFacetedObject_a0fdfef54381269ea76396838b6a7d65d}} 
+void {\bfseries Add\+Polygon} (const float $\ast$float\+Vertices, size\+\_\+t n\+Sides, const float $\ast$float\+Normals=nullptr, const float $\ast$float\+UVs=nullptr)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a8e38f39de5e2f12aca47c9f419d35312}\label{classFacetedObject_a8e38f39de5e2f12aca47c9f419d35312}} 
+void {\bfseries Add\+Triangle} (const float $\ast$float\+Vertices, const float $\ast$float\+Normals=nullptr, const float $\ast$float\+UVs=nullptr)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a08eae67029112e436c765048f245790b}\label{classFacetedObject_a08eae67029112e436c765048f245790b}} 
+void {\bfseries Add\+Faceted\+Object} (const \mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} $\ast$\mbox{\hyperlink{structobject}{object}}, bool use\+Display\+Rotation, bool use\+Direct\+Access)
+\item 
+\mbox{\Hypertarget{classFacetedObject_aa008bdfe0db1c4f39dfde7514ec74320}\label{classFacetedObject_aa008bdfe0db1c4f39dfde7514ec74320}} 
+void {\bfseries Move} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a0d0d5fb8c69c8e801f46ba77b89244c7}\label{classFacetedObject_a0d0d5fb8c69c8e801f46ba77b89244c7}} 
+void {\bfseries Scale} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a53b289bd45317551f7657e952e191b43}\label{classFacetedObject_a53b289bd45317551f7657e952e191b43}} 
+void {\bfseries Mirror} (bool x, bool y, bool z)
+\item 
+\mbox{\Hypertarget{classFacetedObject_af3a22897a07b08ac22aa3628e31fddeb}\label{classFacetedObject_af3a22897a07b08ac22aa3628e31fddeb}} 
+void {\bfseries Swap\+Axes} (int axis1, int axis2)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a60ce33d3934f29bb9726802f626b005e}\label{classFacetedObject_a60ce33d3934f29bb9726802f626b005e}} 
+void {\bfseries Rotate} (double x, double y, double z, double angle\+Degrees)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a997d64e2f7415a28d9d8bea9e5011e6d}\label{classFacetedObject_a997d64e2f7415a28d9d8bea9e5011e6d}} 
+void {\bfseries Reverse\+Winding} ()
+\item 
+\mbox{\Hypertarget{classFacetedObject_a9b575bb79883d43c4a4f17132612884e}\label{classFacetedObject_a9b575bb79883d43c4a4f17132612884e}} 
+void {\bfseries Allocate\+Memory} (size\+\_\+t num\+Triangles)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a6b76839403fda1102b834202a5baaf41}\label{classFacetedObject_a6b76839403fda1102b834202a5baaf41}} 
+void {\bfseries Apply\+Display\+Transformation} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} in\+Vec, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$out\+Vec)
+\item 
+\mbox{\Hypertarget{classFacetedObject_aabe55122b698d4c82afd58c826a9d8a1}\label{classFacetedObject_aabe55122b698d4c82afd58c826a9d8a1}} 
+void {\bfseries Apply\+Display\+Rotation} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} in\+Vec, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$out\+Vec)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a28acce4090d229242a7a68d254488d1b}\label{classFacetedObject_a28acce4090d229242a7a68d254488d1b}} 
+void {\bfseries Calculate\+Trimesh} (double $\ast$$\ast$vertices, int $\ast$num\+Vertices, int $\ast$vertex\+Stride, d\+Tri\+Index $\ast$$\ast$tri\+Indexes, int $\ast$num\+Tri\+Indexes, int $\ast$tri\+Stride)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a0ef140a81fc8bb4e2b014da138a47eed}\label{classFacetedObject_a0ef140a81fc8bb4e2b014da138a47eed}} 
+void {\bfseries Calculate\+Trimesh} (float $\ast$$\ast$vertices, int $\ast$num\+Vertices, int $\ast$vertex\+Stride, d\+Tri\+Index $\ast$$\ast$tri\+Indexes, int $\ast$num\+Tri\+Indexes, int $\ast$tri\+Stride)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a7b6b69680a0c5038e9f81a3a4436a302}\label{classFacetedObject_a7b6b69680a0c5038e9f81a3a4436a302}} 
+void {\bfseries Calculate\+Mass\+Properties} (d\+Mass $\ast$m, double density, bool clockwise, double $\ast$translation)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a14571d62220a9ec7d1deb8974a9171c8}\label{classFacetedObject_a14571d62220a9ec7d1deb8974a9171c8}} 
+double $\ast$ {\bfseries lower\+Bound} ()
+\item 
+\mbox{\Hypertarget{classFacetedObject_a4b633543f15da1c8361ac1343640665e}\label{classFacetedObject_a4b633543f15da1c8361ac1343640665e}} 
+double $\ast$ {\bfseries upper\+Bound} ()
+\item 
+\mbox{\Hypertarget{classFacetedObject_a384fef0217548cf125de96b3a11d1bea}\label{classFacetedObject_a384fef0217548cf125de96b3a11d1bea}} 
+\mbox{\hyperlink{classSimulationWidget}{Simulation\+Widget}} $\ast$ {\bfseries simulation\+Widget} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_aa26368c4507fd408c55a12e30468d392}\label{classFacetedObject_aa26368c4507fd408c55a12e30468d392}} 
+void {\bfseries set\+Simulation\+Widget} (\mbox{\hyperlink{classSimulationWidget}{Simulation\+Widget}} $\ast$simulation\+Widget)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a3ce76df68217371009f9334e7f1e4628}\label{classFacetedObject_a3ce76df68217371009f9334e7f1e4628}} 
+void {\bfseries set\+Blend\+Colour} (const QColor \&blend\+Colour, double blend\+Fraction)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a70a34687de13971b5716da43b1b173b6}\label{classFacetedObject_a70a34687de13971b5716da43b1b173b6}} 
+QColor {\bfseries blend\+Colour} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a8fd4f91f6a076388f53959c2e4237cfa}\label{classFacetedObject_a8fd4f91f6a076388f53959c2e4237cfa}} 
+double {\bfseries blend\+Fraction} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_aa1c2284ea974aca86a4e6abb4814f2b3}\label{classFacetedObject_aa1c2284ea974aca86a4e6abb4814f2b3}} 
+int {\bfseries Find\+Intersection} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ray\+Origin, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ray\+Vector, std\+::vector$<$ \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $>$ $\ast$intersection\+Coord\+List, std\+::vector$<$ size\+\_\+t $>$ $\ast$intersection\+Index\+List) const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a82e27b9bbb9dad9b6171879c876310ca}\label{classFacetedObject_a82e27b9bbb9dad9b6171879c876310ca}} 
+void {\bfseries Set\+Display\+Position} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a8bc53056e942f909c8011639a78361b1}\label{classFacetedObject_a8bc53056e942f909c8011639a78361b1}} 
+void {\bfseries Set\+Display\+Scale} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a3f12092fa0928c6fa2de50537a6ac5d7}\label{classFacetedObject_a3f12092fa0928c6fa2de50537a6ac5d7}} 
+void {\bfseries Set\+Display\+Rotation} (const d\+Matrix3 R)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a418f4eadaeff7018f0a679d7624e8f49}\label{classFacetedObject_a418f4eadaeff7018f0a679d7624e8f49}} 
+void {\bfseries Set\+Display\+Rotation\+From\+Quaternion} (const d\+Quaternion q)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a846535f0eec0916442326527bcf21c5e}\label{classFacetedObject_a846535f0eec0916442326527bcf21c5e}} 
+bool {\bfseries visible} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_ad6b3b20557f5ddc7994f43fa58dcd3db}\label{classFacetedObject_ad6b3b20557f5ddc7994f43fa58dcd3db}} 
+void {\bfseries set\+Visible} (bool visible)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a967c3263b24cf93d475d138aec45652b}\label{classFacetedObject_a967c3263b24cf93d475d138aec45652b}} 
+const QMatrix4x4 \& {\bfseries model} ()
+\item 
+\mbox{\Hypertarget{classFacetedObject_a69e1e27b776889f777f2ff5e883e4bb8}\label{classFacetedObject_a69e1e27b776889f777f2ff5e883e4bb8}} 
+void {\bfseries set\+Model} (const QMatrix4x4 \&model)
+\item 
+\mbox{\Hypertarget{classFacetedObject_ac6c56902841a2fd9444ba6b709114eac}\label{classFacetedObject_ac6c56902841a2fd9444ba6b709114eac}} 
+QOpen\+GLTexture $\ast$ {\bfseries texture} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_a9939a8c7dbab25b3b1026beb064f4218}\label{classFacetedObject_a9939a8c7dbab25b3b1026beb064f4218}} 
+void {\bfseries set\+Texture} (std\+::unique\+\_\+ptr$<$ QOpen\+GLTexture $>$ \&\&texture)
+\item 
+\mbox{\Hypertarget{classFacetedObject_ad3a33a319e6a3fe0b4f71b81e08e7109}\label{classFacetedObject_ad3a33a319e6a3fe0b4f71b81e08e7109}} 
+double {\bfseries decal} () const
+\item 
+\mbox{\Hypertarget{classFacetedObject_af2e64e207608a53ea1fd7fb75f63c15b}\label{classFacetedObject_af2e64e207608a53ea1fd7fb75f63c15b}} 
+void {\bfseries set\+Decal} (double decal)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a7b792f306038075fc9457c2ab281a70e}\label{classFacetedObject_a7b792f306038075fc9457c2ab281a70e}} 
+std\+::string {\bfseries filename} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFacetedObject_a395b6b7f78a26a2f7409548a31deef8c}\label{classFacetedObject_a395b6b7f78a26a2f7409548a31deef8c}} 
+static void {\bfseries Compute\+Face\+Normal} (const double $\ast$v1, const double $\ast$v2, const double $\ast$v3, double normal\mbox{[}3\mbox{]})
+\item 
+\mbox{\Hypertarget{classFacetedObject_aead3567f4d37c0a3f181be1450f2a9ab}\label{classFacetedObject_aead3567f4d37c0a3f181be1450f2a9ab}} 
+static void {\bfseries Clear\+Mesh\+Store} ()
+\item 
+\mbox{\Hypertarget{classFacetedObject_a8c9146ce1eb2513502968b42c3387aab}\label{classFacetedObject_a8c9146ce1eb2513502968b42c3387aab}} 
+static bool {\bfseries Ray\+Intersects\+Triangle} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ray\+Origin, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&ray\+Vector, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&vertex0, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&vertex1, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&vertex2, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$out\+Intersection\+Point)
+\item 
+\mbox{\Hypertarget{classFacetedObject_a5a18d97a71e14c3c6fafb74b00e70435}\label{classFacetedObject_a5a18d97a71e14c3c6fafb74b00e70435}} 
+static bool {\bfseries Hit\+Bounding\+Box} (const double minB\mbox{[}3\mbox{]}, const double maxB\mbox{[}3\mbox{]}, const double origin\mbox{[}3\mbox{]}, const double dir\mbox{[}3\mbox{]}, double coord\mbox{[}3\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 28 of file Faceted\+Object.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Gait\+Sym\+Qt/Faceted\+Object.\+h\item 
+Gait\+Sym\+Qt/Faceted\+Object.\+cpp\item 
+Gait\+Sym\+Qt/Mesh\+Store.\+cpp\end{DoxyCompactItemize}

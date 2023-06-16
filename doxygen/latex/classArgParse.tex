@@ -1,0 +1,115 @@
+\hypertarget{classArgParse}{}\doxysection{Arg\+Parse Class Reference}
+\label{classArgParse}\index{ArgParse@{ArgParse}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classArgParse_ab7ba9fcad618b70f2e9c5f28e6b69893}\label{classArgParse_ab7ba9fcad618b70f2e9c5f28e6b69893}} 
+enum {\bfseries Arg\+Type} \{ {\bfseries String}
+, {\bfseries Int}
+, {\bfseries Bool}
+, {\bfseries Double}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classArgParse_a96906bc55deb9867b2393261ede6cc1e}\label{classArgParse_a96906bc55deb9867b2393261ede6cc1e}} 
+void {\bfseries Initialise} (int argc, const char $\ast$$\ast$argv, const std\+::string \&app\+Help\+Text, size\+\_\+t max\+Num\+End\+Arguments, size\+\_\+t min\+Num\+End\+Arguments)
+\item 
+\mbox{\Hypertarget{classArgParse_a6221862534b8900f17725236499d8d8d}\label{classArgParse_a6221862534b8900f17725236499d8d8d}} 
+void {\bfseries Add\+Argument} (const std\+::string \&short\+Name, const std\+::string \&long\+Name, const std\+::string \&help\+Text)
+\item 
+\mbox{\Hypertarget{classArgParse_ad01c53b48f9473527415218636fc4321}\label{classArgParse_ad01c53b48f9473527415218636fc4321}} 
+void {\bfseries Add\+Argument} (const std\+::string \&short\+Name, const std\+::string \&long\+Name, const std\+::string \&help\+Text, const std\+::string \&default\+Value, size\+\_\+t num\+Args, bool required, Arg\+Type arg\+Type)
+\item 
+\mbox{\Hypertarget{classArgParse_a56b7751eba70623580fff36fd39c9def}\label{classArgParse_a56b7751eba70623580fff36fd39c9def}} 
+void {\bfseries Add\+Argument} (const std\+::string \&short\+Name, const std\+::string \&long\+Name, const std\+::string \&help\+Text, const std\+::string \&default\+Value, size\+\_\+t min\+Args, size\+\_\+t max\+Args, bool required, Arg\+Type arg\+Type)
+\item 
+\mbox{\Hypertarget{classArgParse_a93491199f833d942892663bac3d4c605}\label{classArgParse_a93491199f833d942892663bac3d4c605}} 
+int {\bfseries Parse} ()
+\item 
+\mbox{\Hypertarget{classArgParse_a6bc4902fa38c879f8598ae10fc562935}\label{classArgParse_a6bc4902fa38c879f8598ae10fc562935}} 
+void {\bfseries Usage} ()
+\item 
+\mbox{\Hypertarget{classArgParse_a579bd80de352fcf66e7c31a555170980}\label{classArgParse_a579bd80de352fcf66e7c31a555170980}} 
+bool {\bfseries Get} (const std\+::string \&argument, std\+::vector$<$ std\+::string $>$ $\ast$strings)
+\item 
+\mbox{\Hypertarget{classArgParse_ab91c70f71e7c03ff8e8817cbf00a5ddd}\label{classArgParse_ab91c70f71e7c03ff8e8817cbf00a5ddd}} 
+bool {\bfseries Get} (const std\+::string \&argument, std\+::vector$<$ int $>$ $\ast$ints)
+\item 
+\mbox{\Hypertarget{classArgParse_a54c49698248ce77fd5f5cf451cb88746}\label{classArgParse_a54c49698248ce77fd5f5cf451cb88746}} 
+bool {\bfseries Get} (const std\+::string \&argument, std\+::vector$<$ bool $>$ $\ast$bools)
+\item 
+\mbox{\Hypertarget{classArgParse_a306b911e974ee5a6929c276414fb11a1}\label{classArgParse_a306b911e974ee5a6929c276414fb11a1}} 
+bool {\bfseries Get} (const std\+::string \&argument, std\+::vector$<$ double $>$ $\ast$doubles)
+\item 
+\mbox{\Hypertarget{classArgParse_a669840d3c4059305595affe1c7cbd6f4}\label{classArgParse_a669840d3c4059305595affe1c7cbd6f4}} 
+bool {\bfseries Get} (const std\+::string \&argument, std\+::string $\ast$s)
+\item 
+\mbox{\Hypertarget{classArgParse_a9acbcf738624bf6cbeeddd63b8ff09c3}\label{classArgParse_a9acbcf738624bf6cbeeddd63b8ff09c3}} 
+bool {\bfseries Get} (const std\+::string \&argument, int $\ast$i)
+\item 
+\mbox{\Hypertarget{classArgParse_aaab1127eba951eb17c1e4ef8ed41ae12}\label{classArgParse_aaab1127eba951eb17c1e4ef8ed41ae12}} 
+bool {\bfseries Get} (const std\+::string \&argument, bool $\ast$b)
+\item 
+\mbox{\Hypertarget{classArgParse_a9645b9d418766673cb3575717e4b7eb6}\label{classArgParse_a9645b9d418766673cb3575717e4b7eb6}} 
+bool {\bfseries Get} (const std\+::string \&argument, double $\ast$d)
+\item 
+\mbox{\Hypertarget{classArgParse_aaf5f556080a412cbc603ec8e6d2b9640}\label{classArgParse_aaf5f556080a412cbc603ec8e6d2b9640}} 
+bool {\bfseries Get} (std\+::vector$<$ std\+::string $>$ $\ast$strings)
+\item 
+\mbox{\Hypertarget{classArgParse_a793d54a27fe64a896767335914904c3a}\label{classArgParse_a793d54a27fe64a896767335914904c3a}} 
+bool {\bfseries Get} (std\+::vector$<$ int $>$ $\ast$ints)
+\item 
+\mbox{\Hypertarget{classArgParse_abbe3df396174b2d1aa32407edf53f0e8}\label{classArgParse_abbe3df396174b2d1aa32407edf53f0e8}} 
+bool {\bfseries Get} (std\+::vector$<$ bool $>$ $\ast$bools)
+\item 
+\mbox{\Hypertarget{classArgParse_abb08cdc8071cc9a37df0d0963e516e1e}\label{classArgParse_abb08cdc8071cc9a37df0d0963e516e1e}} 
+bool {\bfseries Get} (std\+::vector$<$ double $>$ $\ast$doubles)
+\item 
+\mbox{\Hypertarget{classArgParse_ad2373caf3e3c6955652cc1f65d675a1d}\label{classArgParse_ad2373caf3e3c6955652cc1f65d675a1d}} 
+bool {\bfseries Get} (std\+::string $\ast$s)
+\item 
+\mbox{\Hypertarget{classArgParse_a8f34ff49e90f6748b5e68ec457e54c4e}\label{classArgParse_a8f34ff49e90f6748b5e68ec457e54c4e}} 
+bool {\bfseries Get} (int $\ast$i)
+\item 
+\mbox{\Hypertarget{classArgParse_a85555caa183c3515d5d6c94921b96c13}\label{classArgParse_a85555caa183c3515d5d6c94921b96c13}} 
+bool {\bfseries Get} (bool $\ast$b)
+\item 
+\mbox{\Hypertarget{classArgParse_ad468ddfd31b264ad83dad0d6a4ece849}\label{classArgParse_ad468ddfd31b264ad83dad0d6a4ece849}} 
+bool {\bfseries Get} (double $\ast$d)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classArgParse_a1772ebf47e679cad363eb5ecb2f547a8}\label{classArgParse_a1772ebf47e679cad363eb5ecb2f547a8}} 
+static bool {\bfseries Is\+Number} (const std\+::string \&s)
+\item 
+\mbox{\Hypertarget{classArgParse_a6735cf1b5e77115c2f91192c0ee5b822}\label{classArgParse_a6735cf1b5e77115c2f91192c0ee5b822}} 
+static bool {\bfseries Is\+Int} (const std\+::string \&s)
+\item 
+\mbox{\Hypertarget{classArgParse_a9b6df06dd4b0c3b1d4a65ed3d573c76c}\label{classArgParse_a9b6df06dd4b0c3b1d4a65ed3d573c76c}} 
+static bool {\bfseries Is\+Bool} (const std\+::string \&s)
+\item 
+\mbox{\Hypertarget{classArgParse_a177eac7692647154a95a7b30080534dd}\label{classArgParse_a177eac7692647154a95a7b30080534dd}} 
+static int {\bfseries To\+Bool} (const std\+::string \&s)
+\item 
+\mbox{\Hypertarget{classArgParse_a5f736702dcafcc184b78ddf1c060c40c}\label{classArgParse_a5f736702dcafcc184b78ddf1c060c40c}} 
+static double {\bfseries To\+Double} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classArgParse_a29aef2eb29a2cd1b3a541509ff218579}\label{classArgParse_a29aef2eb29a2cd1b3a541509ff218579}} 
+static int {\bfseries To\+Int} (const std\+::string \&buf)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 17 of file Arg\+Parse.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Arg\+Parse.\+h\item 
+src/Arg\+Parse.\+cpp\end{DoxyCompactItemize}

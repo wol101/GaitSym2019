@@ -1,0 +1,109 @@
+\hypertarget{classStrokeFont}{}\doxysection{Stroke\+Font Class Reference}
+\label{classStrokeFont}\index{StrokeFont@{StrokeFont}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classStrokeFont_aa61bc7d7daa5baafc33997c43d9f2a0a}\label{classStrokeFont_aa61bc7d7daa5baafc33997c43d9f2a0a}} 
+enum {\bfseries Marker\+Code} \{ {\bfseries XShape}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classStrokeFont_a33cf964194f7d40913465c77778f547d}\label{classStrokeFont_a33cf964194f7d40913465c77778f547d}} 
+void {\bfseries Stroke\+String} (const char $\ast$string, int length, float x, float y, float cwidth, float cheight, int x\+Justification, int y\+Justification, const float $\ast$matrix, const float $\ast$translation)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a1e902d571f97a2e34c15d2affab84327}\label{classStrokeFont_a1e902d571f97a2e34c15d2affab84327}} 
+void {\bfseries Stroke\+Character} (int ichar, float x, float y, float cwidth, float cheight, const float $\ast$matrix, const float $\ast$translation)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a677502c5e7ba2a70d81dee6f0e59e4a8}\label{classStrokeFont_a677502c5e7ba2a70d81dee6f0e59e4a8}} 
+void {\bfseries Stroke\+Marker} (Marker\+Code code, float x, float y, float cwidth, float cheight, const float $\ast$matrix, const float $\ast$translation)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a399fb0e884279352f4a240bb6988d034}\label{classStrokeFont_a399fb0e884279352f4a240bb6988d034}} 
+void {\bfseries Add\+Line} (float ix1, float iy1, float iz1, float ix2, float iy2, float iz2)
+\item 
+\mbox{\Hypertarget{classStrokeFont_aef2df54ce2f0f21c940a066928cad591}\label{classStrokeFont_aef2df54ce2f0f21c940a066928cad591}} 
+void {\bfseries Add\+Line} (float ix1, float iy1, float iz1, float ix2, float iy2, float iz2, const float $\ast$matrix, const float $\ast$translation)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a8b40464fab01f5042837e2180b5c952b}\label{classStrokeFont_a8b40464fab01f5042837e2180b5c952b}} 
+void {\bfseries Start\+Line} ()
+\item 
+\mbox{\Hypertarget{classStrokeFont_a8c51e54d852708a30e8a36e89eda3404}\label{classStrokeFont_a8c51e54d852708a30e8a36e89eda3404}} 
+void {\bfseries Add\+Point} (float ix1, float iy1, float iz1)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a134fa1dd4756da4febedcef79223cce4}\label{classStrokeFont_a134fa1dd4756da4febedcef79223cce4}} 
+void {\bfseries Add\+Point} (float ix1, float iy1, float iz1, const float $\ast$matrix, const float $\ast$translation)
+\item 
+\mbox{\Hypertarget{classStrokeFont_ad7d83427fefdc024c87ab6750cf5cbde}\label{classStrokeFont_ad7d83427fefdc024c87ab6750cf5cbde}} 
+void {\bfseries Add\+Circle} (float cx, float cy, float cz, float r, int num\+\_\+segments)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a9c7600568b5b6f1573220c13ae3427db}\label{classStrokeFont_a9c7600568b5b6f1573220c13ae3427db}} 
+void {\bfseries Add\+Arc} (float cx, float cy, float cz, float r, float start\+\_\+angle, float arc\+\_\+angle, int num\+\_\+segments)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a06aba95ad9a35a40e736b7dfa5c8a141}\label{classStrokeFont_a06aba95ad9a35a40e736b7dfa5c8a141}} 
+void {\bfseries Set\+Display\+Position} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classStrokeFont_aa6e7915c621e5ae8ea3cb28f1c1346f8}\label{classStrokeFont_aa6e7915c621e5ae8ea3cb28f1c1346f8}} 
+void {\bfseries Set\+Display\+Rotation} (const d\+Matrix3 R, bool fast=true)
+\item 
+\mbox{\Hypertarget{classStrokeFont_af802d9d7d11a514a09f6627a96a59c64}\label{classStrokeFont_af802d9d7d11a514a09f6627a96a59c64}} 
+void {\bfseries Set\+Display\+Rotation\+From\+Quaternion} (const d\+Quaternion q, bool fast=true)
+\item 
+\mbox{\Hypertarget{classStrokeFont_ae41477f9eeface9ef22184b4bb2d8dfc}\label{classStrokeFont_ae41477f9eeface9ef22184b4bb2d8dfc}} 
+const double $\ast$ {\bfseries Get\+Display\+Position} ()
+\item 
+\mbox{\Hypertarget{classStrokeFont_a9e8ee553516d59de5023efc4194a8266}\label{classStrokeFont_a9e8ee553516d59de5023efc4194a8266}} 
+const double $\ast$ {\bfseries Get\+Display\+Rotation} ()
+\item 
+\mbox{\Hypertarget{classStrokeFont_a8ad41a1c5498a1426ae5b9faf4ce200c}\label{classStrokeFont_a8ad41a1c5498a1426ae5b9faf4ce200c}} 
+void {\bfseries Move} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a790926b5a980fc71e9e21db2f01aeb52}\label{classStrokeFont_a790926b5a980fc71e9e21db2f01aeb52}} 
+void {\bfseries Scale} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classStrokeFont_afb1a965633061a0818a725c133829ba7}\label{classStrokeFont_afb1a965633061a0818a725c133829ba7}} 
+void {\bfseries SetZ} (float z)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a5da44c4fb517f6a0b8722e7d3de60d83}\label{classStrokeFont_a5da44c4fb517f6a0b8722e7d3de60d83}} 
+void {\bfseries Set\+RGBA} (float r, float g, float b, float a)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a1e41a5a8d7b10630ab8b07861d2dd9c4}\label{classStrokeFont_a1e41a5a8d7b10630ab8b07861d2dd9c4}} 
+void {\bfseries Zero\+Line\+Buffer} ()
+\item 
+\mbox{\Hypertarget{classStrokeFont_afc66b96c358f997e13ac9c08741fbabe}\label{classStrokeFont_afc66b96c358f997e13ac9c08741fbabe}} 
+size\+\_\+t {\bfseries Get\+Num\+Lines} ()
+\item 
+\mbox{\Hypertarget{classStrokeFont_af83083bb24e4be9ce9d6cd68b41b7e7f}\label{classStrokeFont_af83083bb24e4be9ce9d6cd68b41b7e7f}} 
+float $\ast$ {\bfseries Get\+Line\+Buffer} ()
+\item 
+\mbox{\Hypertarget{classStrokeFont_ad428f5e963ae065b26c919b5add288ce}\label{classStrokeFont_ad428f5e963ae065b26c919b5add288ce}} 
+\mbox{\hyperlink{classSimulationWidget}{Simulation\+Widget}} $\ast$ {\bfseries gl\+Widget} () const
+\item 
+\mbox{\Hypertarget{classStrokeFont_a5ac3ec70947df0ba284c3bfa7a26311c}\label{classStrokeFont_a5ac3ec70947df0ba284c3bfa7a26311c}} 
+void {\bfseries set\+Gl\+Widget} (\mbox{\hyperlink{classSimulationWidget}{Simulation\+Widget}} $\ast$gl\+Widget)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a6aa15ccb6addca52d54b6fe147a5d703}\label{classStrokeFont_a6aa15ccb6addca52d54b6fe147a5d703}} 
+QMatrix4x4 {\bfseries vp\+Matrix} () const
+\item 
+\mbox{\Hypertarget{classStrokeFont_aa2876b3de9f1471851240ce68066947a}\label{classStrokeFont_aa2876b3de9f1471851240ce68066947a}} 
+void {\bfseries set\+Vp\+Matrix} (const QMatrix4x4 \&vp\+Matrix)
+\item 
+\mbox{\Hypertarget{classStrokeFont_a445b5111b6af6bdc70f1836d4a9a21dd}\label{classStrokeFont_a445b5111b6af6bdc70f1836d4a9a21dd}} 
+void {\bfseries Debug} ()
+\item 
+\mbox{\Hypertarget{classStrokeFont_ab0936c24954237cf556ab89201c60c47}\label{classStrokeFont_ab0936c24954237cf556ab89201c60c47}} 
+virtual void {\bfseries Draw} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 10 of file Stroke\+Font.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Gait\+Sym\+Qt/Stroke\+Font.\+h\item 
+Gait\+Sym\+Qt/Stroke\+Font.\+cpp\end{DoxyCompactItemize}

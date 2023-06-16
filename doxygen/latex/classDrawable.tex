@@ -1,0 +1,62 @@
+\hypertarget{classDrawable}{}\doxysection{Drawable Class Reference}
+\label{classDrawable}\index{Drawable@{Drawable}}
+
+
+Inheritance diagram for Drawable\+:
+% FIG 0
+
+
+Collaboration diagram for Drawable\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDrawable_a097be35c26ce403bdb9f6d628906350e}\label{classDrawable_a097be35c26ce403bdb9f6d628906350e}} 
+virtual void {\bfseries initialise} (\mbox{\hyperlink{classSimulationWidget}{Simulation\+Widget}} $\ast$simulation\+Widget)=0
+\item 
+\mbox{\Hypertarget{classDrawable_ac1084c9e57e1903e0be4ce402f14608c}\label{classDrawable_ac1084c9e57e1903e0be4ce402f14608c}} 
+virtual void {\bfseries Draw} ()=0
+\item 
+\mbox{\Hypertarget{classDrawable_ad33838ff48170b9f2ec565f8701b7636}\label{classDrawable_ad33838ff48170b9f2ec565f8701b7636}} 
+virtual std\+::string {\bfseries name} ()=0
+\item 
+\mbox{\Hypertarget{classDrawable_a1db82c6f210d72957a064ef9e22d237d}\label{classDrawable_a1db82c6f210d72957a064ef9e22d237d}} 
+std\+::string {\bfseries class\+Name} () const
+\item 
+\mbox{\Hypertarget{classDrawable_a8d898ed1425738a898ec1e4cfc78e2f3}\label{classDrawable_a8d898ed1425738a898ec1e4cfc78e2f3}} 
+void {\bfseries Set\+Display\+Position} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classDrawable_a398235feff31cf7137ebf7e97cb0490f}\label{classDrawable_a398235feff31cf7137ebf7e97cb0490f}} 
+void {\bfseries Set\+Display\+Scale} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classDrawable_a33aabfcd0495a2f268d38aeef1873056}\label{classDrawable_a33aabfcd0495a2f268d38aeef1873056}} 
+void {\bfseries Set\+Display\+Rotation} (const d\+Matrix3 R)
+\item 
+\mbox{\Hypertarget{classDrawable_a1fb95cbd058951a4106bd55ad926415d}\label{classDrawable_a1fb95cbd058951a4106bd55ad926415d}} 
+void {\bfseries Set\+Display\+Rotation\+From\+Quaternion} (const d\+Quaternion q)
+\item 
+\mbox{\Hypertarget{classDrawable_a3aa8dfd1f526d0cf744313e8e102cea4}\label{classDrawable_a3aa8dfd1f526d0cf744313e8e102cea4}} 
+void {\bfseries set\+Visible} (bool visible)
+\item 
+\mbox{\Hypertarget{classDrawable_ac9835aa7546a5d6068eb3c4eee2baa67}\label{classDrawable_ac9835aa7546a5d6068eb3c4eee2baa67}} 
+const std\+::vector$<$ \mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} $\ast$ $>$ \& {\bfseries faceted\+Object\+List} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDrawable_a9e0511557a6a1388cd333c9805d8fb7f}\label{classDrawable_a9e0511557a6a1388cd333c9805d8fb7f}} 
+std\+::vector$<$ \mbox{\hyperlink{classFacetedObject}{Faceted\+Object}} $\ast$ $>$ {\bfseries m\+\_\+faceted\+Object\+List}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 21 of file Drawable.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Gait\+Sym\+Qt/Drawable.\+h\item 
+Gait\+Sym\+Qt/Drawable.\+cpp\end{DoxyCompactItemize}

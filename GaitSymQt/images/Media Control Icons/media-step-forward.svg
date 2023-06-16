@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="svg1307" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" inkscape:output_extension="org.inkscape.output.svg.inkscape" sodipodi:version="0.32" inkscape:version="0.46" sodipodi:docname="media-eject.svg" sodipodi:docbase="/home/jimmac/src/cvs/tango-icon-theme/scalable/actions" inkscape:export-ydpi="90" inkscape:export-xdpi="90" inkscape:export-filename="/home/lapo/Desktop/Grafica/Icone/media-actions-outlines.png"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="48px" height="48px"
+	 viewBox="0 0 48 48" enable-background="new 0 0 48 48" xml:space="preserve">
+<defs>
+	
+	
+		<inkscape:perspective  inkscape:vp_x="0 : 24 : 1" inkscape:vp_y="0 : 1000 : 0" inkscape:vp_z="48 : 24 : 1" sodipodi:type="inkscape:persp3d" id="perspective68" inkscape:persp3d-origin="24 : 16 : 1">
+		</inkscape:perspective>
+</defs>
+<sodipodi:namedview  fill="#555753" stroke="#555753" inkscape:grid-points="true" inkscape:guide-bbox="true" showgrid="false" inkscape:cy="17.061223" inkscape:cx="21.647252" inkscape:zoom="11.313708" borderopacity="0.13333333" bordercolor="#969696" pagecolor="#ffffff" id="base" inkscape:showpageshadow="false" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:current-layer="layer1" inkscape:grid-bbox="true" inkscape:window-y="30" inkscape:document-units="px" inkscape:window-width="1090" inkscape:window-height="818" inkscape:window-x="344" showguides="false" guidetolerance="1px" showborder="true">
+	<sodipodi:guide  id="guide2194" position="38.996647" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide2196" position="9.0140845" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide2198" position="9.0140845" orientation="vertical"></sodipodi:guide>
+	<sodipodi:guide  id="guide2200" position="38.975184" orientation="vertical"></sodipodi:guide>
+	<sodipodi:guide  id="guide2202" position="22.988281" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide2204" position="23.908786" orientation="vertical"></sodipodi:guide>
+	<sodipodi:guide  id="guide4332" position="157.99417" orientation="vertical"></sodipodi:guide>
+	<sodipodi:guide  id="guide4334" position="-36.062446" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide4336" position="-58.02695" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide4338" position="180.00287" orientation="vertical"></sodipodi:guide>
+	<sodipodi:guide  id="guide4417" position="107.92217" orientation="vertical"></sodipodi:guide>
+	<sodipodi:guide  id="guide4419" position="129.93087" orientation="vertical"></sodipodi:guide>
+	<sodipodi:guide  id="guide5106" position="19.996875" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide5119" position="63.039674" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide5121" position="49.066305" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide5307" position="-86.007168" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide5309" position="-108.09009" orientation="horizontal"></sodipodi:guide>
+	<sodipodi:guide  id="guide3111" position="-100.15429" orientation="horizontal"></sodipodi:guide>
+	
+		<inkscape:grid  type="xygrid" color="#0000ff" id="GridFromPre046Settings" empspacing="2" opacity="0.2" empopacity="0.4" originy="0px" empcolor="#0000ff" originx="0px" spacingx="0.5px" spacingy="0.5px">
+		</inkscape:grid>
+</sodipodi:namedview>
+<g id="layer4" inkscape:label="contorno" inkscape:groupmode="layer">
+</g>
+<g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer">
+	
+		<linearGradient id="path3711_1_" gradientUnits="userSpaceOnUse" x1="138.5742" y1="-293.668" x2="138.2798" y2="-275.2004" gradientTransform="matrix(0 1.1282 1.1282 0 339.5526 -133.9172)">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#000000"/>
+	</linearGradient>
+	
+		<path id="path3711" sodipodi:nodetypes="cccc" inkscape:r_cy="true" inkscape:r_cx="true" opacity="0.15" fill="none" stroke="url(#path3711_1_)" stroke-width="3" stroke-linecap="square" stroke-linejoin="round" enable-background="new    " d="
+		M36.92,22.247L19.178,9.431v25.632L36.92,22.247z"/>
+	
+		<radialGradient id="path2818_1_" cx="-481.8389" cy="-20.3003" r="12.5504" gradientTransform="matrix(0.841 7.417671e-04 0.0018 -2.0617 425.6907 -19.2501)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#D3D7CF"/>
+	</radialGradient>
+	
+		<linearGradient id="path2818_2_" gradientUnits="userSpaceOnUse" x1="179.502" y1="-246.7144" x2="179.4274" y2="-266.2482" gradientTransform="matrix(0 1 1 0 277.4082 -157.2109)">
+		<stop  offset="0" style="stop-color:#474845"/>
+		<stop  offset="1" style="stop-color:#838681"/>
+	</linearGradient>
+	
+		<path id="path2818" sodipodi:nodetypes="cccc" inkscape:r_cy="true" inkscape:r_cx="true" fill="url(#path2818_1_)" stroke="url(#path2818_2_)" stroke-width="1" stroke-linecap="square" stroke-linejoin="round" d="
+		M36.92,22.247L19.178,9.431v25.632L36.92,22.247z"/>
+	<path id="path2828" sodipodi:nodetypes="cccc" inkscape:r_cy="true" inkscape:r_cx="true" fill="none" stroke="#FFFFFF" d="
+		M35.186,22.247l-15.1-10.876l0.089,21.752L35.186,22.247z"/>
+	
+		<linearGradient id="rect3723_1_" gradientUnits="userSpaceOnUse" x1="138.1484" y1="-294.293" x2="138.7405" y2="-276.7088" gradientTransform="matrix(0 1.1282 1.1282 0 339.5526 -133.9172)">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#000000"/>
+	</linearGradient>
+	
+		<rect id="rect3723" x="10.198" y="9.173" inkscape:r_cy="true" inkscape:r_cx="true" opacity="0.15" fill="none" stroke="url(#rect3723_1_)" stroke-width="3" stroke-linecap="square" stroke-linejoin="round" enable-background="new    " width="4.976" height="25.881">
+	</rect>
+	
+		<radialGradient id="rect3703_1_" cx="-521.3965" cy="-18.3022" r="12.5508" gradientTransform="matrix(0.7861 7.541952e-04 0.0017 -2.0963 423.0694 -15.8578)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#D3D7CF"/>
+	</radialGradient>
+	
+		<linearGradient id="rect3703_2_" gradientUnits="userSpaceOnUse" x1="179.3936" y1="-246.7104" x2="179.319" y2="-266.2474" gradientTransform="matrix(0 1 1 0 277.4082 -157.2109)">
+		<stop  offset="0" style="stop-color:#474845"/>
+		<stop  offset="1" style="stop-color:#838681"/>
+	</linearGradient>
+	
+		<rect id="rect3703" x="10.198" y="9.173" inkscape:r_cy="true" inkscape:r_cx="true" fill="url(#rect3703_1_)" stroke="url(#rect3703_2_)" stroke-width="1" width="4.976" height="25.881">
+	</rect>
+	
+		<rect id="rect3707" x="11.194" y="10.176" inkscape:r_cy="true" inkscape:r_cx="true" fill="none" stroke="#FFFFFF" stroke-width="1" width="2.931" height="23.877">
+	</rect>
+	
+		<path id="path3709" sodipodi:nodetypes="cccc" inkscape:r_cy="true" inkscape:r_cx="true" opacity="0.5611" fill="#FFFFFF" enable-background="new    " d="
+		M34.365,22.247l-8.312-6c-0.188,4.996,0.168,6.712,0.812,11.375L34.365,22.247z"/>
+</g>
+</svg>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="283.46px" height="283.46px" viewBox="0 0 283.46 283.46" enable-background="new 0 0 283.46 283.46" xml:space="preserve">
+<path stroke="#72B02E" stroke-width="22.6772" stroke-miterlimit="10" d="M269.291,255.427c0,7.657-6.207,13.864-13.863,13.864
+	H28.038c-7.657,0-13.865-6.207-13.865-13.864V28.038c0-7.657,6.208-13.865,13.865-13.865h227.39c7.656,0,13.863,6.208,13.863,13.865
+	V255.427z"/>
+<g id="layer1_1_" inkscape:label="Layer 1" inkscape:groupmode="layer">
+	
+		<linearGradient id="path5288_1_" gradientUnits="userSpaceOnUse" x1="297.1377" y1="-86.2603" x2="293.6389" y2="-193.9666" gradientTransform="matrix(1 0 0 -1 -153.7705 5.2695)">
+		<stop  offset="0" style="stop-color:#000000"/>
+		<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0.6598"/>
+	</linearGradient>
+	
+		<path id="path5288" inkscape:r_cy="true" inkscape:r_cx="true" opacity="0.15" fill="none" stroke="url(#path5288_1_)" stroke-width="3" stroke-linecap="square" stroke-linejoin="round" enable-background="new    " d="
+		M248.437,85.784v112.038l-93.364-56.019L248.437,85.784z M152.402,85.784v112.038L61.707,143.47v54.352H35.031V85.784h26.676
+		v54.352L152.402,85.784z"/>
+	
+		<radialGradient id="path5515_1_" cx="-270.0654" cy="-25.2271" r="46.6819" gradientTransform="matrix(0.2227 -0.9963 -2.13 -0.476 143.2451 -121.5742)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#D3D7CF"/>
+	</radialGradient>
+	
+		<path id="path5515" inkscape:r_cy="true" inkscape:r_cx="true" inkscape:export-xdpi="90" inkscape:export-filename="/home/lapo/Desktop/Grafica/Icone/media-actions.png" inkscape:export-ydpi="90" sodipodi:nodetypes="cccc" fill="url(#path5515_1_)" d="
+		M152.402,85.784l-93.361,56.019l93.361,56.019V85.784z"/>
+	
+		<radialGradient id="use5517_1_" cx="-253.3955" cy="-60.1191" r="46.6818" gradientTransform="matrix(0.2227 -0.9963 -2.13 -0.476 161.2451 -121.5742)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#D3D7CF"/>
+	</radialGradient>
+	
+		<path id="use5517" inkscape:r_cy="true" inkscape:r_cx="true" inkscape:export-xdpi="90" inkscape:export-filename="/home/lapo/Desktop/Grafica/Icone/media-actions.png" inkscape:export-ydpi="90" sodipodi:nodetypes="cccc" fill="url(#use5517_1_)" d="
+		M248.437,85.784l-93.364,56.019l93.364,56.019V85.784z"/>
+	
+		<linearGradient id="path2915_1_" gradientUnits="userSpaceOnUse" x1="386.2363" y1="-174.627" x2="387.5002" y2="-186.2964" gradientTransform="matrix(1 0 0 -1 -198.7607 -91.9922)">
+		<stop  offset="0" style="stop-color:#000000"/>
+		<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0"/>
+	</linearGradient>
+	
+		<path id="path2915" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="ccccccccc" opacity="0.0703" fill="url(#path2915_1_)" enable-background="new    " d="
+		M248.437,85.784l-6.336,3.835l6.336-0.667V85.784z M152.402,87.117l-2.5,0.167l-21.171,12.671l23.671-2.168V87.117z"/>
+	
+		<linearGradient id="path5521_1_" gradientUnits="userSpaceOnUse" x1="355.3818" y1="-323.0938" x2="355.6372" y2="-247.1927" gradientTransform="matrix(1 0 0 -1 -201.7695 -115.7305)">
+		<stop  offset="0" style="stop-color:#ADB0A8"/>
+		<stop  offset="1" style="stop-color:#464744"/>
+	</linearGradient>
+	
+		<path id="path5521" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccccccc" fill="none" stroke="url(#path5521_1_)" stroke-linecap="square" stroke-linejoin="round" d="
+		M152.402,85.784l-93.361,56.019l93.361,56.019V85.784z M248.437,85.784l-93.364,56.019l93.364,56.019V85.784z"/>
+	<path id="path5525" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccccccccccccccc" fill="#FFFFFF" d="
+		M149.736,90.453l-85.528,51.35l85.528,51.351V90.453z M245.77,90.453l-85.528,51.35l85.528,51.351V90.453z M144.402,99.955v83.695
+		l-69.857-41.848L144.402,99.955z M240.434,99.955v83.695l-69.855-41.848L240.434,99.955z"/>
+	
+		<path id="path3197" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" opacity="0.5611" fill="#FFFFFF" enable-background="new    " d="
+		M82.581,137.317l61.821-37.195v32.239L82.581,137.317z"/>
+	
+		<path id="path4072" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" opacity="0.5611" fill="#FFFFFF" enable-background="new    " d="
+		M186.925,131.903l53.509-31.781v29.655L186.925,131.903z"/>
+	
+		<radialGradient id="path3110_1_" cx="-285.8032" cy="7.7285" r="46.6801" gradientTransform="matrix(0.2227 -0.9963 -2.13 -0.476 126.2451 -121.5742)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#D3D7CF"/>
+	</radialGradient>
+	
+		<path id="path3110" inkscape:r_cy="true" inkscape:r_cx="true" inkscape:export-xdpi="90" inkscape:export-filename="/home/lapo/Desktop/Grafica/Icone/media-actions.png" inkscape:export-ydpi="90" sodipodi:nodetypes="ccccc" fill="url(#path3110_1_)" d="
+		M61.707,85.784H35.031v112.038h26.676V85.784z"/>
+	
+		<rect id="rect1923" x="40.363" y="91.119" inkscape:r_cy="true" inkscape:r_cx="true" fill="none" stroke="#FFFFFF" stroke-linecap="square" width="16.011" height="101.367">
+	</rect>
+	
+		<linearGradient id="path1935_1_" gradientUnits="userSpaceOnUse" x1="249.1367" y1="606.0605" x2="249.1367" y2="535.5288" gradientTransform="matrix(1 0 0 1 -200.7705 -393.7305)">
+		<stop  offset="0" style="stop-color:#ADB0A8"/>
+		<stop  offset="1" style="stop-color:#464744"/>
+	</linearGradient>
+	
+		<path id="path1935" inkscape:r_cy="true" inkscape:r_cx="true" fill="none" stroke="url(#path1935_1_)" stroke-linecap="square" stroke-linejoin="round" d="
+		M35.027,197.821V85.784h26.68v112.038H35.027z"/>
+	
+		<path id="path5291" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="ccccc" opacity="0.5611" fill="#FFFFFF" enable-background="new    " d="
+		M53.704,143.47l-10.436,1.796V93.953h10.845L53.704,143.47z"/>
+</g>
+</svg>

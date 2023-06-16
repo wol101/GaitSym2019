@@ -1,0 +1,87 @@
+\hypertarget{classDriver}{}\doxysection{Driver Class Reference}
+\label{classDriver}\index{Driver@{Driver}}
+
+
+Inheritance diagram for Driver\+:
+% FIG 0
+
+
+Collaboration diagram for Driver\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDriver_a012be2be0038b22fc09f7c61b7c9080f}\label{classDriver_a012be2be0038b22fc09f7c61b7c9080f}} 
+int {\bfseries Add\+Target} (\mbox{\hyperlink{classDrivable}{Drivable}} $\ast$target)
+\item 
+\mbox{\Hypertarget{classDriver_a99120fee0ffa994528df51ff750aa3f6}\label{classDriver_a99120fee0ffa994528df51ff750aa3f6}} 
+\mbox{\hyperlink{classDrivable}{Drivable}} $\ast$ {\bfseries Get\+Target} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classDriver_a0ad66519421343138eced2dcf4e96b37}\label{classDriver_a0ad66519421343138eced2dcf4e96b37}} 
+double {\bfseries Clamp} (double value)
+\item 
+\mbox{\Hypertarget{classDriver_a8eaf59ad187e81aa6ccaf11d724fd30a}\label{classDriver_a8eaf59ad187e81aa6ccaf11d724fd30a}} 
+virtual void {\bfseries Update} ()=0
+\item 
+\mbox{\Hypertarget{classDriver_a7972a60edf32e6daedee596277ee83ed}\label{classDriver_a7972a60edf32e6daedee596277ee83ed}} 
+virtual void {\bfseries Send\+Data} ()
+\item 
+\mbox{\Hypertarget{classDriver_adb60cfb0b1f60827f62331b3a74d4857}\label{classDriver_adb60cfb0b1f60827f62331b3a74d4857}} 
+virtual std\+::string {\bfseries dump\+To\+String} ()
+\item 
+\mbox{\Hypertarget{classDriver_a2c5bdaa9459d7d76815b37781a58fecd}\label{classDriver_a2c5bdaa9459d7d76815b37781a58fecd}} 
+virtual std\+::string $\ast$ {\bfseries create\+From\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classDriver_ad67094f2ea15109510106d70d3496d53}\label{classDriver_ad67094f2ea15109510106d70d3496d53}} 
+virtual void {\bfseries save\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classDriver_ac8784e418c4e129ecde80c430d90f5f2}\label{classDriver_ac8784e418c4e129ecde80c430d90f5f2}} 
+virtual void {\bfseries append\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classDriver_ae090011ddc9463a4e2da84a21e74a43c}\label{classDriver_ae090011ddc9463a4e2da84a21e74a43c}} 
+double {\bfseries Min\+Value} () const
+\item 
+\mbox{\Hypertarget{classDriver_a3bc11e0490ddbabc8cca2b9a4423d72f}\label{classDriver_a3bc11e0490ddbabc8cca2b9a4423d72f}} 
+void {\bfseries set\+Min\+Value} (double Min\+Value)
+\item 
+\mbox{\Hypertarget{classDriver_aa98c95ead4374f00704de8bd2a159db1}\label{classDriver_aa98c95ead4374f00704de8bd2a159db1}} 
+double {\bfseries Max\+Value} () const
+\item 
+\mbox{\Hypertarget{classDriver_a83d4480ae87c1e8e30cf4606599aef7b}\label{classDriver_a83d4480ae87c1e8e30cf4606599aef7b}} 
+void {\bfseries set\+Max\+Value} (double Max\+Value)
+\item 
+\mbox{\Hypertarget{classDriver_ab6ce400cd68bebbc17c1cdc46cfb3a87}\label{classDriver_ab6ce400cd68bebbc17c1cdc46cfb3a87}} 
+bool {\bfseries Interp} () const
+\item 
+\mbox{\Hypertarget{classDriver_a656803f7edf2f023098d95ac1631ded0}\label{classDriver_a656803f7edf2f023098d95ac1631ded0}} 
+void {\bfseries set\+Interp} (bool Interp)
+\item 
+\mbox{\Hypertarget{classDriver_affe0313a2466dcb0893215b62fcab45b}\label{classDriver_affe0313a2466dcb0893215b62fcab45b}} 
+const std\+::map$<$ std\+::string, \mbox{\hyperlink{classDrivable}{Drivable}} $\ast$ $>$ $\ast$ {\bfseries target\+List} () const
+\item 
+\mbox{\Hypertarget{classDriver_a6ebfad3116e99c2637a386bf5a081410}\label{classDriver_a6ebfad3116e99c2637a386bf5a081410}} 
+int64\+\_\+t {\bfseries last\+Step\+Count} () const
+\item 
+\mbox{\Hypertarget{classDriver_aef3f39b1c218ae430acb02115c4437e4}\label{classDriver_aef3f39b1c218ae430acb02115c4437e4}} 
+void {\bfseries set\+Last\+Step\+Count} (const int64\+\_\+t \&last\+Step\+Count)
+\item 
+\mbox{\Hypertarget{classDriver_a08464455f4a82fbada7e0461121ff549}\label{classDriver_a08464455f4a82fbada7e0461121ff549}} 
+double {\bfseries value} () const
+\item 
+\mbox{\Hypertarget{classDriver_a4cbd52d377c40bdde8382e8a2f84daae}\label{classDriver_a4cbd52d377c40bdde8382e8a2f84daae}} 
+void {\bfseries set\+Value} (double value)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 21 of file Driver.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Driver.\+h\item 
+src/Driver.\+cpp\end{DoxyCompactItemize}

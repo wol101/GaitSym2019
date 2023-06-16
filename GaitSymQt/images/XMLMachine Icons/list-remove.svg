@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="svg6431" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:cc="http://creativecommons.org/ns#" sodipodi:docname="list-remove.svg" sodipodi:docbase="/home/jimmac/src/cvs/tango-icon-theme/scalable/actions" inkscape:version="0.46" sodipodi:version="0.32" inkscape:output_extension="org.inkscape.output.svg.inkscape"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="32.127px"
+	 height="8.018px" viewBox="8.005 20.962 32.127 8.018" enable-background="new 8.005 20.962 32.127 8.018" xml:space="preserve">
+<defs>
+	
+	
+		<inkscape:perspective  inkscape:vp_z="48 : 24 : 1" inkscape:vp_y="0 : 1000 : 0" sodipodi:type="inkscape:persp3d" inkscape:vp_x="0 : 24 : 1" id="perspective69" inkscape:persp3d-origin="24 : 16 : 1">
+		</inkscape:perspective>
+</defs>
+<sodipodi:namedview  showgrid="false" inkscape:cy="26.474252" inkscape:cx="-123.27226" inkscape:zoom="1" pagecolor="#ffffff" borderopacity="0.10980392" bordercolor="#666666" id="base" inkscape:window-y="30" inkscape:window-x="0" inkscape:window-height="818" inkscape:window-width="1280" inkscape:showpageshadow="false" inkscape:document-units="px" inkscape:grid-bbox="true" inkscape:current-layer="layer1" inkscape:pageshadow="2" inkscape:pageopacity="0.0">
+	</sodipodi:namedview>
+<g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer">
+	<path id="text1314" sodipodi:nodetypes="ccccccccc" fill="#75A1D0" stroke="#3465A4" d="M27.514,28.359l12.119,0.116V21.48H27.523
+		l-7.021-0.018L8.544,21.489l-0.036,6.968l12.003,0.019L27.514,28.359z"/>
+	
+		<linearGradient id="path7076_1_" gradientUnits="userSpaceOnUse" x1="37.7178" y1="13.9458" x2="48.7436" y2="1.8208" gradientTransform="matrix(1 0 0 -1 -17.9731 34.1885)">
+		<stop  offset="0" style="stop-color:#729FCF"/>
+		<stop  offset="1" style="stop-color:#5187D6"/>
+	</linearGradient>
+	
+		<linearGradient id="path7076_2_" gradientUnits="userSpaceOnUse" x1="19.7002" y1="27.5186" x2="30.7261" y2="15.3936" gradientTransform="matrix(1 0 0 -1 0.0449 47.7598)">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0.3402"/>
+	</linearGradient>
+	
+		<path id="path7076" sodipodi:nodetypes="ccccc" opacity="0.4086" fill="url(#path7076_1_)" stroke="url(#path7076_2_)" enable-background="new    " d="
+		M38.58,27.484l0.008-5.009L9.527,22.493L9.5,27.467L38.58,27.484z"/>
+	<path id="path7914" sodipodi:nodetypes="ccccc" opacity="0.3118" fill="#FFFFFF" enable-background="new    " d="M9,25
+		c0,1.938,30.125-0.938,30.125,0v-3H9V25z"/>
+</g>
+</svg>

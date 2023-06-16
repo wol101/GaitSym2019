@@ -1,0 +1,883 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogMuscles</class>
+ <widget class="QDialog" name="DialogMuscles">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>951</width>
+    <height>778</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <property name="topMargin">
+    <number>9</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
+   <property name="bottomMargin">
+    <number>9</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="widget_2" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Muscle ID</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="LineEditUniqueName" name="lineEditMuscleID"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_3" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Muscle</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QTabWidget" name="tabWidgetMuscle">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="tab">
+            <attribute name="title">
+             <string>Minetti-Alexander</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="4" column="1">
+              <widget class="LineEditDouble" name="lineEditActivationK"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_16">
+               <property name="text">
+                <string>Vmax Factor</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="LineEditDouble" name="lineEditVMaxFactor"/>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Activation K</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="LineEditDouble" name="lineEditPCA"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string>Force Per Unit Area</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_17">
+               <property name="text">
+                <string>PCA</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="LineEditDouble" name="lineEditForcePerUnitArea"/>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>Fibre Length</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="LineEditDouble" name="lineEditFibreLength"/>
+             </item>
+             <item row="5" column="0">
+              <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_2">
+            <attribute name="title">
+             <string>Minetti-Alexander Elastic</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="7" column="1">
+              <widget class="LineEditDouble" name="lineEditSerialStrainAtFMax"/>
+             </item>
+             <item row="10" column="1">
+              <widget class="LineEditDouble" name="lineEditParallelStrainAtFMax"/>
+             </item>
+             <item row="1" column="1">
+              <widget class="LineEditDouble" name="lineEditVMaxFactor_2"/>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_22">
+               <property name="text">
+                <string>Tendon Length</string>
+               </property>
+              </widget>
+             </item>
+             <item row="15" column="0">
+              <widget class="QLabel" name="label_49">
+               <property name="text">
+                <string>Fast Twitch Proportion</string>
+               </property>
+              </widget>
+             </item>
+             <item row="11" column="0">
+              <widget class="QLabel" name="label_28">
+               <property name="text">
+                <string>Parallel Strain Rate at Fmax</string>
+               </property>
+              </widget>
+             </item>
+             <item row="12" column="0">
+              <widget class="QLabel" name="label_29">
+               <property name="text">
+                <string>Parallel Strain Model</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_42">
+               <property name="text">
+                <string>PCA</string>
+               </property>
+              </widget>
+             </item>
+             <item row="13" column="1">
+              <widget class="LineEditDouble" name="lineEditInitialFibreLength"/>
+             </item>
+             <item row="7" column="0">
+              <widget class="QLabel" name="label_21">
+               <property name="text">
+                <string>Serial Strain at Fmax</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_25">
+               <property name="text">
+                <string>Force Per Unit Area</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_45">
+               <property name="text">
+                <string>Fibre Length</string>
+               </property>
+              </widget>
+             </item>
+             <item row="18" column="0">
+              <widget class="QLabel" name="label_47">
+               <property name="text">
+                <string>T Deactivation A</string>
+               </property>
+              </widget>
+             </item>
+             <item row="11" column="1">
+              <widget class="LineEditDouble" name="lineEditParallelStrainRateAtFMax"/>
+             </item>
+             <item row="21" column="0">
+              <widget class="QLabel" name="label_46">
+               <property name="text">
+                <string>Initial Activation</string>
+               </property>
+              </widget>
+             </item>
+             <item row="16" column="1">
+              <widget class="LineEditDouble" name="lineEditTActivationA"/>
+             </item>
+             <item row="9" column="1">
+              <widget class="QComboBox" name="comboBoxSerialStrainModel">
+               <item>
+                <property name="text">
+                 <string>Linear</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Square</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="LineEditDouble" name="lineEditActivationK_2"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="LineEditDouble" name="lineEditPCA_2"/>
+             </item>
+             <item row="17" column="1">
+              <widget class="LineEditDouble" name="lineEditTActivationB"/>
+             </item>
+             <item row="15" column="1">
+              <widget class="LineEditDouble" name="lineEditFastTwitchProportion"/>
+             </item>
+             <item row="0" column="1">
+              <widget class="LineEditDouble" name="lineEditForcePerUnitArea_2"/>
+             </item>
+             <item row="17" column="0">
+              <widget class="QLabel" name="label_52">
+               <property name="text">
+                <string>T Activation B</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_20">
+               <property name="text">
+                <string>Width</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="0">
+              <widget class="QLabel" name="label_24">
+               <property name="text">
+                <string>Serial Strain Rate at Fmax</string>
+               </property>
+              </widget>
+             </item>
+             <item row="19" column="1">
+              <widget class="LineEditDouble" name="lineEditTDeactivationB"/>
+             </item>
+             <item row="21" column="1">
+              <widget class="LineEditDouble" name="lineEditInitialActivation"/>
+             </item>
+             <item row="20" column="1">
+              <widget class="LineEditDouble" name="lineEditActivationRate"/>
+             </item>
+             <item row="18" column="1">
+              <widget class="LineEditDouble" name="lineEditTDeactivationA"/>
+             </item>
+             <item row="14" column="0">
+              <widget class="QLabel" name="label_53">
+               <property name="text">
+                <string>Use Activation</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="0">
+              <widget class="QLabel" name="label_23">
+               <property name="text">
+                <string>Serial Strain Model</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="LineEditDouble" name="lineEditTendonLength"/>
+             </item>
+             <item row="5" column="1">
+              <widget class="LineEditDouble" name="lineEditWidth"/>
+             </item>
+             <item row="12" column="1">
+              <widget class="QComboBox" name="comboBoxParallelStrainModel">
+               <item>
+                <property name="text">
+                 <string>Linear</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Square</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_44">
+               <property name="text">
+                <string>Activation K</string>
+               </property>
+              </widget>
+             </item>
+             <item row="20" column="0">
+              <widget class="QLabel" name="label_51">
+               <property name="text">
+                <string>Activation Rate</string>
+               </property>
+              </widget>
+             </item>
+             <item row="14" column="1">
+              <widget class="QCheckBox" name="checkBoxUseActivation">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="1">
+              <widget class="LineEditDouble" name="lineEditSerialStrainRateAtFMax"/>
+             </item>
+             <item row="23" column="0">
+              <spacer name="verticalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="13" column="0">
+              <widget class="QLabel" name="label_26">
+               <property name="text">
+                <string>Initial Fibre Length</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="LineEditDouble" name="lineEditFibreLength_2"/>
+             </item>
+             <item row="16" column="0">
+              <widget class="QLabel" name="label_50">
+               <property name="text">
+                <string>T Activation A</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_43">
+               <property name="text">
+                <string>Vmax Factor</string>
+               </property>
+              </widget>
+             </item>
+             <item row="10" column="0">
+              <widget class="QLabel" name="label_27">
+               <property name="text">
+                <string>Parallel Strain at Fmax</string>
+               </property>
+              </widget>
+             </item>
+             <item row="19" column="0">
+              <widget class="QLabel" name="label_48">
+               <property name="text">
+                <string>T Deactivation B</string>
+               </property>
+              </widget>
+             </item>
+             <item row="22" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Minimum Activation</string>
+               </property>
+              </widget>
+             </item>
+             <item row="22" column="1">
+              <widget class="LineEditDouble" name="lineEditMinimumActivation"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_6">
+            <attribute name="title">
+             <string>Damped Spring</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_9">
+             <item row="3" column="1">
+              <widget class="LineEditDouble" name="lineEditDamping"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="LineEditDouble" name="lineEditArea"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_38">
+               <property name="text">
+                <string>Unloaded Length</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="LineEditDouble" name="lineEditSpringConstant"/>
+             </item>
+             <item row="5" column="0">
+              <spacer name="verticalSpacer_6">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_39">
+               <property name="text">
+                <string>Area</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="LineEditDouble" name="lineEditUnloadedLength"/>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_41">
+               <property name="text">
+                <string>Damping</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_40">
+               <property name="text">
+                <string>Spring Constant</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Breaking Strain</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="LineEditDouble" name="lineEditBreakingStrain"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>Strap</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Origin Marker</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBoxOriginMarker">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Insertion Marker</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBoxInsertionMarker"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Length</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="LineEditDouble" name="lineEditLength"/>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QTabWidget" name="tabWidgetStrap">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="tab_3">
+            <attribute name="title">
+             <string>N-Point</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="minimumSize">
+                <size>
+                 <width>80</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Via Points</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="spinBoxNViaPoints">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="QWidget" name="widgetViaPointsPlaceholder" native="true">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>25</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_4">
+            <attribute name="title">
+             <string>Cylinder</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="2" column="0">
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Cylinder Marker</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Cylinder Radius</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="comboBoxCylinderMarker">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="LineEditDouble" name="lineEditCylinderRadius"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_5">
+            <attribute name="title">
+             <string>2-Cylinder</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="4" column="0">
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_15">
+               <property name="text">
+                <string>Cylinder 2 Marker</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Cylinder 1 Marker</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Cylinder 1 Radius</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QComboBox" name="comboBox2Cylinder2Marker">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="comboBox2Cylinder1Marker">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Cylinder 2 Radius</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="LineEditDouble" name="lineEdit2Cylinder1Radius"/>
+             </item>
+             <item row="3" column="1">
+              <widget class="LineEditDouble" name="lineEdit2Cylinder2Radius"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="2">
+          <widget class="QTabWidget" name="tabWidgetTorqueMarkers">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="tab_8">
+            <attribute name="title">
+             <string>Torque Report</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_31">
+               <property name="minimumSize">
+                <size>
+                 <width>80</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Number</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="spinBoxNTorqueMarkers">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="QWidget" name="widgetTorqueMarkersPlaceholder" native="true">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>25</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="pushButtonProperties">
+        <property name="text">
+         <string>Properties...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>765</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonOK">
+        <property name="text">
+         <string>OK</string>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonCancel">
+        <property name="text">
+         <string>Cancel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LineEditDouble</class>
+   <extends>QLineEdit</extends>
+   <header>LineEditDouble.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEditUniqueName</class>
+   <extends>QLineEdit</extends>
+   <header>LineEditUniqueName.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>lineEditMuscleID</tabstop>
+  <tabstop>tabWidgetMuscle</tabstop>
+  <tabstop>lineEditForcePerUnitArea</tabstop>
+  <tabstop>lineEditVMaxFactor</tabstop>
+  <tabstop>lineEditPCA</tabstop>
+  <tabstop>lineEditFibreLength</tabstop>
+  <tabstop>lineEditActivationK</tabstop>
+  <tabstop>lineEditForcePerUnitArea_2</tabstop>
+  <tabstop>lineEditVMaxFactor_2</tabstop>
+  <tabstop>lineEditPCA_2</tabstop>
+  <tabstop>lineEditFibreLength_2</tabstop>
+  <tabstop>lineEditActivationK_2</tabstop>
+  <tabstop>lineEditWidth</tabstop>
+  <tabstop>lineEditTendonLength</tabstop>
+  <tabstop>lineEditSerialStrainAtFMax</tabstop>
+  <tabstop>lineEditSerialStrainRateAtFMax</tabstop>
+  <tabstop>comboBoxSerialStrainModel</tabstop>
+  <tabstop>lineEditParallelStrainAtFMax</tabstop>
+  <tabstop>lineEditParallelStrainRateAtFMax</tabstop>
+  <tabstop>comboBoxParallelStrainModel</tabstop>
+  <tabstop>lineEditInitialFibreLength</tabstop>
+  <tabstop>checkBoxUseActivation</tabstop>
+  <tabstop>lineEditFastTwitchProportion</tabstop>
+  <tabstop>lineEditTActivationA</tabstop>
+  <tabstop>lineEditTActivationB</tabstop>
+  <tabstop>lineEditTDeactivationA</tabstop>
+  <tabstop>lineEditTDeactivationB</tabstop>
+  <tabstop>lineEditActivationRate</tabstop>
+  <tabstop>lineEditInitialActivation</tabstop>
+  <tabstop>lineEditUnloadedLength</tabstop>
+  <tabstop>lineEditSpringConstant</tabstop>
+  <tabstop>lineEditArea</tabstop>
+  <tabstop>lineEditDamping</tabstop>
+  <tabstop>comboBoxOriginMarker</tabstop>
+  <tabstop>comboBoxInsertionMarker</tabstop>
+  <tabstop>tabWidgetStrap</tabstop>
+  <tabstop>spinBoxNViaPoints</tabstop>
+  <tabstop>comboBoxCylinderMarker</tabstop>
+  <tabstop>comboBox2Cylinder1Marker</tabstop>
+  <tabstop>comboBox2Cylinder2Marker</tabstop>
+  <tabstop>pushButtonOK</tabstop>
+  <tabstop>pushButtonCancel</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

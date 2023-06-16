@@ -1,0 +1,84 @@
+\hypertarget{classMuscle}{}\doxysection{Muscle Class Reference}
+\label{classMuscle}\index{Muscle@{Muscle}}
+
+
+Inheritance diagram for Muscle\+:
+% FIG 0
+
+
+Collaboration diagram for Muscle\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classMuscle_a350fa227d38b65fb88afd3dc1abe9dc7}\label{classMuscle_a350fa227d38b65fb88afd3dc1abe9dc7}} 
+double {\bfseries Get\+Length} () const
+\item 
+\mbox{\Hypertarget{classMuscle_a206a526ab5ce9e182abe83c97a4418dc}\label{classMuscle_a206a526ab5ce9e182abe83c97a4418dc}} 
+double {\bfseries Get\+Velocity} () const
+\item 
+\mbox{\Hypertarget{classMuscle_a082f88414522da9ca0b2c5a26afea87a}\label{classMuscle_a082f88414522da9ca0b2c5a26afea87a}} 
+double {\bfseries Get\+Tension} () const
+\item 
+\mbox{\Hypertarget{classMuscle_a6490fc8fb4e85dc6a59d134a2cab2f1b}\label{classMuscle_a6490fc8fb4e85dc6a59d134a2cab2f1b}} 
+double {\bfseries Get\+Power} () const
+\item 
+\mbox{\Hypertarget{classMuscle_a0b32438839b6ff0c76419798eeb6b95d}\label{classMuscle_a0b32438839b6ff0c76419798eeb6b95d}} 
+void {\bfseries Calculate\+Strap} ()
+\item 
+\mbox{\Hypertarget{classMuscle_aa84011bc96d98531070cec9a498cdf5b}\label{classMuscle_aa84011bc96d98531070cec9a498cdf5b}} 
+{\bfseries SMART\+\_\+\+ENUM} (Strap\+Colour\+Control, strap\+Colour\+Control\+Strings, strap\+Colour\+Control\+Count, fixed\+Colour, activation\+Map, strain\+Map, force\+Map)
+\item 
+\mbox{\Hypertarget{classMuscle_a03e5cb3e7c0c1f85787862250ccb3b06}\label{classMuscle_a03e5cb3e7c0c1f85787862250ccb3b06}} 
+virtual void {\bfseries Set\+Activation} ()=0
+\item 
+\mbox{\Hypertarget{classMuscle_aeb135efc7c25a01c548602fb74835417}\label{classMuscle_aeb135efc7c25a01c548602fb74835417}} 
+virtual double {\bfseries Get\+Activation} ()=0
+\item 
+\mbox{\Hypertarget{classMuscle_a9d88c0e698c609fd73297c43b3376861}\label{classMuscle_a9d88c0e698c609fd73297c43b3376861}} 
+virtual double {\bfseries Get\+Metabolic\+Power} ()=0
+\item 
+\mbox{\Hypertarget{classMuscle_ad10137a75caef9d110ab0436097c7a9c}\label{classMuscle_ad10137a75caef9d110ab0436097c7a9c}} 
+virtual double {\bfseries Get\+Elastic\+Energy} ()=0
+\item 
+\mbox{\Hypertarget{classMuscle_a81dee90d8b331ecc2c7be43d782a7fa4}\label{classMuscle_a81dee90d8b331ecc2c7be43d782a7fa4}} 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structPointForce}{Point\+Force}} $>$ $>$ $\ast$ {\bfseries Get\+Point\+Force\+List} () const
+\item 
+\mbox{\Hypertarget{classMuscle_a434a7572f1c7e2730e3631160adbcc59}\label{classMuscle_a434a7572f1c7e2730e3631160adbcc59}} 
+\mbox{\hyperlink{classStrap}{Strap}} $\ast$ {\bfseries Get\+Strap} () const
+\item 
+\mbox{\Hypertarget{classMuscle_a94b3129b02b8b303ead64b3fe277e212}\label{classMuscle_a94b3129b02b8b303ead64b3fe277e212}} 
+void {\bfseries Set\+Strap} (\mbox{\hyperlink{classStrap}{Strap}} $\ast$strap)
+\item 
+\mbox{\Hypertarget{classMuscle_a0a71e06a7910c0892e1639626705b1ed}\label{classMuscle_a0a71e06a7910c0892e1639626705b1ed}} 
+virtual void {\bfseries Late\+Initialisation} ()
+\item 
+\mbox{\Hypertarget{classMuscle_a8d28e067c788b5659684ab8b806f6a75}\label{classMuscle_a8d28e067c788b5659684ab8b806f6a75}} 
+virtual std\+::string $\ast$ {\bfseries create\+From\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classMuscle_a3638caa81accdec0acab74a9351ce7d8}\label{classMuscle_a3638caa81accdec0acab74a9351ce7d8}} 
+virtual void {\bfseries save\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classMuscle_ae6c4a3ebfe6fdafd48f85feac9229f97}\label{classMuscle_ae6c4a3ebfe6fdafd48f85feac9229f97}} 
+virtual void {\bfseries append\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classMuscle_af45e579b528b776482eff2da4370ae9e}\label{classMuscle_af45e579b528b776482eff2da4370ae9e}} 
+Strap\+Colour\+Control {\bfseries strap\+Colour\+Control} () const
+\item 
+\mbox{\Hypertarget{classMuscle_a7d0b630a5c08395c4cdb366d6a27246b}\label{classMuscle_a7d0b630a5c08395c4cdb366d6a27246b}} 
+void {\bfseries set\+Strap\+Colour\+Control} (const Muscle\+::\+Strap\+Colour\+Control \&strap\+Colour\+Control)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 20 of file Muscle.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Muscle.\+h\item 
+src/Muscle.\+cpp\end{DoxyCompactItemize}

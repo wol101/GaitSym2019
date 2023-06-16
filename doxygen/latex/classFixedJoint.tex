@@ -1,0 +1,159 @@
+\hypertarget{classFixedJoint}{}\doxysection{Fixed\+Joint Class Reference}
+\label{classFixedJoint}\index{FixedJoint@{FixedJoint}}
+
+
+Inheritance diagram for Fixed\+Joint\+:
+% FIG 0
+
+
+Collaboration diagram for Fixed\+Joint\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFixedJoint_a0f49d5f88668830f33ce158bcf20a1ae}\label{classFixedJoint_a0f49d5f88668830f33ce158bcf20a1ae}} 
+{\bfseries Fixed\+Joint} (d\+World\+ID world\+ID)
+\item 
+\mbox{\Hypertarget{classFixedJoint_ad6f6ee3c170a4d264f062be37e91d0f5}\label{classFixedJoint_ad6f6ee3c170a4d264f062be37e91d0f5}} 
+{\bfseries SMART\+\_\+\+ENUM} (Stress\+Calculation\+Type, stress\+Calculation\+Type\+Strings, stress\+Calculation\+Type\+Count, none, beam, spring)
+\item 
+\mbox{\Hypertarget{classFixedJoint_af563a2d9e0e268e48d34c321f62b7e7f}\label{classFixedJoint_af563a2d9e0e268e48d34c321f62b7e7f}} 
+{\bfseries SMART\+\_\+\+ENUM} (Low\+Pass\+Type, low\+Pass\+Type\+Strings, low\+Pass\+Type\+Count, No\+Low\+Pass, Moving\+Average\+Low\+Pass, Butterworth2nd\+Order\+Low\+Pass)
+\item 
+\mbox{\Hypertarget{classFixedJoint_a3e48c9b9f7a010265ae8651d50667de7}\label{classFixedJoint_a3e48c9b9f7a010265ae8651d50667de7}} 
+virtual void {\bfseries Late\+Initialisation} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a8d761795c0c3a2993a2c7ffe9f868b0f}\label{classFixedJoint_a8d761795c0c3a2993a2c7ffe9f868b0f}} 
+void {\bfseries Set\+Fixed} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_abde10cb9056bfd9d1852a888591edb34}\label{classFixedJoint_abde10cb9056bfd9d1852a888591edb34}} 
+void {\bfseries Set\+Cross\+Section} (const std\+::vector$<$ unsigned char $>$ \&stiffness, size\+\_\+t nx, size\+\_\+t ny, double dx, double dy)
+\item 
+\mbox{\Hypertarget{classFixedJoint_aceccbd84447d385f6f528998698f2cfb}\label{classFixedJoint_aceccbd84447d385f6f528998698f2cfb}} 
+void {\bfseries Set\+Stress\+Origin} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classFixedJoint_a60957c4f06806f6fb997f06c6cdbfdd2}\label{classFixedJoint_a60957c4f06806f6fb997f06c6cdbfdd2}} 
+void {\bfseries Set\+Stress\+Orientation} (double q0, double q1, double q2, double q3)
+\item 
+\mbox{\Hypertarget{classFixedJoint_aae32487cc0eecbc64600293e08b5ae4f}\label{classFixedJoint_aae32487cc0eecbc64600293e08b5ae4f}} 
+void {\bfseries Set\+Stress\+Calculation\+Type} (Stress\+Calculation\+Type type)
+\item 
+\mbox{\Hypertarget{classFixedJoint_a389c01e37e344330b59331e714a5f31c}\label{classFixedJoint_a389c01e37e344330b59331e714a5f31c}} 
+Stress\+Calculation\+Type {\bfseries Get\+Stress\+Calculation\+Type} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a1bf6b719bb4b5b6cedebc684cd8f69e1}\label{classFixedJoint_a1bf6b719bb4b5b6cedebc684cd8f69e1}} 
+\mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} {\bfseries Get\+Stress\+Origin} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a965e52e3a2b4c13398c9541279438556}\label{classFixedJoint_a965e52e3a2b4c13398c9541279438556}} 
+\mbox{\hyperlink{classpgd_1_1Quaternion}{pgd\+::\+Quaternion}} {\bfseries Get\+Stress\+Orientation} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a9a4dcd1c94a59a8448ef69aa231a2afe}\label{classFixedJoint_a9a4dcd1c94a59a8448ef69aa231a2afe}} 
+double {\bfseries Get\+Max\+Stress} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a6e995a02280cb1552d006167955d76b6}\label{classFixedJoint_a6e995a02280cb1552d006167955d76b6}} 
+double {\bfseries Get\+Min\+Stress} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a9e35d2a8c14c5717205ad344d4c999e3}\label{classFixedJoint_a9e35d2a8c14c5717205ad344d4c999e3}} 
+void {\bfseries Set\+Stress\+Limit} (double stress\+Limit)
+\item 
+\mbox{\Hypertarget{classFixedJoint_afb397e671427b73e22009b59b0da0b94}\label{classFixedJoint_afb397e671427b73e22009b59b0da0b94}} 
+bool {\bfseries Check\+Stress\+Abort} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a03a237a2260894903f722a71a66fd3ab}\label{classFixedJoint_a03a237a2260894903f722a71a66fd3ab}} 
+void {\bfseries Set\+Low\+Pass\+Type} (Low\+Pass\+Type low\+Pass\+Type)
+\item 
+\mbox{\Hypertarget{classFixedJoint_a2cf1cb0750386efee7210dff6f81142a}\label{classFixedJoint_a2cf1cb0750386efee7210dff6f81142a}} 
+Low\+Pass\+Type {\bfseries Get\+Low\+Pass\+Type} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a4ce8c15ca18f28270075e45c6c9e4909}\label{classFixedJoint_a4ce8c15ca18f28270075e45c6c9e4909}} 
+void {\bfseries Set\+Window} (size\+\_\+t window)
+\item 
+\mbox{\Hypertarget{classFixedJoint_aae234edc79e4ede9ef2cf14b8f652669}\label{classFixedJoint_aae234edc79e4ede9ef2cf14b8f652669}} 
+void {\bfseries Set\+Cutoff\+Frequency} (double cutoff\+Frequency)
+\item 
+\mbox{\Hypertarget{classFixedJoint_a13990fd352845f3a8c3a457d1182db20}\label{classFixedJoint_a13990fd352845f3a8c3a457d1182db20}} 
+double {\bfseries Get\+Low\+Pass\+Min\+Stress} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a38c36c308d2acaa54455337b7a630227}\label{classFixedJoint_a38c36c308d2acaa54455337b7a630227}} 
+double {\bfseries Get\+Low\+Pass\+Max\+Stress} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_abef231796e844971d0bbee41fc2315e8}\label{classFixedJoint_abef231796e844971d0bbee41fc2315e8}} 
+const std\+::vector$<$ double $>$ \& {\bfseries Get\+Stress} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_ab0b05417bc0d729daf36c504bc992c10}\label{classFixedJoint_ab0b05417bc0d729daf36c504bc992c10}} 
+virtual void {\bfseries Update} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a70d63ae4270b4844af08d8944da0a517}\label{classFixedJoint_a70d63ae4270b4844af08d8944da0a517}} 
+virtual std\+::string {\bfseries dump\+To\+String} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_ab1faac6e1e8b35363a116dc2b0b9a5f2}\label{classFixedJoint_ab1faac6e1e8b35363a116dc2b0b9a5f2}} 
+virtual std\+::string $\ast$ {\bfseries create\+From\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_af927824457dd4d334d66ded27339870e}\label{classFixedJoint_af927824457dd4d334d66ded27339870e}} 
+virtual void {\bfseries append\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_ac84583f01f07713852da5107ae42d925}\label{classFixedJoint_ac84583f01f07713852da5107ae42d925}} 
+double {\bfseries max\+Stress} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_aac4e8df3982cbae0ffa181bdad1e40eb}\label{classFixedJoint_aac4e8df3982cbae0ffa181bdad1e40eb}} 
+double {\bfseries width} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_aa5f607aebbfca0b33906527b7af3400e}\label{classFixedJoint_aa5f607aebbfca0b33906527b7af3400e}} 
+double {\bfseries height} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_af024c8c60cd1bbd2c170e578f678e6fc}\label{classFixedJoint_af024c8c60cd1bbd2c170e578f678e6fc}} 
+double {\bfseries x\+Origin} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_aea1e95c6e071fbb904da7cb18c832f97}\label{classFixedJoint_aea1e95c6e071fbb904da7cb18c832f97}} 
+double {\bfseries y\+Origin} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_afe910d6bb68fb17ee33e3447868ec8f5}\label{classFixedJoint_afe910d6bb68fb17ee33e3447868ec8f5}} 
+size\+\_\+t {\bfseries nx} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_a29ad0d46b50ae5349fc7c9fa4d418344}\label{classFixedJoint_a29ad0d46b50ae5349fc7c9fa4d418344}} 
+size\+\_\+t {\bfseries ny} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_a4a583355fdec5445f2748858c1747334}\label{classFixedJoint_a4a583355fdec5445f2748858c1747334}} 
+const std\+::vector$<$ unsigned char $>$ \& {\bfseries stiffness} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_ac3af211cffb1327bcae6b2a73fc0bbcb}\label{classFixedJoint_ac3af211cffb1327bcae6b2a73fc0bbcb}} 
+double {\bfseries low\+Range} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_ae3b0c97da811e4283c959cd7ac169552}\label{classFixedJoint_ae3b0c97da811e4283c959cd7ac169552}} 
+void {\bfseries set\+Low\+Range} (double low\+Range)
+\item 
+\mbox{\Hypertarget{classFixedJoint_a10c70434897a3f59296462877370aeff}\label{classFixedJoint_a10c70434897a3f59296462877370aeff}} 
+double {\bfseries high\+Range} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_a164f84a96c5e6acb950a03dbf387b2ad}\label{classFixedJoint_a164f84a96c5e6acb950a03dbf387b2ad}} 
+void {\bfseries set\+High\+Range} (double high\+Range)
+\item 
+\mbox{\Hypertarget{classFixedJoint_a8f71eff75a1a3d30f665be20864f87f8}\label{classFixedJoint_a8f71eff75a1a3d30f665be20864f87f8}} 
+void {\bfseries Calculate\+Pixmap} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_a031031182b667341a51e2003ea1f8cb5}\label{classFixedJoint_a031031182b667341a51e2003ea1f8cb5}} 
+bool {\bfseries Calculate\+Pixmap\+Needed} ()
+\item 
+\mbox{\Hypertarget{classFixedJoint_aa327768784778b7a5c4b21191a061ef9}\label{classFixedJoint_aa327768784778b7a5c4b21191a061ef9}} 
+const std\+::vector$<$ unsigned char $>$ \& {\bfseries pix\+Map} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_a4787a775ec4e0ccdff4be6ad6900a56f}\label{classFixedJoint_a4787a775ec4e0ccdff4be6ad6900a56f}} 
+bool {\bfseries late\+Fix} () const
+\item 
+\mbox{\Hypertarget{classFixedJoint_a8acf6896515ccdac964454f20b808805}\label{classFixedJoint_a8acf6896515ccdac964454f20b808805}} 
+void {\bfseries set\+Late\+Fix} (bool late\+Fix)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 23 of file Fixed\+Joint.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Fixed\+Joint.\+h\item 
+src/Fixed\+Joint.\+cpp\end{DoxyCompactItemize}

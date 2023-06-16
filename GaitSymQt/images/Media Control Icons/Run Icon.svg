@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="283.46px" height="283.46px" viewBox="0 0 283.46 283.46" enable-background="new 0 0 283.46 283.46" xml:space="preserve">
+<path stroke="#72B02E" stroke-width="22.6772" stroke-miterlimit="10" d="M269.291,255.427c0,7.657-6.207,13.864-13.863,13.864
+	H28.038c-7.657,0-13.865-6.207-13.865-13.864V28.038c0-7.657,6.208-13.865,13.865-13.865h227.39c7.656,0,13.863,6.208,13.863,13.865
+	V255.427z"/>
+<g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer">
+	
+		<linearGradient id="path2682_1_" gradientUnits="userSpaceOnUse" x1="311.376" y1="-188.3262" x2="311.5216" y2="-139.1758" gradientTransform="matrix(1.1282 0 0 -1.1282 -209.7383 -41.8359)">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#000000"/>
+	</linearGradient>
+	
+		<path id="path2682" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" opacity="0.15" fill="none" stroke="url(#path2682_1_)" stroke-width="2" stroke-linecap="square" stroke-linejoin="round" enable-background="new    " d="
+		M89.013,204.804V81.45l105.438,59.923L89.013,204.804z"/>
+	
+		<radialGradient id="path3375_1_" cx="-361.5503" cy="55.3369" r="50.7653" gradientTransform="matrix(0.0532 -0.8362 -2.0195 -0.1286 266.2217 -133.2554)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#D3D7CF"/>
+	</radialGradient>
+	<path id="path3375" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" fill="url(#path3375_1_)" d="
+		M91.034,197.976V85.495l97.479,56.242L91.034,197.976z"/>
+	
+		<linearGradient id="path2479_1_" gradientUnits="userSpaceOnUse" x1="341.9199" y1="-322.3062" x2="340.1002" y2="-207.625" gradientTransform="matrix(1 0 0 -1 -200.7705 -65.8242)">
+		<stop  offset="0" style="stop-color:#ADB0A8"/>
+		<stop  offset="1" style="stop-color:#464744"/>
+	</linearGradient>
+	
+		<path id="path2479" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" fill="none" stroke="url(#path2479_1_)" stroke-linecap="square" stroke-linejoin="round" d="
+		M91.034,197.976V85.495l97.479,56.242L91.034,197.976z"/>
+	<path id="path2481" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccccccc" fill="#FFFFFF" d="M93.057,89.034
+		v105.408l91.377-52.705L93.057,89.034z M97.102,96.111l79.118,45.625l-79.118,45.626V96.111z"/>
+	
+		<path id="path2339" inkscape:r_cy="true" inkscape:r_cx="true" sodipodi:nodetypes="cccc" opacity="0.5" fill="#FFFFFF" enable-background="new    " d="
+		M96.848,95.859v47.267c17.269-0.183,37.063-1.396,69.009-7.583L96.848,95.859z"/>
+</g>
+</svg>

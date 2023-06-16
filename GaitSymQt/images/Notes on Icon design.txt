@@ -1,0 +1,10 @@
+Notes on Icon Design
+
+These are mostly freedesktop.org tango-icon-theme-0.8.90 scalable icons that have been framed to make better buttons.
+
+Scale by 400% from the SVG icon and put in the standard frame (just open one of the existing files)
+
+Save as .ai files and use media/crop box to get the 1024x1024 image in photoshop.
+
+I now run  the jsx file (File/Scripts/Browse) to do the scaling. It needs absolute paths currently so might need editing.
+

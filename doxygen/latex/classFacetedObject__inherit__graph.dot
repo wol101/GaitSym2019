@@ -1,0 +1,24 @@
+digraph "FacetedObject"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="FacetedObject",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="FacetedAxes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFacetedAxes.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="FacetedBox",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFacetedBox.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node4 [label="FacetedCappedCylinder",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFacetedCappedCylinder.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="FacetedCheckerboard",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFacetedCheckerboard.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node6 [label="FacetedConicSegment",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFacetedConicSegment.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node7 [label="FacetedPolyline",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFacetedPolyline.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node8 [label="FacetedRect",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFacetedRect.html",tooltip=" "];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node9 [label="FacetedSphere",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFacetedSphere.html",tooltip=" "];
+}

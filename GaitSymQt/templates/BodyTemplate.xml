@@ -1,0 +1,2 @@
+  <BODY ID="ID_BOOKMARK" Mass="1" MOI="1 1 1 0 0 0" Position="World 0 0 0" Quaternion="World 1 0 0 0" LinearVelocity="0 0 0" AngularVelocity="0 0 0" GraphicFile="GRAPHICFILE_BOOKMARK" Scale="1.0" Offset="0 0 0" Density="-1" PositionLowBound="-10 -5 0" PositionHighBound="1000 5 5" Clockwise="false"/>
+

@@ -1,0 +1,14 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="udp::UDPPacket",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structudp_1_1UDPPacket.html",tooltip=" "];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="udp::RequestItemUDPPacket",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structudp_1_1RequestItemUDPPacket.html",tooltip=" "];
+  Node0 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="udp::SendFECUDPPacket",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structudp_1_1SendFECUDPPacket.html",tooltip=" "];
+  Node0 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="udp::SendTextUDPPacket",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structudp_1_1SendTextUDPPacket.html",tooltip=" "];
+}

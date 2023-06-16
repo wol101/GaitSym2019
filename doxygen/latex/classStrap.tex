@@ -1,0 +1,84 @@
+\hypertarget{classStrap}{}\doxysection{Strap Class Reference}
+\label{classStrap}\index{Strap@{Strap}}
+
+
+Inheritance diagram for Strap\+:
+% FIG 0
+
+
+Collaboration diagram for Strap\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classStrap_aca713614fb283d56c33cf1d27d63fd5f}\label{classStrap_aca713614fb283d56c33cf1d27d63fd5f}} 
+double {\bfseries Get\+Length} () const
+\item 
+\mbox{\Hypertarget{classStrap_a817d7634268007c224e3d2de34cbd9f1}\label{classStrap_a817d7634268007c224e3d2de34cbd9f1}} 
+double {\bfseries Get\+Velocity} () const
+\item 
+\mbox{\Hypertarget{classStrap_ae2436d22677192566c14722a77e5afbb}\label{classStrap_ae2436d22677192566c14722a77e5afbb}} 
+void {\bfseries Set\+Tension} (double tension)
+\item 
+\mbox{\Hypertarget{classStrap_a77e4aa30501395b67f39eeed44fd4261}\label{classStrap_a77e4aa30501395b67f39eeed44fd4261}} 
+double {\bfseries Get\+Tension} () const
+\item 
+\mbox{\Hypertarget{classStrap_a977b25870e456f220a831d853f85a2be}\label{classStrap_a977b25870e456f220a831d853f85a2be}} 
+void {\bfseries Get\+Torque} (const \mbox{\hyperlink{classMarker}{Marker}} \&marker, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$world\+Torque, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$marker\+Torque, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$world\+Moment\+Arm, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$marker\+Moment\+Arm)
+\item 
+\mbox{\Hypertarget{classStrap_a7e435abad0195c453d3a56875d49fb06}\label{classStrap_a7e435abad0195c453d3a56875d49fb06}} 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structPointForce}{Point\+Force}} $>$ $>$ $\ast$ {\bfseries Get\+Point\+Force\+List} ()
+\item 
+\mbox{\Hypertarget{classStrap_ab649e7b2f6aa102b900d274e2d6e6321}\label{classStrap_ab649e7b2f6aa102b900d274e2d6e6321}} 
+virtual void {\bfseries Calculate} ()=0
+\item 
+\mbox{\Hypertarget{classStrap_a9174ae04fdac52527ef268b722545617}\label{classStrap_a9174ae04fdac52527ef268b722545617}} 
+virtual std\+::string {\bfseries dump\+To\+String} ()
+\item 
+\mbox{\Hypertarget{classStrap_ae8704e429b99be2d23ee5d7e40920ade}\label{classStrap_ae8704e429b99be2d23ee5d7e40920ade}} 
+virtual std\+::string $\ast$ {\bfseries create\+From\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classStrap_a4474e78d4bf479fca3f776f166b1954b}\label{classStrap_a4474e78d4bf479fca3f776f166b1954b}} 
+virtual void {\bfseries save\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classStrap_ab4d1e8308b06319adbd585c00badac5b}\label{classStrap_ab4d1e8308b06319adbd585c00badac5b}} 
+virtual void {\bfseries append\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classStrap_a8748be64cb41e02400a7aaa530ecc0ec}\label{classStrap_a8748be64cb41e02400a7aaa530ecc0ec}} 
+double {\bfseries Length} () const
+\item 
+\mbox{\Hypertarget{classStrap_ad1bb39869204e1cf3177d1d0d2003a6a}\label{classStrap_ad1bb39869204e1cf3177d1d0d2003a6a}} 
+void {\bfseries set\+Length} (double Length)
+\item 
+\mbox{\Hypertarget{classStrap_ad9c88832a972f0a6596006b2afce0a47}\label{classStrap_ad9c88832a972f0a6596006b2afce0a47}} 
+double {\bfseries Velocity} () const
+\item 
+\mbox{\Hypertarget{classStrap_a18bb500861e9c3f4246a4dcfbf6bdda3}\label{classStrap_a18bb500861e9c3f4246a4dcfbf6bdda3}} 
+void {\bfseries set\+Velocity} (double Velocity)
+\item 
+\mbox{\Hypertarget{classStrap_a3196e02fc809f980c97595073c95ac3f}\label{classStrap_a3196e02fc809f980c97595073c95ac3f}} 
+double {\bfseries Tension} () const
+\item 
+\mbox{\Hypertarget{classStrap_ace81b2f2b5a2fdc818ecc36733227aeb}\label{classStrap_ace81b2f2b5a2fdc818ecc36733227aeb}} 
+void {\bfseries set\+Tension} (double Tension)
+\item 
+\mbox{\Hypertarget{classStrap_ad61569182b5062a2df0b1305626aaabd}\label{classStrap_ad61569182b5062a2df0b1305626aaabd}} 
+std\+::vector$<$ \mbox{\hyperlink{classMarker}{Marker}} $\ast$ $>$ {\bfseries torque\+Marker\+List} () const
+\item 
+\mbox{\Hypertarget{classStrap_a417eea517c69c206f06b97a4de2e022b}\label{classStrap_a417eea517c69c206f06b97a4de2e022b}} 
+void {\bfseries set\+Torque\+Marker\+List} (const std\+::vector$<$ \mbox{\hyperlink{classMarker}{Marker}} $\ast$ $>$ \&torque\+Marker\+List)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 28 of file Strap.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Strap.\+h\item 
+src/Strap.\+cpp\end{DoxyCompactItemize}

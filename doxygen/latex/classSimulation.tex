@@ -1,0 +1,233 @@
+\hypertarget{classSimulation}{}\doxysection{Simulation Class Reference}
+\label{classSimulation}\index{Simulation@{Simulation}}
+
+
+Inheritance diagram for Simulation\+:
+% FIG 0
+
+
+Collaboration diagram for Simulation\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulation_a0562013c154023ae2d2aee344ee8d302}\label{classSimulation_a0562013c154023ae2d2aee344ee8d302}} 
+{\bfseries SMART\+\_\+\+ENUM} (Axis\+Type, axis\+Type\+Strings, axis\+Type\+Count, XAxis, YAxis, ZAxis)
+\item 
+\mbox{\Hypertarget{classSimulation_a590a40faeeba9f9170ed90955799f3b1}\label{classSimulation_a590a40faeeba9f9170ed90955799f3b1}} 
+std\+::string $\ast$ {\bfseries Load\+Model} (const char $\ast$buffer, size\+\_\+t length)
+\item 
+\mbox{\Hypertarget{classSimulation_a2e8bc70fe82e48a670b2737e5a1ea9a1}\label{classSimulation_a2e8bc70fe82e48a670b2737e5a1ea9a1}} 
+void {\bfseries Update\+Simulation} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_adb0c4d049638d490dd2d5935990ac506}\label{classSimulation_adb0c4d049638d490dd2d5935990ac506}} 
+double {\bfseries Get\+Time} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_ab155651849b9a01455e71cc87ceb240b}\label{classSimulation_ab155651849b9a01455e71cc87ceb240b}} 
+double {\bfseries Get\+Time\+Increment} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_aef64c0d3429fc04151ee98cd21afcd89}\label{classSimulation_aef64c0d3429fc04151ee98cd21afcd89}} 
+long long {\bfseries Get\+Step\+Count} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_ab0839e46231f9e0fe0a070b6590b706b}\label{classSimulation_ab0839e46231f9e0fe0a070b6590b706b}} 
+double {\bfseries Get\+Mechanical\+Energy} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_aed368188dbca69523b84a1c6ae56ad6c}\label{classSimulation_aed368188dbca69523b84a1c6ae56ad6c}} 
+double {\bfseries Get\+Metabolic\+Energy} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_af2317c7185755aa8d71d53db77b2229e}\label{classSimulation_af2317c7185755aa8d71d53db77b2229e}} 
+double {\bfseries Get\+Time\+Limit} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_a7d023ffaec148fbb177592e828c317dc}\label{classSimulation_a7d023ffaec148fbb177592e828c317dc}} 
+double {\bfseries Get\+Metabolic\+Energy\+Limit} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_ab883d3f7dff452c1115c5ee6b983936d}\label{classSimulation_ab883d3f7dff452c1115c5ee6b983936d}} 
+double {\bfseries Get\+Mechanical\+Energy\+Limit} (void)
+\item 
+\mbox{\Hypertarget{classSimulation_aed755d9d89742d25f9582b8d200d3ccf}\label{classSimulation_aed755d9d89742d25f9582b8d200d3ccf}} 
+\mbox{\hyperlink{classBody}{Body}} $\ast$ {\bfseries Get\+Body} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_a96f890d982ed6d939db27d11b6b33d13}\label{classSimulation_a96f890d982ed6d939db27d11b6b33d13}} 
+\mbox{\hyperlink{classJoint}{Joint}} $\ast$ {\bfseries Get\+Joint} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_ab4d3fd60b26fb3c21b7317c3cf3e108e}\label{classSimulation_ab4d3fd60b26fb3c21b7317c3cf3e108e}} 
+\mbox{\hyperlink{classGeom}{Geom}} $\ast$ {\bfseries Get\+Geom} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_ab14299d650af548b6ed8f462d7c8d129}\label{classSimulation_ab14299d650af548b6ed8f462d7c8d129}} 
+\mbox{\hyperlink{classMuscle}{Muscle}} $\ast$ {\bfseries Get\+Muscle} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_a18663b9e5abd9b6868e6bbf81dc31faf}\label{classSimulation_a18663b9e5abd9b6868e6bbf81dc31faf}} 
+\mbox{\hyperlink{classStrap}{Strap}} $\ast$ {\bfseries Get\+Strap} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_a026f6e8f02c44b66f37fcb3ff5de5ddb}\label{classSimulation_a026f6e8f02c44b66f37fcb3ff5de5ddb}} 
+\mbox{\hyperlink{classFluidSac}{Fluid\+Sac}} $\ast$ {\bfseries Get\+Fluid\+Sac} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_ae3c5dfa2c80a97a6b7e4607be8566484}\label{classSimulation_ae3c5dfa2c80a97a6b7e4607be8566484}} 
+\mbox{\hyperlink{classDriver}{Driver}} $\ast$ {\bfseries Get\+Driver} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_aae00d68044a11556521aea0f8f3cf7f7}\label{classSimulation_aae00d68044a11556521aea0f8f3cf7f7}} 
+\mbox{\hyperlink{classDataTarget}{Data\+Target}} $\ast$ {\bfseries Get\+Data\+Target} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_ac553526228d53ddd134da4e7b31efe6b}\label{classSimulation_ac553526228d53ddd134da4e7b31efe6b}} 
+\mbox{\hyperlink{classMarker}{Marker}} $\ast$ {\bfseries Get\+Marker} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_a877725cdc27e1f3ab0c6392ad9a5ee82}\label{classSimulation_a877725cdc27e1f3ab0c6392ad9a5ee82}} 
+\mbox{\hyperlink{classReporter}{Reporter}} $\ast$ {\bfseries Get\+Reporter} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_a2bf604087124998d9ad1fb2c723a9f2a}\label{classSimulation_a2bf604087124998d9ad1fb2c723a9f2a}} 
+\mbox{\hyperlink{classController}{Controller}} $\ast$ {\bfseries Get\+Controller} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_a258230ef13036eba17fc1ae3f1371a48}\label{classSimulation_a258230ef13036eba17fc1ae3f1371a48}} 
+\mbox{\hyperlink{classWarehouse}{Warehouse}} $\ast$ {\bfseries Get\+Warehouse} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_ae24992e8b67d7c377c746d0bf21fff65}\label{classSimulation_ae24992e8b67d7c377c746d0bf21fff65}} 
+bool {\bfseries Get\+Output\+Model\+State\+Occured} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a1ba9865980c7ad70acb8677ec849da16}\label{classSimulation_a1ba9865980c7ad70acb8677ec849da16}} 
+d\+World\+ID {\bfseries Get\+World\+ID} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a7970b0b200ce19cc7e4d4bc9f14446e9}\label{classSimulation_a7970b0b200ce19cc7e4d4bc9f14446e9}} 
+d\+Space\+ID {\bfseries Get\+Space\+ID} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a7beb0b21ae705fafad84d2e9dc0ba6e9}\label{classSimulation_a7beb0b21ae705fafad84d2e9dc0ba6e9}} 
+void {\bfseries Set\+Time\+Limit} (double time\+Limit)
+\item 
+\mbox{\Hypertarget{classSimulation_a638040ec5edf484be83d6203769948b9}\label{classSimulation_a638040ec5edf484be83d6203769948b9}} 
+void {\bfseries Set\+Metabolic\+Energy\+Limit} (double energy\+Limit)
+\item 
+\mbox{\Hypertarget{classSimulation_a2a20d1ab4ef2a8eb731c170c8a21b995}\label{classSimulation_a2a20d1ab4ef2a8eb731c170c8a21b995}} 
+void {\bfseries Set\+Mechanical\+Energy\+Limit} (double energy\+Limit)
+\item 
+\mbox{\Hypertarget{classSimulation_aceb3ef499c346e6612f1fce79e911ca1}\label{classSimulation_aceb3ef499c346e6612f1fce79e911ca1}} 
+void {\bfseries Set\+Output\+Model\+State\+At\+Time} (double output\+Model\+State\+At\+Time)
+\item 
+\mbox{\Hypertarget{classSimulation_a415771f16d6e4d8025209c89a2cbe86d}\label{classSimulation_a415771f16d6e4d8025209c89a2cbe86d}} 
+void {\bfseries Set\+Output\+Model\+State\+At\+Cycle} (double output\+Model\+State\+At\+Cycle)
+\item 
+\mbox{\Hypertarget{classSimulation_aaad89175b4a3a70776e0b9fc6f292feb}\label{classSimulation_aaad89175b4a3a70776e0b9fc6f292feb}} 
+void {\bfseries Set\+Output\+Model\+State\+At\+Warehouse\+Distance} (double output\+Model\+State\+At\+Warehouse\+Distance)
+\item 
+\mbox{\Hypertarget{classSimulation_a13506868f944f22a3cc1930e574ae77a}\label{classSimulation_a13506868f944f22a3cc1930e574ae77a}} 
+void {\bfseries Set\+Output\+Model\+State\+File} (const std\+::string \&filename)
+\item 
+\mbox{\Hypertarget{classSimulation_a4cdcd73023f963b66602334d61a3890a}\label{classSimulation_a4cdcd73023f963b66602334d61a3890a}} 
+void {\bfseries Set\+Output\+Warehouse\+File} (const std\+::string \&filename)
+\item 
+\mbox{\Hypertarget{classSimulation_a2567545d9f2a216c54ca4d9cc1f1c1e5}\label{classSimulation_a2567545d9f2a216c54ca4d9cc1f1c1e5}} 
+void {\bfseries Set\+Warehouse\+Fail\+Distance\+Abort} (double warehouse\+Fail\+Distance\+Abort)
+\item 
+\mbox{\Hypertarget{classSimulation_af9542801faf158d148f86cead303f7f8}\label{classSimulation_af9542801faf158d148f86cead303f7f8}} 
+void {\bfseries Add\+Warehouse} (const std\+::string \&filename)
+\item 
+\mbox{\Hypertarget{classSimulation_a5ddce1ddb6a140d5cef9290171fff089}\label{classSimulation_a5ddce1ddb6a140d5cef9290171fff089}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classBody}{Body}} $>$ $>$ $\ast$ {\bfseries Get\+Body\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_aeb6198d31fa4dd739f2f65f7e014a939}\label{classSimulation_aeb6198d31fa4dd739f2f65f7e014a939}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classJoint}{Joint}} $>$ $>$ $\ast$ {\bfseries Get\+Joint\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a6741aba3bd8e36958e29d92a40c9a067}\label{classSimulation_a6741aba3bd8e36958e29d92a40c9a067}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGeom}{Geom}} $>$ $>$ $\ast$ {\bfseries Get\+Geom\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_afb182da145726455f65c13735772d1b6}\label{classSimulation_afb182da145726455f65c13735772d1b6}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classMuscle}{Muscle}} $>$ $>$ $\ast$ {\bfseries Get\+Muscle\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a8c3624dbc30b9b7f534cc9f973d6ac3a}\label{classSimulation_a8c3624dbc30b9b7f534cc9f973d6ac3a}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classStrap}{Strap}} $>$ $>$ $\ast$ {\bfseries Get\+Strap\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_ae169607a92eed0fcb458c206f1b6be04}\label{classSimulation_ae169607a92eed0fcb458c206f1b6be04}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classFluidSac}{Fluid\+Sac}} $>$ $>$ $\ast$ {\bfseries Get\+Fluid\+Sac\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_af6b6880451baa4c04a239b11821a5044}\label{classSimulation_af6b6880451baa4c04a239b11821a5044}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDriver}{Driver}} $>$ $>$ $\ast$ {\bfseries Get\+Driver\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_aa8b0272c77798395f169abc8d70f7fde}\label{classSimulation_aa8b0272c77798395f169abc8d70f7fde}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDataTarget}{Data\+Target}} $>$ $>$ $\ast$ {\bfseries Get\+Data\+Target\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a367355f137e604708a4e8e54155b655a}\label{classSimulation_a367355f137e604708a4e8e54155b655a}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classMarker}{Marker}} $>$ $>$ $\ast$ {\bfseries Get\+Marker\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a83793a5e6f75a21d882320a5c1079f0f}\label{classSimulation_a83793a5e6f75a21d882320a5c1079f0f}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classReporter}{Reporter}} $>$ $>$ $\ast$ {\bfseries Get\+Reporter\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_ab542ee9273184891ec1e79a98b3ab871}\label{classSimulation_ab542ee9273184891ec1e79a98b3ab871}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classController}{Controller}} $>$ $>$ $\ast$ {\bfseries Get\+Controller\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_abd98f545fbb9caf6c3376d8ae0909640}\label{classSimulation_abd98f545fbb9caf6c3376d8ae0909640}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classWarehouse}{Warehouse}} $>$ $>$ $\ast$ {\bfseries Get\+Warehouse\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_ac5e716d1d397d3bf7fa783ff97e9919d}\label{classSimulation_ac5e716d1d397d3bf7fa783ff97e9919d}} 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classContact}{Contact}} $>$ $>$ $\ast$ {\bfseries Get\+Contact\+List} ()
+\item 
+\mbox{\Hypertarget{classSimulation_adea5836ac084d84890475d4f29391cbb}\label{classSimulation_adea5836ac084d84890475d4f29391cbb}} 
+std\+::vector$<$ std\+::string $>$ {\bfseries Get\+Name\+List} () const
+\item 
+\mbox{\Hypertarget{classSimulation_a8c4e977c6fff9b938dbe77953cbb90f1}\label{classSimulation_a8c4e977c6fff9b938dbe77953cbb90f1}} 
+std\+::set$<$ std\+::string $>$ {\bfseries Get\+Name\+Set} () const
+\item 
+\mbox{\Hypertarget{classSimulation_af6e6e6ed01433f8211fff020db1ad732}\label{classSimulation_af6e6e6ed01433f8211fff020db1ad732}} 
+std\+::vector$<$ \mbox{\hyperlink{classNamedObject}{Named\+Object}} $\ast$ $>$ {\bfseries Get\+Object\+List} () const
+\item 
+\mbox{\Hypertarget{classSimulation_a284d4375761f695576082469d8ed24f6}\label{classSimulation_a284d4375761f695576082469d8ed24f6}} 
+\mbox{\hyperlink{classNamedObject}{Named\+Object}} $\ast$ {\bfseries Get\+Named\+Object} (const std\+::string \&name) const
+\item 
+\mbox{\Hypertarget{classSimulation_a497fa2da0641cd24fbda4f9828f6b159}\label{classSimulation_a497fa2da0641cd24fbda4f9828f6b159}} 
+bool {\bfseries Delete\+Named\+Object} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classSimulation_a1d481348c8e26a2a8346a888c3334b2b}\label{classSimulation_a1d481348c8e26a2a8346a888c3334b2b}} 
+bool {\bfseries Has\+Assembly} ()
+\item 
+\mbox{\Hypertarget{classSimulation_ac262a32a9369a469ee30f3198ce2ae34}\label{classSimulation_ac262a32a9369a469ee30f3198ce2ae34}} 
+bool {\bfseries Test\+For\+Catastrophy} ()
+\item 
+\mbox{\Hypertarget{classSimulation_afa7b5ea6c21ac075a1193530909fdb4f}\label{classSimulation_afa7b5ea6c21ac075a1193530909fdb4f}} 
+double {\bfseries Calculate\+Instantaneous\+Fitness} ()
+\item 
+\mbox{\Hypertarget{classSimulation_afca7670a59ac7751cae21a8e4ad5d4c0}\label{classSimulation_afca7670a59ac7751cae21a8e4ad5d4c0}} 
+bool {\bfseries Should\+Quit} ()
+\item 
+\mbox{\Hypertarget{classSimulation_ac12e0d5047bfe2b669a573babf065fa1}\label{classSimulation_ac12e0d5047bfe2b669a573babf065fa1}} 
+void {\bfseries Set\+Contact\+Abort} (const std\+::string \&contact\+ID)
+\item 
+\mbox{\Hypertarget{classSimulation_a1c30c1399cd571a43fb454291f1cc0c5}\label{classSimulation_a1c30c1399cd571a43fb454291f1cc0c5}} 
+void {\bfseries Set\+Data\+Target\+Abort} (const std\+::string \&data\+Target\+ID)
+\item 
+\mbox{\Hypertarget{classSimulation_a76eb5007a8d4f97677be1fb55e113092}\label{classSimulation_a76eb5007a8d4f97677be1fb55e113092}} 
+std\+::string {\bfseries Save\+To\+XML} ()
+\item 
+\mbox{\Hypertarget{classSimulation_ae985e9a6ba15981079eda9a6bbeb7453}\label{classSimulation_ae985e9a6ba15981079eda9a6bbeb7453}} 
+void {\bfseries Output\+Program\+State} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a4cb853ceeb5c4653333558c301d1404a}\label{classSimulation_a4cb853ceeb5c4653333558c301d1404a}} 
+void {\bfseries Output\+Warehouse} ()
+\item 
+\mbox{\Hypertarget{classSimulation_ae99570e17aaabce0d9ac15e0f825afc0}\label{classSimulation_ae99570e17aaabce0d9ac15e0f825afc0}} 
+\mbox{\hyperlink{classGlobal}{Global}} $\ast$ {\bfseries Get\+Global} ()
+\item 
+\mbox{\Hypertarget{classSimulation_a50883871b5a851886807a93f83df707f}\label{classSimulation_a50883871b5a851886807a93f83df707f}} 
+void {\bfseries Set\+Global} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGlobal}{Global}} $>$ global)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulation_ad87c52ed979cd7e7e29ba317b9fc1e5f}\label{classSimulation_ad87c52ed979cd7e7e29ba317b9fc1e5f}} 
+static void {\bfseries Near\+Callback} (void $\ast$data, d\+Geom\+ID o1, d\+Geom\+ID o2)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulation_a72412775710f62976a3905334f889071}\label{classSimulation_a72412775710f62976a3905334f889071}} 
+int {\bfseries m\+\_\+numerical\+Error\+Count} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 47 of file Simulation.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Simulation.\+h\item 
+src/Simulation.\+cpp\end{DoxyCompactItemize}

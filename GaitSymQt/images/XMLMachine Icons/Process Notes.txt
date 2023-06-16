@@ -1,0 +1,18 @@
+Process:
+
+1. The svg icons were read into illustrator
+
+2. The object was ungrouped and the drop shadow deleted
+
+3. The artbox was set to fit the artwork
+
+4. The icon was saved as AI format
+
+5. The AI file was read into photoshop with the maximum size set to 1004 (width or height)
+
+6. The file canvas was resized to 1024 by 1024 with the fill transparent
+
+7. The file was saved as a PNG file
+
+8. resize_for_icon.jsx was run using photoshop File/Batch/Browse to produce the scaled versions
+

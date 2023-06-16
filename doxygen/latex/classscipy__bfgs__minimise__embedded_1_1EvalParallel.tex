@@ -1,0 +1,94 @@
+\hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel}{}\doxysection{scipy\+\_\+bfgs\+\_\+minimise\+\_\+embedded.\+Eval\+Parallel Class Reference}
+\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel}\index{scipy\_bfgs\_minimise\_embedded.EvalParallel@{scipy\_bfgs\_minimise\_embedded.EvalParallel}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a49482586581f8c1514fbc762814ee46e}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a49482586581f8c1514fbc762814ee46e}} 
+def {\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, fun, jac=None, args=(), eps=1e-\/8, executor=concurrent.\+futures.\+Process\+Pool\+Executor(), forward=True, loginfo=False, verbose=False, n=1)
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_aaabc1cee1d623e035a47d6a3db6e019a}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_aaabc1cee1d623e035a47d6a3db6e019a}} 
+def {\bfseries eval\+\_\+parallel} (self, x)
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a1e80f50a20b81b0c33f4802e2a83ba5d}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a1e80f50a20b81b0c33f4802e2a83ba5d}} 
+def {\bfseries fun} (self, x)
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a1341b15ddba30802c1a58e63f73095bf}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a1341b15ddba30802c1a58e63f73095bf}} 
+def {\bfseries jac} (self, x)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a949486f092581b1939cd28eea23bc88c}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a949486f092581b1939cd28eea23bc88c}} 
+{\bfseries fun\+\_\+in}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a29387b8e2cd4c81b2cbd1790e363d610}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a29387b8e2cd4c81b2cbd1790e363d610}} 
+{\bfseries jac\+\_\+in}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a8b91773387545d26ea9f2a31ccb53798}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a8b91773387545d26ea9f2a31ccb53798}} 
+{\bfseries eps}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a38f08877cf00f78a4c314709fc7f9e15}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a38f08877cf00f78a4c314709fc7f9e15}} 
+{\bfseries forward}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_afb9589d4eeaa99245389545ddae89e5d}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_afb9589d4eeaa99245389545ddae89e5d}} 
+{\bfseries loginfo}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a816dca9e6174ed2777a120bba114575f}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a816dca9e6174ed2777a120bba114575f}} 
+{\bfseries verbose}
+\item 
+\mbox{\hyperlink{classscipy__bfgs__minimise__embedded_1_1EvalParallel_aaa86c91f23004921d202bb4f41b888e4}{x\+\_\+val}}
+\begin{DoxyCompactList}\small\item\em function to evaluate \textquotesingle{}fun\textquotesingle{} and \textquotesingle{}jac\textquotesingle{} in parallel \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a6526ad7af7ed25db793ae83a90d757a3}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a6526ad7af7ed25db793ae83a90d757a3}} 
+\mbox{\hyperlink{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a6526ad7af7ed25db793ae83a90d757a3}{fun\+\_\+val}}
+\begin{DoxyCompactList}\small\item\em pack \textquotesingle{}self.\+args\textquotesingle{} into function because otherwise it cannot be serialized by \textquotesingle{}concurrent.\+futures.\+Process\+Pool\+Executor()\textquotesingle{} \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a18f3672f0a818ae98f655d0686ba527d}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a18f3672f0a818ae98f655d0686ba527d}} 
+{\bfseries jac\+\_\+val}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a623eb18b0f54821a18cfe4069ea7880f}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a623eb18b0f54821a18cfe4069ea7880f}} 
+{\bfseries args}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a70425d830a77848fccfb3c7a54eb8b60}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a70425d830a77848fccfb3c7a54eb8b60}} 
+{\bfseries n}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a972792964f2ded7a24317426f9ba67b2}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_a972792964f2ded7a24317426f9ba67b2}} 
+{\bfseries executor}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_ad788c4236b209b028e2837defff06f87}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_ad788c4236b209b028e2837defff06f87}} 
+{\bfseries info}
+\item 
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_ad0edca61d13adaeb269f9f2f937efd63}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_ad0edca61d13adaeb269f9f2f937efd63}} 
+{\bfseries np\+\_\+precision}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 406 of file scipy\+\_\+bfgs\+\_\+minimise\+\_\+embedded.\+py.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classscipy__bfgs__minimise__embedded_1_1EvalParallel_aaa86c91f23004921d202bb4f41b888e4}\label{classscipy__bfgs__minimise__embedded_1_1EvalParallel_aaa86c91f23004921d202bb4f41b888e4}} 
+\index{scipy\_bfgs\_minimise\_embedded.EvalParallel@{scipy\_bfgs\_minimise\_embedded.EvalParallel}!x\_val@{x\_val}}
+\index{x\_val@{x\_val}!scipy\_bfgs\_minimise\_embedded.EvalParallel@{scipy\_bfgs\_minimise\_embedded.EvalParallel}}
+\doxysubsubsection{\texorpdfstring{x\_val}{x\_val}}
+{\footnotesize\ttfamily scipy\+\_\+bfgs\+\_\+minimise\+\_\+embedded.\+Eval\+Parallel.\+x\+\_\+val}
+
+
+
+function to evaluate \textquotesingle{}fun\textquotesingle{} and \textquotesingle{}jac\textquotesingle{} in parallel 
+
+
+\begin{DoxyItemize}
+\item if \textquotesingle{}jac\textquotesingle{} is None, the gradient is computed numerically
+\item if \textquotesingle{}forward\textquotesingle{} is True, the numerical gradient uses the forward difference method, otherwise, the central difference method is used 
+\end{DoxyItemize}
+
+Definition at line 416 of file scipy\+\_\+bfgs\+\_\+minimise\+\_\+embedded.\+py.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+python/scipy\+\_\+bfgs\+\_\+minimise\+\_\+embedded.\+py\end{DoxyCompactItemize}

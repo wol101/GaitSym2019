@@ -1,0 +1,81 @@
+\hypertarget{classTegotaeDriver}{}\doxysection{Tegotae\+Driver Class Reference}
+\label{classTegotaeDriver}\index{TegotaeDriver@{TegotaeDriver}}
+
+
+Inheritance diagram for Tegotae\+Driver\+:
+% FIG 0
+
+
+Collaboration diagram for Tegotae\+Driver\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a72a6e4f5a05e5dad0ed94c7d998313f5}\label{classTegotaeDriver_a72a6e4f5a05e5dad0ed94c7d998313f5}} 
+void {\bfseries Initialise} (double omega, double sigma, double A, double Aprime, double B, double phi, \mbox{\hyperlink{classMarker}{Marker}} $\ast$tegotae\+Centre, \mbox{\hyperlink{classMarker}{Marker}} $\ast$tegotae\+Rim, \mbox{\hyperlink{classMarker}{Marker}} $\ast$error\+Output, \mbox{\hyperlink{classMarker}{Marker}} $\ast$force\+Direction, const std\+::vector$<$ \mbox{\hyperlink{classGeom}{Geom}} $\ast$ $>$ \&contact\+Geom\+List)
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a6ffd84b1b8bd9f69787e291c47c5904b}\label{classTegotaeDriver_a6ffd84b1b8bd9f69787e291c47c5904b}} 
+virtual void {\bfseries Update} ()
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a48a722eeb054961069027a39383a3817}\label{classTegotaeDriver_a48a722eeb054961069027a39383a3817}} 
+virtual void {\bfseries Send\+Data} ()
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a8d78b222cc119d472c2060e253a7dba2}\label{classTegotaeDriver_a8d78b222cc119d472c2060e253a7dba2}} 
+void {\bfseries Update\+Reaction\+Force} ()
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a1e6543178bfb38bf85163d6a4965a589}\label{classTegotaeDriver_a1e6543178bfb38bf85163d6a4965a589}} 
+virtual std\+::string {\bfseries dump\+To\+String} ()
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a5ef97c623bef372c4b9e1cb495c7cf8c}\label{classTegotaeDriver_a5ef97c623bef372c4b9e1cb495c7cf8c}} 
+double {\bfseries omega} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a1c018fc63b30faffcd21693a31e76fd7}\label{classTegotaeDriver_a1c018fc63b30faffcd21693a31e76fd7}} 
+double {\bfseries sigma} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_abdeb82b7823f85e599dec941bc1c52c5}\label{classTegotaeDriver_abdeb82b7823f85e599dec941bc1c52c5}} 
+double {\bfseries A} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a0820508400169be0f77ed827a5ce0cfa}\label{classTegotaeDriver_a0820508400169be0f77ed827a5ce0cfa}} 
+double {\bfseries Aprime} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a42f503baf302409368c8075525181273}\label{classTegotaeDriver_a42f503baf302409368c8075525181273}} 
+double {\bfseries B} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a9fbca5a47159c846e6763bcc7ee3155e}\label{classTegotaeDriver_a9fbca5a47159c846e6763bcc7ee3155e}} 
+double {\bfseries phi} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a7295f8c8ddffa52738756f53377a2164}\label{classTegotaeDriver_a7295f8c8ddffa52738756f53377a2164}} 
+double {\bfseries X} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a8b631c7f32e48f358448e00af4f05450}\label{classTegotaeDriver_a8b631c7f32e48f358448e00af4f05450}} 
+double {\bfseries Y} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a34926553fe670876e3864e7f4d6f11b9}\label{classTegotaeDriver_a34926553fe670876e3864e7f4d6f11b9}} 
+double {\bfseries N} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_aacbb6a7d8260d4ae706945ce576e6fb2}\label{classTegotaeDriver_aacbb6a7d8260d4ae706945ce576e6fb2}} 
+virtual std\+::string $\ast$ {\bfseries create\+From\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a902e0d4aed77e883447719eeb765e618}\label{classTegotaeDriver_a902e0d4aed77e883447719eeb765e618}} 
+virtual void {\bfseries append\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_a926677cb8c2a8c31bab0ccc365b92568}\label{classTegotaeDriver_a926677cb8c2a8c31bab0ccc365b92568}} 
+\mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} {\bfseries world\+Error\+Vector} () const
+\item 
+\mbox{\Hypertarget{classTegotaeDriver_ab77aaa4c0388fa13714eb06e30a49436}\label{classTegotaeDriver_ab77aaa4c0388fa13714eb06e30a49436}} 
+\mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} {\bfseries local\+Error\+Vector} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 20 of file Tegotae\+Driver.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Tegotae\+Driver.\+h\item 
+src/Tegotae\+Driver.\+cpp\end{DoxyCompactItemize}

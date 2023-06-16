@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TextEditDialog</class>
+ <widget class="QDialog" name="TextEditDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1107</width>
+    <height>770</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>XML Edit Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_6">
+   <item row="0" column="0">
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Text Editor</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0" colspan="2">
+        <widget class="QPlainTextEdit" name="plainTextEdit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>Raw XML defining the model. Edit with caution.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="widget_2" native="true">
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Search &amp;&amp; Replace</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="3">
+           <widget class="QPushButton" name="pushButtonReplaceAll">
+            <property name="toolTip">
+             <string>Click to replace all</string>
+            </property>
+            <property name="text">
+             <string>Replace All</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="pushButtonFind">
+            <property name="toolTip">
+             <string>Click to find text</string>
+            </property>
+            <property name="text">
+             <string>Find</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="pushButtonReplace">
+            <property name="toolTip">
+             <string>Click to replace a single occurance.</string>
+            </property>
+            <property name="text">
+             <string>Replace</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lineEditFind">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>Text to find</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QLineEdit" name="lineEditReplace">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>Replace found text with this</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>XML Attribute Machine</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="1" column="2">
+           <widget class="QToolButton" name="toolButtonInsert">
+            <property name="toolTip">
+             <string>Insert an extra row</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/images/XMLMachine Icons/list-add.svg</normaloff>:/images/XMLMachine Icons/list-add.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QToolButton" name="toolButtonMoveUp">
+            <property name="toolTip">
+             <string>Move selected row up</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/images/XMLMachine Icons/go-up.svg</normaloff>:/images/XMLMachine Icons/go-up.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="9">
+           <widget class="QPushButton" name="pushButtonApply">
+            <property name="toolTip">
+             <string>Apply the XML machine instructions</string>
+            </property>
+            <property name="text">
+             <string>Apply</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="7">
+           <widget class="QPushButton" name="pushButtonSave">
+            <property name="toolTip">
+             <string>Save the XML machine instructions</string>
+            </property>
+            <property name="text">
+             <string>Save...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="6">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>587</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="3">
+           <widget class="QToolButton" name="toolButtonDelete">
+            <property name="toolTip">
+             <string>Delete an existing row</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/images/XMLMachine Icons/list-remove.svg</normaloff>:/images/XMLMachine Icons/list-remove.svg</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="8">
+           <widget class="QPushButton" name="pushButtonLoad">
+            <property name="toolTip">
+             <string>Load the XML machine instructions</string>
+            </property>
+            <property name="text">
+             <string>Load...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="10">
+           <widget class="QTableWidget" name="tableWidget">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Instructions for automated attribute editing</string>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>false</bool>
+            </property>
+            <property name="rowCount">
+             <number>0</number>
+            </property>
+            <property name="columnCount">
+             <number>9</number>
+            </property>
+            <attribute name="horizontalHeaderDefaultSectionSize">
+             <number>140</number>
+            </attribute>
+            <column>
+             <property name="text">
+              <string>Action</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Match Tag</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Match Attribute</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Match Attribute Value</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Change Attribute</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Token Number</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Search</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Replace</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Arithmetic</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <widget class="QToolButton" name="toolButtonMoveDown">
+            <property name="toolTip">
+             <string>Move selected row down</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/images/XMLMachine Icons/go-down.svg</normaloff>:/images/XMLMachine Icons/go-down.svg</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QWidget" name="widget" native="true">
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="2">
+           <widget class="QCheckBox" name="checkBoxRegularExpression">
+            <property name="toolTip">
+             <string>Search and replace using regular expressions</string>
+            </property>
+            <property name="text">
+             <string>Regular Expression</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QPushButton" name="pushButtonOK">
+            <property name="toolTip">
+             <string>Accept edits and return to main program</string>
+            </property>
+            <property name="text">
+             <string>OK</string>
+            </property>
+            <property name="default">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="QPushButton" name="pushButtonCancel">
+            <property name="toolTip">
+             <string>Cancel edits and return to main program</string>
+            </property>
+            <property name="text">
+             <string>Cancel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>427</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="checkBoxCaseSensitive">
+            <property name="toolTip">
+             <string>Use case sensitive search</string>
+            </property>
+            <property name="text">
+             <string>Case Sensitive</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QPushButton" name="pushButtonSaveAs">
+            <property name="toolTip">
+             <string>Save the XML text with no validity checks</string>
+            </property>
+            <property name="text">
+             <string>Save As...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="pushButtonResetPositions">
+            <property name="text">
+             <string>Reset Positions</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>plainTextEdit</tabstop>
+  <tabstop>pushButtonFind</tabstop>
+  <tabstop>lineEditFind</tabstop>
+  <tabstop>pushButtonReplace</tabstop>
+  <tabstop>pushButtonReplaceAll</tabstop>
+  <tabstop>lineEditReplace</tabstop>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>toolButtonInsert</tabstop>
+  <tabstop>toolButtonDelete</tabstop>
+  <tabstop>toolButtonMoveUp</tabstop>
+  <tabstop>toolButtonMoveDown</tabstop>
+  <tabstop>pushButtonSave</tabstop>
+  <tabstop>pushButtonLoad</tabstop>
+  <tabstop>pushButtonApply</tabstop>
+  <tabstop>checkBoxCaseSensitive</tabstop>
+  <tabstop>checkBoxRegularExpression</tabstop>
+  <tabstop>pushButtonSaveAs</tabstop>
+  <tabstop>pushButtonOK</tabstop>
+  <tabstop>pushButtonCancel</tabstop>
+ </tabstops>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,83 @@
+\hypertarget{classDialogDrivers}{}\doxysection{Dialog\+Drivers Class Reference}
+\label{classDialogDrivers}\index{DialogDrivers@{DialogDrivers}}
+
+
+Inheritance diagram for Dialog\+Drivers\+:
+% FIG 0
+
+
+Collaboration diagram for Dialog\+Drivers\+:
+% FIG 1
+\doxysubsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDialogDrivers_ab4200e69cb8ac67b44f75283ff2870c9}\label{classDialogDrivers_ab4200e69cb8ac67b44f75283ff2870c9}} 
+virtual void {\bfseries accept} () Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classDialogDrivers_af246f325618a55fe4660e9eb365bc2bd}\label{classDialogDrivers_af246f325618a55fe4660e9eb365bc2bd}} 
+virtual void {\bfseries reject} () Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classDialogDrivers_acfe3e12e3c1525adc324a47cc8d8123f}\label{classDialogDrivers_acfe3e12e3c1525adc324a47cc8d8123f}} 
+void {\bfseries combo\+Box\+Changed} (int index)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_a2f6127e598a02b3eec766bb0556098f4}\label{classDialogDrivers_a2f6127e598a02b3eec766bb0556098f4}} 
+void {\bfseries line\+Edit\+Changed} (const QString \&text)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_afcad366fe664165e9df67dffbbb76ac7}\label{classDialogDrivers_afcad366fe664165e9df67dffbbb76ac7}} 
+void {\bfseries spin\+Box\+Changed\+Targets} (int value)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_a582a32576ce35e1774e3c04a3ca42a9a}\label{classDialogDrivers_a582a32576ce35e1774e3c04a3ca42a9a}} 
+void {\bfseries spin\+Box\+Changed\+Steps} (int value)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_a019713f4fbcf138af27596c60ce36c73}\label{classDialogDrivers_a019713f4fbcf138af27596c60ce36c73}} 
+void {\bfseries spin\+Box\+Changed\+Steps\+Per\+Cycle} (int value)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_ac951d43a71a5730b983a610b13d45bd3}\label{classDialogDrivers_ac951d43a71a5730b983a610b13d45bd3}} 
+void {\bfseries spin\+Box\+Changed\+Boxcar\+Stack\+Size} (int value)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_adc19116781ec4b7f69a77a8a5ca98478}\label{classDialogDrivers_adc19116781ec4b7f69a77a8a5ca98478}} 
+void {\bfseries check\+Box\+Changed} (int index)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_aacf80fc2806f9d459944810f0e0d9411}\label{classDialogDrivers_aacf80fc2806f9d459944810f0e0d9411}} 
+void {\bfseries tab\+Changed} (int index)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDialogDrivers_a9e37d3b4e6b1c228e1ae93b8264828fb}\label{classDialogDrivers_a9e37d3b4e6b1c228e1ae93b8264828fb}} 
+{\bfseries Dialog\+Drivers} (QWidget $\ast$parent=nullptr)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_adb02df2ded426415c15279162204225c}\label{classDialogDrivers_adb02df2ded426415c15279162204225c}} 
+void {\bfseries late\+Initialise} ()
+\item 
+\mbox{\Hypertarget{classDialogDrivers_a86cb7b1c0b5648da05239f073ec4b4a8}\label{classDialogDrivers_a86cb7b1c0b5648da05239f073ec4b4a8}} 
+\mbox{\hyperlink{classSimulation}{Simulation}} $\ast$ {\bfseries simulation} () const
+\item 
+\mbox{\Hypertarget{classDialogDrivers_aa744640bb7459699d3d22de69587b783}\label{classDialogDrivers_aa744640bb7459699d3d22de69587b783}} 
+void {\bfseries set\+Simulation} (\mbox{\hyperlink{classSimulation}{Simulation}} $\ast$simulation)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_a9b58cf39ad0fff88615e956503a3cead}\label{classDialogDrivers_a9b58cf39ad0fff88615e956503a3cead}} 
+void {\bfseries set\+Input\+Driver} (\mbox{\hyperlink{classDriver}{Driver}} $\ast$input\+Driver)
+\item 
+\mbox{\Hypertarget{classDialogDrivers_afc90f1a64fc5cc16cc209badb8f62902}\label{classDialogDrivers_afc90f1a64fc5cc16cc209badb8f62902}} 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDriver}{Driver}} $>$ {\bfseries output\+Driver} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDialogDrivers_a5c3c00b9d65e9a723c46cce145d3d551}\label{classDialogDrivers_a5c3c00b9d65e9a723c46cce145d3d551}} 
+void {\bfseries close\+Event} (QClose\+Event $\ast$event) Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 20 of file Dialog\+Drivers.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Gait\+Sym\+Qt/Dialog\+Drivers.\+h\item 
+Gait\+Sym\+Qt/Dialog\+Drivers.\+cpp\end{DoxyCompactItemize}

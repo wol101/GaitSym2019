@@ -1,0 +1,36 @@
+"Info" context menu in the simulation widget to get the current state of the element
+
+Add some useful 'batch' commands. e.g. autogenerate testing drivers for muscles; maybe autogenerate left from right
+
+Have a rename dialog - quite an easy option now.
+
+Bugs to Check
+
+The way the last view is remembered (or not) is not at all obvious. And the load/save default view does not behave itself either.
+
+Improvements
+
+All values should be accessible via id.attribute within the attributes to enable dependencies to be maintained. Ideally this would allow basic vector and quaternion mathematics so we can embed rotations and so forth. The code for this probably exists in earlier versions of gaitsym via the anybody reader code.
+
+At some point I need to generalise the 3 joint controller to allow the end effector to have a fully specified pose. Of course the heuristics for this will end up quite complex (and lots of poses are simply not possible so I need to think about that too).
+
+Notes
+
+The OBJ reader is a little fragile for speed reasons. It requires all faces to be triangular, and if multiple objects are in the file then they all have to have the same face format (so you cannot mix textured faces with non-textured faces, and faces with normals with faces without normals). This can usually be fixed by choosing the right options in the Blender OBJ export. The recommended set are:
+
+Selection Only
+Y Forward
+Z Up
+Apply Modifiers
+Write Normals
+Write Materials
+Triangulate Faces
+
+UVs are currently not supported so it is best to disable Include UVs, and if they are enabled then all sub-objects need UVs.
+
+Might want to at least flag up errors (although it all slows things down).
+
+CQtDeployer command on ubuntu
+
+~/CQtDeployer/1.4/cqtdeployer.sh -bin GaitSym2019 qif force-clear
+

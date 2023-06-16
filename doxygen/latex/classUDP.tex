@@ -1,0 +1,64 @@
+\hypertarget{classUDP}{}\doxysection{UDP Class Reference}
+\label{classUDP}\index{UDP@{UDP}}
+
+
+Inheritance diagram for UDP\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classUDP_ab4e860a0a85856f82dcfcc924eb2dd67}\label{classUDP_ab4e860a0a85856f82dcfcc924eb2dd67}} 
+int {\bfseries Receive\+Text} (uint64\+\_\+t match\+ID, std\+::string $\ast$text, struct sockaddr\+\_\+in $\ast$sender)
+\item 
+\mbox{\Hypertarget{classUDP_afadfe3d0aae040af6f6e8dd6bedecfc0}\label{classUDP_afadfe3d0aae040af6f6e8dd6bedecfc0}} 
+int {\bfseries Send\+Text} (uint64\+\_\+t match\+ID, const struct sockaddr\+\_\+in \&destination, const std\+::string \&text)
+\item 
+\mbox{\Hypertarget{classUDP_a9fb51cf32fb4f1e96556aee8298d6bed}\label{classUDP_a9fb51cf32fb4f1e96556aee8298d6bed}} 
+int {\bfseries Receive\+FEC} (uint64\+\_\+t match\+ID, uint32\+\_\+t percent\+Redundancy, std\+::string $\ast$data, struct sockaddr\+\_\+in $\ast$sender)
+\item 
+\mbox{\Hypertarget{classUDP_ad7d042ad8e97a6f1299d25827e2624dc}\label{classUDP_ad7d042ad8e97a6f1299d25827e2624dc}} 
+int {\bfseries Send\+FEC} (uint64\+\_\+t match\+ID, const struct sockaddr\+\_\+in \&destination, const std\+::string \&data, uint32\+\_\+t percent\+Redundancy)
+\item 
+\mbox{\Hypertarget{classUDP_a9ac86acdb50e7a0c4a90a97f2d3f4894}\label{classUDP_a9ac86acdb50e7a0c4a90a97f2d3f4894}} 
+virtual int {\bfseries Receive\+UDPPacket} (\mbox{\hyperlink{structudp_1_1UDPPacket}{udp\+::\+UDPPacket}} $\ast$packet, int num\+Bytes, struct sockaddr\+\_\+in $\ast$sender)
+\item 
+\mbox{\Hypertarget{classUDP_a04e9f67438d2d6afc12485dee017d7f3}\label{classUDP_a04e9f67438d2d6afc12485dee017d7f3}} 
+virtual int {\bfseries Send\+UDPPacket} (const struct sockaddr\+\_\+in \&destination, const \mbox{\hyperlink{structudp_1_1UDPPacket}{udp\+::\+UDPPacket}} $\ast$packet, int num\+Bytes)
+\item 
+\mbox{\Hypertarget{classUDP_a92c0454e1a4e45222440d0754e4d4bc4}\label{classUDP_a92c0454e1a4e45222440d0754e4d4bc4}} 
+virtual int {\bfseries Start\+Listener} (uint16\+\_\+t port)
+\item 
+\mbox{\Hypertarget{classUDP_ab8e2653127ecb976ee111fe5148f2d17}\label{classUDP_ab8e2653127ecb976ee111fe5148f2d17}} 
+virtual void {\bfseries Stop\+Listener} ()
+\item 
+\mbox{\Hypertarget{classUDP_ae4f059c3164c6c05d96255bc132ae52a}\label{classUDP_ae4f059c3164c6c05d96255bc132ae52a}} 
+virtual int {\bfseries Check\+Receiver} (uint64\+\_\+t usec\+Timeout)
+\item 
+\mbox{\Hypertarget{classUDP_a8b907155cb8b7eef76dcedea8b7615db}\label{classUDP_a8b907155cb8b7eef76dcedea8b7615db}} 
+struct sockaddr\+\_\+in $\ast$ {\bfseries Get\+My\+Address} ()
+\item 
+\mbox{\Hypertarget{classUDP_a8957f891e380d49d599e1b951fde3d84}\label{classUDP_a8957f891e380d49d599e1b951fde3d84}} 
+void {\bfseries set\+Debug} (bool debug)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classUDP_a28ae748514155ec40349194a23a47a09}\label{classUDP_a28ae748514155ec40349194a23a47a09}} 
+int {\bfseries m\+\_\+\+Rec\+Sockfd} = 0
+\item 
+\mbox{\Hypertarget{classUDP_ac1292d87e2f8cf9421b4fd4c84fb113d}\label{classUDP_ac1292d87e2f8cf9421b4fd4c84fb113d}} 
+bool {\bfseries m\+\_\+debug} = false
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 79 of file UDP.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/UDP.\+h\item 
+src/UDP.\+cpp\end{DoxyCompactItemize}

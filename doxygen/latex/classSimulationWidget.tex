@@ -1,0 +1,362 @@
+\hypertarget{classSimulationWidget}{}\doxysection{Simulation\+Widget Class Reference}
+\label{classSimulationWidget}\index{SimulationWidget@{SimulationWidget}}
+
+
+Inheritance diagram for Simulation\+Widget\+:
+% FIG 0
+
+
+Collaboration diagram for Simulation\+Widget\+:
+% FIG 1
+\doxysubsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a9866b15efbc5b35d9d508ae0e241ca28}\label{classSimulationWidget_a9866b15efbc5b35d9d508ae0e241ca28}} 
+void {\bfseries Set\+Camera\+Vec} (float x, float y, float z)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a54ae2389cf6cfc4cb029ad04e59f5b9a}\label{classSimulationWidget_a54ae2389cf6cfc4cb029ad04e59f5b9a}} 
+void {\bfseries Set\+Camera\+Vec} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ab73cbbf16e3d61533b55286bf2f9b94d}\label{classSimulationWidget_ab73cbbf16e3d61533b55286bf2f9b94d}} 
+void {\bfseries menu\+Request} (const QPoint \&pos)
+\end{DoxyCompactItemize}
+\doxysubsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulationWidget_adff08b6cf3fc995df18dbf6caeccbfc4}\label{classSimulationWidget_adff08b6cf3fc995df18dbf6caeccbfc4}} 
+void {\bfseries Emit\+Status\+String} (const QString \&s, int log\+Level)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a7f422dca3be389b52226b1c5cb681198}\label{classSimulationWidget_a7f422dca3be389b52226b1c5cb681198}} 
+void {\bfseries Emit\+COI} (float x, float y, float z)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a003e14c32a3921be0cb3c7dd18e68f87}\label{classSimulationWidget_a003e14c32a3921be0cb3c7dd18e68f87}} 
+void {\bfseries Emit\+FoV} (float v)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a73ed578468724ce50beea824b8cfd55f}\label{classSimulationWidget_a73ed578468724ce50beea824b8cfd55f}} 
+void {\bfseries Emit\+Create\+Marker\+Request} ()
+\item 
+\mbox{\Hypertarget{classSimulationWidget_afdb3469be501689d66310e7826676614}\label{classSimulationWidget_afdb3469be501689d66310e7826676614}} 
+void {\bfseries Emit\+Edit\+Marker\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a994ba24606b1e9fdecb879195cd52705}\label{classSimulationWidget_a994ba24606b1e9fdecb879195cd52705}} 
+void {\bfseries Emit\+Move\+Marker\+Request} (const QString \&s, const QVector3D \&p)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a9db50f8c416f0ee6ce903095bb1af1b6}\label{classSimulationWidget_a9db50f8c416f0ee6ce903095bb1af1b6}} 
+void {\bfseries Emit\+Edit\+Body\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ad072bcf92efbf269f0f8ef3fed4a0094}\label{classSimulationWidget_ad072bcf92efbf269f0f8ef3fed4a0094}} 
+void {\bfseries Emit\+Edit\+Geom\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_af3b92efbba8e9a4bf6c45b1f11d2b87f}\label{classSimulationWidget_af3b92efbba8e9a4bf6c45b1f11d2b87f}} 
+void {\bfseries Emit\+Edit\+Joint\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a6333d0a6f634231853ee72e981ed07dd}\label{classSimulationWidget_a6333d0a6f634231853ee72e981ed07dd}} 
+void {\bfseries Emit\+Edit\+Muscle\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_af6cec89bd6a7a793018440020cffe7be}\label{classSimulationWidget_af6cec89bd6a7a793018440020cffe7be}} 
+void {\bfseries Emit\+Delete\+Marker\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ac9ea88882cb4325cc02c7150dcafd1fe}\label{classSimulationWidget_ac9ea88882cb4325cc02c7150dcafd1fe}} 
+void {\bfseries Emit\+Delete\+Body\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a005815e7c1ad4dc26850c6b562dded3c}\label{classSimulationWidget_a005815e7c1ad4dc26850c6b562dded3c}} 
+void {\bfseries Emit\+Delete\+Geom\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ac0a77d89e891677958b1ee6da97ae8ca}\label{classSimulationWidget_ac0a77d89e891677958b1ee6da97ae8ca}} 
+void {\bfseries Emit\+Delete\+Joint\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ace0f67109e4d7c970d956f84bc2e2970}\label{classSimulationWidget_ace0f67109e4d7c970d956f84bc2e2970}} 
+void {\bfseries Emit\+Delete\+Muscle\+Request} (const QString \&s)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a8d4f3f1f540f08bdc1033779683505fa}\label{classSimulationWidget_a8d4f3f1f540f08bdc1033779683505fa}} 
+void {\bfseries Emit\+Info\+Request} (const QString \&element\+Type, const QString \&element\+Name)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a90d92f476ac9bdb368fa2ed58b6b0f01}\label{classSimulationWidget_a90d92f476ac9bdb368fa2ed58b6b0f01}} 
+void {\bfseries Emit\+Hide\+Request} (const QString \&element\+Type, const QString \&element\+Name)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a360b22ab8ac6c57d27c37052cb1428cc}\label{classSimulationWidget_a360b22ab8ac6c57d27c37052cb1428cc}} 
+void {\bfseries Emit\+Resize} (int width, int height)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a05e791693c5786fa85d161668af97430}\label{classSimulationWidget_a05e791693c5786fa85d161668af97430}} 
+{\bfseries Simulation\+Widget} (QWidget $\ast$parent=nullptr)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ae6bc3634b39841132a3576921a326e2e}\label{classSimulationWidget_ae6bc3634b39841132a3576921a326e2e}} 
+\mbox{\hyperlink{classSimulation}{Simulation}} $\ast$ {\bfseries simulation} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_af23a6240907257437cc89649b6d890f3}\label{classSimulationWidget_af23a6240907257437cc89649b6d890f3}} 
+void {\bfseries set\+Simulation} (\mbox{\hyperlink{classSimulation}{Simulation}} $\ast$simulation)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a780e927233b6402a51bbf1697b39a37f}\label{classSimulationWidget_a780e927233b6402a51bbf1697b39a37f}} 
+bool {\bfseries wire\+Frame} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_af9fd583f17592e8d8e22e379d34bcf02}\label{classSimulationWidget_af9fd583f17592e8d8e22e379d34bcf02}} 
+void {\bfseries set\+Wire\+Frame} (bool wire\+Frame)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a47de62fc0a90ec7ad3a644af9b0c5a66}\label{classSimulationWidget_a47de62fc0a90ec7ad3a644af9b0c5a66}} 
+bool {\bfseries bounding\+Box} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ac75e970673a25cad8e10463355778a1b}\label{classSimulationWidget_ac75e970673a25cad8e10463355778a1b}} 
+void {\bfseries set\+Bounding\+Box} (bool bounding\+Box)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a042c708c8d00a67de8a42e225dda537b}\label{classSimulationWidget_a042c708c8d00a67de8a42e225dda537b}} 
+bool {\bfseries orthographic\+Projection} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a5a225e42d23cf90ac5daf862c38857c2}\label{classSimulationWidget_a5a225e42d23cf90ac5daf862c38857c2}} 
+void {\bfseries set\+Orthographic\+Projection} (bool orthographic\+Projection)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_afbb380953b03b6c7a533ae28ff35583b}\label{classSimulationWidget_afbb380953b03b6c7a533ae28ff35583b}} 
+float {\bfseries camera\+Distance} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a2c3fec6fce71338b5b558d9dc99b4989}\label{classSimulationWidget_a2c3fec6fce71338b5b558d9dc99b4989}} 
+void {\bfseries set\+Camera\+Distance} (float camera\+Distance)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a905273047882e0061034afb2c5a2c964}\label{classSimulationWidget_a905273047882e0061034afb2c5a2c964}} 
+float {\bfseries FOV} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a1ae8522b12595deaa5607ee2deaf8b56}\label{classSimulationWidget_a1ae8522b12595deaa5607ee2deaf8b56}} 
+void {\bfseries set\+FOV} (float FOV)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a2c8c3a4a2dfec9b3b445de67e51b6895}\label{classSimulationWidget_a2c8c3a4a2dfec9b3b445de67e51b6895}} 
+float {\bfseries camera\+VecX} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a40aca46fe5323177e2529971df326b8f}\label{classSimulationWidget_a40aca46fe5323177e2529971df326b8f}} 
+void {\bfseries set\+Camera\+VecX} (float camera\+VecX)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a1b54fb0959f501caf4f435aee023e388}\label{classSimulationWidget_a1b54fb0959f501caf4f435aee023e388}} 
+float {\bfseries camera\+VecY} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a2f70e0e9ee1345169e99f780c47ac5bd}\label{classSimulationWidget_a2f70e0e9ee1345169e99f780c47ac5bd}} 
+void {\bfseries set\+Camera\+VecY} (float camera\+VecY)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a9adfa71e96411f0f4def6b024c1a8299}\label{classSimulationWidget_a9adfa71e96411f0f4def6b024c1a8299}} 
+float {\bfseries camera\+VecZ} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a74e31b8a7179ef78d14d2105aa7a8178}\label{classSimulationWidget_a74e31b8a7179ef78d14d2105aa7a8178}} 
+void {\bfseries set\+Camera\+VecZ} (float camera\+VecZ)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a4bad92db9b3907d7748ef3bd9fc0294b}\label{classSimulationWidget_a4bad92db9b3907d7748ef3bd9fc0294b}} 
+float {\bfseries COIx} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_af856334b96fdb7aafd828619c11aee16}\label{classSimulationWidget_af856334b96fdb7aafd828619c11aee16}} 
+void {\bfseries set\+COIx} (float COIx)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_aaa8307e873fc175a6821e16857a8fb7e}\label{classSimulationWidget_aaa8307e873fc175a6821e16857a8fb7e}} 
+float {\bfseries COIy} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a08f3f502e0472a946b05af0b07c6ce1f}\label{classSimulationWidget_a08f3f502e0472a946b05af0b07c6ce1f}} 
+void {\bfseries set\+COIy} (float COIy)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a15ffe68adda4b742279199ec84c310cf}\label{classSimulationWidget_a15ffe68adda4b742279199ec84c310cf}} 
+float {\bfseries COIz} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_af1e1f0d75d302137172b38f5a4b1b0e4}\label{classSimulationWidget_af1e1f0d75d302137172b38f5a4b1b0e4}} 
+void {\bfseries set\+COIz} (float COIz)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a055958c9043723b87d31daecdbad5cc6}\label{classSimulationWidget_a055958c9043723b87d31daecdbad5cc6}} 
+float {\bfseries front\+Clip} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a97d6c593b16f72e1a7ea6bd21831168b}\label{classSimulationWidget_a97d6c593b16f72e1a7ea6bd21831168b}} 
+void {\bfseries set\+Front\+Clip} (float front\+Clip)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ac991052068ea6412d8baf57b9152b48b}\label{classSimulationWidget_ac991052068ea6412d8baf57b9152b48b}} 
+float {\bfseries back\+Clip} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_adc46f0072c042af45478f07a6613eaf9}\label{classSimulationWidget_adc46f0072c042af45478f07a6613eaf9}} 
+void {\bfseries set\+Back\+Clip} (float back\+Clip)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ab36fc5e1ef99b1e07300a3abc6e65c07}\label{classSimulationWidget_ab36fc5e1ef99b1e07300a3abc6e65c07}} 
+float {\bfseries upX} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ad7c4b8c92e9b5adb9f216cb19e4a2ff4}\label{classSimulationWidget_ad7c4b8c92e9b5adb9f216cb19e4a2ff4}} 
+void {\bfseries set\+UpX} (float upX)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ae807acc84a401c1842968d277fb9b90f}\label{classSimulationWidget_ae807acc84a401c1842968d277fb9b90f}} 
+float {\bfseries upY} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a302b2d24bc888a2067ec530e93730b88}\label{classSimulationWidget_a302b2d24bc888a2067ec530e93730b88}} 
+void {\bfseries set\+UpY} (float upY)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a530b0d8b11de2813fee1585a2520046d}\label{classSimulationWidget_a530b0d8b11de2813fee1585a2520046d}} 
+float {\bfseries upZ} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a23078f592c2cf2a02d08ab463811bffa}\label{classSimulationWidget_a23078f592c2cf2a02d08ab463811bffa}} 
+void {\bfseries set\+UpZ} (float upZ)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a994b4647192ec54cd1cf3982c1f9f7d6}\label{classSimulationWidget_a994b4647192ec54cd1cf3982c1f9f7d6}} 
+float {\bfseries cursor\+Radius} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a5bb9cee2eb2c7e0e215eabe593021c21}\label{classSimulationWidget_a5bb9cee2eb2c7e0e215eabe593021c21}} 
+void {\bfseries set\+Cursor\+Radius} (float cursor\+Radius)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a7c2c84ecb5c3bb50233f9b8bc163a240}\label{classSimulationWidget_a7c2c84ecb5c3bb50233f9b8bc163a240}} 
+float {\bfseries cursor3\+DNudge} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_acc0f5e58e0898858a0a7e8bf6bfdd50d}\label{classSimulationWidget_acc0f5e58e0898858a0a7e8bf6bfdd50d}} 
+void {\bfseries set\+Cursor3\+DNudge} (float cursor3\+DNudge)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a6bc530a532e81620e93039811332e4d8}\label{classSimulationWidget_a6bc530a532e81620e93039811332e4d8}} 
+QVector3D {\bfseries cursor3\+DPosition} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a98b092dafd8228f227d9c45429db2eac}\label{classSimulationWidget_a98b092dafd8228f227d9c45429db2eac}} 
+void {\bfseries set\+Cursor3\+DPosition} (const QVector3D \&cursor3\+DPosition)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a7a4df828f6126929e5b050140b4aa97e}\label{classSimulationWidget_a7a4df828f6126929e5b050140b4aa97e}} 
+QColor {\bfseries cursor\+Colour} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_af0ae5ae7dc1eed2cce88d0d9e464868e}\label{classSimulationWidget_af0ae5ae7dc1eed2cce88d0d9e464868e}} 
+void {\bfseries set\+Cursor\+Colour} (const QColor \&cursor\+Colour)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a74a96d17acc061e23268c28e3b89cb49}\label{classSimulationWidget_a74a96d17acc061e23268c28e3b89cb49}} 
+bool {\bfseries normals} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a99fc4b9cf25a9272e91ecfa6e697b0e5}\label{classSimulationWidget_a99fc4b9cf25a9272e91ecfa6e697b0e5}} 
+void {\bfseries set\+Normals} (bool normals)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a6ea6a5b21d2d149f9bf7c9c2b6529cdb}\label{classSimulationWidget_a6ea6a5b21d2d149f9bf7c9c2b6529cdb}} 
+bool {\bfseries half\+Transparency} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a4f75cae4bf129ab7ab2ea7e3dae29314}\label{classSimulationWidget_a4f75cae4bf129ab7ab2ea7e3dae29314}} 
+void {\bfseries set\+Half\+Transparency} (bool half\+Transparency)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_aeb64e6a2e012868e2e5548c90418ac31}\label{classSimulationWidget_aeb64e6a2e012868e2e5548c90418ac31}} 
+int {\bfseries Write\+Still\+Frame} (const QString \&filename)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a9f75321904dacf94be0fe86349caa73d}\label{classSimulationWidget_a9f75321904dacf94be0fe86349caa73d}} 
+int {\bfseries Write\+Movie\+Frame} ()
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a68f8b3f6ac40734916352fdf1521c769}\label{classSimulationWidget_a68f8b3f6ac40734916352fdf1521c769}} 
+int {\bfseries Write\+CADFrame} (const QString \&pathname)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a091472ae3da02cef707510827ccf3a91}\label{classSimulationWidget_a091472ae3da02cef707510827ccf3a91}} 
+int {\bfseries Start\+AVISave} (const QString \&filename)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a078dccad64443616340488b1ee4ee3f1}\label{classSimulationWidget_a078dccad64443616340488b1ee4ee3f1}} 
+int {\bfseries Stop\+AVISave} ()
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a7a60a8b7356e179f8677e04788b9dc5e}\label{classSimulationWidget_a7a60a8b7356e179f8677e04788b9dc5e}} 
+bool {\bfseries Delete\+Draw\+Body} (const std\+::string \&body\+Name)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_afd121e5481e979fc518edf8d6835c110}\label{classSimulationWidget_afd121e5481e979fc518edf8d6835c110}} 
+\mbox{\hyperlink{classAVIWriter}{AVIWriter}} $\ast$ {\bfseries avi\+Writer} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a5ecf8cde99025ff0533cffa3e81ea491}\label{classSimulationWidget_a5ecf8cde99025ff0533cffa3e81ea491}} 
+int {\bfseries avi\+Quality} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_afdff5511f5b70f590ecb3ed4f390f1ba}\label{classSimulationWidget_afdff5511f5b70f590ecb3ed4f390f1ba}} 
+void {\bfseries set\+Avi\+Quality} (int avi\+Quality)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a0161a2df2aac40ad7110fabc2661a587}\label{classSimulationWidget_a0161a2df2aac40ad7110fabc2661a587}} 
+QColor {\bfseries background\+Colour} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a2d0b48dacd321cf52e0434525291bb97}\label{classSimulationWidget_a2d0b48dacd321cf52e0434525291bb97}} 
+void {\bfseries set\+Background\+Colour} (const QColor \&background\+Colour)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_afd20abf0dfbdbcf9748aca77cdc555b1}\label{classSimulationWidget_afd20abf0dfbdbcf9748aca77cdc555b1}} 
+float {\bfseries axes\+Scale} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a62331e4d03bb9f35e67740f617b6ea32}\label{classSimulationWidget_a62331e4d03bb9f35e67740f617b6ea32}} 
+void {\bfseries set\+Axes\+Scale} (float axes\+Scale)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a2807fb032f80da7725760eda2d147a6a}\label{classSimulationWidget_a2807fb032f80da7725760eda2d147a6a}} 
+\mbox{\hyperlink{classMainWindow}{Main\+Window}} $\ast$ {\bfseries get\+Main\+Window} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a2bd69be9175e803950ac8af077a9b5b5}\label{classSimulationWidget_a2bd69be9175e803950ac8af077a9b5b5}} 
+void {\bfseries set\+Main\+Window} (\mbox{\hyperlink{classMainWindow}{Main\+Window}} $\ast$main\+Window)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a7e32b630865f6cf0f075f4c118d7f71c}\label{classSimulationWidget_a7e32b630865f6cf0f075f4c118d7f71c}} 
+QOpen\+GLShader\+Program $\ast$ {\bfseries faceted\+Object\+Shader} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ab13db65782a4cec981cb6c4746b9673f}\label{classSimulationWidget_ab13db65782a4cec981cb6c4746b9673f}} 
+QOpen\+GLShader\+Program $\ast$ {\bfseries fixed\+Colour\+Object\+Shader} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a6b78823abaaa02fe67db966a29e8b6c1}\label{classSimulationWidget_a6b78823abaaa02fe67db966a29e8b6c1}} 
+QMatrix4x4 {\bfseries proj} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a54252daf013df5d2548322dffbcebc8b}\label{classSimulationWidget_a54252daf013df5d2548322dffbcebc8b}} 
+QMatrix4x4 {\bfseries view} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a509f5868f16cdde06bb230353cc06e72}\label{classSimulationWidget_a509f5868f16cdde06bb230353cc06e72}} 
+bool {\bfseries get\+Draw\+Body\+Mesh1} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ad21068aff6c5a25d0af55c4cd94ea1d5}\label{classSimulationWidget_ad21068aff6c5a25d0af55c4cd94ea1d5}} 
+void {\bfseries set\+Draw\+Body\+Mesh1} (bool draw\+Body\+Mesh1)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a27eb66e53f83b981f21cc3cf766697e9}\label{classSimulationWidget_a27eb66e53f83b981f21cc3cf766697e9}} 
+bool {\bfseries get\+Draw\+Body\+Mesh2} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a72c2a2f94a860dfd6d0c8c3cbb2c8719}\label{classSimulationWidget_a72c2a2f94a860dfd6d0c8c3cbb2c8719}} 
+void {\bfseries set\+Draw\+Body\+Mesh2} (bool draw\+Body\+Mesh2)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ab3397305285252ee94823ab4f2efca51}\label{classSimulationWidget_ab3397305285252ee94823ab4f2efca51}} 
+bool {\bfseries get\+Draw\+Body\+Mesh3} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a059172fd9d0a2174e3f5f47e1b859b18}\label{classSimulationWidget_a059172fd9d0a2174e3f5f47e1b859b18}} 
+void {\bfseries set\+Draw\+Body\+Mesh3} (bool draw\+Body\+Mesh3)
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a869d7ec290bc3b295d54dd04a6e03e74}\label{classSimulationWidget_a869d7ec290bc3b295d54dd04a6e03e74}} 
+const \mbox{\hyperlink{classIntersectionHits}{Intersection\+Hits}} $\ast$ {\bfseries get\+Closest\+Hit} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ab3c6c228ed5f0dded596be6e151ff614}\label{classSimulationWidget_ab3c6c228ed5f0dded596be6e151ff614}} 
+QString {\bfseries get\+Last\+Menu\+Item} () const
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a637f7249cbe53fdc9b3761acb9b4ee35}\label{classSimulationWidget_a637f7249cbe53fdc9b3761acb9b4ee35}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDrawBody}{Draw\+Body}} $>$ $>$ $\ast$ {\bfseries get\+Draw\+Body\+Map} ()
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a52d19f6f488461ff3f558dfbbdb62723}\label{classSimulationWidget_a52d19f6f488461ff3f558dfbbdb62723}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDrawJoint}{Draw\+Joint}} $>$ $>$ $\ast$ {\bfseries get\+Draw\+Joint\+Map} ()
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a52de9ce773c30ada47487da822215624}\label{classSimulationWidget_a52de9ce773c30ada47487da822215624}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDrawGeom}{Draw\+Geom}} $>$ $>$ $\ast$ {\bfseries get\+Draw\+Geom\+Map} ()
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a2a3abb2e28a892ea904625a841e7ecd7}\label{classSimulationWidget_a2a3abb2e28a892ea904625a841e7ecd7}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDrawMuscle}{Draw\+Muscle}} $>$ $>$ $\ast$ {\bfseries get\+Draw\+Muscle\+Map} ()
+\item 
+\mbox{\Hypertarget{classSimulationWidget_afa4664eea434c0e259a8b58dec7d3ea4}\label{classSimulationWidget_afa4664eea434c0e259a8b58dec7d3ea4}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDrawFluidSac}{Draw\+Fluid\+Sac}} $>$ $>$ $\ast$ {\bfseries get\+Draw\+Fluid\+Sac\+Map} ()
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ac836303f2eb84700dc2317eb1e9e3474}\label{classSimulationWidget_ac836303f2eb84700dc2317eb1e9e3474}} 
+std\+::map$<$ std\+::string, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classDrawMarker}{Draw\+Marker}} $>$ $>$ $\ast$ {\bfseries get\+Draw\+Marker\+Map} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a1e693d0b51aca32ab3fd3b8fba6d90b3}\label{classSimulationWidget_a1e693d0b51aca32ab3fd3b8fba6d90b3}} 
+virtual void {\bfseries initialize\+GL} () Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classSimulationWidget_afb76115969d956f9d24df734af4e4217}\label{classSimulationWidget_afb76115969d956f9d24df734af4e4217}} 
+virtual void {\bfseries paint\+GL} () Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classSimulationWidget_aa4ab72404b10eaa9328c5c86017b1605}\label{classSimulationWidget_aa4ab72404b10eaa9328c5c86017b1605}} 
+virtual void {\bfseries resize\+GL} (int width, int height) Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a8aa295b99773c1c8e75d4682f8b7f9f3}\label{classSimulationWidget_a8aa295b99773c1c8e75d4682f8b7f9f3}} 
+virtual void {\bfseries mouse\+Press\+Event} (QMouse\+Event $\ast$event) Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a9a727c5613ad56860ba2ce5b3370987d}\label{classSimulationWidget_a9a727c5613ad56860ba2ce5b3370987d}} 
+virtual void {\bfseries mouse\+Move\+Event} (QMouse\+Event $\ast$event) Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a3a721fc1f2a9338948b62e04f5b46ad8}\label{classSimulationWidget_a3a721fc1f2a9338948b62e04f5b46ad8}} 
+virtual void {\bfseries mouse\+Release\+Event} (QMouse\+Event $\ast$event) Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classSimulationWidget_ac45e884f531bd51008161a5e3cf32080}\label{classSimulationWidget_ac45e884f531bd51008161a5e3cf32080}} 
+virtual void {\bfseries wheel\+Event} (QWheel\+Event $\ast$event) Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\item 
+\mbox{\Hypertarget{classSimulationWidget_a7f5c94b561fb6736818e052f9677a5f2}\label{classSimulationWidget_a7f5c94b561fb6736818e052f9677a5f2}} 
+virtual void {\bfseries key\+Press\+Event} (QKey\+Event $\ast$event) Q\+\_\+\+DECL\+\_\+\+OVERRIDE
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 48 of file Simulation\+Widget.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Gait\+Sym\+Qt/Simulation\+Widget.\+h\item 
+Gait\+Sym\+Qt/Simulation\+Widget.\+cpp\end{DoxyCompactItemize}

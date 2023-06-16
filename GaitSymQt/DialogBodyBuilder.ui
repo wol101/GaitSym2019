@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogBodyBuilder</class>
+ <widget class="QDialog" name="DialogBodyBuilder">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>908</width>
+    <height>705</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Create/Edit Body</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_6">
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="title">
+      <string>Run Pose</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Position XYZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="LineEditDouble" name="lineEditRunX"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="LineEditDouble" name="lineEditRunY"/>
+      </item>
+      <item row="0" column="3">
+       <widget class="LineEditDouble" name="lineEditRunZ"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Euler XYZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="LineEditDouble" name="lineEditEulerX"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="LineEditDouble" name="lineEditEulerY"/>
+      </item>
+      <item row="1" column="3">
+       <widget class="LineEditDouble" name="lineEditEulerZ"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Velocity XYZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="LineEditDouble" name="lineEditVX"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="LineEditDouble" name="lineEditVY"/>
+      </item>
+      <item row="2" column="3">
+       <widget class="LineEditDouble" name="lineEditVZ"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>Ang. Vel. XYZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="LineEditDouble" name="lineEditAVX"/>
+      </item>
+      <item row="3" column="2">
+       <widget class="LineEditDouble" name="lineEditAVY"/>
+      </item>
+      <item row="3" column="3">
+       <widget class="LineEditDouble" name="lineEditAVZ"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Mass Properties</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Mass</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="LineEditDouble" name="lineEditMass"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>I11, I22, I33</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="LineEditDouble" name="lineEditI11"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="LineEditDouble" name="lineEditI22"/>
+      </item>
+      <item row="1" column="3">
+       <widget class="LineEditDouble" name="lineEditI33"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>I12, I13, I23</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="LineEditDouble" name="lineEditI12"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="LineEditDouble" name="lineEditI13"/>
+      </item>
+      <item row="2" column="3">
+       <widget class="LineEditDouble" name="lineEditI23"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Construction Pose</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <widget class="LineEditDouble" name="lineEditX"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="LineEditDouble" name="lineEditY"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Position XYZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="LineEditDouble" name="lineEditZ"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="title">
+      <string>Meshes</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_13">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Mesh 1</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="LineEditPath" name="lineEditMesh1"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Mesh 2</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="LineEditPath" name="lineEditMesh2"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Mesh 3</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="LineEditPath" name="lineEditMesh3"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string>Definition</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>ID</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="LineEditDouble" name="lineEditDensity"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Density</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="LineEditUniqueName" name="lineEditID"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_acting_as_spacer">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Limits</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Position Low</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="LineEditDouble" name="lineEditLowX"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="LineEditDouble" name="lineEditLowY"/>
+      </item>
+      <item row="0" column="3">
+       <widget class="LineEditDouble" name="lineEditLowZ"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Position High</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="LineEditDouble" name="lineEditHighX"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="LineEditDouble" name="lineEditHighY"/>
+      </item>
+      <item row="1" column="3">
+       <widget class="LineEditDouble" name="lineEditHighZ"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Velocity Low</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="LineEditDouble" name="lineEditLowVX"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="LineEditDouble" name="lineEditLowVY"/>
+      </item>
+      <item row="2" column="3">
+       <widget class="LineEditDouble" name="lineEditLowVZ"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Velocity High</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="LineEditDouble" name="lineEditHighVX"/>
+      </item>
+      <item row="3" column="2">
+       <widget class="LineEditDouble" name="lineEditHighVY"/>
+      </item>
+      <item row="3" column="3">
+       <widget class="LineEditDouble" name="lineEditHighVZ"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Ang. Vel. Low</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="LineEditDouble" name="lineEditLowAVX"/>
+      </item>
+      <item row="4" column="2">
+       <widget class="LineEditDouble" name="lineEditLowAVY"/>
+      </item>
+      <item row="4" column="3">
+       <widget class="LineEditDouble" name="lineEditLowAVZ"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_19">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Ang. Vel. High</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="LineEditDouble" name="lineEditHighAVX"/>
+      </item>
+      <item row="5" column="2">
+       <widget class="LineEditDouble" name="lineEditHighAVY"/>
+      </item>
+      <item row="5" column="3">
+       <widget class="LineEditDouble" name="lineEditHighAVZ"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <widget class="QWidget" name="widget_2" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButtonProperties">
+        <property name="text">
+         <string>Properties...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonCalculate">
+        <property name="text">
+         <string>Calculate Mass &amp;&amp; Position</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxMoveMarkers">
+        <property name="text">
+         <string>Move Markers</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>297</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonOK">
+        <property name="text">
+         <string>OK</string>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonCancel">
+        <property name="text">
+         <string>Cancel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LineEditDouble</class>
+   <extends>QLineEdit</extends>
+   <header>LineEditDouble.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEditUniqueName</class>
+   <extends>QLineEdit</extends>
+   <header>LineEditUniqueName.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEditPath</class>
+   <extends>QLineEdit</extends>
+   <header>LineEditPath.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>lineEditID</tabstop>
+  <tabstop>lineEditDensity</tabstop>
+  <tabstop>lineEditMesh1</tabstop>
+  <tabstop>lineEditMesh2</tabstop>
+  <tabstop>lineEditMesh3</tabstop>
+  <tabstop>lineEditX</tabstop>
+  <tabstop>lineEditY</tabstop>
+  <tabstop>lineEditZ</tabstop>
+  <tabstop>lineEditRunX</tabstop>
+  <tabstop>lineEditRunY</tabstop>
+  <tabstop>lineEditRunZ</tabstop>
+  <tabstop>lineEditEulerX</tabstop>
+  <tabstop>lineEditEulerY</tabstop>
+  <tabstop>lineEditEulerZ</tabstop>
+  <tabstop>lineEditVX</tabstop>
+  <tabstop>lineEditVY</tabstop>
+  <tabstop>lineEditVZ</tabstop>
+  <tabstop>lineEditAVX</tabstop>
+  <tabstop>lineEditAVY</tabstop>
+  <tabstop>lineEditAVZ</tabstop>
+  <tabstop>lineEditMass</tabstop>
+  <tabstop>lineEditI11</tabstop>
+  <tabstop>lineEditI22</tabstop>
+  <tabstop>lineEditI33</tabstop>
+  <tabstop>lineEditI12</tabstop>
+  <tabstop>lineEditI13</tabstop>
+  <tabstop>lineEditI23</tabstop>
+  <tabstop>lineEditLowX</tabstop>
+  <tabstop>lineEditLowY</tabstop>
+  <tabstop>lineEditLowZ</tabstop>
+  <tabstop>lineEditHighX</tabstop>
+  <tabstop>lineEditHighY</tabstop>
+  <tabstop>lineEditHighZ</tabstop>
+  <tabstop>lineEditLowVX</tabstop>
+  <tabstop>lineEditLowVY</tabstop>
+  <tabstop>lineEditLowVZ</tabstop>
+  <tabstop>lineEditHighVX</tabstop>
+  <tabstop>lineEditHighVY</tabstop>
+  <tabstop>lineEditHighVZ</tabstop>
+  <tabstop>lineEditLowAVX</tabstop>
+  <tabstop>lineEditLowAVY</tabstop>
+  <tabstop>lineEditLowAVZ</tabstop>
+  <tabstop>lineEditHighAVX</tabstop>
+  <tabstop>lineEditHighAVY</tabstop>
+  <tabstop>lineEditHighAVZ</tabstop>
+  <tabstop>pushButtonProperties</tabstop>
+  <tabstop>pushButtonCalculate</tabstop>
+  <tabstop>checkBoxMoveMarkers</tabstop>
+  <tabstop>pushButtonOK</tabstop>
+  <tabstop>pushButtonCancel</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

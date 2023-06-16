@@ -1,0 +1,267 @@
+\hypertarget{classDataFile}{}\doxysection{Data\+File Class Reference}
+\label{classDataFile}\index{DataFile@{DataFile}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDataFile_a1cdf7c4b5d82276f5dbf354dafac3099}\label{classDataFile_a1cdf7c4b5d82276f5dbf354dafac3099}} 
+bool {\bfseries Read\+File} (const std\+::string \&name)
+\item 
+\mbox{\Hypertarget{classDataFile_a13c601609e3a00f08c4436387aad122b}\label{classDataFile_a13c601609e3a00f08c4436387aad122b}} 
+bool {\bfseries Write\+File} (const std\+::string \&name, bool binary=false)
+\item 
+\mbox{\Hypertarget{classDataFile_a874207071b63f6c78023f19eb85a9b8b}\label{classDataFile_a874207071b63f6c78023f19eb85a9b8b}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, int $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_a4e3dd23875cd2d1fe80ab502e7722e7c}\label{classDataFile_a4e3dd23875cd2d1fe80ab502e7722e7c}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, unsigned int $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_aa13c193ee7a58b71759eb1eb1d448baa}\label{classDataFile_aa13c193ee7a58b71759eb1eb1d448baa}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, double $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_aad05346e226204d7bd9c01d021430193}\label{classDataFile_aad05346e226204d7bd9c01d021430193}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, bool $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_ab84b7860c8e9e7579cd2097fac4dc840}\label{classDataFile_ab84b7860c8e9e7579cd2097fac4dc840}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, char $\ast$val, size\+\_\+t size, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_ad4e8f6ab74ada181b24ba36f0b1331f9}\label{classDataFile_ad4e8f6ab74ada181b24ba36f0b1331f9}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, char $\ast$$\ast$val, size\+\_\+t $\ast$size, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_a6b9e99c84e123fce16898d71be4dd439}\label{classDataFile_a6b9e99c84e123fce16898d71be4dd439}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, std\+::string $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_aec76919d5d0e1c17c13ad2df50404118}\label{classDataFile_aec76919d5d0e1c17c13ad2df50404118}} 
+bool {\bfseries Retrieve\+Quoted\+String\+Parameter} (const char $\ast$const param, char $\ast$val, size\+\_\+t size, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_ab23fe74ce8650aea6788ea45e3ee96bf}\label{classDataFile_ab23fe74ce8650aea6788ea45e3ee96bf}} 
+bool {\bfseries Retrieve\+Quoted\+String\+Parameter} (const char $\ast$const param, char $\ast$$\ast$val, size\+\_\+t $\ast$size, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_ab8a11776a08614f190f536a20df6dad9}\label{classDataFile_ab8a11776a08614f190f536a20df6dad9}} 
+bool {\bfseries Retrieve\+Quoted\+String\+Parameter} (const char $\ast$const param, std\+::string $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_afc6e31d8432ba867278cf011b3b731e4}\label{classDataFile_afc6e31d8432ba867278cf011b3b731e4}} 
+bool {\bfseries Retrieve\+Ranged\+Parameter} (const char $\ast$const param, double $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_a18dc6f0433a3aa5818f18c05e69dac22}\label{classDataFile_a18dc6f0433a3aa5818f18c05e69dac22}} 
+void {\bfseries Set\+Range\+Control} (double r)
+\item 
+\mbox{\Hypertarget{classDataFile_a1bff7cfc42e5b899edc715afb6ae0f7a}\label{classDataFile_a1bff7cfc42e5b899edc715afb6ae0f7a}} 
+bool {\bfseries Read\+Next\+Line} (char $\ast$line, size\+\_\+t size, bool ignore\+Empty, char comment\+Char=0, char continuation\+Char=0)
+\item 
+\mbox{\Hypertarget{classDataFile_a96e68a3a533a9a5046289b779d7c609c}\label{classDataFile_a96e68a3a533a9a5046289b779d7c609c}} 
+bool {\bfseries Read\+Next\+Line2} (char $\ast$line, size\+\_\+t size, bool ignore\+Empty, const char $\ast$comment\+String, const char $\ast$continuation\+String=nullptr)
+\item 
+\mbox{\Hypertarget{classDataFile_a326b5a66ccf05d1257f17bd8c9a37273}\label{classDataFile_a326b5a66ccf05d1257f17bd8c9a37273}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, size\+\_\+t n, int $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_a0152cab60a1cd9a72ff332ef3f507f22}\label{classDataFile_a0152cab60a1cd9a72ff332ef3f507f22}} 
+bool {\bfseries Retrieve\+Parameter} (const char $\ast$const param, size\+\_\+t n, double $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_a16b55db2bfbeae1cbb76832554582be3}\label{classDataFile_a16b55db2bfbeae1cbb76832554582be3}} 
+bool {\bfseries Retrieve\+Ranged\+Parameter} (const char $\ast$const param, size\+\_\+t n, double $\ast$val, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_a2a23d30b2b240249a0bf49c2b7eded75}\label{classDataFile_a2a23d30b2b240249a0bf49c2b7eded75}} 
+void {\bfseries Set\+Exit\+On\+Error} (bool flag)
+\item 
+\mbox{\Hypertarget{classDataFile_a1e130aab4073e5bc2e91f9df79a81c36}\label{classDataFile_a1e130aab4073e5bc2e91f9df79a81c36}} 
+bool {\bfseries Get\+Exit\+On\+Error} ()
+\item 
+\mbox{\Hypertarget{classDataFile_a92ea6f5d23c0187f8536e411f1397d4e}\label{classDataFile_a92ea6f5d23c0187f8536e411f1397d4e}} 
+char $\ast$ {\bfseries Get\+Raw\+Data} ()
+\item 
+\mbox{\Hypertarget{classDataFile_a74a5b937cd75d3b7a3cf3177b8a5f32f}\label{classDataFile_a74a5b937cd75d3b7a3cf3177b8a5f32f}} 
+void {\bfseries Set\+Raw\+Data} (const char $\ast$string, size\+\_\+t string\+Len)
+\item 
+\mbox{\Hypertarget{classDataFile_a92854a31a898e27adfe2a7d17b09ad1f}\label{classDataFile_a92854a31a898e27adfe2a7d17b09ad1f}} 
+void {\bfseries Reset\+Index} ()
+\item 
+\mbox{\Hypertarget{classDataFile_a8f16dd888c3894f0c770f9999aa125db}\label{classDataFile_a8f16dd888c3894f0c770f9999aa125db}} 
+size\+\_\+t {\bfseries Get\+Size} ()
+\item 
+\mbox{\Hypertarget{classDataFile_aaf53befeeca2685b6f952a8eac583725}\label{classDataFile_aaf53befeeca2685b6f952a8eac583725}} 
+void {\bfseries Clear\+Data} ()
+\item 
+\mbox{\Hypertarget{classDataFile_acafc30d8934062ae03e211a9d63b1641}\label{classDataFile_acafc30d8934062ae03e211a9d63b1641}} 
+size\+\_\+t {\bfseries Replace} (const char $\ast$old\+String, const char $\ast$new\+String)
+\item 
+\mbox{\Hypertarget{classDataFile_a5607a8566fbc73022e32477dde162b96}\label{classDataFile_a5607a8566fbc73022e32477dde162b96}} 
+char $\ast$ {\bfseries Get\+Index} ()
+\item 
+\mbox{\Hypertarget{classDataFile_ac42c66fb0d317e1e2a5fc8f4d685d1d7}\label{classDataFile_ac42c66fb0d317e1e2a5fc8f4d685d1d7}} 
+void {\bfseries Set\+Index} (char $\ast$index)
+\item 
+\mbox{\Hypertarget{classDataFile_a5bf89c50097aa06fbe769b1c004942ab}\label{classDataFile_a5bf89c50097aa06fbe769b1c004942ab}} 
+std\+::string {\bfseries Get\+Path\+Name} ()
+\item 
+\mbox{\Hypertarget{classDataFile_a3681ef7cc239dfabd99df3d628b6bb95}\label{classDataFile_a3681ef7cc239dfabd99df3d628b6bb95}} 
+bool {\bfseries Find\+Parameter} (const char $\ast$const param, bool search\+From\+Start=true)
+\item 
+\mbox{\Hypertarget{classDataFile_ad0099f9def4cca8e0961f8d3d572308f}\label{classDataFile_ad0099f9def4cca8e0961f8d3d572308f}} 
+bool {\bfseries Read\+Next} (int $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_ac26f08e84ac89a340bc0186326cb9e41}\label{classDataFile_ac26f08e84ac89a340bc0186326cb9e41}} 
+bool {\bfseries Read\+Next} (double $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_a3871b2f72a3be97c693dd8ea3dacaf44}\label{classDataFile_a3871b2f72a3be97c693dd8ea3dacaf44}} 
+bool {\bfseries Read\+Next} (char $\ast$val, size\+\_\+t size)
+\item 
+\mbox{\Hypertarget{classDataFile_ad3f58a3ecc4a3e6ab66b9a82c8b9f10f}\label{classDataFile_ad3f58a3ecc4a3e6ab66b9a82c8b9f10f}} 
+bool {\bfseries Read\+Next} (char $\ast$$\ast$val, size\+\_\+t $\ast$size)
+\item 
+\mbox{\Hypertarget{classDataFile_abee07b3ca45be07eb3dad46af26644d9}\label{classDataFile_abee07b3ca45be07eb3dad46af26644d9}} 
+bool {\bfseries Read\+Next} (std\+::string $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_aef3328db487157e7c53871661bc5163f}\label{classDataFile_aef3328db487157e7c53871661bc5163f}} 
+bool {\bfseries Read\+Next\+Quoted\+String} (char $\ast$val, size\+\_\+t size)
+\item 
+\mbox{\Hypertarget{classDataFile_aadeb376fa99e12142db6d1346ec2d365}\label{classDataFile_aadeb376fa99e12142db6d1346ec2d365}} 
+bool {\bfseries Read\+Next\+Quoted\+String} (char $\ast$$\ast$val, size\+\_\+t $\ast$size)
+\item 
+\mbox{\Hypertarget{classDataFile_a8850a7561af3fb8ddc7f64afcf7e92c2}\label{classDataFile_a8850a7561af3fb8ddc7f64afcf7e92c2}} 
+bool {\bfseries Read\+Next\+Quoted\+String} (std\+::string $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_a07416dd0827af4d07a41fcaa639db4de}\label{classDataFile_a07416dd0827af4d07a41fcaa639db4de}} 
+bool {\bfseries Read\+Next\+Line} (char $\ast$line, size\+\_\+t size)
+\item 
+\mbox{\Hypertarget{classDataFile_ac4d4ebeb1067c0bfeeff6f0de4e25ce4}\label{classDataFile_ac4d4ebeb1067c0bfeeff6f0de4e25ce4}} 
+bool {\bfseries Read\+Next\+Ranged} (double $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_a512a826c5738f3ab268d9b8fd8d04e59}\label{classDataFile_a512a826c5738f3ab268d9b8fd8d04e59}} 
+bool {\bfseries Read\+Next\+Binary} (int $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_aa793646b38953f563fac0abdbf76d01d}\label{classDataFile_aa793646b38953f563fac0abdbf76d01d}} 
+bool {\bfseries Read\+Next\+Binary} (float $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_a5ad35378e13324ee00e1357d65f74ba9}\label{classDataFile_a5ad35378e13324ee00e1357d65f74ba9}} 
+bool {\bfseries Read\+Next\+Binary} (double $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_a293a41d24c1467d1fb4059f0e248bf84}\label{classDataFile_a293a41d24c1467d1fb4059f0e248bf84}} 
+bool {\bfseries Read\+Next\+Binary} (char $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_a6e2d663bb46dba798b072862a59a1ca2}\label{classDataFile_a6e2d663bb46dba798b072862a59a1ca2}} 
+bool {\bfseries Read\+Next\+Binary} (bool $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_a32ec0d57fe44bf2beb12ad05d2899ab2}\label{classDataFile_a32ec0d57fe44bf2beb12ad05d2899ab2}} 
+bool {\bfseries Read\+Next\+Binary} (int $\ast$val, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classDataFile_a5c3a84b22162c34316d36d618890ea75}\label{classDataFile_a5c3a84b22162c34316d36d618890ea75}} 
+bool {\bfseries Read\+Next\+Binary} (float $\ast$val, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classDataFile_afc659a0cad88150b6b1cfb2d8ebbbb38}\label{classDataFile_afc659a0cad88150b6b1cfb2d8ebbbb38}} 
+bool {\bfseries Read\+Next\+Binary} (double $\ast$val, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classDataFile_a33455d9fc76d3eed9408a9b351baf2a0}\label{classDataFile_a33455d9fc76d3eed9408a9b351baf2a0}} 
+bool {\bfseries Read\+Next\+Binary} (char $\ast$val, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classDataFile_a260db80d8ba8c9144c2f175419d00725}\label{classDataFile_a260db80d8ba8c9144c2f175419d00725}} 
+bool {\bfseries Read\+Next\+Binary} (bool $\ast$val, size\+\_\+t n)
+\item 
+\mbox{\Hypertarget{classDataFile_a5b8a8b43cb4299db799d1c8a43779e34}\label{classDataFile_a5b8a8b43cb4299db799d1c8a43779e34}} 
+bool {\bfseries Write\+Parameter} (const char $\ast$const param, int val)
+\item 
+\mbox{\Hypertarget{classDataFile_aafcc3735343846dcb640fe2f6282f100}\label{classDataFile_aafcc3735343846dcb640fe2f6282f100}} 
+bool {\bfseries Write\+Parameter} (const char $\ast$const param, double val)
+\item 
+\mbox{\Hypertarget{classDataFile_a45dbeebf5cfd79b5810f6c026a0424f2}\label{classDataFile_a45dbeebf5cfd79b5810f6c026a0424f2}} 
+bool {\bfseries Write\+Parameter} (const char $\ast$const param, bool val)
+\item 
+\mbox{\Hypertarget{classDataFile_a1daa36fc143dcbe50ca3d9c9e24dbfaa}\label{classDataFile_a1daa36fc143dcbe50ca3d9c9e24dbfaa}} 
+bool {\bfseries Write\+Parameter} (const char $\ast$const param, const char $\ast$const val)
+\item 
+\mbox{\Hypertarget{classDataFile_a95b29a2d6786c26ef071234ceb0f55f0}\label{classDataFile_a95b29a2d6786c26ef071234ceb0f55f0}} 
+bool {\bfseries Write\+Quoted\+String\+Parameter} (const char $\ast$const param, const char $\ast$const val)
+\item 
+\mbox{\Hypertarget{classDataFile_a76784566aede6853e3d340be65ff7a31}\label{classDataFile_a76784566aede6853e3d340be65ff7a31}} 
+bool {\bfseries Write\+Parameter} (const char $\ast$const param, size\+\_\+t n, int $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_ad7a970d76493e84084e2f77c52abc345}\label{classDataFile_ad7a970d76493e84084e2f77c52abc345}} 
+bool {\bfseries Write\+Parameter} (const char $\ast$const param, size\+\_\+t n, double $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_a49343c38778bccc3470041c7789003d8}\label{classDataFile_a49343c38778bccc3470041c7789003d8}} 
+bool {\bfseries Write\+Parameter} (const char $\ast$const param, size\+\_\+t n, bool $\ast$val)
+\item 
+\mbox{\Hypertarget{classDataFile_adeee9138ab175d7694e7a58dd0824064}\label{classDataFile_adeee9138ab175d7694e7a58dd0824064}} 
+bool {\bfseries Write\+Next} (int val, char after=0)
+\item 
+\mbox{\Hypertarget{classDataFile_a00ef78d7696e79408c1f3a730496edff}\label{classDataFile_a00ef78d7696e79408c1f3a730496edff}} 
+bool {\bfseries Write\+Next} (double val, char after=0)
+\item 
+\mbox{\Hypertarget{classDataFile_a6a83a4befefdefd66b5be9e8aab38765}\label{classDataFile_a6a83a4befefdefd66b5be9e8aab38765}} 
+bool {\bfseries Write\+Next} (bool val, char after=0)
+\item 
+\mbox{\Hypertarget{classDataFile_aaf2d77333318fb3c40e7af6399b9d094}\label{classDataFile_aaf2d77333318fb3c40e7af6399b9d094}} 
+bool {\bfseries Write\+Next} (const char $\ast$const val, char after=0)
+\item 
+\mbox{\Hypertarget{classDataFile_a03cbc5e74827825d059464b9c0f69024}\label{classDataFile_a03cbc5e74827825d059464b9c0f69024}} 
+bool {\bfseries Write\+Next\+Quoted\+String} (const char $\ast$const val, char after=0)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDataFile_a3e74df2c5e02f3878b8b8d6c4b93bb94}\label{classDataFile_a3e74df2c5e02f3878b8b8d6c4b93bb94}} 
+static bool {\bfseries End\+Of\+Line\+Test} (char $\ast$$\ast$p)
+\item 
+\mbox{\Hypertarget{classDataFile_aa98c1853271c049f629cedd928890833}\label{classDataFile_aa98c1853271c049f629cedd928890833}} 
+static size\+\_\+t {\bfseries Count\+Tokens} (const char $\ast$string)
+\item 
+\mbox{\Hypertarget{classDataFile_a8d6c6e221223fb3f1db49be40354846c}\label{classDataFile_a8d6c6e221223fb3f1db49be40354846c}} 
+static size\+\_\+t {\bfseries Return\+Tokens} (char $\ast$string, char $\ast$ptrs\mbox{[}$\,$\mbox{]}, size\+\_\+t size)
+\item 
+\mbox{\Hypertarget{classDataFile_a045eb13c3c08cb164d06c31170b110fc}\label{classDataFile_a045eb13c3c08cb164d06c31170b110fc}} 
+static size\+\_\+t {\bfseries Count\+Tokens} (const char $\ast$string, const char $\ast$separators)
+\item 
+\mbox{\Hypertarget{classDataFile_aeec5490fb0f155b5204c1a2ff9bf1380}\label{classDataFile_aeec5490fb0f155b5204c1a2ff9bf1380}} 
+static size\+\_\+t {\bfseries Return\+Tokens} (char $\ast$string, char $\ast$ptrs\mbox{[}$\,$\mbox{]}, size\+\_\+t size, const char $\ast$separators)
+\item 
+\mbox{\Hypertarget{classDataFile_a8c4cfac266b2f1ff3ba457d8cdf24559}\label{classDataFile_a8c4cfac266b2f1ff3ba457d8cdf24559}} 
+static size\+\_\+t {\bfseries Count\+Lines} (const char $\ast$string)
+\item 
+\mbox{\Hypertarget{classDataFile_a6f5943c3c06b6f5cf80a5659a5b6d5de}\label{classDataFile_a6f5943c3c06b6f5cf80a5659a5b6d5de}} 
+static size\+\_\+t {\bfseries Return\+Lines} (char $\ast$string, char $\ast$ptrs\mbox{[}$\,$\mbox{]}, size\+\_\+t size)
+\item 
+\mbox{\Hypertarget{classDataFile_a19f17a9baf43ac709a251a96c089c939}\label{classDataFile_a19f17a9baf43ac709a251a96c089c939}} 
+static void {\bfseries Strip} (char $\ast$str)
+\item 
+\mbox{\Hypertarget{classDataFile_a5bdd0ea2a8ba6dc97c2a17823840c620}\label{classDataFile_a5bdd0ea2a8ba6dc97c2a17823840c620}} 
+static bool {\bfseries String\+Ends\+With} (const char $\ast$str, const char $\ast$suffix)
+\item 
+\mbox{\Hypertarget{classDataFile_ad7b73b72c8d0346bbca27b6261fbc488}\label{classDataFile_ad7b73b72c8d0346bbca27b6261fbc488}} 
+static bool {\bfseries String\+Starts\+With} (const char $\ast$str, const char $\ast$suffix)
+\item 
+\mbox{\Hypertarget{classDataFile_a056409178644d72a55a7d7c94a9a1703}\label{classDataFile_a056409178644d72a55a7d7c94a9a1703}} 
+static double {\bfseries Double} (const char $\ast$buf)
+\item 
+\mbox{\Hypertarget{classDataFile_a7234019a47883bb2c6150e7421d3bbfa}\label{classDataFile_a7234019a47883bb2c6150e7421d3bbfa}} 
+static void {\bfseries Double} (const char $\ast$buf, size\+\_\+t n, double $\ast$d)
+\item 
+\mbox{\Hypertarget{classDataFile_af889ba28edf86a73e7ebbf1fa2c433a4}\label{classDataFile_af889ba28edf86a73e7ebbf1fa2c433a4}} 
+static int {\bfseries Int} (const char $\ast$buf)
+\item 
+\mbox{\Hypertarget{classDataFile_a86b0f43e356d24dfc83c7880969e88bc}\label{classDataFile_a86b0f43e356d24dfc83c7880969e88bc}} 
+static void {\bfseries Int} (const char $\ast$buf, size\+\_\+t n, int $\ast$d)
+\item 
+\mbox{\Hypertarget{classDataFile_ab78130a3f1b33e3cb036d332fcef9b67}\label{classDataFile_ab78130a3f1b33e3cb036d332fcef9b67}} 
+static bool {\bfseries Bool} (const char $\ast$buf)
+\item 
+\mbox{\Hypertarget{classDataFile_a2b64d9b9bdef6ee8eb9f3063e476b061}\label{classDataFile_a2b64d9b9bdef6ee8eb9f3063e476b061}} 
+static bool {\bfseries Ends\+With} (const char $\ast$str, const char $\ast$suffix)
+\item 
+\mbox{\Hypertarget{classDataFile_a4aa2553d376518e8f94c283c2d747da2}\label{classDataFile_a4aa2553d376518e8f94c283c2d747da2}} 
+static std\+::wstring {\bfseries Convert\+UTF8\+To\+Wide} (const std\+::string \&str)
+\item 
+\mbox{\Hypertarget{classDataFile_a14a4f9a1fbbc563bc92e9363f0bd77e9}\label{classDataFile_a14a4f9a1fbbc563bc92e9363f0bd77e9}} 
+static std\+::string {\bfseries Convert\+Wide\+To\+UTF8} (const std\+::wstring \&wstr)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 19 of file Data\+File.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Data\+File.\+h\item 
+src/Data\+File.\+cpp\end{DoxyCompactItemize}

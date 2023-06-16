@@ -1,0 +1,252 @@
+\hypertarget{classBody}{}\doxysection{Body Class Reference}
+\label{classBody}\index{Body@{Body}}
+
+
+Inheritance diagram for Body\+:
+% FIG 0
+
+
+Collaboration diagram for Body\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classBody_aa256c2c6545365beab9192278224c848}\label{classBody_aa256c2c6545365beab9192278224c848}} 
+{\bfseries Body} (d\+World\+ID world\+ID)
+\item 
+\mbox{\Hypertarget{classBody_a54d52ac3fdec9bb33ebef4d2b5b852bd}\label{classBody_a54d52ac3fdec9bb33ebef4d2b5b852bd}} 
+virtual void {\bfseries Late\+Initialisation} ()
+\item 
+\mbox{\Hypertarget{classBody_a7f5bf991655fdf74cf6da7035b38ecf0}\label{classBody_a7f5bf991655fdf74cf6da7035b38ecf0}} 
+{\bfseries SMART\+\_\+\+ENUM} (Limit\+Test\+Result, limit\+Test\+Result\+Strings, limit\+Test\+Result\+Count, Within\+Limits, XPos\+Error, YPos\+Error, ZPos\+Error, XVel\+Error, YVel\+Error, ZVel\+Error, XAVel\+Error, YAVel\+Error, ZAVel\+Error, Numerical\+Error)
+\item 
+\mbox{\Hypertarget{classBody_adc423ae2c7587d2950d7504919cc8f9d}\label{classBody_adc423ae2c7587d2950d7504919cc8f9d}} 
+{\bfseries SMART\+\_\+\+ENUM} (Drag\+Control, drag\+Control\+Strings, drag\+Control\+Count, No\+Drag, Drag\+Coefficients, Drag\+CylinderX, Drag\+CylinderY, Drag\+CylinderZ)
+\item 
+\mbox{\Hypertarget{classBody_ac5f32aaa883f02804c9d19bec3337134}\label{classBody_ac5f32aaa883f02804c9d19bec3337134}} 
+void {\bfseries Set\+Construction\+Position} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_ad620d0b697d5b7a7da908a93a974d51d}\label{classBody_ad620d0b697d5b7a7da908a93a974d51d}} 
+const double $\ast$ {\bfseries Get\+Construction\+Position} () const
+\item 
+\mbox{\Hypertarget{classBody_ad518b2f297a1c9f98fa14dc120b52f07}\label{classBody_ad518b2f297a1c9f98fa14dc120b52f07}} 
+void {\bfseries Set\+Construction\+Density} (double construction\+Density)
+\item 
+\mbox{\Hypertarget{classBody_af32922d043af51f5ad5b4c68c06278f5}\label{classBody_af32922d043af51f5ad5b4c68c06278f5}} 
+double {\bfseries Get\+Construction\+Density} () const
+\item 
+\mbox{\Hypertarget{classBody_a88d96f04247a7fdacf5cec112c43b42c}\label{classBody_a88d96f04247a7fdacf5cec112c43b42c}} 
+void {\bfseries Set\+Position} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a70735d6525be6ecc30c48e5b2f42d0cb}\label{classBody_a70735d6525be6ecc30c48e5b2f42d0cb}} 
+void {\bfseries Set\+Quaternion} (double n, double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a97e4f6a6e05915751ea733fc91b2263c}\label{classBody_a97e4f6a6e05915751ea733fc91b2263c}} 
+std\+::string $\ast$ {\bfseries Set\+Position} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classBody_a464e80e4f21b2d9c1dba78f525143403}\label{classBody_a464e80e4f21b2d9c1dba78f525143403}} 
+std\+::string $\ast$ {\bfseries Set\+Quaternion} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classBody_a2abb65e5cda96bd987b0dfd9efe7d611}\label{classBody_a2abb65e5cda96bd987b0dfd9efe7d611}} 
+void {\bfseries Set\+Linear\+Velocity} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a63d60608ac1fddb03b21e05bd6892876}\label{classBody_a63d60608ac1fddb03b21e05bd6892876}} 
+void {\bfseries Set\+Angular\+Velocity} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a95a07482724b36fd5791c0f5394a707f}\label{classBody_a95a07482724b36fd5791c0f5394a707f}} 
+std\+::string $\ast$ {\bfseries Set\+Linear\+Velocity} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classBody_a8dfa747cbfd68a96503158faa07a4f2d}\label{classBody_a8dfa747cbfd68a96503158faa07a4f2d}} 
+std\+::string $\ast$ {\bfseries Set\+Angular\+Velocity} (const std\+::string \&buf)
+\item 
+\mbox{\Hypertarget{classBody_a70565593017a759fa86f6f118536e5eb}\label{classBody_a70565593017a759fa86f6f118536e5eb}} 
+void {\bfseries Set\+Position\+Delta} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a3e3a311d92352ab525416940bfb81768}\label{classBody_a3e3a311d92352ab525416940bfb81768}} 
+void {\bfseries Set\+Quaternion\+Delta} (double n, double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a251644e578d3bb67d3dcb0bfdbae7f7d}\label{classBody_a251644e578d3bb67d3dcb0bfdbae7f7d}} 
+void {\bfseries Set\+Mass} (const d\+Mass $\ast$mass)
+\item 
+\mbox{\Hypertarget{classBody_a3b0f3e5774eb0a9de5fe5ab77ec6ef41}\label{classBody_a3b0f3e5774eb0a9de5fe5ab77ec6ef41}} 
+void {\bfseries Set\+Position\+Low\+Bound} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a1500a6d90717c2234c3658a288f4eca5}\label{classBody_a1500a6d90717c2234c3658a288f4eca5}} 
+void {\bfseries Set\+Position\+High\+Bound} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_afe3224432406154ad2549c6343cb5ed3}\label{classBody_afe3224432406154ad2549c6343cb5ed3}} 
+void {\bfseries Set\+Linear\+Velocity\+Low\+Bound} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_aa8249fa8bb6eed6675be701c65e7bd5d}\label{classBody_aa8249fa8bb6eed6675be701c65e7bd5d}} 
+void {\bfseries Set\+Linear\+Velocity\+High\+Bound} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a59bc8592ed96e17cda078193fcae3ca4}\label{classBody_a59bc8592ed96e17cda078193fcae3ca4}} 
+void {\bfseries Set\+Angular\+Velocity\+Low\+Bound} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_afacdf936c899b649714c66141185319f}\label{classBody_afacdf936c899b649714c66141185319f}} 
+void {\bfseries Set\+Angular\+Velocity\+High\+Bound} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a4e8a08ba7c60ed508c5b3df6bcc8b33b}\label{classBody_a4e8a08ba7c60ed508c5b3df6bcc8b33b}} 
+const double $\ast$ {\bfseries Get\+Position\+Low\+Bound} () const
+\item 
+\mbox{\Hypertarget{classBody_a93b6c78112677d63642962bb40f59e72}\label{classBody_a93b6c78112677d63642962bb40f59e72}} 
+const double $\ast$ {\bfseries Get\+Position\+High\+Bound} () const
+\item 
+\mbox{\Hypertarget{classBody_a3db5e8797dbbf621e1b34fe942bfc24e}\label{classBody_a3db5e8797dbbf621e1b34fe942bfc24e}} 
+const double $\ast$ {\bfseries Get\+Linear\+Velocity\+Low\+Bound} () const
+\item 
+\mbox{\Hypertarget{classBody_ad9262e45fc4faa70dc625ec818775afd}\label{classBody_ad9262e45fc4faa70dc625ec818775afd}} 
+const double $\ast$ {\bfseries Get\+Linear\+Velocity\+High\+Bound} () const
+\item 
+\mbox{\Hypertarget{classBody_a9e30894bdbdfe99a39f7b7eb211a63da}\label{classBody_a9e30894bdbdfe99a39f7b7eb211a63da}} 
+const double $\ast$ {\bfseries Get\+Angular\+Velocity\+Low\+Bound} () const
+\item 
+\mbox{\Hypertarget{classBody_ac6db8f69a971d7e317b7d20c71460398}\label{classBody_ac6db8f69a971d7e317b7d20c71460398}} 
+const double $\ast$ {\bfseries Get\+Angular\+Velocity\+High\+Bound} () const
+\item 
+\mbox{\Hypertarget{classBody_aecc049067aaf1f090437020275f43dfd}\label{classBody_aecc049067aaf1f090437020275f43dfd}} 
+void {\bfseries Set\+Linear\+Damping} (double linear\+Damping)
+\item 
+\mbox{\Hypertarget{classBody_a403ac995eb6294ca091cba41dfaee3e4}\label{classBody_a403ac995eb6294ca091cba41dfaee3e4}} 
+void {\bfseries Set\+Angular\+Damping} (double angular\+Damping)
+\item 
+\mbox{\Hypertarget{classBody_a27f8e445a6fdf9be7e4a47636ea47900}\label{classBody_a27f8e445a6fdf9be7e4a47636ea47900}} 
+void {\bfseries Set\+Linear\+Damping\+Threshold} (double linear\+Damping\+Threshold)
+\item 
+\mbox{\Hypertarget{classBody_a08665aa0332a0f6d09a8f485bdfd4100}\label{classBody_a08665aa0332a0f6d09a8f485bdfd4100}} 
+void {\bfseries Set\+Angular\+Damping\+Threshold} (double angular\+Damping\+Threshold)
+\item 
+\mbox{\Hypertarget{classBody_a29927c8a1d2474dcb61cdb81fdb3c33b}\label{classBody_a29927c8a1d2474dcb61cdb81fdb3c33b}} 
+void {\bfseries Set\+Max\+Angular\+Speed} (double max\+Angular\+Speed)
+\item 
+\mbox{\Hypertarget{classBody_a839e24082b725316fe946ed4dec21cc8}\label{classBody_a839e24082b725316fe946ed4dec21cc8}} 
+const double $\ast$ {\bfseries Get\+Position} ()
+\item 
+\mbox{\Hypertarget{classBody_a83c04adab09ac6c7b9912e9898e84562}\label{classBody_a83c04adab09ac6c7b9912e9898e84562}} 
+const double $\ast$ {\bfseries Get\+Quaternion} ()
+\item 
+\mbox{\Hypertarget{classBody_ada23679fc5a00128c16b824e3e7a9367}\label{classBody_ada23679fc5a00128c16b824e3e7a9367}} 
+const double $\ast$ {\bfseries Get\+Linear\+Velocity} ()
+\item 
+\mbox{\Hypertarget{classBody_afcb5972ee8ce4fa7a119afceea186616}\label{classBody_afcb5972ee8ce4fa7a119afceea186616}} 
+const double $\ast$ {\bfseries Get\+Angular\+Velocity} ()
+\item 
+\mbox{\Hypertarget{classBody_a035e702489930c7888b76c1f667dae08}\label{classBody_a035e702489930c7888b76c1f667dae08}} 
+void {\bfseries Get\+Position} (\mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$pos)
+\item 
+\mbox{\Hypertarget{classBody_ae5230d7c22b2ae591c529c383a5b1b3c}\label{classBody_ae5230d7c22b2ae591c529c383a5b1b3c}} 
+void {\bfseries Get\+Quaternion} (\mbox{\hyperlink{classpgd_1_1Quaternion}{pgd\+::\+Quaternion}} $\ast$quat)
+\item 
+\mbox{\Hypertarget{classBody_ad7ab5ea5e7b15a77e32b7dd8dc065368}\label{classBody_ad7ab5ea5e7b15a77e32b7dd8dc065368}} 
+void {\bfseries Get\+Relative\+Position} (\mbox{\hyperlink{classBody}{Body}} $\ast$rel, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$pos)
+\item 
+\mbox{\Hypertarget{classBody_a7b5a0f68b29ad41c34ab24735711d9f4}\label{classBody_a7b5a0f68b29ad41c34ab24735711d9f4}} 
+void {\bfseries Get\+Relative\+Quaternion} (\mbox{\hyperlink{classBody}{Body}} $\ast$rel, \mbox{\hyperlink{classpgd_1_1Quaternion}{pgd\+::\+Quaternion}} $\ast$quat)
+\item 
+\mbox{\Hypertarget{classBody_a695c4534ce5f7eee5d59d344836ec66b}\label{classBody_a695c4534ce5f7eee5d59d344836ec66b}} 
+void {\bfseries Get\+Relative\+Linear\+Velocity} (\mbox{\hyperlink{classBody}{Body}} $\ast$rel, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$vel)
+\item 
+\mbox{\Hypertarget{classBody_ad5b17537b05a7a08c6380b57e1c9c31d}\label{classBody_ad5b17537b05a7a08c6380b57e1c9c31d}} 
+void {\bfseries Get\+Relative\+Angular\+Velocity} (\mbox{\hyperlink{classBody}{Body}} $\ast$rel, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$r\+Vel)
+\item 
+\mbox{\Hypertarget{classBody_a44bdcc009581043cee6b3a8ea1e6babc}\label{classBody_a44bdcc009581043cee6b3a8ea1e6babc}} 
+double {\bfseries Get\+Mass} () const
+\item 
+\mbox{\Hypertarget{classBody_a5e2b8252582b0afa5cae6ffb626eda52}\label{classBody_a5e2b8252582b0afa5cae6ffb626eda52}} 
+void {\bfseries Get\+Mass} (d\+Mass $\ast$mass) const
+\item 
+\mbox{\Hypertarget{classBody_a7a12e11459918ffdc3afa165cea43253}\label{classBody_a7a12e11459918ffdc3afa165cea43253}} 
+double {\bfseries Get\+Linear\+Kinetic\+Energy} ()
+\item 
+\mbox{\Hypertarget{classBody_a8e7b37800ad7f0d195e799303e5a45dc}\label{classBody_a8e7b37800ad7f0d195e799303e5a45dc}} 
+void {\bfseries Get\+Linear\+Kinetic\+Energy} (d\+Vector3 ke)
+\item 
+\mbox{\Hypertarget{classBody_a419da3d4fa33c95ff2308867af4c1321}\label{classBody_a419da3d4fa33c95ff2308867af4c1321}} 
+double {\bfseries Get\+Rotational\+Kinetic\+Energy} ()
+\item 
+\mbox{\Hypertarget{classBody_a6726219b4aba48fb3e1d56cb57653661}\label{classBody_a6726219b4aba48fb3e1d56cb57653661}} 
+double {\bfseries Get\+Gravitational\+Potential\+Energy} ()
+\item 
+\mbox{\Hypertarget{classBody_a902b34c47ab070c08c2b68148a9b4b95}\label{classBody_a902b34c47ab070c08c2b68148a9b4b95}} 
+d\+Body\+ID {\bfseries Get\+Body\+ID} () const
+\item 
+\mbox{\Hypertarget{classBody_a7234b514fe1f9d8cd84d2283d22d9a92}\label{classBody_a7234b514fe1f9d8cd84d2283d22d9a92}} 
+void {\bfseries Set\+Initial\+Position} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_a916c81354885bea6badde4b0d6e19df4}\label{classBody_a916c81354885bea6badde4b0d6e19df4}} 
+void {\bfseries Set\+Initial\+Quaternion} (double n, double x, double y, double z)
+\item 
+\mbox{\Hypertarget{classBody_af1616a9cb22c82a2f8fb065022606b95}\label{classBody_af1616a9cb22c82a2f8fb065022606b95}} 
+const double $\ast$ {\bfseries Get\+Initial\+Position} ()
+\item 
+\mbox{\Hypertarget{classBody_a30dda02ba47c1309d3a16ef5d7f88e15}\label{classBody_a30dda02ba47c1309d3a16ef5d7f88e15}} 
+const double $\ast$ {\bfseries Get\+Initial\+Quaternion} ()
+\item 
+\mbox{\Hypertarget{classBody_a915d5b050861b9ed052821f5c831d85d}\label{classBody_a915d5b050861b9ed052821f5c831d85d}} 
+Limit\+Test\+Result {\bfseries Test\+Limits} ()
+\item 
+\mbox{\Hypertarget{classBody_a0f39a789151d11a590b1821d76aa0fbb}\label{classBody_a0f39a789151d11a590b1821d76aa0fbb}} 
+void {\bfseries Enter\+Construction\+Mode} ()
+\item 
+\mbox{\Hypertarget{classBody_a9c6c09b75fdb2c0daf7729f99bd2749d}\label{classBody_a9c6c09b75fdb2c0daf7729f99bd2749d}} 
+void {\bfseries Enter\+Run\+Mode} ()
+\item 
+\mbox{\Hypertarget{classBody_a5021b0f4e3496d1a33f964b57ba5e203}\label{classBody_a5021b0f4e3496d1a33f964b57ba5e203}} 
+void {\bfseries Set\+Graphic\+File1} (const std\+::string \&graphic\+File)
+\item 
+\mbox{\Hypertarget{classBody_a3a528068c59a42ea811210b4ea3850e2}\label{classBody_a3a528068c59a42ea811210b4ea3850e2}} 
+std\+::string {\bfseries Get\+Graphic\+File1} () const
+\item 
+\mbox{\Hypertarget{classBody_a07909bd9e9693e4da931b0f1c3efc193}\label{classBody_a07909bd9e9693e4da931b0f1c3efc193}} 
+void {\bfseries Set\+Graphic\+File2} (const std\+::string \&graphic\+File)
+\item 
+\mbox{\Hypertarget{classBody_a6180ced30378cdfda8799328bc3cb981}\label{classBody_a6180ced30378cdfda8799328bc3cb981}} 
+std\+::string {\bfseries Get\+Graphic\+File2} () const
+\item 
+\mbox{\Hypertarget{classBody_adc40a22287e6f0782c1ca51f15ff3cbf}\label{classBody_adc40a22287e6f0782c1ca51f15ff3cbf}} 
+void {\bfseries Set\+Graphic\+File3} (const std\+::string \&graphic\+File)
+\item 
+\mbox{\Hypertarget{classBody_a273da66ff6d4577d1ab3cb3161d17ae4}\label{classBody_a273da66ff6d4577d1ab3cb3161d17ae4}} 
+std\+::string {\bfseries Get\+Graphic\+File3} () const
+\item 
+\mbox{\Hypertarget{classBody_ab9a4fcbd2b7372d118a7f4406ed6ad2e}\label{classBody_ab9a4fcbd2b7372d118a7f4406ed6ad2e}} 
+virtual std\+::string {\bfseries dump\+To\+String} () override
+\item 
+\mbox{\Hypertarget{classBody_a71dd11f753bf1135b081678d82120f23}\label{classBody_a71dd11f753bf1135b081678d82120f23}} 
+virtual std\+::string $\ast$ {\bfseries create\+From\+Attributes} () override
+\item 
+\mbox{\Hypertarget{classBody_af693e6629868dd627f16e575933d8ebd}\label{classBody_af693e6629868dd627f16e575933d8ebd}} 
+virtual void {\bfseries save\+To\+Attributes} () override
+\item 
+\mbox{\Hypertarget{classBody_ac28961822ee0fd9afd5f6e7455dbbb00}\label{classBody_ac28961822ee0fd9afd5f6e7455dbbb00}} 
+virtual void {\bfseries append\+To\+Attributes} () override
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classBody_ac459382a35a0e18511a3b2495b00cd8c}\label{classBody_ac459382a35a0e18511a3b2495b00cd8c}} 
+static void {\bfseries Parallel\+Axis} (d\+Mass $\ast$mass\+Properties, const double $\ast$translation, const double $\ast$quaternion, d\+Mass $\ast$new\+Mass\+Properties)
+\item 
+\mbox{\Hypertarget{classBody_a047640d5c9e92091147427ebc74139ea}\label{classBody_a047640d5c9e92091147427ebc74139ea}} 
+static void {\bfseries Parallel\+Axis} (double x, double y, double z, double mass, double ixx, double iyy, double izz, double ixy, double iyz, double izx, double ang, double ax, double ay, double az, double $\ast$ixxp, double $\ast$iyyp, double $\ast$izzp, double $\ast$ixyp, double $\ast$iyzp, double $\ast$izxp)
+\item 
+\mbox{\Hypertarget{classBody_a69bb780dc87b4f84ce727e15fe7e29c4}\label{classBody_a69bb780dc87b4f84ce727e15fe7e29c4}} 
+static double {\bfseries Get\+Projected\+Angle} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&plane\+Normal, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&vector1, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&vector2)
+\item 
+\mbox{\Hypertarget{classBody_a2963270762b1a1fd1241883efd12a503}\label{classBody_a2963270762b1a1fd1241883efd12a503}} 
+static std\+::string {\bfseries Mass\+Check} (const d\+Mass $\ast$m)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 20 of file Body.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Body.\+h\item 
+src/Body.\+cpp\end{DoxyCompactItemize}

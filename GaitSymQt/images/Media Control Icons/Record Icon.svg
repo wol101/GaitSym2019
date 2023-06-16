@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="283.46px" height="283.46px" viewBox="0 0 283.46 283.46" enable-background="new 0 0 283.46 283.46" xml:space="preserve">
+<path stroke="#72B02E" stroke-width="22.6772" stroke-miterlimit="10" d="M269.579,255.427c0,7.657-6.207,13.864-13.863,13.864
+	H28.326c-7.657,0-13.865-6.207-13.865-13.864V28.038c0-7.657,6.208-13.865,13.865-13.865h227.39c7.656,0,13.863,6.208,13.863,13.865
+	V255.427z"/>
+<g id="layer1_1_" inkscape:label="Layer 1" inkscape:groupmode="layer">
+	
+		<radialGradient id="path3835_1_" cx="149.252" cy="66.2119" r="64.9382" gradientTransform="matrix(2.178 0 0 -2.1887 -181.2793 310.5059)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#EF2929"/>
+		<stop  offset="1" style="stop-color:#CC0000"/>
+	</radialGradient>
+	
+		<linearGradient id="path3835_2_" gradientUnits="userSpaceOnUse" x1="321.0254" y1="-82.6597" x2="321.4904" y2="-191.6823" gradientTransform="matrix(0.9207 0 0 -0.9936 -151.9873 4.9272)">
+		<stop  offset="0" style="stop-color:#000000"/>
+		<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0.7835"/>
+	</linearGradient>
+	
+		<path id="path3835" sodipodi:cx="22.5" sodipodi:ry="13" sodipodi:cy="22" sodipodi:type="arc" sodipodi:rx="14" inkscape:r_cy="true" inkscape:r_cx="true" opacity="0.15" fill="url(#path3835_1_)" stroke="url(#path3835_2_)" stroke-width="3.1366" stroke-linecap="square" stroke-linejoin="round" enable-background="new    " d="
+		M201.367,140.303c0,31.864-25.779,57.696-57.58,57.696c-31.798,0-57.573-25.832-57.573-57.696c0-31.866,25.775-57.69,57.573-57.69
+		C175.588,82.613,201.367,108.438,201.367,140.303z"/>
+	
+		<radialGradient id="path2226_1_" cx="263.1748" cy="-1210.7324" r="69.8945" gradientTransform="matrix(1.1505 0 0 -0.3036 -160.7627 -166.2759)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#000000"/>
+		<stop  offset="1" style="stop-color:#000000;stop-opacity:0"/>
+	</radialGradient>
+	
+		<path id="path2226" sodipodi:cx="24.837126" sodipodi:ry="8.3968935" sodipodi:cy="36.421127" sodipodi:type="arc" sodipodi:rx="15.644737" inkscape:export-xdpi="90" inkscape:export-filename="/home/lapo/Desktop/Grafica/Icone/media-actions.png" inkscape:export-ydpi="90" opacity="0.04" fill="url(#path2226_1_)" enable-background="new    " d="
+		M222.42,201.304c0.014,11.716-35.975,21.218-80.376,21.222c-44.399,0.004-80.409-9.493-80.424-21.212v-0.01
+		c-0.013-11.72,35.97-21.221,80.378-21.226c44.403-0.005,80.409,9.492,80.422,21.207C222.42,201.295,222.42,201.295,222.42,201.304z
+		"/>
+	
+		<radialGradient id="path2525_1_" cx="152.1621" cy="60.2705" r="64.9351" gradientTransform="matrix(2.1169 0 0 -2.1273 -180.1348 294.9121)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#EF2929"/>
+		<stop  offset="1" style="stop-color:#CC0000"/>
+	</radialGradient>
+	
+		<path id="path2525" sodipodi:cx="22.5" sodipodi:ry="13" sodipodi:cy="22" sodipodi:type="arc" sodipodi:rx="14" fill="url(#path2525_1_)" stroke="#CC0000" stroke-width="1.0757" stroke-linecap="square" stroke-linejoin="round" d="
+		M197.936,142.121c0,30.967-25.051,56.076-55.956,56.076c-30.906,0-55.962-25.108-55.962-56.076c0-30.975,25.057-56.08,55.962-56.08
+		C172.885,86.041,197.936,111.146,197.936,142.121z"/>
+	
+		<path id="path2527" sodipodi:cx="24" sodipodi:ry="14" sodipodi:cy="24" sodipodi:type="arc" sodipodi:rx="14" fill="none" stroke="#F77D7D" stroke-width="1.2174" stroke-linecap="square" stroke-linejoin="round" d="
+		M193.391,142.121c0,28.366-23,51.366-51.366,51.366c-28.372,0-51.37-23-51.37-51.366c0-28.372,22.999-51.37,51.37-51.37
+		C170.391,90.75,193.391,113.749,193.391,142.121z"/>
+	
+		<radialGradient id="path2529_1_" cx="91.6714" cy="126.1099" r="58.0692" gradientTransform="matrix(3.6588 0 0 -2.0808 -221 324.8281)" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0"/>
+	</radialGradient>
+	<path id="path2529" sodipodi:nodetypes="cccsc" opacity="0.6" fill="url(#path2529_1_)" enable-background="new    " d="
+		M141.325,88.517c-28.053,0.354-50.939,22.303-52.764,49.974c27.327,11.236,61.951-6.481,103.371-15.112
+		c-3.076-12.272-20.348-34.862-49.907-34.862C141.788,88.517,141.555,88.512,141.325,88.517z"/>
+</g>
+</svg>

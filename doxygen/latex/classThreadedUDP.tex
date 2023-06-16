@@ -1,0 +1,92 @@
+\hypertarget{classThreadedUDP}{}\doxysection{Threaded\+UDP Class Reference}
+\label{classThreadedUDP}\index{ThreadedUDP@{ThreadedUDP}}
+
+
+Inheritance diagram for Threaded\+UDP\+:
+% FIG 0
+
+
+Collaboration diagram for Threaded\+UDP\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structThreadedUDP_1_1Packet}{Packet}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a9df747415b65d355d5f3b5057efefcc3}\label{classThreadedUDP_a9df747415b65d355d5f3b5057efefcc3}} 
+virtual int {\bfseries Receive\+UDPPacket} (\mbox{\hyperlink{structudp_1_1UDPPacket}{udp\+::\+UDPPacket}} $\ast$packet, int num\+Bytes, struct sockaddr\+\_\+in $\ast$sender)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_ac2d6ad9229fe2949acd3660ea9d57a17}\label{classThreadedUDP_ac2d6ad9229fe2949acd3660ea9d57a17}} 
+virtual int {\bfseries Send\+UDPPacket} (const struct sockaddr\+\_\+in \&destination, const \mbox{\hyperlink{structudp_1_1UDPPacket}{udp\+::\+UDPPacket}} $\ast$packet, int num\+Bytes)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a57aedbb4f951b59805616daec24f677f}\label{classThreadedUDP_a57aedbb4f951b59805616daec24f677f}} 
+virtual int {\bfseries Start\+Listener} (uint16\+\_\+t port)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a4b6c6098d1e40326e0e42fc27fdb0d84}\label{classThreadedUDP_a4b6c6098d1e40326e0e42fc27fdb0d84}} 
+virtual void {\bfseries Stop\+Listener} ()
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a3a8e1cc6923c584bd51d2bdb99e05fd3}\label{classThreadedUDP_a3a8e1cc6923c584bd51d2bdb99e05fd3}} 
+virtual int {\bfseries Check\+Receiver} (uint64\+\_\+t usec\+Timeout)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a0cfb0fae4f01b502d4a16661a5d7357e}\label{classThreadedUDP_a0cfb0fae4f01b502d4a16661a5d7357e}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structThreadedUDP_1_1Packet}{Packet}} $>$ {\bfseries Get\+Next\+Packet} ()
+\item 
+\mbox{\Hypertarget{classThreadedUDP_acf5a9842c04d31fd9c301dda49e07e89}\label{classThreadedUDP_acf5a9842c04d31fd9c301dda49e07e89}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structThreadedUDP_1_1Packet}{Packet}} $>$ {\bfseries Get\+Next\+Packet} (uint64\+\_\+t index)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a5d823c1084ccf5a16cbe4a73044426b9}\label{classThreadedUDP_a5d823c1084ccf5a16cbe4a73044426b9}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structThreadedUDP_1_1Packet}{Packet}} $>$ {\bfseries Get\+Next\+Packet} (const struct sockaddr\+\_\+in \&address)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_ab784467ffa23d78edf047837d25a8a65}\label{classThreadedUDP_ab784467ffa23d78edf047837d25a8a65}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structThreadedUDP_1_1Packet}{Packet}} $>$ {\bfseries Get\+Next\+Packet} (uint32\+\_\+t ip4\+Address, uint16\+\_\+t port)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_ada71ae851cb555e1e4d853fdec8e3e3c}\label{classThreadedUDP_ada71ae851cb555e1e4d853fdec8e3e3c}} 
+void {\bfseries Queue\+Send\+Packet} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structThreadedUDP_1_1Packet}{Packet}} $>$ packet)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a0960fdb6b087e3c1b7b8779693f45996}\label{classThreadedUDP_a0960fdb6b087e3c1b7b8779693f45996}} 
+void {\bfseries Clear\+Receive\+Buffers} ()
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a469479fa77e1c3736a93dd1b5ed7cb0c}\label{classThreadedUDP_a469479fa77e1c3736a93dd1b5ed7cb0c}} 
+void {\bfseries Remove\+Used\+Packets} ()
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a078b615bb4c85a45d9e4b1384e39c3cb}\label{classThreadedUDP_a078b615bb4c85a45d9e4b1384e39c3cb}} 
+void {\bfseries Remove\+Empty\+Queues} ()
+\item 
+\mbox{\Hypertarget{classThreadedUDP_ad5ecff45302aeffc2c1bb8cbd1a6b008}\label{classThreadedUDP_ad5ecff45302aeffc2c1bb8cbd1a6b008}} 
+void {\bfseries Clear\+Send\+Buffer} ()
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a46f1d8454459875340a94c12af9ba8d8}\label{classThreadedUDP_a46f1d8454459875340a94c12af9ba8d8}} 
+size\+\_\+t {\bfseries max\+Receive\+Queue\+Size} () const
+\item 
+\mbox{\Hypertarget{classThreadedUDP_aeeac0f6f716b7bce49fe644dfc4342a4}\label{classThreadedUDP_aeeac0f6f716b7bce49fe644dfc4342a4}} 
+void {\bfseries set\+Max\+Receive\+Queue\+Size} (size\+\_\+t max\+Receive\+Queue\+Size)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a0f1fa5827e0124ba69b284addfd84dfa}\label{classThreadedUDP_a0f1fa5827e0124ba69b284addfd84dfa}} 
+size\+\_\+t {\bfseries max\+Send\+Queue\+Size} () const
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a83c74ad9276d817aab8975cdf601fdcf}\label{classThreadedUDP_a83c74ad9276d817aab8975cdf601fdcf}} 
+void {\bfseries set\+Max\+Send\+Queue\+Size} (size\+\_\+t max\+Send\+Queue\+Size)
+\item 
+\mbox{\Hypertarget{classThreadedUDP_a86067b2091b21c2566d27fad9ba3c1bd}\label{classThreadedUDP_a86067b2091b21c2566d27fad9ba3c1bd}} 
+bool {\bfseries use\+Simple\+Receive\+Queue} () const
+\item 
+\mbox{\Hypertarget{classThreadedUDP_abf30779530dafc76219d2a47c0059863}\label{classThreadedUDP_abf30779530dafc76219d2a47c0059863}} 
+void {\bfseries set\+Use\+Simple\+Receive\+Queue} (bool use\+Simple\+Receive\+Queue)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 29 of file Threaded\+UDP.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Threaded\+UDP.\+h\item 
+src/Threaded\+UDP.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,233 @@
+\hypertarget{classMAMuscleComplete}{}\doxysection{MAMuscle\+Complete Class Reference}
+\label{classMAMuscleComplete}\index{MAMuscleComplete@{MAMuscleComplete}}
+
+
+Inheritance diagram for MAMuscle\+Complete\+:
+% FIG 0
+
+
+Collaboration diagram for MAMuscle\+Complete\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structMAMuscleComplete_1_1CalculateForceErrorParams}{Calculate\+Force\+Error\+Params}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a5e4ae0e1e71ccb4e8d78c81ab447a32f}\label{classMAMuscleComplete_a5e4ae0e1e71ccb4e8d78c81ab447a32f}} 
+{\bfseries SMART\+\_\+\+ENUM} (Strain\+Model, Strain\+Model\+Strings, Strain\+Model\+Count, linear, square)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_abc2c30c6cfd05b924b936f47aa353269}\label{classMAMuscleComplete_abc2c30c6cfd05b924b936f47aa353269}} 
+void {\bfseries Set\+Serial\+Elastic\+Properties} (double serial\+Strain\+At\+Fmax, double serial\+Strain\+Rate\+At\+Fmax, double tendon\+Length, MAMuscle\+Complete\+::\+Strain\+Model serial\+Strain\+Model)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ad9fd4f0f9e0fd8dd66701fe6e872bb46}\label{classMAMuscleComplete_ad9fd4f0f9e0fd8dd66701fe6e872bb46}} 
+void {\bfseries Set\+Parallel\+Elastic\+Properties} (double parallel\+Strain\+At\+Fmax, double parallel\+Strain\+Rate\+At\+Fmax, double parallel\+Element\+Length, MAMuscle\+Complete\+::\+Strain\+Model parallel\+Strain\+Model)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a9e30d6ec1f357508402301bb7fb0c979}\label{classMAMuscleComplete_a9e30d6ec1f357508402301bb7fb0c979}} 
+void {\bfseries Set\+Muscle\+Properties} (double v\+Max, double Fmax, double K, double Width)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a1c17ff85274dde5261830eb52bb595af}\label{classMAMuscleComplete_a1c17ff85274dde5261830eb52bb595af}} 
+void {\bfseries Set\+Activation\+Kinetics} (bool activation\+Kinetics, double ak\+Fast\+Twitch\+Proportion, double ak\+TActivationA, double ak\+TActivationB, double ak\+TDeactivationA, double ak\+TDeactivationB)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ada65493f3a7ebd7e0663cdd4aef4e038}\label{classMAMuscleComplete_ada65493f3a7ebd7e0663cdd4aef4e038}} 
+void {\bfseries Set\+Initial\+Fibre\+Length} (double initial\+Fibre\+Length)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a50d94a8f1699a7bf2890beda0bf1ac77}\label{classMAMuscleComplete_a50d94a8f1699a7bf2890beda0bf1ac77}} 
+void {\bfseries Set\+Activation\+Rate} (double activation\+Rate)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a75bb62a8cdba45714aa179ec80c46dcb}\label{classMAMuscleComplete_a75bb62a8cdba45714aa179ec80c46dcb}} 
+void {\bfseries Set\+Start\+Activation} (double start\+Activation)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a17c7c4eac7023536823b86240948f4ae}\label{classMAMuscleComplete_a17c7c4eac7023536823b86240948f4ae}} 
+void {\bfseries Set\+Minimum\+Activation} (double minimum\+Activation)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a0c764c4075f45283e6351cf414a35111}\label{classMAMuscleComplete_a0c764c4075f45283e6351cf414a35111}} 
+virtual double {\bfseries Get\+Metabolic\+Power} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a77fe661f20edf8480d1cac648717bf00}\label{classMAMuscleComplete_a77fe661f20edf8480d1cac648717bf00}} 
+virtual void {\bfseries Set\+Activation} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a58245d0c80f76afcb7fa6e51d218ae9c}\label{classMAMuscleComplete_a58245d0c80f76afcb7fa6e51d218ae9c}} 
+virtual double {\bfseries Get\+Activation} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_af15d679f78d724479212a2486d6a3fd8}\label{classMAMuscleComplete_af15d679f78d724479212a2486d6a3fd8}} 
+virtual double {\bfseries Get\+Elastic\+Energy} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a6e79909185b84bd18eea7cff23a7b8d4}\label{classMAMuscleComplete_a6e79909185b84bd18eea7cff23a7b8d4}} 
+double {\bfseries Get\+Stimulation} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ab40e9fd39ea77c37cd4862bdcbce28e6}\label{classMAMuscleComplete_ab40e9fd39ea77c37cd4862bdcbce28e6}} 
+double {\bfseries Get\+FCE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a311354d510bc6821922350b710eab375}\label{classMAMuscleComplete_a311354d510bc6821922350b710eab375}} 
+double {\bfseries Get\+LPE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a9df48ddbd4d6a41642099f992406c8b8}\label{classMAMuscleComplete_a9df48ddbd4d6a41642099f992406c8b8}} 
+double {\bfseries Get\+FPE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ad0fd19e266199c5c8376a68f7f67beff}\label{classMAMuscleComplete_ad0fd19e266199c5c8376a68f7f67beff}} 
+double {\bfseries Get\+LSE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_aee1812ef9d92a91b9d5f252c33d4b289}\label{classMAMuscleComplete_aee1812ef9d92a91b9d5f252c33d4b289}} 
+double {\bfseries Get\+FSE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_af9f550438539f29830db86c39b3a1b89}\label{classMAMuscleComplete_af9f550438539f29830db86c39b3a1b89}} 
+double {\bfseries Get\+VCE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a9804c898a27fb11725f9ce06ff05169d}\label{classMAMuscleComplete_a9804c898a27fb11725f9ce06ff05169d}} 
+double {\bfseries Get\+VPE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a8c1a67b390732fc18f3ae7ca7d63bede}\label{classMAMuscleComplete_a8c1a67b390732fc18f3ae7ca7d63bede}} 
+double {\bfseries Get\+VSE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_aed64ab44298650ab5ce7f707862240c5}\label{classMAMuscleComplete_aed64ab44298650ab5ce7f707862240c5}} 
+double {\bfseries Get\+ESE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_af333e1473583610c468327c7bf3149a5}\label{classMAMuscleComplete_af333e1473583610c468327c7bf3149a5}} 
+double {\bfseries Get\+EPE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ae2223c9a5bddd31afbcb2c8a0ac00faa}\label{classMAMuscleComplete_ae2223c9a5bddd31afbcb2c8a0ac00faa}} 
+double {\bfseries Get\+PSE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a40ba4f16fbf0db61c85ed08dc1500cb4}\label{classMAMuscleComplete_a40ba4f16fbf0db61c85ed08dc1500cb4}} 
+double {\bfseries Get\+PPE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a5f233d9f84dc829adfb5b5a8db6d0320}\label{classMAMuscleComplete_a5f233d9f84dc829adfb5b5a8db6d0320}} 
+double {\bfseries Get\+PCE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ad37db0a38c1ea22952d5ad2f53f50698}\label{classMAMuscleComplete_ad37db0a38c1ea22952d5ad2f53f50698}} 
+double {\bfseries Get\+SSE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a6f6370d6a82e3a5d7c6a7d0e14647b0d}\label{classMAMuscleComplete_a6f6370d6a82e3a5d7c6a7d0e14647b0d}} 
+double {\bfseries Get\+SPE} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a53bff599d0008ad9d8b42dec87b1b95a}\label{classMAMuscleComplete_a53bff599d0008ad9d8b42dec87b1b95a}} 
+virtual std\+::string {\bfseries dump\+To\+String} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_af4c5ba5c191e8ed021923836a8a6b879}\label{classMAMuscleComplete_af4c5ba5c191e8ed021923836a8a6b879}} 
+virtual void {\bfseries Late\+Initialisation} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_af1ffc58594263e185931674e77cf9dca}\label{classMAMuscleComplete_af1ffc58594263e185931674e77cf9dca}} 
+virtual std\+::string $\ast$ {\bfseries create\+From\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a028783a229294a35d50c043626fea7f8}\label{classMAMuscleComplete_a028783a229294a35d50c043626fea7f8}} 
+virtual void {\bfseries append\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a0c0f118e3e7b94d72b5d0d7ac507f1df}\label{classMAMuscleComplete_a0c0f118e3e7b94d72b5d0d7ac507f1df}} 
+double {\bfseries force\+Per\+Unit\+Area} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ae445738a1f5da607f912a1a6f8024a71}\label{classMAMuscleComplete_ae445738a1f5da607f912a1a6f8024a71}} 
+void {\bfseries set\+Force\+Per\+Unit\+Area} (double force\+Per\+Unit\+Area)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a24e8adcdb4a57599e9e5a6854d409971}\label{classMAMuscleComplete_a24e8adcdb4a57599e9e5a6854d409971}} 
+double {\bfseries v\+Max\+Factor} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a7802260317a8f623f336ec1685527fb7}\label{classMAMuscleComplete_a7802260317a8f623f336ec1685527fb7}} 
+void {\bfseries set\+VMax\+Factor} (double v\+Max\+Factor)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_acfbcd621186c1779d86f7d33dddf877e}\label{classMAMuscleComplete_acfbcd621186c1779d86f7d33dddf877e}} 
+double {\bfseries pca} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a433c5e19ba0ef42110c0ee87d7f8fc93}\label{classMAMuscleComplete_a433c5e19ba0ef42110c0ee87d7f8fc93}} 
+void {\bfseries set\+Pca} (double pca)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a3e47733d1e8c56b11ed50a2f0823b36a}\label{classMAMuscleComplete_a3e47733d1e8c56b11ed50a2f0823b36a}} 
+double {\bfseries fibre\+Length} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a768397bb5212f05c0b02fe749bc8bfc9}\label{classMAMuscleComplete_a768397bb5212f05c0b02fe749bc8bfc9}} 
+void {\bfseries set\+Fibre\+Length} (double fibre\+Length)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a99f26c5ccbf9d812998c436d51bb31b1}\label{classMAMuscleComplete_a99f26c5ccbf9d812998c436d51bb31b1}} 
+double {\bfseries activationK} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a3603b4afaf6a28ee939d06c1b5800995}\label{classMAMuscleComplete_a3603b4afaf6a28ee939d06c1b5800995}} 
+void {\bfseries set\+ActivationK} (double activationK)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a53af037592a929df6046f096a588a760}\label{classMAMuscleComplete_a53af037592a929df6046f096a588a760}} 
+double {\bfseries width} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a07a34e3aa5580e6c7e5632a05e1b0e0c}\label{classMAMuscleComplete_a07a34e3aa5580e6c7e5632a05e1b0e0c}} 
+void {\bfseries set\+Width} (double width)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ad271cc33a65d10735c19cb67dd5f90eb}\label{classMAMuscleComplete_ad271cc33a65d10735c19cb67dd5f90eb}} 
+double {\bfseries tendon\+Length} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a8d748e721159a131b000448052ebaf76}\label{classMAMuscleComplete_a8d748e721159a131b000448052ebaf76}} 
+void {\bfseries set\+Tendon\+Length} (double tendon\+Length)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a25ba27cfa676288390c78be960f32760}\label{classMAMuscleComplete_a25ba27cfa676288390c78be960f32760}} 
+double {\bfseries ak\+Fast\+Twitch\+Proportion} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a8b9eae4a793bb2094e489e8a1d8b1719}\label{classMAMuscleComplete_a8b9eae4a793bb2094e489e8a1d8b1719}} 
+void {\bfseries set\+Ak\+Fast\+Twitch\+Proportion} (double ak\+Fast\+Twitch\+Proportion)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a16b59379b8e829008f192be996d39ff6}\label{classMAMuscleComplete_a16b59379b8e829008f192be996d39ff6}} 
+double {\bfseries ak\+TActivationA} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ab543e17891c75a1ed26fa98deec64b7a}\label{classMAMuscleComplete_ab543e17891c75a1ed26fa98deec64b7a}} 
+void {\bfseries set\+Ak\+TActivationA} (double ak\+TActivationA)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a917a5b9888f8fb36afec2694e82f71a2}\label{classMAMuscleComplete_a917a5b9888f8fb36afec2694e82f71a2}} 
+double {\bfseries ak\+TActivationB} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a2eaac964c5d7dec1076bebf8ad8500a5}\label{classMAMuscleComplete_a2eaac964c5d7dec1076bebf8ad8500a5}} 
+void {\bfseries set\+Ak\+TActivationB} (double ak\+TActivationB)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_afb9713624eb438721289cd459fa70589}\label{classMAMuscleComplete_afb9713624eb438721289cd459fa70589}} 
+double {\bfseries ak\+TDeactivationA} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a786e9c882ad6eaa40725426147fcb67f}\label{classMAMuscleComplete_a786e9c882ad6eaa40725426147fcb67f}} 
+void {\bfseries set\+Ak\+TDeactivationA} (double ak\+TDeactivationA)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a4b8581302ec4f1551e6a0931ce9656f9}\label{classMAMuscleComplete_a4b8581302ec4f1551e6a0931ce9656f9}} 
+double {\bfseries ak\+TDeactivationB} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a21b3b7be80c50c64d44264f45b0c96dc}\label{classMAMuscleComplete_a21b3b7be80c50c64d44264f45b0c96dc}} 
+void {\bfseries set\+Ak\+TDeactivationB} (double ak\+TDeactivationB)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a380a48224a52d32a1a54a2ce7b3db8c6}\label{classMAMuscleComplete_a380a48224a52d32a1a54a2ce7b3db8c6}} 
+double {\bfseries initial\+Fibre\+Length} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a90fa932a364f6b070947587a18a22311}\label{classMAMuscleComplete_a90fa932a364f6b070947587a18a22311}} 
+void {\bfseries set\+Initial\+Fibre\+Length} (double initial\+Fibre\+Length)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a89f316aeaf7c2214b0f7ef58b930997f}\label{classMAMuscleComplete_a89f316aeaf7c2214b0f7ef58b930997f}} 
+double {\bfseries start\+Activation} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ae594a61694c8b479b824a3492317731c}\label{classMAMuscleComplete_ae594a61694c8b479b824a3492317731c}} 
+void {\bfseries set\+Start\+Activation} (double start\+Activation)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a019df436ada676219e437c26b21eb839}\label{classMAMuscleComplete_a019df436ada676219e437c26b21eb839}} 
+Strain\+Model {\bfseries serial\+Strain\+Model} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a175c31a9fb22c0a2a60e56f08659eb75}\label{classMAMuscleComplete_a175c31a9fb22c0a2a60e56f08659eb75}} 
+void {\bfseries set\+Serial\+Strain\+Model} (const Strain\+Model \&serial\+Strain\+Model)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_ad03ac77aef3544102bf14939c6bf256f}\label{classMAMuscleComplete_ad03ac77aef3544102bf14939c6bf256f}} 
+void {\bfseries set\+Serial\+Strain\+Model} (const std\+::string \&serial\+Strain\+Model)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a8c636618323b5bb78bce79df91ba7dab}\label{classMAMuscleComplete_a8c636618323b5bb78bce79df91ba7dab}} 
+Strain\+Model {\bfseries parallel\+Strain\+Model} () const
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a10ffe2832c99ca0b87eb97415faed215}\label{classMAMuscleComplete_a10ffe2832c99ca0b87eb97415faed215}} 
+void {\bfseries set\+Parallel\+Strain\+Model} (const Strain\+Model \&parallel\+Strain\+Model)
+\item 
+\mbox{\Hypertarget{classMAMuscleComplete_a28df6cdd3852be240087c8ed284f8dd4}\label{classMAMuscleComplete_a28df6cdd3852be240087c8ed284f8dd4}} 
+void {\bfseries set\+Parallel\+Strain\+Model} (const std\+::string \&parallel\+Strain\+Model)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 31 of file MAMuscle\+Complete.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/MAMuscle\+Complete.\+h\item 
+src/MAMuscle\+Complete.\+cpp\end{DoxyCompactItemize}

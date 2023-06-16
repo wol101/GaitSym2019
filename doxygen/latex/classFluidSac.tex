@@ -1,0 +1,104 @@
+\hypertarget{classFluidSac}{}\doxysection{Fluid\+Sac Class Reference}
+\label{classFluidSac}\index{FluidSac@{FluidSac}}
+
+
+Inheritance diagram for Fluid\+Sac\+:
+% FIG 0
+
+
+Collaboration diagram for Fluid\+Sac\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structFluidSac_1_1Triangle}{Triangle}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFluidSac_a83aa95b7739add7c88ec13a2d587b6de}\label{classFluidSac_a83aa95b7739add7c88ec13a2d587b6de}} 
+virtual void {\bfseries calculate\+Volume} ()
+\item 
+\mbox{\Hypertarget{classFluidSac_a9ea0f374d39d9961e9d709fecd1de25c}\label{classFluidSac_a9ea0f374d39d9961e9d709fecd1de25c}} 
+virtual void {\bfseries calculate\+Pressure} ()=0
+\item 
+\mbox{\Hypertarget{classFluidSac_a33179d22a95f9bc8b86bb1c94d532479}\label{classFluidSac_a33179d22a95f9bc8b86bb1c94d532479}} 
+virtual void {\bfseries calculate\+Loads\+On\+Markers} ()
+\item 
+\mbox{\Hypertarget{classFluidSac_ad9963644f0e18b75554df118554a62ec}\label{classFluidSac_ad9963644f0e18b75554df118554a62ec}} 
+virtual void {\bfseries Late\+Initialisation} ()
+\item 
+\mbox{\Hypertarget{classFluidSac_a035fc4a8a732063e16c6b3212f9dcf70}\label{classFluidSac_a035fc4a8a732063e16c6b3212f9dcf70}} 
+double {\bfseries sac\+Volume} () const
+\item 
+\mbox{\Hypertarget{classFluidSac_a7bff0302169b707fc2847669e362852c}\label{classFluidSac_a7bff0302169b707fc2847669e362852c}} 
+double {\bfseries pressure} () const
+\item 
+\mbox{\Hypertarget{classFluidSac_a9076623addcaade7ca01e9598137a482}\label{classFluidSac_a9076623addcaade7ca01e9598137a482}} 
+const std\+::vector$<$ \mbox{\hyperlink{structPointForce}{Point\+Force}} $>$ \& {\bfseries point\+Force\+List} () const
+\item 
+\mbox{\Hypertarget{classFluidSac_a0a620c83cf37bdf5be48c83a9f1853a2}\label{classFluidSac_a0a620c83cf37bdf5be48c83a9f1853a2}} 
+const std\+::vector$<$ \mbox{\hyperlink{structFluidSac_1_1Triangle}{Fluid\+Sac\+::\+Triangle}} $>$ \& {\bfseries triangle\+List} () const
+\item 
+\mbox{\Hypertarget{classFluidSac_ac43dee041eccc620a0a2d2301341bee3}\label{classFluidSac_ac43dee041eccc620a0a2d2301341bee3}} 
+size\+\_\+t {\bfseries num\+Triangles} () const
+\item 
+\mbox{\Hypertarget{classFluidSac_af38896c3fe5a851c23be72296923ccfb}\label{classFluidSac_af38896c3fe5a851c23be72296923ccfb}} 
+void {\bfseries triangle\+Vertices} (size\+\_\+t triangle\+Index, double vertices\mbox{[}9\mbox{]}) const
+\item 
+\mbox{\Hypertarget{classFluidSac_a19d32b1922b77a8da971b28c3a290451}\label{classFluidSac_a19d32b1922b77a8da971b28c3a290451}} 
+virtual std\+::string $\ast$ {\bfseries create\+From\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classFluidSac_ac0139b79b6ad1d9ceacacc5a7c623052}\label{classFluidSac_ac0139b79b6ad1d9ceacacc5a7c623052}} 
+virtual void {\bfseries save\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classFluidSac_a46df61e2126c08849ec2cd187ef30357}\label{classFluidSac_a46df61e2126c08849ec2cd187ef30357}} 
+virtual void {\bfseries append\+To\+Attributes} ()
+\item 
+\mbox{\Hypertarget{classFluidSac_a16995b541158acd8ae684fccb9d3b16b}\label{classFluidSac_a16995b541158acd8ae684fccb9d3b16b}} 
+virtual std\+::string {\bfseries dump\+To\+String} ()
+\item 
+\mbox{\Hypertarget{classFluidSac_a4c3093237579e9784ef6c74e0a1798a0}\label{classFluidSac_a4c3093237579e9784ef6c74e0a1798a0}} 
+void {\bfseries set\+Sac\+Volume} (double sac\+Volume)
+\item 
+\mbox{\Hypertarget{classFluidSac_a8741a9985bf2e322a72d3fbf7c7fd50a}\label{classFluidSac_a8741a9985bf2e322a72d3fbf7c7fd50a}} 
+void {\bfseries set\+Pressure} (double pressure)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFluidSac_a0b84833babc5f7ec33e1af47fc7cbe34}\label{classFluidSac_a0b84833babc5f7ec33e1af47fc7cbe34}} 
+static double {\bfseries signed\+Volume\+Of\+Triangle} (\mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p1, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p2, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} p3)
+\item 
+\mbox{\Hypertarget{classFluidSac_a14208af1f928df1468786087453f9361}\label{classFluidSac_a14208af1f928df1468786087453f9361}} 
+static double {\bfseries volume\+Of\+Mesh} (const std\+::vector$<$ \mbox{\hyperlink{structFluidSac_1_1Triangle}{Triangle}} $>$ \&triangle\+List, const std\+::vector$<$ \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $>$ \&vector\+List)
+\item 
+\mbox{\Hypertarget{classFluidSac_a3cc9b5a92b53f491c8b9f2f1b87118be}\label{classFluidSac_a3cc9b5a92b53f491c8b9f2f1b87118be}} 
+static double {\bfseries area} (std\+::vector$<$ std\+::pair$<$ double, double $>$$>$ points)
+\item 
+\mbox{\Hypertarget{classFluidSac_af5195f173bbee2b892481d70db53d1fb}\label{classFluidSac_af5195f173bbee2b892481d70db53d1fb}} 
+static void {\bfseries area\+Centroid} (std\+::vector$<$ std\+::pair$<$ double, double $>$$>$ points, double $\ast$area, std\+::pair$<$ double, double $>$ $\ast$centroid)
+\item 
+\mbox{\Hypertarget{classFluidSac_a9c28933179473354e2a3549c6fbdad8b}\label{classFluidSac_a9c28933179473354e2a3549c6fbdad8b}} 
+static void {\bfseries area\+Centroid\+Normal} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v0, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v1, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v2, double $\ast$area, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$centroid, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$normal)
+\item 
+\mbox{\Hypertarget{classFluidSac_ad922f73cbb09eea907799ad9bae52415}\label{classFluidSac_ad922f73cbb09eea907799ad9bae52415}} 
+static void {\bfseries area\+Centroid\+Normal} (const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v0, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v1, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v2, const \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} \&v3, double $\ast$area, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$centroid, \mbox{\hyperlink{classpgd_1_1Vector3}{pgd\+::\+Vector3}} $\ast$normal)
+\item 
+\mbox{\Hypertarget{classFluidSac_a228ad9e9c82a2cc98626c0da5e5592c7}\label{classFluidSac_a228ad9e9c82a2cc98626c0da5e5592c7}} 
+static bool {\bfseries is\+Good\+Mesh} (const std\+::vector$<$ \mbox{\hyperlink{structFluidSac_1_1Triangle}{Fluid\+Sac\+::\+Triangle}} $>$ \&triangle\+List, const std\+::vector$<$ \mbox{\hyperlink{classMarker}{Marker}} $\ast$ $>$ \&marker\+List)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 22 of file Fluid\+Sac.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Fluid\+Sac.\+h\item 
+src/Fluid\+Sac.\+cpp\end{DoxyCompactItemize}

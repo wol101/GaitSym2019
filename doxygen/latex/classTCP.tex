@@ -1,0 +1,72 @@
+\hypertarget{classTCP}{}\doxysection{TCP Class Reference}
+\label{classTCP}\index{TCP@{TCP}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classTCP_ab32d81efb9caf62c370aa99f7efd8904}\label{classTCP_ab32d81efb9caf62c370aa99f7efd8904}} 
+int {\bfseries Start\+Server} (int MYPORT)
+\item 
+\mbox{\Hypertarget{classTCP_a7d344d5cfefbc6fe3015e6607c12ec92}\label{classTCP_a7d344d5cfefbc6fe3015e6607c12ec92}} 
+void {\bfseries Stop\+Server} ()
+\item 
+\mbox{\Hypertarget{classTCP_a51e580f98935b07d5383af865ed121b6}\label{classTCP_a51e580f98935b07d5383af865ed121b6}} 
+int {\bfseries Start\+Client} (int port, const char $\ast$server\+Address)
+\item 
+\mbox{\Hypertarget{classTCP_a37566ed0ff9df2fad5f8a7533dc8d1bb}\label{classTCP_a37566ed0ff9df2fad5f8a7533dc8d1bb}} 
+void {\bfseries Stop\+Client} ()
+\item 
+\mbox{\Hypertarget{classTCP_ad4246ddfd64a029ec2042981e606bb3c}\label{classTCP_ad4246ddfd64a029ec2042981e606bb3c}} 
+int {\bfseries Start\+Acceptor} (int listening\+Socket)
+\item 
+\mbox{\Hypertarget{classTCP_aa9dd9a42cf101efb66ef6180bfbe5e99}\label{classTCP_aa9dd9a42cf101efb66ef6180bfbe5e99}} 
+void {\bfseries Stop\+Acceptor} ()
+\item 
+\mbox{\Hypertarget{classTCP_a73f94cfc2ae9156c57d33910a792372d}\label{classTCP_a73f94cfc2ae9156c57d33910a792372d}} 
+int {\bfseries Receive\+Data} (char $\ast$data, int num\+Bytes, long sec\+Timeout, long usec\+Timeout)
+\item 
+\mbox{\Hypertarget{classTCP_a61603d078cef9ab7188fde25611490f1}\label{classTCP_a61603d078cef9ab7188fde25611490f1}} 
+int {\bfseries Send\+Data} (char $\ast$data, int num\+Bytes)
+\item 
+\mbox{\Hypertarget{classTCP_ac00354204382dfbc2609ec818d4d5a51}\label{classTCP_ac00354204382dfbc2609ec818d4d5a51}} 
+int {\bfseries Check\+Alive} (struct sockaddr\+\_\+in $\ast$)
+\item 
+\mbox{\Hypertarget{classTCP_a714af799478fe5a202528f1f0f446a71}\label{classTCP_a714af799478fe5a202528f1f0f446a71}} 
+int {\bfseries Check\+Receiver} (long sec\+Timeout, long usec\+Timeout)
+\item 
+\mbox{\Hypertarget{classTCP_a79aa97da980b5e7e182af35bcff31988}\label{classTCP_a79aa97da980b5e7e182af35bcff31988}} 
+struct sockaddr\+\_\+in $\ast$ {\bfseries Get\+My\+Address} ()
+\item 
+\mbox{\Hypertarget{classTCP_a4cf6ba357a339a38c3834d5854278415}\label{classTCP_a4cf6ba357a339a38c3834d5854278415}} 
+struct sockaddr\+\_\+in $\ast$ {\bfseries Get\+Sender\+Address} ()
+\item 
+\mbox{\Hypertarget{classTCP_a1d0fffbfc362ab91c09da9d3f7e45b02}\label{classTCP_a1d0fffbfc362ab91c09da9d3f7e45b02}} 
+int {\bfseries Get\+Socket} ()
+\item 
+\mbox{\Hypertarget{classTCP_a4cff5b0032ea1eab01a05e2a2c5b5571}\label{classTCP_a4cff5b0032ea1eab01a05e2a2c5b5571}} 
+void {\bfseries Get\+Sender\+Address} (uint32\+\_\+t $\ast$address, uint32\+\_\+t $\ast$port)
+\item 
+\mbox{\Hypertarget{classTCP_a95a3521273d8fbf97a82fc1745130aec}\label{classTCP_a95a3521273d8fbf97a82fc1745130aec}} 
+void {\bfseries Get\+My\+Address} (uint32\+\_\+t $\ast$address, uint32\+\_\+t $\ast$port)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classTCP_a868379e5914d98fe8d4a4511dfb40860}\label{classTCP_a868379e5914d98fe8d4a4511dfb40860}} 
+static int {\bfseries One\+Off\+Initialisation} ()
+\item 
+\mbox{\Hypertarget{classTCP_a414dbd051fda1c5295ebc8b20464fdc5}\label{classTCP_a414dbd051fda1c5295ebc8b20464fdc5}} 
+static void {\bfseries One\+Off\+Cleanup} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 21 of file TCP.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/TCP.\+h\item 
+src/TCP.\+cpp\end{DoxyCompactItemize}

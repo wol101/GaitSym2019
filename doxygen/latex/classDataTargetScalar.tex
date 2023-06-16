@@ -1,0 +1,225 @@
+\hypertarget{classDataTargetScalar}{}\doxysection{Data\+Target\+Scalar Class Reference}
+\label{classDataTargetScalar}\index{DataTargetScalar@{DataTargetScalar}}
+
+
+Inheritance diagram for Data\+Target\+Scalar\+:
+% FIG 0
+
+
+Collaboration diagram for Data\+Target\+Scalar\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDataTargetScalar_a8d18c3efbb94fd84c4208a3fefde7b3d}\label{classDataTargetScalar_a8d18c3efbb94fd84c4208a3fefde7b3d}} 
+{\bfseries SMART\+\_\+\+ENUM} (Data\+Type, data\+Type\+Strings, data\+Type\+Count, XP, YP, ZP, Q0, Q1, Q2, Q3, XV, YV, ZV, XRV, YRV, ZRV, Angle, Metabolic\+Energy, Mechanical\+Energy, Driver\+Error, Time, Delta\+Time, XF, YF, ZF, Force)
+\item 
+\mbox{\Hypertarget{classDataTargetScalar_a3d73ce177b960bc0a6d82d1119b07272}\label{classDataTargetScalar_a3d73ce177b960bc0a6d82d1119b07272}} 
+void {\bfseries Set\+Target} (\mbox{\hyperlink{classNamedObject}{Named\+Object}} $\ast$target)
+\item 
+\mbox{\Hypertarget{classDataTargetScalar_a753040030771e779a7c8329301598d43}\label{classDataTargetScalar_a753040030771e779a7c8329301598d43}} 
+\mbox{\hyperlink{classNamedObject}{Named\+Object}} $\ast$ {\bfseries Get\+Target} ()
+\item 
+\mbox{\Hypertarget{classDataTargetScalar_a72ba6164e8365a4d0132f843e9ece28a}\label{classDataTargetScalar_a72ba6164e8365a4d0132f843e9ece28a}} 
+void {\bfseries Set\+Data\+Type} (Data\+Type data\+Type)
+\item 
+\mbox{\Hypertarget{classDataTargetScalar_aeb14d06c4c9a90afcf28f64d16d3fc2c}\label{classDataTargetScalar_aeb14d06c4c9a90afcf28f64d16d3fc2c}} 
+Data\+Type {\bfseries Get\+Data\+Type} ()
+\item 
+virtual std\+::string \mbox{\hyperlink{classDataTargetScalar_a8db6076d2cd3511eb045d83b703473cd}{dump\+To\+String}} () override
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classDataTargetScalar_a8db6076d2cd3511eb045d83b703473cd}{Data\+Target\+Scalar\+::dump\+To\+String}}. \end{DoxyCompactList}\item 
+virtual std\+::string $\ast$ \mbox{\hyperlink{classDataTargetScalar_a76b085729700c93cc1d6182d9692f81c}{create\+From\+Attributes}} () override
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classDataTargetScalar_a76b085729700c93cc1d6182d9692f81c}{Data\+Target\+Scalar\+::create\+From\+Attributes}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDataTargetScalar_a032452ac324e2ef3dd2f0e0b1ef22212}\label{classDataTargetScalar_a032452ac324e2ef3dd2f0e0b1ef22212}} 
+virtual void {\bfseries append\+To\+Attributes} () override
+\item 
+\mbox{\Hypertarget{classDataTargetScalar_a5998155a0e2d2b7f1fb4d2413a550b80}\label{classDataTargetScalar_a5998155a0e2d2b7f1fb4d2413a550b80}} 
+virtual double {\bfseries calculate\+Error} (double time) override
+\item 
+\mbox{\Hypertarget{classDataTargetScalar_a53a9e8c8eaeb24b2f1c9f860285fdd3d}\label{classDataTargetScalar_a53a9e8c8eaeb24b2f1c9f860285fdd3d}} 
+virtual double {\bfseries calculate\+Error} (size\+\_\+t index) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 21 of file Data\+Target\+Scalar.\+h.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classDataTargetScalar_a76b085729700c93cc1d6182d9692f81c}\label{classDataTargetScalar_a76b085729700c93cc1d6182d9692f81c}} 
+\index{DataTargetScalar@{DataTargetScalar}!createFromAttributes@{createFromAttributes}}
+\index{createFromAttributes@{createFromAttributes}!DataTargetScalar@{DataTargetScalar}}
+\doxysubsubsection{\texorpdfstring{createFromAttributes()}{createFromAttributes()}}
+{\footnotesize\ttfamily std\+::string $\ast$ Data\+Target\+Scalar\+::create\+From\+Attributes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+\mbox{\hyperlink{classDataTargetScalar_a76b085729700c93cc1d6182d9692f81c}{Data\+Target\+Scalar\+::create\+From\+Attributes}}. 
+
+\begin{DoxyReturn}{Returns}
+nullptr on success and a pointer to last\+Error() on failure
+\end{DoxyReturn}
+This function initialises the data in the object based on the contents of an xml\+\_\+node node. It uses information from the simulation as required to satisfy dependencies
+
+Attributes in addition to standard DATATARGET\+:
+
+
+\begin{DoxyItemize}
+\item Type=\char`\"{}\+Scalar\char`\"{}
+\item Data\+Type=\char`\"{}\+\_\+data type identifier\+\_\+\char`\"{}
+\begin{DoxyItemize}
+\item XP, YP, ZP -\/ position in world coordinates
+\item Q0, Q1, Q2, Q3 -\/ quaternion in world coodinates
+\item XV, YV, ZV -\/ linear velocities
+\item XRV, YRV, ZRV -\/ angular velocities
+\item Angle -\/ hinge joint angle
+\item Metabolic\+Energy -\/ metabolic energy use
+\item Mechanical\+Energy -\/ mechanical energy
+\item Driver\+Error -\/ driver error term
+\item Time -\/ simulation time
+\item Delta\+Time -\/ simulation change of time
+\item XF, YF, ZF -\/ individual force components
+\item Force -\/ magnitude of force
+\end{DoxyItemize}
+\item Target\+ID=\char`\"{}\+\_\+\+ID name\+\_\+\char`\"{}
+\begin{DoxyItemize}
+\item Where {\itshape ID name} is the ID of target which can be a marker, geom, joint, or empty depending on the Data\+Type
+\end{DoxyItemize}
+\item Target\+Values=\char`\"{}\+\_\+list of numbers\+\_\+\char`\"{}
+\begin{DoxyItemize}
+\item List of numeric values that are used to calculate the error term. The number of values must match the number of Target\+Times. 
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Reimplemented from \mbox{\hyperlink{classDataTarget}{Data\+Target}}.
+
+
+
+Definition at line 450 of file Data\+Target\+Scalar.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{451 \{}
+\DoxyCodeLine{452     \textcolor{keywordflow}{if} (DataTarget::createFromAttributes()) \textcolor{keywordflow}{return} lastErrorPtr();}
+\DoxyCodeLine{453 }
+\DoxyCodeLine{454     std::string buf;}
+\DoxyCodeLine{455     \textcolor{keywordflow}{if} (findAttribute(\textcolor{stringliteral}{"{}DataType"{}}s, \&buf) == \textcolor{keyword}{nullptr}) \textcolor{keywordflow}{return} lastErrorPtr();}
+\DoxyCodeLine{456     \textcolor{keywordtype}{size\_t} dataTypeIndex;}
+\DoxyCodeLine{457     \textcolor{keywordflow}{for} (dataTypeIndex = 0; dataTypeIndex < dataTypeCount; dataTypeIndex++)}
+\DoxyCodeLine{458     \{}
+\DoxyCodeLine{459         \textcolor{keywordflow}{if} (buf == dataTypeStrings(dataTypeIndex))}
+\DoxyCodeLine{460         \{}
+\DoxyCodeLine{461             m\_DataType = \textcolor{keyword}{static\_cast<}DataType\textcolor{keyword}{>}(dataTypeIndex);}
+\DoxyCodeLine{462             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{463         \}}
+\DoxyCodeLine{464     \}}
+\DoxyCodeLine{465     \textcolor{keywordflow}{if} (dataTypeIndex >= dataTypeCount)}
+\DoxyCodeLine{466     \{}
+\DoxyCodeLine{467         setLastError(\textcolor{stringliteral}{"{}DataTargetScalar ID=\(\backslash\)"{}"{}}s + name() +\textcolor{stringliteral}{"{}\(\backslash\)"{} Unrecognised MatchType "{}}s + buf);}
+\DoxyCodeLine{468         \textcolor{keywordflow}{return} lastErrorPtr();}
+\DoxyCodeLine{469     \}}
+\DoxyCodeLine{470     m\_Target = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{471     \textcolor{keywordflow}{if} (m\_noTargetList.count(m\_DataType) == 0)}
+\DoxyCodeLine{472     \{}
+\DoxyCodeLine{473         \textcolor{keywordflow}{if} (findAttribute(\textcolor{stringliteral}{"{}TargetID"{}}s, \&buf) == \textcolor{keyword}{nullptr}) \textcolor{keywordflow}{return} lastErrorPtr();}
+\DoxyCodeLine{474         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{bool} once = \textcolor{keyword}{true}; once; once = \textcolor{keyword}{false})}
+\DoxyCodeLine{475         \{}
+\DoxyCodeLine{476             \textcolor{keyword}{auto} iterBody = simulation()-\/>GetBodyList()-\/>find(buf);}
+\DoxyCodeLine{477             \textcolor{keywordflow}{if} (iterBody != simulation()-\/>GetBodyList()-\/>end()) \{ m\_Target = iterBody-\/>second.get(); \textcolor{keywordflow}{break}; \}}
+\DoxyCodeLine{478             \textcolor{keyword}{auto} iterJoint = simulation()-\/>GetJointList()-\/>find(buf);}
+\DoxyCodeLine{479             \textcolor{keywordflow}{if} (iterJoint != simulation()-\/>GetJointList()-\/>end()) \{ m\_Target = iterJoint-\/>second.get(); \textcolor{keywordflow}{break}; \}}
+\DoxyCodeLine{480             \textcolor{keyword}{auto} iterGeom = simulation()-\/>GetGeomList()-\/>find(buf);}
+\DoxyCodeLine{481             \textcolor{keywordflow}{if} (iterGeom != simulation()-\/>GetGeomList()-\/>end()) \{ m\_Target = iterGeom-\/>second.get(); \textcolor{keywordflow}{break}; \}}
+\DoxyCodeLine{482             \textcolor{keyword}{auto} iterMarker = simulation()-\/>GetMarkerList()-\/>find(buf);}
+\DoxyCodeLine{483             \textcolor{keywordflow}{if} (iterMarker != simulation()-\/>GetMarkerList()-\/>end()) \{ m\_Target = iterMarker-\/>second.get(); \textcolor{keywordflow}{break}; \}}
+\DoxyCodeLine{484             \textcolor{keyword}{auto} iterDriver = simulation()-\/>GetDriverList()-\/>find(buf);}
+\DoxyCodeLine{485             \textcolor{keywordflow}{if} (iterDriver != simulation()-\/>GetDriverList()-\/>end()) \{ m\_Target = iterDriver-\/>second.get(); \textcolor{keywordflow}{break}; \}}
+\DoxyCodeLine{486         \}}
+\DoxyCodeLine{487         \textcolor{keywordflow}{if} (!m\_Target)}
+\DoxyCodeLine{488         \{}
+\DoxyCodeLine{489             setLastError(\textcolor{stringliteral}{"{}DataTargetScalar ID=\(\backslash\)"{}"{}}s + name() +\textcolor{stringliteral}{"{}\(\backslash\)"{} TargetID not found "{}}s + buf);}
+\DoxyCodeLine{490             \textcolor{keywordflow}{return} lastErrorPtr();}
+\DoxyCodeLine{491         \}}
+\DoxyCodeLine{492     \}}
+\DoxyCodeLine{493 }
+\DoxyCodeLine{494     \textcolor{keywordflow}{if} (findAttribute(\textcolor{stringliteral}{"{}TargetValues"{}}s, \&buf) == \textcolor{keyword}{nullptr}) \textcolor{keywordflow}{return} lastErrorPtr();}
+\DoxyCodeLine{495     std::vector<std::string> targetValuesTokens;}
+\DoxyCodeLine{496     pystring::split(buf, targetValuesTokens);}
+\DoxyCodeLine{497     \textcolor{keywordflow}{if} (targetValuesTokens.size() == 0)}
+\DoxyCodeLine{498     \{}
+\DoxyCodeLine{499         setLastError(\textcolor{stringliteral}{"{}DataTarget ID=\(\backslash\)"{}"{}}s + name() +\textcolor{stringliteral}{"{}\(\backslash\)"{} No values found in TargetValues"{}}s);}
+\DoxyCodeLine{500         \textcolor{keywordflow}{return} lastErrorPtr();}
+\DoxyCodeLine{501     \}}
+\DoxyCodeLine{502     \textcolor{keywordflow}{if} (targetValuesTokens.size() != targetTimeList()-\/>size())}
+\DoxyCodeLine{503     \{}
+\DoxyCodeLine{504         setLastError(\textcolor{stringliteral}{"{}DataTargetScalar ID=\(\backslash\)"{}"{}}s + name() +\textcolor{stringliteral}{"{}\(\backslash\)"{} Number of values in TargetValues does not match TargetTimes"{}}s);}
+\DoxyCodeLine{505         \textcolor{keywordflow}{return} lastErrorPtr();}
+\DoxyCodeLine{506     \}}
+\DoxyCodeLine{507     m\_ValueList.clear();}
+\DoxyCodeLine{508     m\_ValueList.reserve(targetValuesTokens.size());}
+\DoxyCodeLine{509     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&\&token : targetValuesTokens) m\_ValueList.push\_back(GSUtil::Double(token));}
+\DoxyCodeLine{510 }
+\DoxyCodeLine{511     \textcolor{keywordflow}{if} (m\_Target) setUpstreamObjects(\{m\_Target\});}
+\DoxyCodeLine{512     \textcolor{keywordflow}{return} \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{513 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{classDataTargetScalar_a8db6076d2cd3511eb045d83b703473cd}\label{classDataTargetScalar_a8db6076d2cd3511eb045d83b703473cd}} 
+\index{DataTargetScalar@{DataTargetScalar}!dumpToString@{dumpToString}}
+\index{dumpToString@{dumpToString}!DataTargetScalar@{DataTargetScalar}}
+\doxysubsubsection{\texorpdfstring{dumpToString()}{dumpToString()}}
+{\footnotesize\ttfamily std\+::string Data\+Target\+Scalar\+::dump\+To\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+\mbox{\hyperlink{classDataTargetScalar_a8db6076d2cd3511eb045d83b703473cd}{Data\+Target\+Scalar\+::dump\+To\+String}}. 
+
+\begin{DoxyReturn}{Returns}
+string containing the data for this time point
+\end{DoxyReturn}
+This function returns useful data to the user about values contained in this object during the simulation
+
+Column Headings\+:
+
+
+\begin{DoxyItemize}
+\item time
+\begin{DoxyItemize}
+\item the simulation time
+\end{DoxyItemize}
+\item error
+\begin{DoxyItemize}
+\item the raw error generated 
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Reimplemented from \mbox{\hyperlink{classDataTarget}{Data\+Target}}.
+
+
+
+Definition at line 406 of file Data\+Target\+Scalar.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{407 \{}
+\DoxyCodeLine{408     std::string s;}
+\DoxyCodeLine{409     \textcolor{keywordflow}{if} (firstDump())}
+\DoxyCodeLine{410     \{}
+\DoxyCodeLine{411         setFirstDump(\textcolor{keyword}{false});}
+\DoxyCodeLine{412         s += dumpHelper(\{\textcolor{stringliteral}{"{}time"{}}, \textcolor{stringliteral}{"{}error"{}}s\});}
+\DoxyCodeLine{413     \}}
+\DoxyCodeLine{414     s += dumpHelper(\{simulation()-\/>GetTime(), m\_errorScore\});}
+\DoxyCodeLine{415     \textcolor{keywordflow}{return} s;}
+\DoxyCodeLine{416 \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/Data\+Target\+Scalar.\+h\item 
+src/\mbox{\hyperlink{DataTargetScalar_8cpp}{Data\+Target\+Scalar.\+cpp}}\end{DoxyCompactItemize}

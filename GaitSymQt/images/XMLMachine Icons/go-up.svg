@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="svg11300" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:cc="http://creativecommons.org/ns#" sodipodi:docname="go-up.svg" sodipodi:docbase="/home/tigert/cvs/freedesktop.org/tango-icon-theme/scalable/actions" inkscape:version="0.46" sodipodi:version="0.32" inkscape:export-filename="/home/jimmac/Desktop/wi-fi.png" inkscape:export-xdpi="90.000000" inkscape:export-ydpi="90.000000" inkscape:output_extension="org.inkscape.output.svg.inkscape"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34.972px"
+	 height="34.001px" viewBox="6.028 4.999 34.972 34.001" enable-background="new 6.028 4.999 34.972 34.001" xml:space="preserve">
+<defs>
+	
+	
+		<inkscape:perspective  inkscape:vp_z="48 : 24 : 1" inkscape:vp_y="0 : 1000 : 0" sodipodi:type="inkscape:persp3d" inkscape:vp_x="0 : 24 : 1" id="perspective23" inkscape:persp3d-origin="24 : 16 : 1">
+		</inkscape:perspective>
+</defs>
+<sodipodi:namedview  stroke="#73d216" fill="#73d216" showgrid="false" inkscape:cy="25.620377" inkscape:cx="9.6380363" inkscape:zoom="13.059378" pagecolor="#ffffff" borderopacity="0.25490196" bordercolor="#666666" id="base" inkscape:window-y="30" inkscape:window-x="0" inkscape:window-height="818" inkscape:window-width="1280" inkscape:showpageshadow="false" inkscape:document-units="px" inkscape:grid-bbox="true" inkscape:current-layer="layer1" inkscape:pageshadow="2" inkscape:pageopacity="0.0">
+	</sodipodi:namedview>
+<radialGradient id="path8643_1_" cx="-709.6997" cy="-89.8257" r="16.9566" gradientTransform="matrix(0 -0.843 -1.0202 0 -68.1258 -565.2334)" gradientUnits="userSpaceOnUse">
+	<stop  offset="0" style="stop-color:#73D216"/>
+	<stop  offset="1" style="stop-color:#4E9A06"/>
+</radialGradient>
+<path id="path8643" sodipodi:nodetypes="cccccccc" fill="url(#path8643_1_)" stroke="#3A7304" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+	M14.492,38.5h17.977V25.547H40.5L23.375,5.499L6.528,25.489l7.969,0.066L14.492,38.5z"/>
+<radialGradient id="path8645_1_" cx="-505.5977" cy="66.626" r="17.1714" gradientTransform="matrix(0 -2.0467 -1.5576 0 107.1658 -1018.0977)" gradientUnits="userSpaceOnUse">
+	<stop  offset="0" style="stop-color:#FFFFFF"/>
+	<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0"/>
+</radialGradient>
+<path id="path8645" sodipodi:nodetypes="cccscc" opacity="0.508" fill="url(#path8645_1_)" enable-background="new    " d="
+	M7.585,25.033h7.41l0.067,6.561c5.656-11,15.993-8.844,16.594-15.627l-8.29-9.545L7.585,25.033z"/>
+<path id="path8658" sodipodi:nodetypes="cccccccc" opacity="0.4813" fill="none" stroke="#FFFFFF" stroke-miterlimit="10" enable-background="new    " d="
+	M15.603,37.5h15.899V24.507h6.81L23.361,7.07L8.655,24.551l6.82-0.022L15.603,37.5z"/>
+</svg>
