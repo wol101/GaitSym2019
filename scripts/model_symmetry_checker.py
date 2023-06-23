@@ -11,9 +11,9 @@ import copy
 import math
 
 def model_symmetry_checker():
-    
+
     parser = argparse.ArgumentParser(description="Tests a model for symmetry. Always uses the left side as the primary reference.")
-    
+
     parser.add_argument("-l", "--left_side_regex_find", default='(.*)left(.*)', help="regex pattern identifying left side items [(.*)left(.*)]")
     parser.add_argument("-r", "--right_side_regex_replace", default='\\1right\\2', help="regex pattern to generate the right side names via re.sub [\\1right\\2]")
     parser.add_argument("-i", "--input_xml_file", required=True, help="file name for input XML config file")
@@ -36,20 +36,20 @@ def model_symmetry_checker():
     if args.verbose:
         pretty_print_sys_argv(sys.argv)
         pretty_print_argparse_args(args)
-    
+
     tolerance = (args.relative_tolerance, args.relative_tolerance_threshold, args.absolute_tolerance)
 
     preflight_read_file(args.input_xml_file, args.verbose)
     if args.output_xml_file: preflight_write_file(args.output_xml_file, args.force, args.verbose)
     if args.output_mapping_file: preflight_write_file(args.output_mapping_file, args.force, args.verbose)
-    
+
     if args.verbose: print('Reading "%s"' % (args.input_xml_file))
     tree = xml.etree.ElementTree.parse(args.input_xml_file)
     root = tree.getroot()
-    
+
     if args.case_insensitive:
         lower_case_ids(root)
-    
+
     if args.replace_list:
         if len(args.replace_list) == 1:
             preflight_read_file(args.replace_list[0], args.verbose)
@@ -66,9 +66,9 @@ def model_symmetry_checker():
         if args.case_insensitive: args.replace_list = [s.lower() for s in args.replace_list]
         count = replace_ids(root, args.replace_list, args.verbose)
         if args.verbose: print('Information: %d manual replacements made' % (count))
-    
+
     input_text = str(xml.etree.ElementTree.tostring(root, encoding="utf-8", method="xml"), "utf-8")
-    
+
     item_list = {}
     id_list = []
     child_list = []
@@ -84,7 +84,7 @@ def model_symmetry_checker():
     left_sided_keys = {}
     right_sided_keys = {}
     non_sided_ids = []
-    
+
     # get a list of left items and hopeful right items
     for item_id in item_list:
         if re.search(args.left_side_regex_find, item_id):
@@ -92,7 +92,7 @@ def model_symmetry_checker():
             left_sided_items[left_id] = item_list[left_id]
             right_id = re.sub(args.left_side_regex_find, args.right_side_regex_replace, left_id)
             right_sided_hopefuls[right_id] = left_id
-            
+
     (changed_ids, changed_ids_scores) = find_close_match_list(right_sided_hopefuls, item_list)
     for best_match in changed_ids:
         if changed_ids_scores[best_match] >= args.string_match_ratio:
@@ -100,12 +100,12 @@ def model_symmetry_checker():
             right_id = best_match
             left_sided_keys[left_id] = right_id
             right_sided_keys[right_id] = left_id
-            if args.verbose and changed_ids_scores[best_match] != 1.0: 
+            if args.verbose and changed_ids_scores[best_match] != 1.0:
                 print('Warning: Right side ID="%s" fuzzy matched to "%s"' % (changed_ids[best_match], best_match))
     for key, value in changed_ids_scores.items():
         if value < args.string_match_ratio:
             del changed_ids[key]
-    
+
     # # get a list of left items and hopeful right items
     # for item_id in item_list:
     #     if re.search(args.left_side_regex_find, item_id):
@@ -129,7 +129,7 @@ def model_symmetry_checker():
     #                 print('Warning: Right side ID="%s" matched to "%s" n=%d' % (right_id, best_match, len(changed_ids[best_match])))
     #             continue
     #         print('Error: Right side %s "%s" missing' % (left_id, right_id))
-    
+
     # # check for duplicates in changed_ids
     # changed_ids_copy = copy.deepcopy(changed_ids)
     # for key, value in changed_ids_copy.items():
@@ -144,51 +144,51 @@ def model_symmetry_checker():
     # # now everything in changed_ids should be unique
     # for key in changed_ids:
     #    changed_ids[key] = changed_ids[key][0]
-    
+
     if args.output_mapping_file:
         if args.verbose: print('Writing "%s"' % (args.output_mapping_file))
         with open(args.output_mapping_file, 'w') as out_f:
             out_f.write('%s\t%s\t%s\n' % ('best_match', 'search_string', 'ratio'))
             for key, value in changed_ids.items():
                 out_f.write('%s\t%s\t%f\n' % (key, value, changed_ids_scores[key]))
-    
+
     for item_id in item_list:
         if not (item_id in left_sided_keys or item_id in right_sided_keys):
             non_sided_ids.append(item_id)
             if args.verbose: print('Information: Unsided TAG "%s" ID="%s" count=%d' % (item_list[item_id].tag, item_id, count_words(item_id, input_text)))
-    
+
     for id_string in id_list:
         if id_string in left_sided_keys:
             left_id = id_string
             left_item = item_list[left_id]
-            right_item = item_list[left_sided_keys[left_id]]    
+            right_item = item_list[left_sided_keys[left_id]]
             test_item(left_item, right_item, tolerance, args.verbose, args.numbers_only, args.mirror_axis)
 
     if not args.output_xml_file:
         return
-    
+
     new_tree = xml.etree.ElementTree.Element(root.tag)
     new_tree.text = '\n'
-    
+
     if args.fix_tags and args.fix_attributes:
         for id_string in id_list:
             if item_list[id_string].tag in args.fix_tags:
                 if id_string in left_sided_keys:
                     left_id = id_string
                     left_item = item_list[left_id]
-                    right_item = item_list[left_sided_keys[left_id]]    
+                    right_item = item_list[left_sided_keys[left_id]]
                     fix_item(left_item, right_item, args.verbose, args.mirror_axis, args.fix_attributes)
                     new_tree.append(left_item)
                     new_tree.append(right_item)
                     continue
-            
+
                 if id_string in right_sided_keys:
                     continue
-       
-            new_tree.append(item_list[id_string]) 
-        
+
+            new_tree.append(item_list[id_string])
+
     apply_changed_ids(new_tree, changed_ids)
-        
+
     if args.verbose: print('Writing "%s"' % (args.output_xml_file))
     with open(args.output_xml_file, 'wb') as out:
         xml_text = xml.etree.ElementTree.tostring(new_tree, encoding="utf-8", method="xml")
@@ -199,7 +199,7 @@ def count_words(word_to_find, src_string):
     return len(match)
 
 def flip_dictionary(input_dict):
-    output_dict = {}  
+    output_dict = {}
     for key, value in input_dict.items():
         if value not in output_dict:
             output_dict[value] = [key]
@@ -225,7 +225,7 @@ def replace_ids(tree, input_replace_list, verbose):
                         tokens[i] = replace_list[search_list.index(tokens[i])]
                         count = count + 1
                 child.attrib[attrib] = ' '.join(tokens)
-        
+
         # special treatment for markers
         if child.tag == 'MARKER':
             position = child.attrib['Position'].split()
@@ -249,7 +249,7 @@ def lower_case_ids(tree):
                 for i in range(0, len(tokens)):
                     tokens[i] = tokens[i].lower()
                 child.attrib[attrib] = ' '.join(tokens)
-        
+
         # special treatment for markers
         if child.tag == 'MARKER':
             if child.attrib['BodyID'] == 'world':
@@ -270,7 +270,7 @@ def apply_changed_ids(tree, changed_ids):
                     if tokens[i] in changed_ids:
                         tokens[i] = changed_ids[tokens[i]]
                 child.attrib[attrib] = ' '.join(tokens)
-        
+
         # special treatment for markers
         if child.tag == 'MARKER':
             position = child.attrib['Position'].split()
@@ -298,7 +298,7 @@ def find_close_match_list(input_str_list, str_list):
     for mapped_string in mapped_strings:
         strings_to_match.discard(mapped_string)
         strings_matched.add(mapped_string)
-    # now handle the unmatched strings        
+    # now handle the unmatched strings
     while len(strings_to_match):
         best_score = -sys.float_info.max
         best_match = ''
@@ -316,7 +316,7 @@ def find_close_match_list(input_str_list, str_list):
         strings_to_match.discard(input_str)
         strings_matched.add(best_match)
     return (mapped_strings, mapped_strings_scores)
-        
+
 def find_close_match(input_str, str_list):
     best_match = ''
     best_score = -sys.float_info.max
@@ -351,7 +351,7 @@ def fix_item(left, right, verbose, mirror_axis, fix_attributes):
         for i in range(0, len(left_tokens)):
             if is_a_number(left_tokens[i]):
                 right_tokens[i] = left_tokens[i]
-        right.attrib[attr] = ' '.join(right_tokens)        
+        right.attrib[attr] = ' '.join(right_tokens)
 
 def test_item(left, right, tolerance, verbose, numbers_only, mirror_axis):
     if verbose: print('Comparing ID="%s" to ID="%s"' % (left.attrib['ID'], right.attrib['ID']))
@@ -373,7 +373,7 @@ def test_item(left, right, tolerance, verbose, numbers_only, mirror_axis):
             errors_found = True
     return errors_found
 
-def test_equal(left, right, tolerance, attrib, numbers_only, negate_index = []): # text test does not do a left/right search and replace like it should
+def test_equal(left, right, tolerance, attrib, numbers_only, negate_index, left_side_regex_find, right_side_regex_replace): # text test does not do a left/right search and replace like it should
     messages = []
     left_id = left.attrib['ID']
     right_id = right.attrib['ID']
@@ -391,16 +391,19 @@ def test_equal(left, right, tolerance, attrib, numbers_only, negate_index = []):
         messages.append('%s "%s": "%s" has %d tokens; "%s" has %d tokens' % (left.tag, attrib, left_id, len(tokens1), right_id, len(tokens2)))
         return messages
     for i in range(0, len(tokens1)):
-        token1 = tokens1[i]           
-        token2 = tokens2[i]           
-        if not is_a_number(token1) or not is_a_number(token2):
-            if negate_index: negate_index = [i + 1 for i in negate_index]
-            if (not numbers_only) and token1 != token2:
-                messages.append('%s %s[%d]: "%s" "%s" != "%s" "%s"' % (left.tag, attrib, i, left_id, token1, right_id, token2))
+        token1 = tokens1[i]
+        token2 = tokens2[i]
+        if is_a_number(token1) != is_a_number(token2):
+            messages.append('Number/String mismatch%s %s[%d]: "%s" "%s" != "%s" "%s"' % (left.tag, attrib, i, left_id, token1, right_id, token2))
+        if not is_a_number(token1): # both strings
+            if numbers_only: continue
+            test_right = re.sub(left_side_regex_find, right_side_regex_replace, token1)
+            if test_right != token2:
+                messages.append('String mismatch%s %s[%d]: "%s" "%s" != "%s" "%s"' % (left.tag, attrib, i, left_id, token1, right_id, token2))
             continue
         x1 = float(token1)
         x2 = float(token2)
-        if i in negate_index:            
+        if i in negate_index:
             if not isclose_rel_abs(x1, -x2, tolerance):
                 messages.append('%s %s[%d]: "%s" %g != "%s" %g * -1' % (left.tag, attrib, i, left_id, x1, right_id, x2))
         else:
@@ -424,7 +427,7 @@ def isclose_dp(a, b, dp):
     match_dp = dp_compare(a, b)
     if match_dp >= dp:
         return True
-    return False    
+    return False
 
 def dp_compare(a, b):
     if math.fabs(a) < 1e-90 and math.fabs(b) < 1e-90:
@@ -446,8 +449,8 @@ def negate_string(inp_str):
         return out_str[1:]
     if out_str.startswith('+'):
         return '-' + out_str[1:]
-    return '-' + out_str    
-        
+    return '-' + out_str
+
 def preflight_read_file(filename, verbose):
     if verbose: print('preflight_read_file: "%s"' % (filename))
     if not os.path.exists(filename):
@@ -515,4 +518,3 @@ def quoted_if_necessary(input_list):
 
 if __name__ == '__main__':
     model_symmetry_checker()
-    
