@@ -106,45 +106,6 @@ def model_symmetry_checker():
         if value < args.string_match_ratio:
             del changed_ids[key]
 
-    # # get a list of left items and hopeful right items
-    # for item_id in item_list:
-    #     if re.search(args.left_side_regex_find, item_id):
-    #         left_id = item_id
-    #         left_sided_items[left_id] = item_list[left_id]
-    #         right_id = re.sub(args.left_side_regex_find, args.right_side_regex_replace, left_id)
-    #         if right_id in item_list:
-    #             left_sided_keys[left_id] = right_id
-    #             right_sided_keys[right_id] = left_id
-    #             continue
-    #         # cannot find an exact match so look for a close match
-    #         (best_match, best_score, unique_solution) = find_close_match(right_id, item_list)
-    #         if unique_solution and best_score > args.string_match_ratio:
-    #             left_sided_keys[left_id] = best_match
-    #             right_sided_keys[best_match] = left_id
-    #             if best_match not in changed_ids:
-    #                 changed_ids[best_match] = [right_id]
-    #             else:
-    #                 changed_ids[best_match].append(right_id)
-    #             if args.verbose:
-    #                 print('Warning: Right side ID="%s" matched to "%s" n=%d' % (right_id, best_match, len(changed_ids[best_match])))
-    #             continue
-    #         print('Error: Right side %s "%s" missing' % (left_id, right_id))
-
-    # # check for duplicates in changed_ids
-    # changed_ids_copy = copy.deepcopy(changed_ids)
-    # for key, value in changed_ids_copy.items():
-    #     if len(value) > 1:
-    #         if args.verbose:
-    #             print('Warning: Duplicates found for ID="%s"' % (key))
-    #         mapped_strings = find_close_match_list(value, item_list)
-    #         for best_match in mapped_strings:
-    #             changed_ids[best_match] = [mapped_strings[best_match]]
-    #             if args.verbose:
-    #                 print('Warning: Right side ID="%s" matched to "%s"' % (changed_ids[best_match][0], best_match))
-    # # now everything in changed_ids should be unique
-    # for key in changed_ids:
-    #    changed_ids[key] = changed_ids[key][0]
-
     if args.output_mapping_file:
         if args.verbose: print('Writing "%s"' % (args.output_mapping_file))
         with open(args.output_mapping_file, 'w') as out_f:
