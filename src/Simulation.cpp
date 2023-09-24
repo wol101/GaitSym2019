@@ -1485,6 +1485,7 @@ void Simulation::NearCallback(void *data, dGeomID o1, dGeomID o2)
     }
 
     std::vector<dContact> contact(size_t(s->m_MaxContacts), dContact{}); // in this case default initialisation is potentially useful
+    // std::unique_ptr<dContact[]> contact = std::make_unique<dContact[]>(size_t(s->m_MaxContacts)); // but this version would be slightly quicker
     // the choice of std::max(cfm) and std::min(erp) means that the softest contact should be used
     double cfm = std::max(g1->GetContactSoftCFM(), g2->GetContactSoftCFM());
     double erp = std::min(g1->GetContactSoftERP(), g2->GetContactSoftERP());
