@@ -24,7 +24,7 @@
 #include "Warehouse.h"
 #include "Preferences.h"
 #include "SimulationWidget.h"
-#include "AVIWriter.h"
+#include "SimulationWindowQt3D.h"
 #include "DialogPreferences.h"
 #include "DialogOutputSelect.h"
 #include "DialogBodyBuilder.h"
@@ -96,12 +96,12 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
     m_mainWindow->m_timer->stop();
     m_mainWindow->ui->actionRun->setChecked(false);
     m_mainWindow->m_movieFlag = false;
-    if (m_mainWindow->ui->widgetSimulation->aviWriter()) menuStopAVISave();
+    if (m_mainWindow->m_simulationWidget->aviWriter()) menuStopAVISave();
     if (m_mainWindow->m_simulation)
     {
         delete m_mainWindow->m_simulation;
         m_mainWindow->m_simulation = nullptr;
-        m_mainWindow->ui->widgetSimulation->setSimulation(m_mainWindow->m_simulation);
+        m_mainWindow->m_simulationWidget->setSimulation(m_mainWindow->m_simulation);
     }
     m_mainWindow->m_stepCount = 0;
     m_mainWindow->m_stepFlag = false;
@@ -140,8 +140,8 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
         m_mainWindow->setStatusString(QString::fromStdString(*errorMessage), 0);
         delete m_mainWindow->m_simulation;
         m_mainWindow->m_simulation = nullptr;
-        m_mainWindow->ui->widgetSimulation->setSimulation(m_mainWindow->m_simulation);
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->setSimulation(m_mainWindow->m_simulation);
+        m_mainWindow->m_simulationWidget->update();
         m_mainWindow->updateEnable();
         return;
     }
@@ -214,13 +214,13 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
         for (int i = 0; i < searchPath.size(); i++) m_mainWindow->m_simulation->GetGlobal()->MeshSearchPath()->push_back(searchPath[i].toStdString());
     }
 
-    m_mainWindow->ui->widgetSimulation->setAxesScale(float(m_mainWindow->m_simulation->GetGlobal()->size1()));
+    m_mainWindow->m_simulationWidget->setAxesScale(float(m_mainWindow->m_simulation->GetGlobal()->size1()));
     QString backgroundColour = QString::fromStdString(m_mainWindow->m_simulation->GetGlobal()->colour1().GetHexArgb());
-    m_mainWindow->ui->widgetSimulation->setSimulation(m_mainWindow->m_simulation);
-    m_mainWindow->ui->widgetSimulation->setBackgroundColour(QColor(backgroundColour));
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->setSimulation(m_mainWindow->m_simulation);
+    m_mainWindow->m_simulationWidget->setBackgroundColour(QColor(backgroundColour));
+    m_mainWindow->m_simulationWidget->update();
     // m_mainWindow->m_simulation->setDrawContactForces(Preferences::valueBool("DisplayContactForces"));
-    //  m_mainWindow->m_simulation->Draw(m_mainWindow->ui->widgetSimulation);
+    //  m_mainWindow->m_simulation->Draw(m_mainWindow->m_simulationWidget);
     m_mainWindow->radioButtonTracking();
 
     m_mainWindow->ui->doubleSpinBoxTimeMax->setValue(m_mainWindow->m_simulation->GetTimeLimit());
@@ -404,7 +404,7 @@ void MainWindowActions::snapshot()
         count = numberString.toInt() + 1;
     }
     QString filename = dir.absoluteFilePath(QString("Snapshot%1.png").arg(count, 5, 10, QChar('0')));
-    if (m_mainWindow->ui->widgetSimulation->WriteStillFrame(filename))
+    if (m_mainWindow->m_simulationWidget->WriteStillFrame(filename))
     {
         QMessageBox::warning(m_mainWindow, "Snapshot Error", QString("Could not write '%1'\n").arg(filename));
         return;
@@ -420,7 +420,7 @@ void MainWindowActions::objSnapshot()
 
     if (folder.isNull() == false)
     {
-        if (m_mainWindow->ui->widgetSimulation->WriteCADFrame(folder))
+        if (m_mainWindow->m_simulationWidget->WriteCADFrame(folder))
         {
             m_mainWindow->setStatusString(QString("Error: Folder '%1' write fail\n").arg(folder), 0);
             return;
@@ -440,7 +440,7 @@ void MainWindowActions::menuRecordMovie()
         if (fileName.isNull() == false)
         {
             m_mainWindow->m_movieFlag = true;
-            m_mainWindow->ui->widgetSimulation->StartAVISave(fileName);
+            m_mainWindow->m_simulationWidget->StartAVISave(fileName);
         }
         else
         {
@@ -451,7 +451,7 @@ void MainWindowActions::menuRecordMovie()
     else
     {
         m_mainWindow->m_movieFlag = false;
-        if (m_mainWindow->ui->widgetSimulation->aviWriter()) menuStopAVISave();
+        if (m_mainWindow->m_simulationWidget->aviWriter()) menuStopAVISave();
     }
 }
 
@@ -469,13 +469,13 @@ void MainWindowActions::menuPreferences()
 
         // these settings have immediate effect
         QColor cursorColour = Preferences::valueQColor("CursorColour");
-        m_mainWindow->ui->widgetSimulation->setCursorColour(QColor(cursorColour.red(), cursorColour.green(), cursorColour.blue(), cursorColour.alpha()));
-        m_mainWindow->ui->widgetSimulation->setCursorRadius(float(Preferences::valueDouble("CursorRadius")));
-        m_mainWindow->ui->widgetSimulation->setCursor3DNudge(float(Preferences::valueDouble("CursorNudge")));
-        m_mainWindow->ui->widgetSimulation->setFrontClip(float(Preferences::valueDouble("CameraFrontClip")));
-        m_mainWindow->ui->widgetSimulation->setBackClip(float(Preferences::valueDouble("CameraBackClip")));
+        m_mainWindow->m_simulationWidget->setCursorColour(QColor(cursorColour.red(), cursorColour.green(), cursorColour.blue(), cursorColour.alpha()));
+        m_mainWindow->m_simulationWidget->setCursorRadius(float(Preferences::valueDouble("CursorRadius")));
+        m_mainWindow->m_simulationWidget->setCursor3DNudge(float(Preferences::valueDouble("CursorNudge")));
+        m_mainWindow->m_simulationWidget->setFrontClip(float(Preferences::valueDouble("CameraFrontClip")));
+        m_mainWindow->m_simulationWidget->setBackClip(float(Preferences::valueDouble("CameraBackClip")));
 
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->update();
 
     }
 
@@ -502,40 +502,40 @@ void MainWindowActions::menuLoadDefaultView()
 {
     m_mainWindow->ui->doubleSpinBoxTrackingOffset->setValue(Preferences::valueDouble("DefaultTrackingOffset"));
 
-    m_mainWindow->ui->widgetSimulation->setCameraDistance(float(Preferences::valueDouble("DefaultCameraDistance")));
-    m_mainWindow->ui->widgetSimulation->setFOV(float(Preferences::valueDouble("DefaultCameraFoV")));
-    m_mainWindow->ui->widgetSimulation->setCameraVecX(float(Preferences::valueDouble("DefaultCameraVecX")));
-    m_mainWindow->ui->widgetSimulation->setCameraVecY(float(Preferences::valueDouble("DefaultCameraVecY")));
-    m_mainWindow->ui->widgetSimulation->setCameraVecZ(float(Preferences::valueDouble("DefaultCameraVecZ")));
-    m_mainWindow->ui->widgetSimulation->setCOIx(float(Preferences::valueDouble("DefaultCameraCOIX")));
-    m_mainWindow->ui->widgetSimulation->setCOIy(float(Preferences::valueDouble("DefaultCameraCOIY")));
-    m_mainWindow->ui->widgetSimulation->setCOIz(float(Preferences::valueDouble("DefaultCameraCOIZ")));
-    m_mainWindow->ui->widgetSimulation->setUpX(float(Preferences::valueDouble("DefaultCameraUpX")));
-    m_mainWindow->ui->widgetSimulation->setUpY(float(Preferences::valueDouble("DefaultCameraUpY")));
-    m_mainWindow->ui->widgetSimulation->setUpZ(float(Preferences::valueDouble("DefaultCameraUpZ")));
-    m_mainWindow->ui->widgetSimulation->setBackClip(float(Preferences::valueDouble("DefaultCameraBackClip")));
-    m_mainWindow->ui->widgetSimulation->setFrontClip(float(Preferences::valueDouble("DefaultCameraFrontClip")));
+    m_mainWindow->m_simulationWidget->setCameraDistance(float(Preferences::valueDouble("DefaultCameraDistance")));
+    m_mainWindow->m_simulationWidget->setFOV(float(Preferences::valueDouble("DefaultCameraFoV")));
+    m_mainWindow->m_simulationWidget->setCameraVecX(float(Preferences::valueDouble("DefaultCameraVecX")));
+    m_mainWindow->m_simulationWidget->setCameraVecY(float(Preferences::valueDouble("DefaultCameraVecY")));
+    m_mainWindow->m_simulationWidget->setCameraVecZ(float(Preferences::valueDouble("DefaultCameraVecZ")));
+    m_mainWindow->m_simulationWidget->setCOIx(float(Preferences::valueDouble("DefaultCameraCOIX")));
+    m_mainWindow->m_simulationWidget->setCOIy(float(Preferences::valueDouble("DefaultCameraCOIY")));
+    m_mainWindow->m_simulationWidget->setCOIz(float(Preferences::valueDouble("DefaultCameraCOIZ")));
+    m_mainWindow->m_simulationWidget->setUpX(float(Preferences::valueDouble("DefaultCameraUpX")));
+    m_mainWindow->m_simulationWidget->setUpY(float(Preferences::valueDouble("DefaultCameraUpY")));
+    m_mainWindow->m_simulationWidget->setUpZ(float(Preferences::valueDouble("DefaultCameraUpZ")));
+    m_mainWindow->m_simulationWidget->setBackClip(float(Preferences::valueDouble("DefaultCameraBackClip")));
+    m_mainWindow->m_simulationWidget->setFrontClip(float(Preferences::valueDouble("DefaultCameraFrontClip")));
 
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->update();
 }
 
 void MainWindowActions::menuSaveDefaultView()
 {
     Preferences::insert("DefaultTrackingOffset", m_mainWindow->ui->doubleSpinBoxTrackingOffset->value());
 
-    Preferences::insert("DefaultCameraDistance", m_mainWindow->ui->widgetSimulation->cameraDistance());
-    Preferences::insert("DefaultCameraFoV", m_mainWindow->ui->widgetSimulation->FOV());
-    Preferences::insert("DefaultCameraCOIX", m_mainWindow->ui->widgetSimulation->COIx());
-    Preferences::insert("DefaultCameraCOIY", m_mainWindow->ui->widgetSimulation->COIy());
-    Preferences::insert("DefaultCameraCOIZ", m_mainWindow->ui->widgetSimulation->COIz());
-    Preferences::insert("DefaultCameraVecX", m_mainWindow->ui->widgetSimulation->cameraVecX());
-    Preferences::insert("DefaultCameraVecY", m_mainWindow->ui->widgetSimulation->cameraVecY());
-    Preferences::insert("DefaultCameraVecZ", m_mainWindow->ui->widgetSimulation->cameraVecZ());
-    Preferences::insert("DefaultCameraUpX", m_mainWindow->ui->widgetSimulation->upX());
-    Preferences::insert("DefaultCameraUpY", m_mainWindow->ui->widgetSimulation->upY());
-    Preferences::insert("DefaultCameraUpZ", m_mainWindow->ui->widgetSimulation->upZ());
-    Preferences::insert("DefaultCameraBackClip", m_mainWindow->ui->widgetSimulation->backClip());
-    Preferences::insert("DefaultCameraFrontClip", m_mainWindow->ui->widgetSimulation->frontClip());
+    Preferences::insert("DefaultCameraDistance", m_mainWindow->m_simulationWidget->cameraDistance());
+    Preferences::insert("DefaultCameraFoV", m_mainWindow->m_simulationWidget->FOV());
+    Preferences::insert("DefaultCameraCOIX", m_mainWindow->m_simulationWidget->COIx());
+    Preferences::insert("DefaultCameraCOIY", m_mainWindow->m_simulationWidget->COIy());
+    Preferences::insert("DefaultCameraCOIZ", m_mainWindow->m_simulationWidget->COIz());
+    Preferences::insert("DefaultCameraVecX", m_mainWindow->m_simulationWidget->cameraVecX());
+    Preferences::insert("DefaultCameraVecY", m_mainWindow->m_simulationWidget->cameraVecY());
+    Preferences::insert("DefaultCameraVecZ", m_mainWindow->m_simulationWidget->cameraVecZ());
+    Preferences::insert("DefaultCameraUpX", m_mainWindow->m_simulationWidget->upX());
+    Preferences::insert("DefaultCameraUpY", m_mainWindow->m_simulationWidget->upY());
+    Preferences::insert("DefaultCameraUpZ", m_mainWindow->m_simulationWidget->upZ());
+    Preferences::insert("DefaultCameraBackClip", m_mainWindow->m_simulationWidget->backClip());
+    Preferences::insert("DefaultCameraFrontClip", m_mainWindow->m_simulationWidget->frontClip());
     Preferences::Write();
 }
 
@@ -561,79 +561,79 @@ void MainWindowActions::menu1920x1080()
 
 void MainWindowActions::buttonCameraRight()
 {
-    m_mainWindow->ui->widgetSimulation->setCameraVecX(0);
-    m_mainWindow->ui->widgetSimulation->setCameraVecY(1);
-    m_mainWindow->ui->widgetSimulation->setCameraVecZ(0);
-    m_mainWindow->ui->widgetSimulation->setUpX(0);
-    m_mainWindow->ui->widgetSimulation->setUpY(0);
-    m_mainWindow->ui->widgetSimulation->setUpZ(1);
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->setCameraVecX(0);
+    m_mainWindow->m_simulationWidget->setCameraVecY(1);
+    m_mainWindow->m_simulationWidget->setCameraVecZ(0);
+    m_mainWindow->m_simulationWidget->setUpX(0);
+    m_mainWindow->m_simulationWidget->setUpY(0);
+    m_mainWindow->m_simulationWidget->setUpZ(1);
+    m_mainWindow->m_simulationWidget->update();
 }
 
 
 void MainWindowActions::buttonCameraTop()
 {
-    m_mainWindow->ui->widgetSimulation->setCameraVecX(0);
-    m_mainWindow->ui->widgetSimulation->setCameraVecY(0);
-    m_mainWindow->ui->widgetSimulation->setCameraVecZ(-1);
-    m_mainWindow->ui->widgetSimulation->setUpX(0);
-    m_mainWindow->ui->widgetSimulation->setUpY(1);
-    m_mainWindow->ui->widgetSimulation->setUpZ(0);
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->setCameraVecX(0);
+    m_mainWindow->m_simulationWidget->setCameraVecY(0);
+    m_mainWindow->m_simulationWidget->setCameraVecZ(-1);
+    m_mainWindow->m_simulationWidget->setUpX(0);
+    m_mainWindow->m_simulationWidget->setUpY(1);
+    m_mainWindow->m_simulationWidget->setUpZ(0);
+    m_mainWindow->m_simulationWidget->update();
 }
 
 
 void MainWindowActions::buttonCameraFront()
 {
-    m_mainWindow->ui->widgetSimulation->setCameraVecX(-1);
-    m_mainWindow->ui->widgetSimulation->setCameraVecY(0);
-    m_mainWindow->ui->widgetSimulation->setCameraVecZ(0);
-    m_mainWindow->ui->widgetSimulation->setUpX(0);
-    m_mainWindow->ui->widgetSimulation->setUpY(0);
-    m_mainWindow->ui->widgetSimulation->setUpZ(1);
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->setCameraVecX(-1);
+    m_mainWindow->m_simulationWidget->setCameraVecY(0);
+    m_mainWindow->m_simulationWidget->setCameraVecZ(0);
+    m_mainWindow->m_simulationWidget->setUpX(0);
+    m_mainWindow->m_simulationWidget->setUpY(0);
+    m_mainWindow->m_simulationWidget->setUpZ(1);
+    m_mainWindow->m_simulationWidget->update();
 }
 
 
 void MainWindowActions::buttonCameraLeft()
 {
-    m_mainWindow->ui->widgetSimulation->setCameraVecX(0);
-    m_mainWindow->ui->widgetSimulation->setCameraVecY(-1);
-    m_mainWindow->ui->widgetSimulation->setCameraVecZ(0);
-    m_mainWindow->ui->widgetSimulation->setUpX(0);
-    m_mainWindow->ui->widgetSimulation->setUpY(0);
-    m_mainWindow->ui->widgetSimulation->setUpZ(1);
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->setCameraVecX(0);
+    m_mainWindow->m_simulationWidget->setCameraVecY(-1);
+    m_mainWindow->m_simulationWidget->setCameraVecZ(0);
+    m_mainWindow->m_simulationWidget->setUpX(0);
+    m_mainWindow->m_simulationWidget->setUpY(0);
+    m_mainWindow->m_simulationWidget->setUpZ(1);
+    m_mainWindow->m_simulationWidget->update();
 }
 
 
 void MainWindowActions::buttonCameraBottom()
 {
-    m_mainWindow->ui->widgetSimulation->setCameraVecX(0);
-    m_mainWindow->ui->widgetSimulation->setCameraVecY(0);
-    m_mainWindow->ui->widgetSimulation->setCameraVecZ(1);
-    m_mainWindow->ui->widgetSimulation->setUpX(0);
-    m_mainWindow->ui->widgetSimulation->setUpY(1);
-    m_mainWindow->ui->widgetSimulation->setUpZ(0);
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->setCameraVecX(0);
+    m_mainWindow->m_simulationWidget->setCameraVecY(0);
+    m_mainWindow->m_simulationWidget->setCameraVecZ(1);
+    m_mainWindow->m_simulationWidget->setUpX(0);
+    m_mainWindow->m_simulationWidget->setUpY(1);
+    m_mainWindow->m_simulationWidget->setUpZ(0);
+    m_mainWindow->m_simulationWidget->update();
 }
 
 
 void MainWindowActions::buttonCameraBack()
 {
-    m_mainWindow->ui->widgetSimulation->setCameraVecX(1);
-    m_mainWindow->ui->widgetSimulation->setCameraVecY(0);
-    m_mainWindow->ui->widgetSimulation->setCameraVecZ(0);
-    m_mainWindow->ui->widgetSimulation->setUpX(0);
-    m_mainWindow->ui->widgetSimulation->setUpY(0);
-    m_mainWindow->ui->widgetSimulation->setUpZ(1);
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->setCameraVecX(1);
+    m_mainWindow->m_simulationWidget->setCameraVecY(0);
+    m_mainWindow->m_simulationWidget->setCameraVecZ(0);
+    m_mainWindow->m_simulationWidget->setUpX(0);
+    m_mainWindow->m_simulationWidget->setUpY(0);
+    m_mainWindow->m_simulationWidget->setUpZ(1);
+    m_mainWindow->m_simulationWidget->update();
 }
 
 void MainWindowActions::menuStopAVISave()
 {
     m_mainWindow->m_movieFlag = false;
-    m_mainWindow->ui->widgetSimulation->StopAVISave();
+    m_mainWindow->m_simulationWidget->StopAVISave();
 }
 
 void MainWindowActions::menuStartOBJSequenceSave()
@@ -689,7 +689,7 @@ void MainWindowActions::menuNew()
     {
         if (m_mainWindow->m_simulation) delete m_mainWindow->m_simulation;
         m_mainWindow->m_simulation = nullptr;
-        m_mainWindow->ui->widgetSimulation->setSimulation(m_mainWindow->m_simulation);
+        m_mainWindow->m_simulationWidget->setSimulation(m_mainWindow->m_simulation);
         m_mainWindow->m_stepCount = 0;
         m_mainWindow->ui->actionRun->setChecked(false);
         m_mainWindow->m_timer->stop();
@@ -697,8 +697,8 @@ void MainWindowActions::menuNew()
         std::unique_ptr<Global> newGlobal = dialogGlobal.outputGlobal();
         newGlobal->setSimulation(m_mainWindow->m_simulation);
         m_mainWindow->m_simulation->SetGlobal(std::move(newGlobal));
-        m_mainWindow->ui->widgetSimulation->setSimulation(m_mainWindow->m_simulation);
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->setSimulation(m_mainWindow->m_simulation);
+        m_mainWindow->m_simulationWidget->update();
         m_mainWindow->ui->treeWidgetElements->setSimulation(m_mainWindow->m_simulation);
         std::unique_ptr<Marker> marker = std::make_unique<Marker>(nullptr);
         marker->setName("WorldMarker"s);
@@ -866,7 +866,7 @@ void MainWindowActions::menuImportMeshes()
     m_mainWindow->updateEnable();
     m_mainWindow->updateComboBoxTrackingMarker();
     m_mainWindow->ui->treeWidgetElements->fillVisibitilityLists(m_mainWindow->m_simulation);
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->update();
 }
 
 void MainWindowActions::menuImportWarehouse()
@@ -955,7 +955,7 @@ void MainWindowActions::menuCreateEditJoint(Joint *joint)
         }
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->update();
     }
     else
     {
@@ -1061,7 +1061,7 @@ void MainWindowActions::menuCreateEditBody(Body *body)
         }
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->update();
     }
     else
     {
@@ -1079,15 +1079,15 @@ void MainWindowActions::menuCreateEditMarker(Marker *marker)
     Q_ASSERT_X(m_mainWindow->m_simulation, "MainWindow::menuCreateEditMarker", "m_simulation undefined");
     Q_ASSERT_X(m_mainWindow->m_simulation->GetBodyList()->size(), "MainWindow::menuCreateEditMarker", "No bodies defined");
     DialogMarkers dialogMarkers(m_mainWindow);
-    dialogMarkers.setCursor3DPosition(m_mainWindow->ui->widgetSimulation->cursor3DPosition());
+    dialogMarkers.setCursor3DPosition(m_mainWindow->m_simulationWidget->cursor3DPosition());
     dialogMarkers.setInputMarker(marker);
     dialogMarkers.setSimulation(m_mainWindow->m_simulation);
     dialogMarkers.lateInitialise();
-    if (sender() == m_mainWindow->ui->widgetSimulation && m_mainWindow->ui->widgetSimulation->getLastMenuItem() != tr("Edit Marker..."))
+    if (sender() == m_mainWindow->m_simulationWidget && m_mainWindow->m_simulationWidget->getLastMenuItem() != tr("Edit Marker..."))
     {
-        if (m_mainWindow->ui->widgetSimulation->getClosestHit())
+        if (m_mainWindow->m_simulationWidget->getClosestHit())
         {
-            pgd::Vector3 location = m_mainWindow->ui->widgetSimulation->getClosestHit()->worldLocation();
+            pgd::Vector3 location = m_mainWindow->m_simulationWidget->getClosestHit()->worldLocation();
             dialogMarkers.overrideStartPosition(location);
         }
     }
@@ -1122,7 +1122,7 @@ void MainWindowActions::menuCreateEditMarker(Marker *marker)
 
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->update();
     }
     else
     {
@@ -1181,7 +1181,7 @@ void MainWindowActions::menuCreateEditMuscle(Muscle *muscle)
         muscle->setStrapColourControl(colourControl);
         muscle->LateInitialisation();
         m_mainWindow->updateEnable();
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->update();
     }
     else
     {
@@ -1236,7 +1236,7 @@ void MainWindowActions::menuCreateEditGeom(Geom *geom)
         }
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->update();
     }
     else
     {
@@ -1285,7 +1285,7 @@ void MainWindowActions::menuCreateEditDriver(Driver *driver)
         }
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->update();
     }
     else
     {
@@ -1311,9 +1311,9 @@ void MainWindowActions::menuEditGlobal()
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
         m_mainWindow->ui->doubleSpinBoxTimeMax->setValue(m_mainWindow->m_simulation->GetGlobal()->TimeLimit());
-        m_mainWindow->ui->widgetSimulation->setAxesScale(float(m_mainWindow->m_simulation->GetGlobal()->size1()));
-        m_mainWindow->ui->widgetSimulation->setBackgroundColour(QString::fromStdString(m_mainWindow->m_simulation->GetGlobal()->colour1().GetHexArgb()));
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->setAxesScale(float(m_mainWindow->m_simulation->GetGlobal()->size1()));
+        m_mainWindow->m_simulationWidget->setBackgroundColour(QString::fromStdString(m_mainWindow->m_simulation->GetGlobal()->colour1().GetHexArgb()));
+        m_mainWindow->m_simulationWidget->update();
     }
     else
     {
@@ -1332,9 +1332,9 @@ void MainWindowActions::enterRunMode()
     m_mainWindow->ui->actionRunMode->setChecked(true);
     m_mainWindow->ui->actionConstructionMode->setChecked(false);
     m_mainWindow->updateEnable();
-    m_mainWindow->ui->widgetSimulation->getDrawMuscleMap()->clear(); // force a redraw of all muscles
-    m_mainWindow->ui->widgetSimulation->getDrawFluidSacMap()->clear(); // force a redraw of all fluid sacs
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->getDrawMuscleMap()->clear(); // force a redraw of all muscles
+    m_mainWindow->m_simulationWidget->getDrawFluidSacMap()->clear(); // force a redraw of all fluid sacs
+    m_mainWindow->m_simulationWidget->update();
 }
 
 void MainWindowActions::enterConstructionMode()
@@ -1349,9 +1349,9 @@ void MainWindowActions::enterConstructionMode()
     m_mainWindow->ui->actionRunMode->setChecked(false);
     m_mainWindow->ui->actionConstructionMode->setChecked(true);
     m_mainWindow->updateEnable();
-    m_mainWindow->ui->widgetSimulation->getDrawMuscleMap()->clear(); // force a redraw of all muscles
-    m_mainWindow->ui->widgetSimulation->getDrawFluidSacMap()->clear(); // force a redraw of all fluid sacs
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->getDrawMuscleMap()->clear(); // force a redraw of all muscles
+    m_mainWindow->m_simulationWidget->getDrawFluidSacMap()->clear(); // force a redraw of all fluid sacs
+    m_mainWindow->m_simulationWidget->update();
 }
 
 void MainWindowActions::menuCreateAssembly()
@@ -1375,7 +1375,7 @@ void MainWindowActions::menuCreateAssembly()
         m_mainWindow->setStatusString(tr("Assembly cancelled"), 2);
     }
     m_mainWindow->updateEnable();
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->update();
 }
 
 void MainWindowActions::menuDeleteAssembly()
@@ -1412,7 +1412,7 @@ void MainWindowActions::menuDeleteAssembly()
         m_mainWindow->setStatusString(tr("Assembly constraints deleted"), 2);
         m_mainWindow->setWindowModified(true);
         m_mainWindow->updateEnable();
-        m_mainWindow->ui->widgetSimulation->update();
+        m_mainWindow->m_simulationWidget->update();
     }
 }
 
@@ -1460,7 +1460,7 @@ void MainWindowActions::menuExportMarkers()
             m_mainWindow->setWindowModified(true);
             m_mainWindow->updateComboBoxTrackingMarker();
             m_mainWindow->updateEnable();
-            m_mainWindow->ui->widgetSimulation->update();
+            m_mainWindow->m_simulationWidget->update();
         }
     }
     else
@@ -1473,23 +1473,23 @@ void MainWindowActions::menuResetView()
 {
     m_mainWindow->ui->doubleSpinBoxTrackingOffset->setValue(Preferences::valueDouble("ResetTrackingOffset"));
 
-    m_mainWindow->ui->widgetSimulation->setCameraDistance(float(Preferences::valueDouble("ResetCameraDistance")));
-    m_mainWindow->ui->widgetSimulation->setFOV(float(Preferences::valueDouble("ResetCameraFoV")));
-    m_mainWindow->ui->widgetSimulation->setCameraVecX(float(Preferences::valueDouble("ResetCameraVecX")));
-    m_mainWindow->ui->widgetSimulation->setCameraVecY(float(Preferences::valueDouble("ResetCameraVecY")));
-    m_mainWindow->ui->widgetSimulation->setCameraVecZ(float(Preferences::valueDouble("ResetCameraVecZ")));
-    m_mainWindow->ui->widgetSimulation->setCOIx(float(Preferences::valueDouble("ResetCameraCOIX")));
-    m_mainWindow->ui->widgetSimulation->setCOIy(float(Preferences::valueDouble("ResetCameraCOIY")));
-    m_mainWindow->ui->widgetSimulation->setCOIz(float(Preferences::valueDouble("ResetCameraCOIZ")));
-    m_mainWindow->ui->widgetSimulation->setUpX(float(Preferences::valueDouble("ResetCameraUpX")));
-    m_mainWindow->ui->widgetSimulation->setUpY(float(Preferences::valueDouble("ResetCameraUpY")));
-    m_mainWindow->ui->widgetSimulation->setUpZ(float(Preferences::valueDouble("ResetCameraUpZ")));
-    m_mainWindow->ui->widgetSimulation->setBackClip(float(Preferences::valueDouble("ResetCameraBackClip")));
-    m_mainWindow->ui->widgetSimulation->setFrontClip(float(Preferences::valueDouble("ResetCameraFrontClip")));
+    m_mainWindow->m_simulationWidget->setCameraDistance(float(Preferences::valueDouble("ResetCameraDistance")));
+    m_mainWindow->m_simulationWidget->setFOV(float(Preferences::valueDouble("ResetCameraFoV")));
+    m_mainWindow->m_simulationWidget->setCameraVecX(float(Preferences::valueDouble("ResetCameraVecX")));
+    m_mainWindow->m_simulationWidget->setCameraVecY(float(Preferences::valueDouble("ResetCameraVecY")));
+    m_mainWindow->m_simulationWidget->setCameraVecZ(float(Preferences::valueDouble("ResetCameraVecZ")));
+    m_mainWindow->m_simulationWidget->setCOIx(float(Preferences::valueDouble("ResetCameraCOIX")));
+    m_mainWindow->m_simulationWidget->setCOIy(float(Preferences::valueDouble("ResetCameraCOIY")));
+    m_mainWindow->m_simulationWidget->setCOIz(float(Preferences::valueDouble("ResetCameraCOIZ")));
+    m_mainWindow->m_simulationWidget->setUpX(float(Preferences::valueDouble("ResetCameraUpX")));
+    m_mainWindow->m_simulationWidget->setUpY(float(Preferences::valueDouble("ResetCameraUpY")));
+    m_mainWindow->m_simulationWidget->setUpZ(float(Preferences::valueDouble("ResetCameraUpZ")));
+    m_mainWindow->m_simulationWidget->setBackClip(float(Preferences::valueDouble("ResetCameraBackClip")));
+    m_mainWindow->m_simulationWidget->setFrontClip(float(Preferences::valueDouble("ResetCameraFrontClip")));
 
-    m_mainWindow->ui->widgetSimulation->setCursor3DPosition(QVector3D(0, 0, 0));
-    m_mainWindow->ui->widgetSimulation->setCursorRadius(float(Preferences::valueDouble("ResetCursorRadius")));
-    m_mainWindow->ui->widgetSimulation->setAxesScale(float(Preferences::valueDouble("ResetAxesSize")));
+    m_mainWindow->m_simulationWidget->setCursor3DPosition(QVector3D(0, 0, 0));
+    m_mainWindow->m_simulationWidget->setCursorRadius(float(Preferences::valueDouble("ResetCursorRadius")));
+    m_mainWindow->m_simulationWidget->setAxesScale(float(Preferences::valueDouble("ResetAxesSize")));
 
     m_mainWindow->ui->doubleSpinBoxDistance->setValue(Preferences::valueDouble("ResetCameraDistance"));
     m_mainWindow->ui->doubleSpinBoxFoV->setValue(Preferences::valueDouble("ResetCameraFoV"));
@@ -1504,7 +1504,7 @@ void MainWindowActions::menuResetView()
 
     m_mainWindow->ui->doubleSpinBoxCursorSize->setValue(Preferences::valueDouble("ResetCursorRadius"));
 
-    m_mainWindow->ui->widgetSimulation->update();
+    m_mainWindow->m_simulationWidget->update();
 }
 
 void MainWindowActions::menuRawXMLEditor()
@@ -1523,7 +1523,7 @@ void MainWindowActions::menuRawXMLEditor()
             m_mainWindow->setWindowModified(true);
             enterConstructionMode();
             m_mainWindow->updateEnable();
-            m_mainWindow->ui->widgetSimulation->update();
+            m_mainWindow->m_simulationWidget->update();
         }
         else
         {
@@ -1552,7 +1552,7 @@ void MainWindowActions::menuCreateMirrorElements()
             m_mainWindow->setWindowModified(true);
             enterConstructionMode();
             m_mainWindow->updateEnable();
-            m_mainWindow->ui->widgetSimulation->update();
+            m_mainWindow->m_simulationWidget->update();
         }
         else
         {
@@ -1581,7 +1581,7 @@ void MainWindowActions::menuCreateTestingDrivers()
             m_mainWindow->setWindowModified(true);
             enterConstructionMode();
             m_mainWindow->updateEnable();
-            m_mainWindow->ui->widgetSimulation->update();
+            m_mainWindow->m_simulationWidget->update();
         }
         else
         {
@@ -1612,7 +1612,7 @@ void MainWindowActions::menuRename()
             m_mainWindow->setWindowModified(true);
             enterConstructionMode();
             m_mainWindow->updateEnable();
-            m_mainWindow->ui->widgetSimulation->update();
+            m_mainWindow->m_simulationWidget->update();
         }
         else
         {

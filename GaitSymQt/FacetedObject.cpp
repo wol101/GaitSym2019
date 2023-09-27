@@ -1220,7 +1220,7 @@ void FacetedObject::Draw()
 
     m_simulationWidget->facetedObjectShader()->release();
 }
-
+#endif
 
 // Write a FacetedObject out as a POVRay file
 void FacetedObject::WritePOVRay(std::string filename)
@@ -1244,7 +1244,7 @@ void FacetedObject::WritePOVRay(std::string filename)
         std::cerr << "Error writing " << filename << "\n";
     }
 }
-#endif
+
 
 // write the object out as a POVRay string
 // currently assumes all faces are triangles (call Triangulate if conversion is necessary)

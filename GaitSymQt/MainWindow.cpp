@@ -11,7 +11,6 @@
 #include "ui_MainWindow.h"
 #include "MainWindowActions.h"
 #include "ViewControlWidget.h"
-#include "ObjectiveMain.h"
 #include "Preferences.h"
 #include "Simulation.h"
 #include "Body.h"
@@ -22,7 +21,11 @@
 #include "Muscle.h"
 #include "Driver.h"
 
-#include "pystring.h"
+#ifdef USE_QT3D
+#include "SimulationWindowQt3D.h"
+#else
+#include "SimulationWidget.h"
+#endif
 
 #include <QMessageBox>
 #include <QTimer>
@@ -171,35 +174,41 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->treeWidgetElements, SIGNAL(infoRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementInfo(const QString &, const QString &)));
 
     // put SimulationWindow into existing widgetGLWidget
-//    QBoxLayout *boxLayout = new QBoxLayout(QBoxLayout::LeftToRight, ui->widgetGLWidget);
-//    boxLayout->setMargin(0);
-//    ui->widgetSimulation = new SimulationWidget();
-//    boxLayout->addWidget(ui->widgetSimulation);
-//    ui->widgetSimulation->setMainWindow(this);
-    ui->widgetSimulation->setMainWindow(this);
+    QBoxLayout *boxLayout = new QBoxLayout(QBoxLayout::LeftToRight, ui->widgetSimulationPlaceholder);
+    boxLayout->setContentsMargins(0, 0, 0, 0);
+    boxLayout->setSpacing(0);
+#ifdef USE_QT3D
+    m_simulationWidget = new SimulationWindowQt3D();
+    QWidget *container = QWidget::createWindowContainer(m_simulationWidget);
+    boxLayout->addWidget(container);
+#else
+    m_simulationWidget = new SimulationWidget();
+    boxLayout->addWidget(m_simulationWidget);
+#endif
+    m_simulationWidget->setMainWindow(this);
 
     // connect the ViewControlWidget to the GLWidget
-    connect(ui->widgetViewFrame, SIGNAL(EmitCameraVec(double, double, double)), ui->widgetSimulation, SLOT(SetCameraVec(double, double, double)));
+    connect(ui->widgetViewFrame, SIGNAL(EmitCameraVec(double, double, double)), m_simulationWidget, SLOT(SetCameraVec(double, double, double)));
 
     // connect the SimulationWindow to the MainWindow
-    connect(ui->widgetSimulation, SIGNAL(EmitStatusString(const QString &, int)), this, SLOT(setStatusString(const QString &, int)));
-    connect(ui->widgetSimulation, SIGNAL(EmitCOI(float, float, float)), this, SLOT(setUICOI(float, float, float)));
-    connect(ui->widgetSimulation, SIGNAL(EmitFoV(float)), this, SLOT(setUIFoV(float)));
-    connect(ui->widgetSimulation, SIGNAL(EmitCreateMarkerRequest()), m_mainWindowActions, SLOT(menuCreateMarker()));
-    connect(ui->widgetSimulation, SIGNAL(EmitEditMarkerRequest(const QString &)), this, SLOT(editExistingMarker(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitMoveMarkerRequest(const QString &, const QVector3D &)), this, SLOT(moveExistingMarker(const QString &, const QVector3D &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitEditBodyRequest(const QString &)), this, SLOT(editExistingBody(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitEditGeomRequest(const QString &)), this, SLOT(editExistingGeom(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitEditJointRequest(const QString &)), this, SLOT(editExistingJoint(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitEditMuscleRequest(const QString &)), this, SLOT(editExistingMuscle(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitDeleteBodyRequest(const QString &)), this, SLOT(deleteExistingBody(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitDeleteGeomRequest(const QString &)), this, SLOT(deleteExistingGeom(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitDeleteJointRequest(const QString &)), this, SLOT(deleteExistingJoint(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitDeleteMarkerRequest(const QString &)), this, SLOT(deleteExistingMarker(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitDeleteMuscleRequest(const QString &)), this, SLOT(deleteExistingMuscle(const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitInfoRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementInfo(const QString &, const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitHideRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementHide(const QString &, const QString &)));
-    connect(ui->widgetSimulation, SIGNAL(EmitResize(int, int)), this, SLOT(reportOpenGLSize(int, int)));
+    connect(m_simulationWidget, SIGNAL(EmitStatusString(const QString &, int)), this, SLOT(setStatusString(const QString &, int)));
+    connect(m_simulationWidget, SIGNAL(EmitCOI(float, float, float)), this, SLOT(setUICOI(float, float, float)));
+    connect(m_simulationWidget, SIGNAL(EmitFoV(float)), this, SLOT(setUIFoV(float)));
+    connect(m_simulationWidget, SIGNAL(EmitCreateMarkerRequest()), m_mainWindowActions, SLOT(menuCreateMarker()));
+    connect(m_simulationWidget, SIGNAL(EmitEditMarkerRequest(const QString &)), this, SLOT(editExistingMarker(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitMoveMarkerRequest(const QString &, const QVector3D &)), this, SLOT(moveExistingMarker(const QString &, const QVector3D &)));
+    connect(m_simulationWidget, SIGNAL(EmitEditBodyRequest(const QString &)), this, SLOT(editExistingBody(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitEditGeomRequest(const QString &)), this, SLOT(editExistingGeom(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitEditJointRequest(const QString &)), this, SLOT(editExistingJoint(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitEditMuscleRequest(const QString &)), this, SLOT(editExistingMuscle(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitDeleteBodyRequest(const QString &)), this, SLOT(deleteExistingBody(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitDeleteGeomRequest(const QString &)), this, SLOT(deleteExistingGeom(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitDeleteJointRequest(const QString &)), this, SLOT(deleteExistingJoint(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitDeleteMarkerRequest(const QString &)), this, SLOT(deleteExistingMarker(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitDeleteMuscleRequest(const QString &)), this, SLOT(deleteExistingMuscle(const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitInfoRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementInfo(const QString &, const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitHideRequest(const QString &, const QString &)), m_mainWindowActions, SLOT(elementHide(const QString &, const QString &)));
+    connect(m_simulationWidget, SIGNAL(EmitResize(int, int)), this, SLOT(reportOpenGLSize(int, int)));
 
     // the treeWidgetElements needs to know about this window
     ui->treeWidgetElements->setMainWindow(this);
@@ -305,18 +314,18 @@ void MainWindow::processOneThing()
                 m_stepFlag = false;
                 m_timer->stop();
             }
-            ui->widgetSimulation->getDrawMuscleMap()->clear(); // force a redraw of all muscles
-            ui->widgetSimulation->getDrawFluidSacMap()->clear(); // force a redraw of all fluid sacs
-            ui->widgetSimulation->update();
+            m_simulationWidget->getDrawMuscleMap()->clear(); // force a redraw of all muscles
+            m_simulationWidget->getDrawFluidSacMap()->clear(); // force a redraw of all fluid sacs
+            m_simulationWidget->update();
             if (m_movieFlag)
             {
-                ui->widgetSimulation->WriteMovieFrame();
+                m_simulationWidget->WriteMovieFrame();
             }
             if (m_saveOBJFileSequenceFlag)
             {
                 QString filename = QString("%1%2").arg("Frame").arg(m_simulation->GetTime(), 12, 'f', 7, QChar('0'));
                 QString path = QDir(m_objFileSequenceFolder).filePath(filename);
-                ui->widgetSimulation->WriteCADFrame(path);
+                m_simulationWidget->WriteCADFrame(path);
             }
             QString time = QString("%1").arg(m_simulation->GetTime(), 0, 'f', 5);
             ui->lcdNumberTime->display(time);
@@ -331,7 +340,7 @@ void MainWindow::processOneThing()
             ui->textEditLog->append(QString("Time = %1\n").arg(m_simulation->GetTime(), 0, 'f', 5));
             ui->textEditLog->append(QString("Metabolic Energy = %1\n").arg(m_simulation->GetMetabolicEnergy(), 0, 'f', 5));
             ui->textEditLog->append(QString("Mechanical Energy = %1\n").arg(m_simulation->GetMechanicalEnergy(), 0, 'f', 5));
-            ui->widgetSimulation->update();
+            m_simulationWidget->update();
             QString time = QString("%1").arg(m_simulation->GetTime(), 0, 'f', 5);
             ui->lcdNumberTime->display(time);
             ui->actionRun->setChecked(false);
@@ -343,7 +352,7 @@ void MainWindow::processOneThing()
             log(QString::fromStdString(capturedCerr.str()));
             setStatusString(tr("Simulation aborted"), 1);
             ui->textEditLog->append(QString("Fitness = %1\n").arg(m_simulation->CalculateInstantaneousFitness(), 0, 'f', 5));
-            ui->widgetSimulation->update();
+            m_simulationWidget->update();
             QString time = QString("%1").arg(m_simulation->GetTime(), 0, 'f', 5);
             ui->lcdNumberTime->display(time);
             ui->actionRun->setChecked(false);
@@ -375,20 +384,20 @@ void MainWindow::handleTracking()
         pgd::Vector3 position = marker->GetWorldPosition();
         if (ui->radioButtonTrackingX->isChecked())
         {
-            ui->widgetSimulation->setCOIx(float(position.x + ui->doubleSpinBoxTrackingOffset->value()));
+            m_simulationWidget->setCOIx(float(position.x + ui->doubleSpinBoxTrackingOffset->value()));
             ui->doubleSpinBoxCOIX->setValue(position.x + ui->doubleSpinBoxTrackingOffset->value());
         }
         if (ui->radioButtonTrackingY->isChecked())
         {
-            ui->widgetSimulation->setCOIy(float(position.y + ui->doubleSpinBoxTrackingOffset->value()));
+            m_simulationWidget->setCOIy(float(position.y + ui->doubleSpinBoxTrackingOffset->value()));
             ui->doubleSpinBoxCOIY->setValue(position.y + ui->doubleSpinBoxTrackingOffset->value());
         }
         if (ui->radioButtonTrackingZ->isChecked())
         {
-            ui->widgetSimulation->setCOIz(float(position.z + ui->doubleSpinBoxTrackingOffset->value()));
+            m_simulationWidget->setCOIz(float(position.z + ui->doubleSpinBoxTrackingOffset->value()));
             ui->doubleSpinBoxCOIZ->setValue(position.z + ui->doubleSpinBoxTrackingOffset->value());
         }
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
     }
 }
 
@@ -401,54 +410,54 @@ const QFileInfo &MainWindow::configFile() const
 void MainWindow::spinboxDistanceChanged(double v)
 {
     Preferences::insert("CameraDistance", v);
-    ui->widgetSimulation->setCameraDistance(float(v));
-    ui->widgetSimulation->update();
+    m_simulationWidget->setCameraDistance(float(v));
+    m_simulationWidget->update();
 }
 
 
 void MainWindow::spinboxFoVChanged(double v)
 {
     Preferences::insert("CameraFoV", v);
-    ui->widgetSimulation->setFOV(float(v));
-    ui->widgetSimulation->update();
+    m_simulationWidget->setFOV(float(v));
+    m_simulationWidget->update();
 }
 
 
 void MainWindow::spinboxCOIXChanged(double v)
 {
     Preferences::insert("CameraCOIX", v);
-    ui->widgetSimulation->setCOIx(float(v));
-    ui->widgetSimulation->update();
+    m_simulationWidget->setCOIx(float(v));
+    m_simulationWidget->update();
 }
 
 
 void MainWindow::spinboxCOIYChanged(double v)
 {
     Preferences::insert("CameraCOIY", v);
-    ui->widgetSimulation->setCOIy(float(v));
-    ui->widgetSimulation->update();
+    m_simulationWidget->setCOIy(float(v));
+    m_simulationWidget->update();
 }
 
 
 void MainWindow::spinboxCOIZChanged(double v)
 {
     Preferences::insert("CameraCOIZ", v);
-    ui->widgetSimulation->setCOIz(float(v));
-    ui->widgetSimulation->update();
+    m_simulationWidget->setCOIz(float(v));
+    m_simulationWidget->update();
 }
 
 void MainWindow::spinboxNearChanged(double v)
 {
     Preferences::insert("CameraFrontClip", v);
-    ui->widgetSimulation->setFrontClip(float(v));
-    ui->widgetSimulation->update();
+    m_simulationWidget->setFrontClip(float(v));
+    m_simulationWidget->update();
 }
 
 void MainWindow::spinboxFarChanged(double v)
 {
     Preferences::insert("CameraBackClip", v);
-    ui->widgetSimulation->setBackClip(float(v));
-    ui->widgetSimulation->update();
+    m_simulationWidget->setBackClip(float(v));
+    m_simulationWidget->update();
 }
 
 void MainWindow::spinboxTrackingOffsetChanged(double v)
@@ -469,14 +478,14 @@ void MainWindow::radioButtonTracking()
 void MainWindow::spinboxCursorSizeChanged(double v)
 {
     Preferences::insert("CursorRadius", v);
-    ui->widgetSimulation->setCursorRadius(float(v));
-    ui->widgetSimulation->update();
+    m_simulationWidget->setCursorRadius(float(v));
+    m_simulationWidget->update();
 }
 
 void MainWindow::spinboxCursorNudgeChanged(double v)
 {
     Preferences::insert("CursorNudge", v);
-    ui->widgetSimulation->setCursor3DNudge(float(v));
+    m_simulationWidget->setCursor3DNudge(float(v));
 }
 
 void MainWindow::comboBoxMuscleColourMapCurrentTextChanged(const QString &text)
@@ -491,7 +500,7 @@ void MainWindow::comboBoxMuscleColourMapCurrentTextChanged(const QString &text)
     {
         for (auto &&iter : *m_simulation->GetMuscleList()) iter.second->setStrapColourControl(colourControl);
     }
-    ui->widgetSimulation->update();
+    m_simulationWidget->update();
 }
 
 void MainWindow::spinboxSkip(int v)
@@ -511,25 +520,25 @@ void MainWindow::spinboxFPSChanged(double v)
 
 void MainWindow::setInterfaceValues()
 {
-    ui->widgetSimulation->setCameraDistance(float(Preferences::valueDouble("CameraDistance")));
-    ui->widgetSimulation->setFOV(float(Preferences::valueDouble("CameraFoV")));
-    ui->widgetSimulation->setCameraVecX(float(Preferences::valueDouble("CameraVecX")));
-    ui->widgetSimulation->setCameraVecY(float(Preferences::valueDouble("CameraVecY")));
-    ui->widgetSimulation->setCameraVecZ(float(Preferences::valueDouble("CameraVecZ")));
-    ui->widgetSimulation->setCOIx(float(Preferences::valueDouble("CameraCOIX")));
-    ui->widgetSimulation->setCOIy(float(Preferences::valueDouble("CameraCOIY")));
-    ui->widgetSimulation->setCOIz(float(Preferences::valueDouble("CameraCOIZ")));
-    ui->widgetSimulation->setFrontClip(float(Preferences::valueDouble("CameraFrontClip")));
-    ui->widgetSimulation->setBackClip(float(Preferences::valueDouble("CameraBackClip")));
-    ui->widgetSimulation->setUpX(float(Preferences::valueDouble("CameraUpX")));
-    ui->widgetSimulation->setUpY(float(Preferences::valueDouble("CameraUpY")));
-    ui->widgetSimulation->setUpZ(float(Preferences::valueDouble("CameraUpZ")));
-    ui->widgetSimulation->setOrthographicProjection(Preferences::valueBool("OrthographicFlag"));
+    m_simulationWidget->setCameraDistance(float(Preferences::valueDouble("CameraDistance")));
+    m_simulationWidget->setFOV(float(Preferences::valueDouble("CameraFoV")));
+    m_simulationWidget->setCameraVecX(float(Preferences::valueDouble("CameraVecX")));
+    m_simulationWidget->setCameraVecY(float(Preferences::valueDouble("CameraVecY")));
+    m_simulationWidget->setCameraVecZ(float(Preferences::valueDouble("CameraVecZ")));
+    m_simulationWidget->setCOIx(float(Preferences::valueDouble("CameraCOIX")));
+    m_simulationWidget->setCOIy(float(Preferences::valueDouble("CameraCOIY")));
+    m_simulationWidget->setCOIz(float(Preferences::valueDouble("CameraCOIZ")));
+    m_simulationWidget->setFrontClip(float(Preferences::valueDouble("CameraFrontClip")));
+    m_simulationWidget->setBackClip(float(Preferences::valueDouble("CameraBackClip")));
+    m_simulationWidget->setUpX(float(Preferences::valueDouble("CameraUpX")));
+    m_simulationWidget->setUpY(float(Preferences::valueDouble("CameraUpY")));
+    m_simulationWidget->setUpZ(float(Preferences::valueDouble("CameraUpZ")));
+    m_simulationWidget->setOrthographicProjection(Preferences::valueBool("OrthographicFlag"));
 
     QColor cursorColour = Preferences::valueQColor("CursorColour");
-    ui->widgetSimulation->setCursorColour(QColor(cursorColour.red(), cursorColour.green(), cursorColour.blue(), cursorColour.alpha()));
-    ui->widgetSimulation->setCursorRadius(float(Preferences::valueDouble("CursorRadius")));
-    ui->widgetSimulation->setCursor3DNudge(float(Preferences::valueDouble("CursorNudge")));
+    m_simulationWidget->setCursorColour(QColor(cursorColour.red(), cursorColour.green(), cursorColour.blue(), cursorColour.alpha()));
+    m_simulationWidget->setCursorRadius(float(Preferences::valueDouble("CursorRadius")));
+    m_simulationWidget->setCursor3DNudge(float(Preferences::valueDouble("CursorNudge")));
 
     ui->doubleSpinBoxDistance->setValue(Preferences::valueDouble("CameraDistance"));
     ui->doubleSpinBoxFoV->setValue(Preferences::valueDouble("CameraFoV"));
@@ -609,24 +618,28 @@ void MainWindow::resizeSimulationWindow(int openGLWidth, int openGLHeight)
     int scaledWidth = openGLWidth / devicePixelRatio();
     int scaledHeight = openGLHeight / devicePixelRatio();
     int repeatCount = 0;
-    while ((ui->widgetSimulation->width() * devicePixelRatio() != openGLWidth || ui->widgetSimulation->height() * devicePixelRatio() != openGLHeight) && repeatCount < 16)
+    while ((m_simulationWidget->width() * devicePixelRatio() != openGLWidth || m_simulationWidget->height() * devicePixelRatio() != openGLHeight) && repeatCount < 16)
     {
-        int deltaW = scaledWidth - ui->widgetSimulation->width();
-        int deltaH = scaledHeight - ui->widgetSimulation->height();
+        int deltaW = scaledWidth - m_simulationWidget->width();
+        int deltaH = scaledHeight - m_simulationWidget->height();
         resize(width() + deltaW, height() + deltaH);
     }
-    ui->widgetSimulation->update();
-    if (ui->widgetSimulation->width() * devicePixelRatio() != openGLWidth || ui->widgetSimulation->height() * devicePixelRatio() != openGLHeight)
+    m_simulationWidget->update();
+    if (m_simulationWidget->width() * devicePixelRatio() != openGLWidth || m_simulationWidget->height() * devicePixelRatio() != openGLHeight)
     {
-        setStatusString(QString("Error: unable to achieve requested size: width = %1 height = %2").arg(ui->widgetSimulation->width() * devicePixelRatio()).arg(ui->widgetSimulation->height() * devicePixelRatio()), 0);
+        setStatusString(QString("Error: unable to achieve requested size: width = %1 height = %2").arg(m_simulationWidget->width() * devicePixelRatio()).arg(m_simulationWidget->height() * devicePixelRatio()), 0);
         return;
     }
-    setStatusString(QString("Simulation widget width = %1 height = %2").arg(ui->widgetSimulation->width() * devicePixelRatio()).arg(ui->widgetSimulation->height() * devicePixelRatio()), 1);
+    setStatusString(QString("Simulation widget width = %1 height = %2").arg(m_simulationWidget->width() * devicePixelRatio()).arg(m_simulationWidget->height() * devicePixelRatio()), 1);
 }
 
+#ifdef USE_QT3D
+SimulationWindowQt3D *MainWindow::simulationWidget() const
+#else
 SimulationWidget *MainWindow::simulationWidget() const
+#endif
 {
-    return ui->widgetSimulation;
+    return m_simulationWidget;
 }
 
 Simulation *MainWindow::simulation() const
@@ -639,8 +652,8 @@ void MainWindow::resizeAndCentre(int w, int h)
     QRect available = screen()->availableGeometry();
 
     // Need to find how big the central widget is compared to the window
-    int heightDiff = height() - ui->widgetSimulation->height();
-    int widthDiff = width() - ui->widgetSimulation->width();
+    int heightDiff = height() - m_simulationWidget->height();
+    int widthDiff = width() - m_simulationWidget->width();
     int newWidth = w + widthDiff;
     int newHeight = h + heightDiff;
 
@@ -653,7 +666,7 @@ void MainWindow::resizeAndCentre(int w, int h)
 
     move(topLeftX, topLeftY);
     resize(newWidth, newHeight);
-    ui->widgetSimulation->update();
+    m_simulationWidget->update();
 }
 
 void MainWindow::reportOpenGLSize(int width, int height)
@@ -778,7 +791,7 @@ void MainWindow::deleteExistingBody(const QString &name, bool force)
         updateComboBoxTrackingMarker();
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
     }
 }
 
@@ -821,10 +834,10 @@ void MainWindow::deleteExistingMarker(const QString &name, bool force)
         updateComboBoxTrackingMarker();
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
     }
 }
 
@@ -866,10 +879,10 @@ void MainWindow::deleteExistingJoint(const QString &name, bool force)
         m_simulation->DeleteNamedObject(joint->name());
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
     }
 }
 
@@ -912,10 +925,10 @@ void MainWindow::deleteExistingMuscle(const QString &name, bool force)
         m_simulation->DeleteNamedObject(muscle->name());
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
     }
 }
 
@@ -957,10 +970,10 @@ void MainWindow::deleteExistingDriver(const QString &name, bool force)
         m_simulation->DeleteNamedObject(driver->name());
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
     }}
 
 void MainWindow::deleteExistingGeom(const QString &name, bool force)
@@ -1001,10 +1014,10 @@ void MainWindow::deleteExistingGeom(const QString &name, bool force)
         m_simulation->DeleteNamedObject(geom->name());
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
         setWindowModified(true);
         updateEnable();
-        ui->widgetSimulation->update();
+        m_simulationWidget->update();
     }
 }
 
@@ -1049,47 +1062,47 @@ void MainWindow::comboBoxMeshDisplayMapCurrentTextChanged(const QString &text)
 {
     if (text == QString("Mesh 1"))
     {
-        ui->widgetSimulation->setDrawBodyMesh1(true);
-        ui->widgetSimulation->setDrawBodyMesh2(false);
-        ui->widgetSimulation->setDrawBodyMesh3(false);
+        m_simulationWidget->setDrawBodyMesh1(true);
+        m_simulationWidget->setDrawBodyMesh2(false);
+        m_simulationWidget->setDrawBodyMesh3(false);
     }
     if (text == QString("Mesh 2"))
     {
-        ui->widgetSimulation->setDrawBodyMesh1(false);
-        ui->widgetSimulation->setDrawBodyMesh2(true);
-        ui->widgetSimulation->setDrawBodyMesh3(false);
+        m_simulationWidget->setDrawBodyMesh1(false);
+        m_simulationWidget->setDrawBodyMesh2(true);
+        m_simulationWidget->setDrawBodyMesh3(false);
     }
     if (text == QString("Mesh 3"))
     {
-        ui->widgetSimulation->setDrawBodyMesh1(false);
-        ui->widgetSimulation->setDrawBodyMesh2(false);
-        ui->widgetSimulation->setDrawBodyMesh3(true);
+        m_simulationWidget->setDrawBodyMesh1(false);
+        m_simulationWidget->setDrawBodyMesh2(false);
+        m_simulationWidget->setDrawBodyMesh3(true);
     }
     if (text == QString("Mesh 1 & 2"))
     {
-        ui->widgetSimulation->setDrawBodyMesh1(true);
-        ui->widgetSimulation->setDrawBodyMesh2(true);
-        ui->widgetSimulation->setDrawBodyMesh3(false);
+        m_simulationWidget->setDrawBodyMesh1(true);
+        m_simulationWidget->setDrawBodyMesh2(true);
+        m_simulationWidget->setDrawBodyMesh3(false);
     }
     if (text == QString("Mesh 2 & 3"))
     {
-        ui->widgetSimulation->setDrawBodyMesh1(false);
-        ui->widgetSimulation->setDrawBodyMesh2(true);
-        ui->widgetSimulation->setDrawBodyMesh3(true);
+        m_simulationWidget->setDrawBodyMesh1(false);
+        m_simulationWidget->setDrawBodyMesh2(true);
+        m_simulationWidget->setDrawBodyMesh3(true);
     }
     if (text == QString("Mesh 1 & 3"))
     {
-        ui->widgetSimulation->setDrawBodyMesh1(true);
-        ui->widgetSimulation->setDrawBodyMesh2(false);
-        ui->widgetSimulation->setDrawBodyMesh3(true);
+        m_simulationWidget->setDrawBodyMesh1(true);
+        m_simulationWidget->setDrawBodyMesh2(false);
+        m_simulationWidget->setDrawBodyMesh3(true);
     }
     if (text == QString("All Meshes"))
     {
-        ui->widgetSimulation->setDrawBodyMesh1(true);
-        ui->widgetSimulation->setDrawBodyMesh2(true);
-        ui->widgetSimulation->setDrawBodyMesh3(true);
+        m_simulationWidget->setDrawBodyMesh1(true);
+        m_simulationWidget->setDrawBodyMesh2(true);
+        m_simulationWidget->setDrawBodyMesh3(true);
     }
-    ui->widgetSimulation->update();
+    m_simulationWidget->update();
 }
 
 void MainWindow::comboBoxTrackingMarkerCurrentTextChanged(const QString &text)
@@ -1104,7 +1117,7 @@ void MainWindow::comboBoxTrackingMarkerCurrentTextChanged(const QString &text)
 
 void MainWindow::handleElementTreeWidgetItemChanged(QTreeWidgetItem * /* item */, int column)
 {
-    if (column == 1) ui->widgetSimulation->update();
+    if (column == 1) m_simulationWidget->update();
 }
 
 
@@ -1129,7 +1142,7 @@ void MainWindow::moveExistingMarker(const QString &s, const QVector3D &p)
     }
     setWindowModified(true);
     updateEnable();
-    ui->widgetSimulation->update();
+    m_simulationWidget->update();
 }
 
 void MainWindow::updateComboBoxTrackingMarker()

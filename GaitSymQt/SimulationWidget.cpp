@@ -7,6 +7,8 @@
  *
  */
 
+#ifndef USE_QT3
+
 #include "SimulationWidget.h"
 #include "Simulation.h"
 #include "Body.h"
@@ -1499,4 +1501,4 @@ QOpenGLShaderProgram *SimulationWidget::fixedColourObjectShader() const
     return m_fixedColourObjectShader;
 }
 
-
+#endif

@@ -1,7 +1,8 @@
 #ifndef SIMULATIONWIDGET_H
 #define SIMULATIONWIDGET_H
 
-#include "PGDMath.h"
+#ifndef USE_QT3
+
 #include "StrokeFont.h"
 #include "IntersectionHits.h"
 #include "DrawBody.h"
@@ -289,5 +290,7 @@ private:
     QMatrix4x4 m_model;
 
 };
+
+#endif
 
 #endif // SIMULATIONWIDGET_H

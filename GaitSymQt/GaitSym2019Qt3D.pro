@@ -417,6 +417,7 @@ SOURCES += \
     MeshStore.cpp \
     Preferences.cpp \
     SimulationWidget.cpp \
+    SimulationWindowQt3D.cpp \
     StrokeFont.cpp \
     TextEditDialog.cpp \
     TrackBall.cpp \
@@ -742,6 +743,7 @@ HEADERS += \
     MeshStore.h \
     Preferences.h \
     SimulationWidget.h \
+    SimulationWindowQt3D.h \
     StrokeFont.h \
     TextEditDialog.h \
     TrackBall.h \

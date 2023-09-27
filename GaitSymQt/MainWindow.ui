@@ -809,7 +809,7 @@
             </layout>
            </widget>
           </widget>
-          <widget class="SimulationWidget" name="widgetSimulation">
+          <widget class="QWidget" name="widgetSimulationPlaceholder">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>1</horstretch>
@@ -1694,11 +1694,6 @@
    <class>ElementTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>ElementTreeWidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SimulationWidget</class>
-   <extends>QOpenGLWidget</extends>
-   <header>SimulationWidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
