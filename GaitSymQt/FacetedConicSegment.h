@@ -16,7 +16,11 @@
 class FacetedConicSegment: public FacetedObject
 {
 public:
+#ifdef USE_QT3D
+    FacetedConicSegment(double l, double r1, double r2, size_t sides, double ox, double oy, double oz, const QColor &blendColour, double blendFraction, Qt3DCore::QNode *parent = nullptr);
+#else
     FacetedConicSegment(double length, double r1, double r2, size_t sides, double ox, double oy, double oz, const QColor &blendColour, double blendFraction);
+#endif
 
     virtual void WritePOVRay(std::ostringstream &theString);
 

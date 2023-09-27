@@ -17,7 +17,11 @@
 #include <cmath>
 #include <memory>
 
+#ifdef USE_QT3D
+FacetedPolyline::FacetedPolyline(std::vector<pgd::Vector3> *polyline, double radius, size_t n, const QColor &blendColour, double blendFraction, bool internal, Qt3DCore::QNode *parent) : FacetedObject (parent)
+#else
 FacetedPolyline::FacetedPolyline(std::vector<pgd::Vector3> *polyline, double radius, size_t n, const QColor &blendColour, double blendFraction, bool internal)
+#endif
 {
     setBlendColour(blendColour, blendFraction);
     if (internal)

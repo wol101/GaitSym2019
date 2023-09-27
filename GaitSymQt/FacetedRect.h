@@ -16,7 +16,11 @@ class FacetedRect : public FacetedObject
 {
 public:
     // draw a rect of dimensions lx, ly with origin at the centre
+#ifdef USE_QT3D
+    FacetedRect(double lx, double ly, const QColor &blendColour, double blendFraction, Qt3DCore::QNode *parent = nullptr);
+#else
     FacetedRect(double lx, double ly, const QColor &blendColour, double blendFraction);
+#endif
 
 };
 

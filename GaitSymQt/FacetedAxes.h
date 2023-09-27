@@ -15,7 +15,11 @@
 class FacetedAxes : public FacetedObject
 {
 public:
+#ifdef USE_QT3D
+    FacetedAxes(Qt3DCore::QNode *parent = nullptr);
+#else
     FacetedAxes();
+#endif
 };
 
 #endif // FACETEDAXES_H

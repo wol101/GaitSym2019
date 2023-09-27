@@ -14,7 +14,11 @@
 
 // draw a box of dimensions lx, ly, lz with origin at the centre
 
-FacetedBox::FacetedBox(double lx, double ly, double lz, const QColor &blendColour, double blendFraction)
+#ifdef USE_QT3D
+FacetedBox::FacetedBox(double lx, double ly, double lz, const QColor &blendColour, double blendFraction, Qt3DCore::QNode *parent) : FacetedObject(parent)
+#else
+    FacetedBox::FacetedBox(double lx, double ly, double lz, const QColor &blendColour, double blendFraction)
+#endif
 {
     setBlendColour(blendColour, blendFraction);
 

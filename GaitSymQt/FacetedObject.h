@@ -10,11 +10,8 @@
 #ifndef FacetedObject_h
 #define FacetedObject_h
 
-#include "NamedObject.h"
 #include "MeshStore.h"
 #include "PGDMath.h"
-
-#include "ode/ode.h"
 
 #include <QColor>
 #include <QOpenGLBuffer>
@@ -25,12 +22,28 @@ class DataFile;
 class TrimeshGeom;
 class QOpenGLTexture;
 
+#ifdef USE_QT3D
+#include <Qt3DCore>
+#include <Qt3DRender>
+
+class FacetedObject: public Qt3DCore::QEntity
+{
+    Q_OBJECT
+public:
+    FacetedObject(Qt3DCore::QNode *parent = nullptr);
+    virtual ~FacetedObject() Q_DECL_OVERRIDE;
+
+    void InitialiseEntity();
+    virtual void Draw() {};
+#else
 class FacetedObject
 {
 public:
     FacetedObject();
     virtual ~FacetedObject();
 
+    virtual void Draw();
+#endif
     // destructor is needed to make sure it is virtual in subclasses but I don't need the rest of the rule of 5
     FacetedObject(const FacetedObject&) = delete;
     FacetedObject(FacetedObject&&) = delete;
@@ -49,7 +62,7 @@ public:
         int illum = {0};
     };
 
-    virtual void Draw();
+
 
     int ParseMeshFile(const std::string &filename);
     int ParseOBJFile(const std::string &filename);
@@ -174,6 +187,13 @@ private:
 
     static MeshStore m_meshStore;
 
+#ifdef USE_QT3D
+    Qt3DRender::QLayer *m_layer = nullptr;
+    Qt3DRender::QEffect *m_effect = nullptr;
+    Qt3DCore::QTransform *m_transform = nullptr;
+#endif
 };
 
 #endif
+
+

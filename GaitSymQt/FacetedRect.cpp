@@ -8,12 +8,15 @@
  */
 
 #include "FacetedRect.h"
-#include "PGDMath.h"
 
 // draw a rect of dimensions lx, ly with origin at the centre
 // creates suitable uv coordinates too
 
+#ifdef USE_QT3D
+FacetedRect::FacetedRect(double lx, double ly, const QColor &blendColour, double blendFraction, Qt3DCore::QNode *parent) : FacetedObject(parent)
+#else
 FacetedRect::FacetedRect(double lx, double ly, const QColor &blendColour, double blendFraction)
+#endif
 {
     setBlendColour(blendColour, blendFraction);
 
