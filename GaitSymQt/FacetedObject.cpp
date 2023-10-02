@@ -1460,10 +1460,10 @@ void FacetedObject::WriteOBJFile(std::ostringstream &out)
 void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &name)
 {
     std::string extent = GSUtil::ToString("(%g,%g,%g),(%g,%g,%g)", m_lowerBound[0], m_lowerBound[1], m_lowerBound[2], m_upperBound[0], m_upperBound[1], m_upperBound[2]);
-    stringstream faceVertexCounts;
-    stringstream faceVertexIndices;
-    stringstream normals;
-    stringstream points;
+    std::ostringstream faceVertexCounts;
+    std::ostringstream faceVertexIndices;
+    std::ostringstream normals;
+    std::ostringstream points;
     size_t numVertices = m_vertexList.size() / 3;
     size_t numFaces = numVertices / 3;
     pgd::Vector3 v1, v2;

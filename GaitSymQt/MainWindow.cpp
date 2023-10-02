@@ -118,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSaveAs, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuSaveAs()));
     connect(ui->actionSaveDefaultView, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuSaveDefaultView()));
     connect(ui->actionSaveOBJSnapshot, SIGNAL(triggered()), m_mainWindowActions, SLOT(objSnapshot()));
+    connect(ui->actionSaveUSDSnapshot, SIGNAL(triggered()), m_mainWindowActions, SLOT(usdSnapshot()));
     connect(ui->actionSelectAll, SIGNAL(triggered()), m_mainWindowActions, SLOT(selectAll()));
     connect(ui->actionSnapshot, SIGNAL(triggered()), m_mainWindowActions, SLOT(snapshot()));
     connect(ui->actionStartOBJSequence, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStartOBJSequenceSave()));
