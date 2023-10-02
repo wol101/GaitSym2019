@@ -122,6 +122,7 @@ public:
     int WriteStillFrame(const QString &filename);
     int WriteMovieFrame();
     int WriteCADFrame(const QString &pathname);
+    int WriteUSDFrame(const QString &pathname);
     int StartAVISave(const QString &filename);
     int StopAVISave();
 

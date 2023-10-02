@@ -809,7 +809,7 @@
             </layout>
            </widget>
           </widget>
-          <widget class="QWidget" name="widgetSimulationPlaceholder">
+          <widget class="QWidget" name="widgetSimulationPlaceholder" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>1</horstretch>
@@ -1069,6 +1069,8 @@
     <addaction name="actionSaveOBJSnapshot"/>
     <addaction name="actionStartOBJSequence"/>
     <addaction name="actionStopOBJSequence"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveUSDSnapshot"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -1679,6 +1681,14 @@
   <action name="actionClear_List">
    <property name="text">
     <string>Clear Menu</string>
+   </property>
+  </action>
+  <action name="actionSaveUSDSnapshot">
+   <property name="text">
+    <string>Save USD Snapshot...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save a single USDA file as a snapshot</string>
    </property>
   </action>
  </widget>

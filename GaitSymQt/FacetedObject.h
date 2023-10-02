@@ -78,6 +78,7 @@ public:
     virtual void WritePOVRay(std::string filename);
     virtual void WriteOBJFile(std::ostringstream &out);
     virtual void WriteOBJFile(std::string filename);
+    virtual void WriteUSDFile(std::ostringstream &out, const std::string &name);
 
     size_t GetNumVertices() const;
     const double *GetVertex(size_t i) const;

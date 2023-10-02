@@ -90,6 +90,7 @@ public slots:
     void elementInfo(const QString &elementType, const QString &elementName);
     void elementHide(const QString &elementType, const QString &elementName);
 
+    void usdSnapshot();
     void objSnapshot();
     void run();
     void snapshot();

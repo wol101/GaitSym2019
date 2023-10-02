@@ -29,6 +29,7 @@
 #include "FacetedSphere.h"
 #include "Preferences.h"
 #include "MainWindow.h"
+#include "GSUtil.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -55,6 +56,7 @@
 #include <sstream>
 #include <memory>
 #include <regex>
+#include <stdio.h>
 
 SimulationWidget::SimulationWidget(QWidget *parent)
     : QOpenGLWidget(parent)
@@ -827,6 +829,62 @@ int SimulationWidget::WriteCADFrame(const QString &pathname)
         }
     }
 
+    QDir::setCurrent(workingFolder);
+    return 0;
+}
+
+// write the scene as a series of OBJ files in a folder
+int SimulationWidget::WriteUSDFrame(const QString &pathname)
+{
+    QString workingFolder = QDir::currentPath();
+    if (QDir(pathname).exists() == false)
+    {
+        if (QDir().mkdir(pathname) == false)
+        {
+            QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Could not create folder '%1' for USD files\nClick button to return to simulation").arg(pathname));
+            return __LINE__;
+        }
+    }
+    QDir::setCurrent(pathname);
+
+    std::ostringstream usdStream;
+    usdStream << "#usda 1.0\n(\n    defaultPrim = \"mesh\"\n    upAxis = \"Z\"\n)\n";
+
+    int meshCount = 0;
+    for (auto &&drawableIter : m_drawables)
+    {
+        for (auto &&facetedObjectIter : drawableIter->facetedObjectList())
+        {
+            if (facetedObjectIter->GetNumVertices())
+            {
+                facetedObjectIter->WriteUSDFile(usdStream, GSUtil::ToString("mesh%05d", meshCount));
+                meshCount++;
+            }
+        }
+    }
+
+    FILE *f = std::fopen(pathname.toUtf8().data(), "w");
+    if (!f)
+    {
+        QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Could not open '%1' for writing\nClick button to return to simulation").arg(pathname));
+        QDir::setCurrent(workingFolder);
+        return __LINE__;
+    }
+    size_t n = fwrite(usdStream.str().data(), usdStream.str().size(), 1, f);
+    if (n != usdStream.str().size())
+    {
+        QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Error writing '%1'\nClick button to return to simulation").arg(pathname));
+        fclose(f);
+        QDir::setCurrent(workingFolder);
+        return __LINE__;
+    }
+    int st = fclose(f);
+    if (st != 0)
+    {
+        QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Error closing '%1'\nClick button to return to simulation").arg(pathname));
+        QDir::setCurrent(workingFolder);
+        return __LINE__;
+    }
     QDir::setCurrent(workingFolder);
     return 0;
 }

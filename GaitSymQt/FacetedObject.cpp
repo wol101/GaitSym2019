@@ -1456,6 +1456,69 @@ void FacetedObject::WriteOBJFile(std::ostringstream &out)
     }
 }
 
+// Write a FacetedObject out as a OBJ
+void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &name)
+{
+    std::string extent = GSUtil::ToString("(%g,%g,%g),(%g,%g,%g)", m_lowerBound[0], m_lowerBound[1], m_lowerBound[2], m_upperBound[0], m_upperBound[1], m_upperBound[2]);
+    stringstream faceVertexCounts;
+    stringstream faceVertexIndices;
+    stringstream normals;
+    stringstream points;
+    size_t numVertices = m_vertexList.size() / 3;
+    size_t numFaces = numVertices / 3;
+    pgd::Vector3 v1, v2;
+    for (size_t i = 0; i < numFaces - 1; i++)
+    {
+        if (i < numFaces - 2) faceVertexCounts << "3,";
+        else faceVertexCounts << "3";
+    };
+    for (size_t i = 0; i < numVertices - 1; i++)
+    {
+        if (i < numVertices - 2) faceVertexIndices << i << ",";
+        else faceVertexIndices << i;
+
+        v1.x = m_vertexList[i * 3];
+        v1.y = m_vertexList[i * 3 + 1];
+        v1.z = m_vertexList[i * 3 + 2];
+        ApplyDisplayTransformation(v1, &v2);
+        if (i < numVertices - 2) points << "(" << v2.x << "," << v2.y << "," << v2.x << "),";
+        else points << "(" << v2.x << "," << v2.y << "," << v2.x << ")";
+
+        v1.x = m_normalList[i * 3];
+        v1.y = m_normalList[i * 3 + 1];
+        v1.z = m_normalList[i * 3 + 2];
+        ApplyDisplayTransformation(v1, &v2);
+        if (i < numVertices - 2) normals << "(" << v2.x << "," << v2.y << "," << v2.x << "),";
+        else normals << "(" << v2.x << "," << v2.y << "," << v2.x << ")";
+    };
+
+    out << "def Xform \"" << name << "_xform\" (\n";
+    out << "    assetInfo = {\n";
+    out << "        asset identifier = @mesh.usd@\n";
+    out << "        string name = \"" << name << "\"\n";
+    out << "    }\n";
+    out << "    kind = \"component\"\n";
+    out << ")\n";
+    out << "{\n";
+    out << "    def Scope \"" << name << "_scope\"\n";
+    out << "    {\n";
+    out << "        def Mesh \"" << name << "_mesh\"\n";
+    out << "        {\n";
+    out << "            float3[] extent = [" << extent << "]\n";
+    out << "            int[] faceVertexCounts = [" << faceVertexCounts.str() << "\n";
+    out << "            int[] faceVertexIndices = [" << faceVertexIndices.str() << "]\n";
+    out << "            normal3f[] normals = [" << normals.str() << "] (\n";
+    out << "                interpolation = \"faceVarying\"\n";
+    out << "            )\n";
+    out << "            point3f[] points = [" << points.str() << "]\n";
+    out << "            uniform token subdivisionScheme = \"none\"\n";
+    out << "        }\n";
+    out << "    }\n";
+    out << "}\n";
+
+}
+
+
 // utility to calculate a face normal
 // this assumes anticlockwise winding
 // for a triangle p1, p2, p3, if the vector A = p2 - p1 and the vector B = p3 - p1

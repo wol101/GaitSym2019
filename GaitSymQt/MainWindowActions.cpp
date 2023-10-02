@@ -429,6 +429,26 @@ void MainWindowActions::objSnapshot()
     }
 }
 
+void MainWindowActions::usdSnapshot()
+{
+    int count = 0;
+    QDir dir(m_mainWindow->m_configFile.absolutePath());
+    QStringList list = dir.entryList(QDir::Files | QDir::Dirs, QDir::Name);
+    QStringList matches = list.filter(QRegularExpression(QString("^Snapshot\\d\\d\\d\\d\\d.*")));
+    if (matches.size() > 0)
+    {
+        QString numberString = matches.last().mid(8, 5);
+        count = numberString.toInt() + 1;
+    }
+    QString filename = dir.absoluteFilePath(QString("Snapshot%1.usda").arg(count, 5, 10, QChar('0')));
+    if (m_mainWindow->m_simulationWidget->WriteUSDFrame(filename))
+    {
+        QMessageBox::warning(m_mainWindow, "Snapshot Error", QString("Could not write '%1'\n").arg(filename));
+        return;
+    }
+    m_mainWindow->setStatusString(QString("\"%1\" saved").arg(filename), 1);
+}
+
 
 void MainWindowActions::menuRecordMovie()
 {
