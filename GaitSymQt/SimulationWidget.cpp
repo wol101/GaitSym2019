@@ -852,23 +852,11 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
         }
     }
 
-    FILE *f = std::fopen(pathname.toUtf8().data(), "w");
-    if (!f)
-    {
-        QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Could not open '%1' for writing\nClick button to return to simulation").arg(pathname));
-        return __LINE__;
-    }
-    size_t n = fwrite(usdStream.str().data(), usdStream.str().size(), 1, f);
-    if (n != usdStream.str().size())
+    DataFile file;
+    file.SetRawData(usdStream.str().data(), usdStream.str().size());
+    if (file.WriteFile(pathname.toStdString(), true))
     {
         QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Error writing '%1'\nClick button to return to simulation").arg(pathname));
-        fclose(f);
-        return __LINE__;
-    }
-    int st = fclose(f);
-    if (st != 0)
-    {
-        QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Error closing '%1'\nClick button to return to simulation").arg(pathname));
         return __LINE__;
     }
     return 0;

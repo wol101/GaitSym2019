@@ -1505,7 +1505,7 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
     out << "        def Mesh \"" << name << "_mesh\"\n";
     out << "        {\n";
     out << "            float3[] extent = [" << extent << "]\n";
-    out << "            int[] faceVertexCounts = [" << faceVertexCounts.str() << "\n";
+    out << "            int[] faceVertexCounts = [" << faceVertexCounts.str() << "]\n";
     out << "            int[] faceVertexIndices = [" << faceVertexIndices.str() << "]\n";
     out << "            normal3f[] normals = [" << normals.str() << "] (\n";
     out << "                interpolation = \"faceVarying\"\n";
