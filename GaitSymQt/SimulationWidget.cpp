@@ -837,9 +837,10 @@ int SimulationWidget::WriteCADFrame(const QString &pathname)
 int SimulationWidget::WriteUSDFrame(const QString &pathname)
 {
     std::ostringstream usdStream;
-    usdStream << "#usda 1.0\n(\n    defaultPrim = \"mesh\"\n    upAxis = \"Z\"\n)\n";
 
     int meshCount = 0;
+    usdStream << "#usda 1.0\n(\n    defaultPrim = \"" << GSUtil::ToString("mesh%05d_xform", meshCount) << "\"\n    upAxis = \"Z\"\n)\n";
+
     for (auto &&drawableIter : m_drawables)
     {
         for (auto &&facetedObjectIter : drawableIter->facetedObjectList())
