@@ -53,6 +53,7 @@ DataFile::~DataFile()
     if (m_FileData) delete [] m_FileData;
 }
 
+// set the raw data adding a terminating 0
 void DataFile::SetRawData(const char *string, size_t stringLen)
 {
     if (m_FileData) delete [] m_FileData;
@@ -60,6 +61,7 @@ void DataFile::SetRawData(const char *string, size_t stringLen)
     else m_Size = stringLen + 1;
     m_FileData = new char [m_Size];
     memcpy(m_FileData, string, m_Size);
+    m_FileData[stringLen] = 0;
     m_Index = m_FileData;
 }
 
@@ -187,8 +189,8 @@ bool DataFile::ReadFile(const std::string &name)
 }
 
 // write the data to a file
-// if binary is true, the whole of the buffer (including terminating zero) is written
-// otherwise it is just the string until the terminating zero
+// if binary is true, the whole of the buffer (excluding terminating zero) is written
+// otherwise it is just the string until the first terminating zero
 bool DataFile::WriteFile(const std::string &name, bool binary)
 {
 #if (defined(_WIN32) || defined(WIN32)) && !defined(__MINGW32__)
@@ -203,23 +205,21 @@ bool DataFile::WriteFile(const std::string &name, bool binary)
     {
         if (m_ExitOnErrorFlag)
         {
-            std::cerr << "Error: DataFile::WriteFile(" << name <<
-            ") - Cannot open file\n";
+            std::cerr << "Error: DataFile::WriteFile(" << name << ") - Cannot open file\n";
             exit(1);
         }
         else return true;
     }
 
     // write file
-    if (binary) count = fwrite(m_FileData, m_Size, 1, out);
+    if (binary) count = fwrite(m_FileData, m_Size - 1, 1, out);
     else count = fwrite(m_FileData, strlen(m_FileData), 1, out);
 
     if (count != 1)
     {
         if (m_ExitOnErrorFlag)
         {
-            std::cerr << "Error: DataFile::WriteFile(" << name <<
-            ") - Cannot write file\n";
+            std::cerr << "Error: DataFile::WriteFile(" << name << ") - Cannot write file\n";
             exit(1);
         }
         else return true;
@@ -229,8 +229,7 @@ bool DataFile::WriteFile(const std::string &name, bool binary)
     {
         if (m_ExitOnErrorFlag)
         {
-            std::cerr << "Error: DataFile::WriteFile(" << name <<
-            ") - Cannot close file\n";
+            std::cerr << "Error: DataFile::WriteFile(" << name << ") - Cannot close file\n";
             exit(1);
         }
         else return true;
@@ -301,8 +300,8 @@ bool DataFile::ReadFile(const std::wstring &name)
 }
 
 // write the data to a file
-// if binary is true, the whole of the buffer (including terminating zero) is written
-// otherwise it is just the string until the terminating zero
+// if binary is true, the whole of the buffer (excluding terminating zero) is written
+// otherwise it is just the string until the first terminating zero
 bool DataFile::WriteFile(const std::wstring &name, bool binary)
 {
     FILE *out;
@@ -321,7 +320,7 @@ bool DataFile::WriteFile(const std::wstring &name, bool binary)
     }
 
     // write file
-    if (binary) count = fwrite(m_FileData, m_Size, 1, out);
+    if (binary) count = fwrite(m_FileData, m_Size - 1, 1, out);
     else count = fwrite(m_FileData, strlen(m_FileData), 1, out);
 
     if (count != 1)

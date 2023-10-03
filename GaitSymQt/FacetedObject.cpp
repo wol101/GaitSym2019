@@ -1467,29 +1467,29 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
     size_t numVertices = m_vertexList.size() / 3;
     size_t numFaces = numVertices / 3;
     pgd::Vector3 v1, v2;
-    for (size_t i = 0; i < numFaces - 1; i++)
+    for (size_t i = 0; i < numFaces; i++)
     {
-        if (i < numFaces - 2) faceVertexCounts << "3,";
+        if (i < numFaces - 1) faceVertexCounts << "3,";
         else faceVertexCounts << "3";
     };
-    for (size_t i = 0; i < numVertices - 1; i++)
+    for (size_t i = 0; i < numVertices; i++)
     {
-        if (i < numVertices - 2) faceVertexIndices << i << ",";
+        if (i < numVertices - 1) faceVertexIndices << i << ",";
         else faceVertexIndices << i;
 
         v1.x = m_vertexList[i * 3];
         v1.y = m_vertexList[i * 3 + 1];
         v1.z = m_vertexList[i * 3 + 2];
         ApplyDisplayTransformation(v1, &v2);
-        if (i < numVertices - 2) points << "(" << v2.x << "," << v2.y << "," << v2.x << "),";
-        else points << "(" << v2.x << "," << v2.y << "," << v2.x << ")";
+        if (i < numVertices - 1) points << "(" << v2.x << "," << v2.y << "," << v2.z << "),";
+        else points << "(" << v2.x << "," << v2.y << "," << v2.z << ")";
 
         v1.x = m_normalList[i * 3];
         v1.y = m_normalList[i * 3 + 1];
         v1.z = m_normalList[i * 3 + 2];
         ApplyDisplayTransformation(v1, &v2);
-        if (i < numVertices - 2) normals << "(" << v2.x << "," << v2.y << "," << v2.x << "),";
-        else normals << "(" << v2.x << "," << v2.y << "," << v2.x << ")";
+        if (i < numVertices - 1) normals << "(" << v2.x << "," << v2.y << "," << v2.z << "),";
+        else normals << "(" << v2.x << "," << v2.y << "," << v2.z << ")";
     };
 
     out << "def Xform \"" << name << "_xform\" (\n";

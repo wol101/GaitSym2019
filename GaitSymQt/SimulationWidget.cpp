@@ -855,7 +855,7 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
 
     DataFile file;
     file.SetRawData(usdStream.str().data(), usdStream.str().size());
-    if (file.WriteFile(pathname.toStdString(), true))
+    if (file.WriteFile(pathname.toStdString()))
     {
         QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Error writing '%1'\nClick button to return to simulation").arg(pathname));
         return __LINE__;
