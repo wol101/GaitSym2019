@@ -71,6 +71,8 @@ public:
 
         double *data(void);
         const double *constData(void) const;
+
+        bool operator <(const Vector2 rhs) const; // used for sets and maps
     };
 
     inline  Vector2 operator+(Vector2 u, Vector2 v);
@@ -264,6 +266,14 @@ public:
         return u / u.Magnitude();
     }
 
+    // less than used for sorting in maps and sets
+    inline  bool Vector2::operator<(const Vector2 rhs) const
+    {
+        if (x < rhs.x) return true;
+        if (y < rhs.y) return true;
+        return false;
+    }
+
     //------------------------------------------------------------------------//
     // Vector3 Class and vector functions
     //------------------------------------------------------------------------//
@@ -299,6 +309,8 @@ public:
 
         double *data(void);
         const double *constData(void) const;
+
+        bool operator <(const Vector3 rhs) const; // used for sets and maps
     };
 
     inline  Vector3 operator+(Vector3 u, Vector3 v);
@@ -535,6 +547,15 @@ public:
     inline Vector3 Normalize(Vector3 u)
     {
         return u / u.Magnitude();
+    }
+
+    // less than used for sorting in maps and sets
+    inline  bool Vector3::operator<(const Vector3 rhs) const
+    {
+        if (x < rhs.x) return true;
+        if (y < rhs.y) return true;
+        if (z < rhs.z) return true;
+        return false;
     }
 
     //------------------------------------------------------------------------//

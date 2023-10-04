@@ -1459,77 +1459,98 @@ void FacetedObject::WriteOBJFile(std::ostringstream &out)
 // Write a FacetedObject out as a OBJ
 void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &name)
 {
-    std::string extent = GSUtil::ToString("(%g,%g,%g),(%g,%g,%g)", m_lowerBound[0], m_lowerBound[1], m_lowerBound[2], m_upperBound[0], m_upperBound[1], m_upperBound[2]);
-    std::vector<char> faceVertexCounts;
-    std::vector<char> faceVertexIndices;
-    std::vector<char> normals;
-    std::vector<char> points;
-    size_t numVertices = m_vertexList.size() / 3;
-    size_t numFaces = numVertices / 3;
-    faceVertexCounts.reserve(numFaces * 2);
-    pgd::Vector3 v1, v2;
-    for (size_t i = 0; i < numFaces; i++)
-    {
-        faceVertexCounts.push_back('3');
-        faceVertexCounts.push_back(',');
-    };
-    faceVertexCounts.back() = 0;
-    faceVertexIndices.reserve(numVertices * 10);
-    normals.reserve(numVertices * 50);
-    points.reserve(numVertices * 50);
-    std::vector<char> buffer(256);
-    for (size_t i = 0; i < numVertices; i++)
-    {
-        std::snprintf(buffer.data(), buffer.size(), "%zu,", i);
-        for (char *ptr = buffer.data(); *ptr != 0; ptr++) { faceVertexIndices.push_back(*ptr); }
-
-        v1.x = m_vertexList[i * 3];
-        v1.y = m_vertexList[i * 3 + 1];
-        v1.z = m_vertexList[i * 3 + 2];
-        ApplyDisplayTransformation(v1, &v2);
-        std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
-        for (char *ptr = buffer.data(); *ptr != 0; ptr++) { points.push_back(*ptr); }
-
-        v1.x = m_normalList[i * 3];
-        v1.y = m_normalList[i * 3 + 1];
-        v1.z = m_normalList[i * 3 + 2];
-        ApplyDisplayTransformation(v1, &v2);
-        std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
-        for (char *ptr = buffer.data(); *ptr != 0; ptr++) { normals.push_back(*ptr); }
-    };
-    faceVertexIndices.back() = 0;
-    points.back() = 0;
-    normals.back() = 0;
-
-    std::string_view faceVertexCountsView(faceVertexCounts.data(), faceVertexCounts.size() - 1);
-    std::string_view faceVertexIndicesView(faceVertexIndices.data(),faceVertexIndices .size() - 1);
-    std::string_view normalsView(normals.data(), normals.size() - 1);
-    std::string_view pointsView(points.data(), points.size() - 1);
-
-    out << "def Xform \"" << name << "_xform\" (\n";
-    out << "    assetInfo = {\n";
-    out << "        asset identifier = @mesh.usd@\n";
-    out << "        string name = \"" << name << "\"\n";
-    out << "    }\n";
-    out << "    kind = \"component\"\n";
-    out << ")\n";
+    // add the preamble
+    out << "def Xform \"" << name << "_xform\" (kind = \"component\")\n";
     out << "{\n";
-//    out << "    def Scope \"" << name << "_scope\"\n";
-//    out << "    {\n";
-    out << "        def Mesh \"" << name << "_mesh\"\n";
-    out << "        {\n";
-    out << "            float3[] extent = [" << extent << "]\n";
-    out << "            int[] faceVertexCounts = [" << faceVertexCountsView << "]\n";
-    out << "            int[] faceVertexIndices = [" << faceVertexIndicesView << "]\n";
-    out << "            normal3f[] normals = [" << normalsView << "] (\n";
-    out << "                interpolation = \"faceVarying\"\n";
-    out << "            )\n";
-    out << "            point3f[] points = [" << pointsView << "]\n";
-    out << "            uniform token subdivisionScheme = \"none\"\n";
-    out << "        }\n";
-//    out << "    }\n";
-    out << "}\n";
 
+    // create the extent string
+    std::vector<char> buffer(512);
+    size_t l = std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),(%g,%g,%g)", m_lowerBound[0], m_lowerBound[1], m_lowerBound[2], m_upperBound[0], m_upperBound[1], m_upperBound[2]);
+    std::string extent(buffer.data(), l);
+
+    // now we need to split the mesh into triangles with the same colours
+    pgd::Vector3 v;
+    std::map<pgd::Vector3, std::vector<size_t>> colourMap;
+    size_t numVertices =  m_vertexList.size() / 3;
+    size_t numTriangles = numVertices / 3;
+    for (size_t i = 0; i < numTriangles; i++)
+    {
+        v.x = m_colourList[i * 9];
+        v.y = m_colourList[i * 9 + 1];
+        v.z = m_colourList[i * 9 + 2];
+        auto it = colourMap.find(v);
+        if (it == colourMap.end()) { colourMap[v] = std::vector<size_t>(); colourMap[v].reserve(numTriangles); }
+        colourMap[v].push_back(i);
+    }
+
+    // output a separate mesh for each material
+    size_t colourCount = 0;
+    for (auto &&it : colourMap)
+    {
+        // set all the faceVertexCounts to 3
+        std::vector<char> faceVertexCounts;
+        faceVertexCounts.reserve(it.second.size() * 2);
+        for (size_t i = 0; i < it.second.size(); i++)
+        {
+            faceVertexCounts.push_back('3');
+            faceVertexCounts.push_back(',');
+        }
+        faceVertexCounts.back() = 0;
+
+        std::vector<char> faceVertexIndices;
+        std::vector<char> normals;
+        std::vector<char> points;
+        faceVertexIndices.reserve(it.second.size() * 30);
+        normals.reserve(it.second.size() * 150);
+        points.reserve(it.second.size() * 150);
+        pgd::Vector3 v1, v2;
+        for (size_t i = 0; i < it.second.size() * 3; i += 3)
+        {
+            std::snprintf(buffer.data(), buffer.size(), "%zu,%zu,%zu,", i, i + 1, i + 2);
+            for (char *ptr = buffer.data(); *ptr != 0; ptr++) { faceVertexIndices.push_back(*ptr); }
+
+            for (size_t j = 0; j < 3; j++)
+            {
+                v1.x = m_vertexList[i * 9 + j * 3];
+                v1.y = m_vertexList[i * 9 + j * 3 + 1];
+                v1.z = m_vertexList[i * 9 + j * 3 + 2];
+                ApplyDisplayTransformation(v1, &v2);
+                std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
+                for (char *ptr = buffer.data(); *ptr != 0; ptr++) { points.push_back(*ptr); }
+
+                v1.x = m_normalList[i * 9 + j * 3];
+                v1.y = m_normalList[i * 9 + j * 3 + 1];
+                v1.z = m_normalList[i * 9 + j * 3 + 2];
+                ApplyDisplayTransformation(v1, &v2);
+                std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
+                for (char *ptr = buffer.data(); *ptr != 0; ptr++) { normals.push_back(*ptr); }
+            }
+        };
+        faceVertexIndices.back() = 0;
+        points.back() = 0;
+        normals.back() = 0;
+
+        std::string_view faceVertexCountsView(faceVertexCounts.data(), faceVertexCounts.size() - 1);
+        std::string_view faceVertexIndicesView(faceVertexIndices.data(),faceVertexIndices .size() - 1);
+        std::string_view normalsView(normals.data(), normals.size() - 1);
+        std::string_view pointsView(points.data(), points.size() - 1);
+
+        out << "def Mesh \"" << name << "_mesh_" << GSUtil::ToString(colourCount) << "\"\n";
+        out << "{\n";
+        out << "    float3[] extent = [" << extent << "]\n";
+        out << "    int[] faceVertexCounts = [" << faceVertexCountsView << "]\n";
+        out << "    int[] faceVertexIndices = [" << faceVertexIndicesView << "]\n";
+        out << "    normal3f[] normals = [" << normalsView << "] (\n";
+        out << "        interpolation = \"faceVarying\"\n";
+        out << "    )\n";
+        out << "    point3f[] points = [" << pointsView << "]\n";
+        out << "    uniform token subdivisionScheme = \"none\"\n";
+        out << "}\n";
+
+        colourCount++;
+    }
+
+    out << "}\n";
 }
 
 
