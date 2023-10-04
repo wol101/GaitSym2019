@@ -122,6 +122,7 @@ public:
 
     double *lowerBound();
     double *upperBound();
+    double boundingBoxVolume();
 
     SimulationWidget *simulationWidget() const;
     void setSimulationWidget(SimulationWidget *simulationWidget);

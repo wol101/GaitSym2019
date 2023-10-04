@@ -1481,21 +1481,21 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
     for (size_t i = 0; i < numVertices; i++)
     {
         std::snprintf(buffer.data(), buffer.size(), "%zu,", i);
-        for (char *ptr = buffer.data(); ptr != 0; ptr++) { faceVertexIndices.push_back(*ptr); }
+        for (char *ptr = buffer.data(); *ptr != 0; ptr++) { faceVertexIndices.push_back(*ptr); }
 
         v1.x = m_vertexList[i * 3];
         v1.y = m_vertexList[i * 3 + 1];
         v1.z = m_vertexList[i * 3 + 2];
         ApplyDisplayTransformation(v1, &v2);
         std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
-        for (char *ptr = buffer.data(); ptr != 0; ptr++) { points.push_back(*ptr); }
+        for (char *ptr = buffer.data(); *ptr != 0; ptr++) { points.push_back(*ptr); }
 
         v1.x = m_normalList[i * 3];
         v1.y = m_normalList[i * 3 + 1];
         v1.z = m_normalList[i * 3 + 2];
         ApplyDisplayTransformation(v1, &v2);
         std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
-        for (char *ptr = buffer.data(); ptr != 0; ptr++) { normals.push_back(*ptr); }
+        for (char *ptr = buffer.data(); *ptr != 0; ptr++) { normals.push_back(*ptr); }
     };
     faceVertexIndices.back() = 0;
     points.back() = 0;
@@ -2617,3 +2617,7 @@ double FacetedObject::blendFraction() const
     return m_blendFraction;
 }
 
+double FacetedObject::boundingBoxVolume()
+{
+    return (m_upperBound[0] - m_lowerBound[0]) * (m_upperBound[1] - m_lowerBound[1]) * (m_upperBound[2] - m_lowerBound[2]);
+}

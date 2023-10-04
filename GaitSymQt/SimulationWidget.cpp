@@ -845,7 +845,7 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     {
         for (auto &&facetedObjectIter : drawableIter->facetedObjectList())
         {
-            if (facetedObjectIter->GetNumVertices())
+            if (facetedObjectIter->GetNumVertices() && facetedObjectIter->visible() && facetedObjectIter->boundingBoxVolume() != 0)
             {
                 facetedObjectIter->WriteUSDFile(usdStream, GSUtil::ToString("mesh%05d", meshCount));
                 meshCount++;
