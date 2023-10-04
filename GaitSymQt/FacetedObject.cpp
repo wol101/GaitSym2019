@@ -1460,37 +1460,51 @@ void FacetedObject::WriteOBJFile(std::ostringstream &out)
 void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &name)
 {
     std::string extent = GSUtil::ToString("(%g,%g,%g),(%g,%g,%g)", m_lowerBound[0], m_lowerBound[1], m_lowerBound[2], m_upperBound[0], m_upperBound[1], m_upperBound[2]);
-    std::ostringstream faceVertexCounts;
-    std::ostringstream faceVertexIndices;
-    std::ostringstream normals;
-    std::ostringstream points;
+    std::vector<char> faceVertexCounts;
+    std::vector<char> faceVertexIndices;
+    std::vector<char> normals;
+    std::vector<char> points;
     size_t numVertices = m_vertexList.size() / 3;
     size_t numFaces = numVertices / 3;
+    faceVertexCounts.reserve(numFaces * 2);
     pgd::Vector3 v1, v2;
     for (size_t i = 0; i < numFaces; i++)
     {
-        if (i < numFaces - 1) faceVertexCounts << "3,";
-        else faceVertexCounts << "3";
+        faceVertexCounts.push_back('3');
+        faceVertexCounts.push_back(',');
     };
+    faceVertexCounts.back() = 0;
+    faceVertexIndices.reserve(numVertices * 10);
+    normals.reserve(numVertices * 50);
+    points.reserve(numVertices * 50);
+    std::vector<char> buffer(256);
     for (size_t i = 0; i < numVertices; i++)
     {
-        if (i < numVertices - 1) faceVertexIndices << i << ",";
-        else faceVertexIndices << i;
+        std::snprintf(buffer.data(), buffer.size(), "%zu,", i);
+        for (char *ptr = buffer.data(); ptr != 0; ptr++) { faceVertexIndices.push_back(*ptr); }
 
         v1.x = m_vertexList[i * 3];
         v1.y = m_vertexList[i * 3 + 1];
         v1.z = m_vertexList[i * 3 + 2];
         ApplyDisplayTransformation(v1, &v2);
-        if (i < numVertices - 1) points << "(" << v2.x << "," << v2.y << "," << v2.z << "),";
-        else points << "(" << v2.x << "," << v2.y << "," << v2.z << ")";
+        std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
+        for (char *ptr = buffer.data(); ptr != 0; ptr++) { points.push_back(*ptr); }
 
         v1.x = m_normalList[i * 3];
         v1.y = m_normalList[i * 3 + 1];
         v1.z = m_normalList[i * 3 + 2];
         ApplyDisplayTransformation(v1, &v2);
-        if (i < numVertices - 1) normals << "(" << v2.x << "," << v2.y << "," << v2.z << "),";
-        else normals << "(" << v2.x << "," << v2.y << "," << v2.z << ")";
+        std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
+        for (char *ptr = buffer.data(); ptr != 0; ptr++) { normals.push_back(*ptr); }
     };
+    faceVertexIndices.back() = 0;
+    points.back() = 0;
+    normals.back() = 0;
+
+    std::string_view faceVertexCountsView(faceVertexCounts.data(), faceVertexCounts.size() - 1);
+    std::string_view faceVertexIndicesView(faceVertexIndices.data(),faceVertexIndices .size() - 1);
+    std::string_view normalsView(normals.data(), normals.size() - 1);
+    std::string_view pointsView(points.data(), points.size() - 1);
 
     out << "def Xform \"" << name << "_xform\" (\n";
     out << "    assetInfo = {\n";
@@ -1500,20 +1514,20 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
     out << "    kind = \"component\"\n";
     out << ")\n";
     out << "{\n";
-    out << "    def Scope \"" << name << "_scope\"\n";
-    out << "    {\n";
+//    out << "    def Scope \"" << name << "_scope\"\n";
+//    out << "    {\n";
     out << "        def Mesh \"" << name << "_mesh\"\n";
     out << "        {\n";
     out << "            float3[] extent = [" << extent << "]\n";
-    out << "            int[] faceVertexCounts = [" << faceVertexCounts.str() << "]\n";
-    out << "            int[] faceVertexIndices = [" << faceVertexIndices.str() << "]\n";
-    out << "            normal3f[] normals = [" << normals.str() << "] (\n";
+    out << "            int[] faceVertexCounts = [" << faceVertexCountsView << "]\n";
+    out << "            int[] faceVertexIndices = [" << faceVertexIndicesView << "]\n";
+    out << "            normal3f[] normals = [" << normalsView << "] (\n";
     out << "                interpolation = \"faceVarying\"\n";
     out << "            )\n";
-    out << "            point3f[] points = [" << points.str() << "]\n";
+    out << "            point3f[] points = [" << pointsView << "]\n";
     out << "            uniform token subdivisionScheme = \"none\"\n";
     out << "        }\n";
-    out << "    }\n";
+//    out << "    }\n";
     out << "}\n";
 
 }
