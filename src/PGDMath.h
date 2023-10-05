@@ -72,7 +72,7 @@ public:
         double *data(void);
         const double *constData(void) const;
 
-        bool operator <(const Vector2 rhs) const; // used for sets and maps
+        bool operator <(const Vector2 &rhs) const; // used for sets and maps
     };
 
     inline  Vector2 operator+(Vector2 u, Vector2 v);
@@ -267,9 +267,10 @@ public:
     }
 
     // less than used for sorting in maps and sets
-    inline  bool Vector2::operator<(const Vector2 rhs) const
+    inline  bool Vector2::operator<(const Vector2 &rhs) const
     {
         if (x < rhs.x) return true;
+        if (x > rhs.x) return false;
         if (y < rhs.y) return true;
         return false;
     }
@@ -310,7 +311,7 @@ public:
         double *data(void);
         const double *constData(void) const;
 
-        bool operator <(const Vector3 rhs) const; // used for sets and maps
+        bool operator <(const Vector3 &rhs) const; // used for sets and maps
     };
 
     inline  Vector3 operator+(Vector3 u, Vector3 v);
@@ -550,10 +551,12 @@ public:
     }
 
     // less than used for sorting in maps and sets
-    inline  bool Vector3::operator<(const Vector3 rhs) const
+    inline  bool Vector3::operator<(const Vector3 &rhs) const
     {
         if (x < rhs.x) return true;
+        if (x > rhs.x) return false;
         if (y < rhs.y) return true;
+        if (y > rhs.y) return false;
         if (z < rhs.z) return true;
         return false;
     }
