@@ -839,7 +839,21 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     std::ostringstream usdStream;
 
     int meshCount = 0;
-    usdStream << "#usda 1.0\n(\n    defaultPrim = \"" << GSUtil::ToString("mesh%05d_xform", meshCount) << "\"\n    upAxis = \"Z\"\n)\n";
+    usdStream <<
+    "#usda 1.0\n"
+    "(\n"
+    "    defaultPrim = \"" << GSUtil::ToString("mesh%05d_xform", meshCount) << "\"\n"
+    "    upAxis = \"Z\"\n"
+    ")\n";
+
+    usdStream <<
+    "def DomeLight \"environment\"\n"
+    "{\n"
+    "    custom color3f color = (0.1, 0.1, 0.1)\n"
+    "    color3f inputs:color = (0.1, 0.1, 0.1)\n"
+    "    float inputs:intensity = 100.0\n"
+    "    custom float intensity = 100.0\n"
+    "}\n";
 
     for (auto &&drawableIter : m_drawables)
     {

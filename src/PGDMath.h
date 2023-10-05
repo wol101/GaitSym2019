@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cfloat>
 #include <iostream>
+#include <tuple>
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846264338327950288
@@ -269,10 +270,7 @@ public:
     // less than used for sorting in maps and sets
     inline  bool Vector2::operator<(const Vector2 &rhs) const
     {
-        if (x < rhs.x) return true;
-        if (x > rhs.x) return false;
-        if (y < rhs.y) return true;
-        return false;
+        return std::tie(x, y) < std::tie(rhs.x, rhs.y);
     }
 
     //------------------------------------------------------------------------//
@@ -553,12 +551,7 @@ public:
     // less than used for sorting in maps and sets
     inline  bool Vector3::operator<(const Vector3 &rhs) const
     {
-        if (x < rhs.x) return true;
-        if (x > rhs.x) return false;
-        if (y < rhs.y) return true;
-        if (y > rhs.y) return false;
-        if (z < rhs.z) return true;
-        return false;
+        return std::tie(x, y, z) < std::tie(rhs.x, rhs.y, rhs.z);
     }
 
     //------------------------------------------------------------------------//
@@ -594,6 +587,8 @@ public:
 
         double *data(void);
         const double *constData(void) const;
+
+        bool operator <(const Vector4 &rhs) const; // used for sets and maps
     };
 
     inline  Vector4 operator+(Vector4 u, Vector4 v);
@@ -794,6 +789,13 @@ public:
     {
         return u / u.Magnitude();
     }
+
+    // less than used for sorting in maps and sets
+    inline  bool Vector4::operator<(const Vector4 &rhs) const
+    {
+        return std::tie(x, y, z, w) < std::tie(rhs.x, rhs.y, rhs.z, rhs.w);
+    }
+
     //------------------------------------------------------------------------//
     // Quaternion Class and Quaternion functions
     //------------------------------------------------------------------------//
@@ -827,6 +829,8 @@ public:
 
         double *data();
         const double *constData() const;
+
+        bool operator <(const Quaternion &rhs) const; // used for sets and maps
     };
 
     inline  Quaternion operator+(Quaternion q1, Quaternion q2);
@@ -861,7 +865,6 @@ public:
         y = 0;
         z = 0;
     }
-
 
     inline  Quaternion::Quaternion(double nn, double x, double y, double z)
     {
@@ -1009,6 +1012,12 @@ public:
     inline  Quaternion operator/(Quaternion q, double s)
     {
         return  Quaternion(q.n/s, q.x/s, q.y/s, q.z/s);
+    }
+
+    // less than used for sorting in maps and sets
+    inline  bool Quaternion::operator<(const Quaternion &rhs) const
+    {
+        return std::tie(n, x, y, z) < std::tie(rhs.n, rhs.x, rhs.y, rhs.z);
     }
 
     inline Quaternion Conjugate(Quaternion q)

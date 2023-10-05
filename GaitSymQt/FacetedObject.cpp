@@ -1464,8 +1464,11 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
     out << "{\n";
 
     // create the extent string
+    pgd::Vector3 lb, ub;
+    ApplyDisplayTransformation(m_lowerBound, &lb);
+    ApplyDisplayTransformation(m_upperBound, &ub);
     std::vector<char> buffer(512);
-    size_t l = std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),(%g,%g,%g)", m_lowerBound[0], m_lowerBound[1], m_lowerBound[2], m_upperBound[0], m_upperBound[1], m_upperBound[2]);
+    size_t l = std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),(%g,%g,%g)", lb.x, lb.y, lb.z, ub.x, ub.y, ub.z);
     std::string extent(buffer.data(), l);
 
     // now we need to split the mesh into triangles with the same colours
@@ -1482,6 +1485,29 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
         if (it == colourMap.end()) { colourMap[v] = std::vector<size_t>(); colourMap[v].reserve(numTriangles); }
         colourMap[v].push_back(i * 3);
     }
+
+    // output the materials
+    std::vector<pgd::Vector3> colourList;
+    colourList.reserve(colourMap.size());
+    for (auto &&it : colourMap)
+    {
+        size_t l = std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g)", it.first.x, it.first.y, it.first.z);
+        std::string diffuseColor(buffer.data(), l);
+        out << "def Material \"" << name << "_material_" << GSUtil::ToString(colourList.size()) << "\"\n";
+        out << "{\n";
+        out << "    token outputs:surface.connect = </" << name << "_xform/" << name << "_material_" << GSUtil::ToString(colourList.size()) << "/previewShader.outputs:surface>\n";
+        out << "    def Shader \"previewShader\"\n";
+        out << "    {\n";
+        out << "        uniform token info:id = \"UsdPreviewSurface\"\n";
+        out << "        color3f inputs:diffuseColor = " << diffuseColor << "\n";
+        out << "        float inputs:metallic = 0.5\n";
+        out << "        float inputs:roughness = 0.25\n";
+        out << "        token outputs:surface\n";
+        out << "    }\n";
+        out << "}\n";
+        colourList.push_back(it.first);
+    }
+
 
     // output a separate mesh for each material
     size_t colourCount = 0;
@@ -1541,6 +1567,7 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
         out << "    float3[] extent = [" << extent << "]\n";
         out << "    int[] faceVertexCounts = [" << faceVertexCountsView << "]\n";
         out << "    int[] faceVertexIndices = [" << faceVertexIndicesView << "]\n";
+        out << "    rel material:binding = </" << name << "_xform/" << name << "_material_" << GSUtil::ToString(colourCount) << ">\n";
         out << "    normal3f[] normals = [" << normalsView << "] (\n";
         out << "        interpolation = \"faceVarying\"\n";
         out << "    )\n";
