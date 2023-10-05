@@ -1480,7 +1480,7 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
         v.z = m_colourList[i * 9 + 2];
         auto it = colourMap.find(v);
         if (it == colourMap.end()) { colourMap[v] = std::vector<size_t>(); colourMap[v].reserve(numTriangles); }
-        colourMap[v].push_back(i);
+        colourMap[v].push_back(i * 3);
     }
 
     // output a separate mesh for each material
@@ -1507,22 +1507,25 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
         pgd::Vector3 v1, v2;
         for (size_t i = 0; i < it.second.size(); i++)
         {
-            std::snprintf(buffer.data(), buffer.size(), "%zu,", i);
+            std::snprintf(buffer.data(), buffer.size(), "%zu,%zu,%zu,", i * 3, i * 3 + 1, i * 3 + 2);
             for (char *ptr = buffer.data(); *ptr != 0; ptr++) { faceVertexIndices.push_back(*ptr); }
 
-            v1.x = m_vertexList[it.second[i] * 3];
-            v1.y = m_vertexList[it.second[i] * 3 + 1];
-            v1.z = m_vertexList[it.second[i] * 3 + 2];
-            ApplyDisplayTransformation(v1, &v2);
-            std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
-            for (char *ptr = buffer.data(); *ptr != 0; ptr++) { points.push_back(*ptr); }
+            for (size_t j = 0; j < 3; j++)
+            {
+                v1.x = m_vertexList[(it.second[i] + j) * 3]; // qDebug() << (it.second[i] + j) * 3;
+                v1.y = m_vertexList[(it.second[i] + j) * 3 + 1]; // qDebug() << (it.second[i] + j) * 3 + 1;
+                v1.z = m_vertexList[(it.second[i] + j) * 3 + 2]; // qDebug() << (it.second[i] + j) * 3 + 2;
+                ApplyDisplayTransformation(v1, &v2);
+                std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
+                for (char *ptr = buffer.data(); *ptr != 0; ptr++) { points.push_back(*ptr); }
 
-            v1.x = m_normalList[it.second[i] * 3];
-            v1.y = m_normalList[it.second[i] * 3 + 1];
-            v1.z = m_normalList[it.second[i] * 3 + 2];
-            ApplyDisplayTransformation(v1, &v2);
-            std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
-            for (char *ptr = buffer.data(); *ptr != 0; ptr++) { normals.push_back(*ptr); }
+                v1.x = m_normalList[(it.second[i] + j) * 3];
+                v1.y = m_normalList[(it.second[i] + j) * 3 + 1];
+                v1.z = m_normalList[(it.second[i] + j) * 3 + 2];
+                ApplyDisplayTransformation(v1, &v2);
+                std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
+                for (char *ptr = buffer.data(); *ptr != 0; ptr++) { normals.push_back(*ptr); }
+            }
         }
         faceVertexIndices.back() = 0;
         points.back() = 0;
