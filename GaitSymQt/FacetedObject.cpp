@@ -1491,7 +1491,10 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
     colourList.reserve(colourMap.size());
     for (auto &&it : colourMap)
     {
-        size_t l = std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g)", it.first.x, it.first.y, it.first.z);
+        double r = m_blendColour.redF() * m_blendFraction + (1 - m_blendFraction) * it.first.x;
+        double g = m_blendColour.greenF() * m_blendFraction + (1 - m_blendFraction) * it.first.x;
+        double b = m_blendColour.blueF() * m_blendFraction + (1 - m_blendFraction) * it.first.x;
+        size_t l = std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g)", r, g, b);
         std::string diffuseColor(buffer.data(), l);
         out << "def Material \"" << name << "_material_" << GSUtil::ToString(colourList.size()) << "\"\n";
         out << "{\n";
