@@ -579,6 +579,7 @@ void MainWindow::writeSettings()
 void MainWindow::setStatusString(const QString &s, int logLevel)
 {
     statusBar()->showMessage(s);
+    statusBar()->repaint();
     if (logLevel <= m_logLevel) log(s);
 }
 
@@ -680,6 +681,7 @@ void MainWindow::log(const QString &text)
     if (text.trimmed().size()) // only log strings with content
     {
         ui->textEditLog->append(text);
+        ui->textEditLog->repaint();
     }
 }
 

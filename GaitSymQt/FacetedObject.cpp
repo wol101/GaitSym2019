@@ -2670,3 +2670,9 @@ double FacetedObject::boundingBoxVolume()
 {
     return (m_upperBound[0] - m_lowerBound[0]) * (m_upperBound[1] - m_lowerBound[1]) * (m_upperBound[2] - m_lowerBound[2]);
 }
+
+pgd::Vector3 FacetedObject::boundingBoxSize()
+{
+    return pgd::Vector3(m_upperBound[0] - m_lowerBound[0], m_upperBound[1] - m_lowerBound[1], m_upperBound[2] - m_lowerBound[2]);
+}
+

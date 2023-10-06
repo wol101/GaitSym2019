@@ -420,6 +420,7 @@ void MainWindowActions::objSnapshot()
 
     if (folder.isNull() == false)
     {
+        m_mainWindow->setStatusString(QString("Writing to \"%1\"").arg(folder), 1);
         if (m_mainWindow->m_simulationWidget->WriteCADFrame(folder))
         {
             m_mainWindow->setStatusString(QString("Error: Folder '%1' write fail\n").arg(folder), 0);
@@ -441,12 +442,18 @@ void MainWindowActions::usdSnapshot()
         count = numberString.toInt() + 1;
     }
     QString filename = dir.absoluteFilePath(QString("Snapshot%1.usda").arg(count, 5, 10, QChar('0')));
-    if (m_mainWindow->m_simulationWidget->WriteUSDFrame(filename))
+    filename = QFileDialog::getSaveFileName(m_mainWindow, tr("Save current view as USD file"), filename, tr("Images (*.usd *.usda *.usdc)"));
+
+    if (filename.isNull() == false)
     {
-        QMessageBox::warning(m_mainWindow, "Snapshot Error", QString("Could not write '%1'\n").arg(filename));
-        return;
+        m_mainWindow->setStatusString(QString("Writing \"%1\"").arg(filename), 1);
+        if (m_mainWindow->m_simulationWidget->WriteUSDFrame(filename))
+        {
+            QMessageBox::warning(m_mainWindow, "Snapshot Error", QString("Could not write '%1'\n").arg(filename));
+            return;
+        }
+        m_mainWindow->setStatusString(QString("\"%1\" saved").arg(filename), 1);
     }
-    m_mainWindow->setStatusString(QString("\"%1\" saved").arg(filename), 1);
 }
 
 

@@ -847,19 +847,75 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     ")\n";
 
     usdStream <<
-    "def DomeLight \"environment\"\n"
+    "def Xform \"Colored_Lights\" (\n"
+    "    hide_in_stage_window = false\n"
+    "    no_delete = false\n"
+    ")\n"
     "{\n"
-    "    custom color3f color = (0.1, 0.1, 0.1)\n"
-    "    color3f inputs:color = (0.1, 0.1, 0.1)\n"
-    "    float inputs:intensity = 100.0\n"
-    "    custom float intensity = 100.0\n"
-    "}\n";
+    "	def DistantLight \"DistantLight\" (\n"
+    "		apiSchemas = [\"ShapingAPI\"]\n"
+    "	)\n"
+    "	{\n"
+    "		float angle = 5\n"
+    "		color3f color = (0.33692104, 0.76232195, 0.8996139)\n"
+    "		float exposure = 0.2\n"
+    "		float intensity = 2000\n"
+    "		float shaping:cone:angle = 180\n"
+    "		float shaping:cone:softness\n"
+    "		float shaping:focus\n"
+    "		color3f shaping:focusTint\n"
+    "		asset shaping:ies:file\n"
+    "		double3 xformOp:rotateXYZ = (293.12090746423974, 0, 0)\n"
+    "		double3 xformOp:scale = (1, 1, 1)\n"
+    "		double3 xformOp:translate = (0, 0, 0)\n"
+    "		uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n"
+    "	}\n"
+    "\n"
+    "	def DistantLight \"DistantLight_01\" (\n"
+    "		apiSchemas = [\"ShapingAPI\"]\n"
+    "	)\n"
+    "	{\n"
+    "		float angle = 10\n"
+    "		color3f color = (0.8108108, 0.44140664, 0.44140664)\n"
+    "		float exposure = 0\n"
+    "		float intensity = 2000\n"
+    "		float shaping:cone:angle = 180\n"
+    "		float shaping:cone:softness\n"
+    "		float shaping:focus\n"
+    "		color3f shaping:focusTint\n"
+    "		asset shaping:ies:file\n"
+    "		double3 xformOp:rotateXYZ = (315, -179.32902833160193, 0)\n"
+    "		double3 xformOp:scale = (1, 1, 1)\n"
+    "		double3 xformOp:translate = (0, 0, 0)\n"
+    "		uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n"
+    "	}\n"
+    "\n"
+    "	def DistantLight \"DistantLight_02\" (\n"
+    "		apiSchemas = [\"ShapingAPI\"]\n"
+    "	)\n"
+    "	{\n"
+    "		float angle = 10\n"
+    "		color3f color = (0.8918919, 0.5545123, 0.28926224)\n"
+    "		float exposure = 0\n"
+    "		float intensity = 2000\n"
+    "		float shaping:cone:angle = 180\n"
+    "		float shaping:cone:softness\n"
+    "		float shaping:focus\n"
+    "		color3f shaping:focusTint\n"
+    "		asset shaping:ies:file\n"
+    "		double3 xformOp:rotateXYZ = (293.12090746423974, -216.57111056617208, 0)\n"
+    "		double3 xformOp:scale = (1, 1, 1)\n"
+    "		double3 xformOp:translate = (0, 0, 0)\n"
+    "		uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n"
+    "	}\n"
+    "}\n"
+    ;
 
     for (auto &&drawableIter : m_drawables)
     {
         for (auto &&facetedObjectIter : drawableIter->facetedObjectList())
         {
-            if (facetedObjectIter->GetNumVertices() && facetedObjectIter->visible() && facetedObjectIter->boundingBoxVolume() != 0)
+            if (facetedObjectIter->GetNumVertices() && facetedObjectIter->visible() && facetedObjectIter->boundingBoxSize().Magnitude2() != 0)
             {
                 facetedObjectIter->WriteUSDFile(usdStream, GSUtil::ToString("mesh%05d", meshCount));
                 meshCount++;

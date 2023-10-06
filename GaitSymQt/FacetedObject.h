@@ -123,6 +123,7 @@ public:
     double *lowerBound();
     double *upperBound();
     double boundingBoxVolume();
+    pgd::Vector3 boundingBoxSize();
 
     SimulationWidget *simulationWidget() const;
     void setSimulationWidget(SimulationWidget *simulationWidget);
