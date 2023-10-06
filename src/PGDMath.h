@@ -1403,7 +1403,7 @@ public:
      class Matrix3x3 {
 public:
         // elements eij: i -> row, j -> column
-        double   e11, e12, e13, e21, e22, e23, e31, e32, e33;
+        double   e11, e12, e13, e21, e22, e23, e31, e32, e33; // in memory as row major
 
         Matrix3x3(void);
         Matrix3x3(  double r1c1, double r1c2, double r1c3,

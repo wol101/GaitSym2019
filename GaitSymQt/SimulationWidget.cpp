@@ -843,8 +843,65 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     "#usda 1.0\n"
     "(\n"
     "    defaultPrim = \"" << GSUtil::ToString("mesh%05d_xform", meshCount) << "\"\n"
+    "    metersPerUnit = 1.0\n"
     "    upAxis = \"Z\"\n"
     ")\n";
+
+    pgd::Vector3 cameraVector(m_cameraVecX, m_cameraVecY, m_cameraVecZ);
+    pgd::Vector3 centre(m_COIx, m_COIy, m_COIz);
+    pgd::Vector3 eye =  centre - m_cameraDistance * cameraVector;
+
+    // this code from gluLookAT
+    pgd::Vector3 forward = centre - eye;
+    pgd::Vector3 up(m_upX, m_upY, m_upZ);
+    forward.Normalize();
+    up.Normalize();
+    // Side = forward x up
+    pgd::Vector3 side = pgd::Cross(forward, up);
+    side.Normalize();
+    // Recompute up as: up = side x forward
+    up = pgd::Cross(side, forward);
+    // now assemble the matrix
+    pgd::Matrix3x3 cameraMatrix(side.x, up.x, -forward.x,
+                                side.y, up.y, -forward.y,
+                                side.z, up.z, -forward.z);
+    // and because we are moving the camera not the view, we need the inverse of this
+//    pgd::Matrix3x3 cameraMatrix2 = cameraMatrix.Inverse();
+//    // USD cameras are Y up and point along the Z axis so we need an extra rotation
+//    pgd::Matrix3x3 extraRotation(pgd::MakeQFromEulerAngles(0, 0, 0));
+//    pgd::Matrix3x3 cameraMatrix3 = cameraMatrix2 * extraRotation;
+    pgd::Vector3 euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix));
+//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
+//    euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix2));
+//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
+//     euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix3));
+//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
+
+    float sensorSize = 5; // approximate match via trial and error
+    std::string clippingRange = GSUtil::ToString("(%g,%g)", m_frontClip, m_backClip);
+    std::string focalLength = GSUtil::ToString("%g", sensorSize / (2 * std::tan(pgd::DegreesToRadians(m_FOV) / 2))); // FOV_angle = 2 * atan((sensorSize / 2) / focalLength)
+    std::string focusDistance = GSUtil::ToString("%g", m_cameraDistance);
+    std::string projection = "perspective";
+//    std::string projection = (m_orthographicProjection) ? "orthographic" : "perspective";
+    std::string rotateXYZ = GSUtil::ToString("(%g,%g,%g)", euler.x, euler.y, euler.z);
+    std::string translate = GSUtil::ToString("(%g,%g,%g)", eye.x, eye.y, eye.z);
+
+    usdStream <<
+    "def Xform \"Camera\"\n"
+    "{\n"
+    "    def Camera \"Camera\"\n"
+    "    {\n"
+    "        float2 clippingRange = " << clippingRange << "\n"
+    "        float focalLength = " << focalLength << "\n"
+    "        float focusDistance = " << focusDistance << "\n"
+    "        token projection = \"" << projection << "\"\n"
+    "        double3 xformOp:rotateXYZ = " << rotateXYZ << "\n"
+    "        double3 xformOp:scale = (1, 1, 1)\n"
+    "        double3 xformOp:translate = " << translate << "\n"
+    "        uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n"
+    "    }\n"
+    "}\n"
+    ;
 
     usdStream <<
     "def Xform \"Colored_Lights\" (\n"
@@ -910,50 +967,6 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     "   }\n"
     "}\n"
     ;
-
-    pgd::Vector3 cameraVector(m_cameraVecX, m_cameraVecY, m_cameraVecZ);
-    pgd::Vector3 centre(m_COIx, m_COIy, m_COIz);
-    pgd::Vector3 eye =  centre - m_cameraDistance * cameraVector;
-
-    // this code from gluLookAT
-    pgd::Vector3 forward = centre - eye;
-    pgd::Vector3 up(m_upX, m_upY, m_upZ);
-    forward.Normalize();
-    up.Normalize();
-    // Side = forward x up
-    pgd::Vector3 side = pgd::Cross(forward, up);
-    side.Normalize();
-    // Recompute up as: up = side x forward
-    up = pgd::Cross(side, forward);
-    // now assemble the matrix
-    pgd::Matrix3x3 cameraMatrix(side.x, up.x, -forward.x,
-                                side.y, up.y, -forward.y,
-                                side.z, up.z, -forward.z);
-    double thetaX, thetaY, thetaZ;
-    GSUtil::EulerDecompositionXYZ(cameraMatrix.data(), thetaX, thetaY, thetaZ);
-
-    float sensorSize = 35;
-    std::string clippingRange = GSUtil::ToString("(%g,%g)", m_frontClip, m_backClip);
-    std::string focalLength = GSUtil::ToString("%g", sensorSize / (2 * std::tan(m_FOV / 2))); // FOV_angle = 2 * atan((sensorSize / 2) / focalLength)
-    std::string focusDistance = GSUtil::ToString("%g", m_cameraDistance);
-    std::string projection = (m_orthographicProjection) ? "orthographic" : "perspective";
-    std::string rotateXYZ = GSUtil::ToString("(%g,%g,%g)", pgd::RadiansToDegrees(thetaX), pgd::RadiansToDegrees(thetaY), pgd::RadiansToDegrees(thetaZ));
-    std::string translate = GSUtil::ToString("(%g,%g,%g)", eye.x, eye.y, eye.z);
-
-    usdStream << "def Xform \"Camera\"\n";
-    usdStream << "{\n";
-    usdStream << "    def Camera \"Camera\"\n";
-    usdStream << "    {\n";
-    usdStream << "        float2 clippingRange = " << clippingRange << "\n";
-    usdStream << "        float focalLength = " << focalLength << "\n";
-    usdStream << "        float focusDistance = " << focusDistance << "\n";
-    usdStream << "        token projection = \"" << projection << "\"\n";
-    usdStream << "        double3 xformOp:rotateXYZ = " << rotateXYZ << "\n";
-    usdStream << "        double3 xformOp:scale = (1, 1, 1)\n";
-    usdStream << "        double3 xformOp:translate = " << translate << "\n";
-    usdStream << "        uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n";
-    usdStream << "    }\n";
-    usdStream << "}\n";
 
     for (auto &&drawableIter : m_drawables)
     {
