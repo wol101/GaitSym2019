@@ -1456,7 +1456,7 @@ void FacetedObject::WriteOBJFile(std::ostringstream &out)
     }
 }
 
-// Write a FacetedObject out as a OBJ
+// Write a FacetedObject out as a USD file
 void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &name)
 {
     // add the preamble
