@@ -838,14 +838,17 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
 {
     std::ostringstream usdStream;
 
-    int meshCount = 0;
     usdStream <<
     "#usda 1.0\n"
     "(\n"
-    "    defaultPrim = \"" << GSUtil::ToString("mesh%05d_xform", meshCount) << "\"\n"
+    "    defaultPrim = \"World\"\n"
     "    metersPerUnit = 1.0\n"
     "    upAxis = \"Z\"\n"
     ")\n";
+
+    usdStream <<
+    "def Xform \"World\"\n"
+    "{\n";
 
     pgd::Vector3 cameraVector(m_cameraVecX, m_cameraVecY, m_cameraVecZ);
     pgd::Vector3 centre(m_COIx, m_COIy, m_COIz);
@@ -909,6 +912,8 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     "    no_delete = false\n"
     ")\n"
     "{\n"
+    "    matrix4d xformOp:transform = ( (0, 1, 0, 0), (0, 0, 1, 0), (1, 0, 0, 0), (0, 0, 0, 1) )\n"
+    "    uniform token[] xformOpOrder = [\"xformOp:transform\"]\n"
     "   def DistantLight \"DistantLight\" (\n"
     "       apiSchemas = [\"ShapingAPI\"]\n"
     "   )\n"
@@ -968,6 +973,7 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     "}\n"
     ;
 
+    int meshCount = 0;
     for (auto &&drawableIter : m_drawables)
     {
         for (auto &&facetedObjectIter : drawableIter->facetedObjectList())
@@ -979,6 +985,9 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
             }
         }
     }
+
+    usdStream <<
+    "}\n";
 
     DataFile file;
     file.SetRawData(usdStream.str().data(), usdStream.str().size());

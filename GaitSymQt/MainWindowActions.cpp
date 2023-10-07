@@ -420,6 +420,7 @@ void MainWindowActions::objSnapshot()
 
     if (folder.isNull() == false)
     {
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         m_mainWindow->setStatusString(QString("Writing to \"%1\"").arg(folder), 1);
         if (m_mainWindow->m_simulationWidget->WriteCADFrame(folder))
         {
@@ -427,6 +428,7 @@ void MainWindowActions::objSnapshot()
             return;
         }
         m_mainWindow->setStatusString(QString("Files written in '%1'\n").arg(folder), 1);
+        QApplication::restoreOverrideCursor();
     }
 }
 
@@ -446,6 +448,7 @@ void MainWindowActions::usdSnapshot()
 
     if (filename.isNull() == false)
     {
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         m_mainWindow->setStatusString(QString("Writing \"%1\"").arg(filename), 1);
         if (m_mainWindow->m_simulationWidget->WriteUSDFrame(filename))
         {
@@ -453,6 +456,7 @@ void MainWindowActions::usdSnapshot()
             return;
         }
         m_mainWindow->setStatusString(QString("\"%1\" saved").arg(filename), 1);
+        QApplication::restoreOverrideCursor();
     }
 }
 

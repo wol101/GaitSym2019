@@ -1498,7 +1498,7 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
         std::string diffuseColor(buffer.data(), l);
         out << "def Material \"" << name << "_material_" << GSUtil::ToString(colourList.size()) << "\"\n";
         out << "{\n";
-        out << "    token outputs:surface.connect = </" << name << "_xform/" << name << "_material_" << GSUtil::ToString(colourList.size()) << "/previewShader.outputs:surface>\n";
+        out << "    token outputs:surface.connect = </World/" << name << "_xform/" << name << "_material_" << GSUtil::ToString(colourList.size()) << "/previewShader.outputs:surface>\n";
         out << "    def Shader \"previewShader\"\n";
         out << "    {\n";
         out << "        uniform token info:id = \"UsdPreviewSurface\"\n";
@@ -1570,7 +1570,7 @@ void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &nam
         out << "    float3[] extent = [" << extent << "]\n";
         out << "    int[] faceVertexCounts = [" << faceVertexCountsView << "]\n";
         out << "    int[] faceVertexIndices = [" << faceVertexIndicesView << "]\n";
-        out << "    rel material:binding = </" << name << "_xform/" << name << "_material_" << GSUtil::ToString(colourCount) << ">\n";
+        out << "    rel material:binding = </World/" << name << "_xform/" << name << "_material_" << GSUtil::ToString(colourCount) << ">\n";
         out << "    normal3f[] normals = [" << normalsView << "] (\n";
         out << "        interpolation = \"faceVarying\"\n";
         out << "    )\n";
