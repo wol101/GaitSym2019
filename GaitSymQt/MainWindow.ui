@@ -1071,6 +1071,8 @@
     <addaction name="actionStopOBJSequence"/>
     <addaction name="separator"/>
     <addaction name="actionSaveUSDSnapshot"/>
+    <addaction name="actionStartUSDSequence"/>
+    <addaction name="actionStopUSDSequence"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -1689,6 +1691,16 @@
    </property>
    <property name="toolTip">
     <string>Save a single USDA file as a snapshot</string>
+   </property>
+  </action>
+  <action name="actionStartUSDSequence">
+   <property name="text">
+    <string>Start USD Sequence...</string>
+   </property>
+  </action>
+  <action name="actionStopUSDSequence">
+   <property name="text">
+    <string>Stop USD Sequence</string>
    </property>
   </action>
  </widget>
