@@ -97,6 +97,8 @@ class usd_batch_render(omni.ext.IExt):
             capture_extension = omni.kit.capture.viewport.CaptureExtension.get_instance()
             capture_extension.options._output_folder = self._preferences['output_folder']
             capture_extension.options._file_type = FILETYPES[self._preferences['file_type_index']]
+            if capture_extension.options._file_type == ".exr": capture_extension.options._hdr_output = True
+            else: capture_extension.options._hdr_output = False
             if self._preferences['output_file_name']:
                 capture_extension.options._file_name = self._preferences['output_file_name']
             else:
