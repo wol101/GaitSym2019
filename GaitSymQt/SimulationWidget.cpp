@@ -890,7 +890,7 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     std::string translate = GSUtil::ToString("(%g,%g,%g)", eye.x, eye.y, eye.z);
 
     usdStream <<
-    "def Xform \"Camera\"\n"
+    "def Xform \"Cameras\"\n"
     "{\n"
     "    def Camera \"Camera\"\n"
     "    {\n"
