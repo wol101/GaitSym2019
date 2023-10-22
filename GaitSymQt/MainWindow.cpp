@@ -270,6 +270,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         switch (ret)
         {
         case QMessageBox::Ok:
+            if (m_movieFlag) { m_simulationWidget->StopAVISave(); }
             writeSettings();
             QMainWindow::closeEvent(event);
             break;
@@ -284,6 +285,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     else
     {
+        if (m_movieFlag) { m_simulationWidget->StopAVISave(); }
         writeSettings();
         QMainWindow::closeEvent(event);
     }

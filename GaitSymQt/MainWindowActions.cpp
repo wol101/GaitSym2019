@@ -101,7 +101,8 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
     // dispose any simulation cleanly
     m_mainWindow->m_timer->stop();
     m_mainWindow->ui->actionRun->setChecked(false);
-    m_mainWindow->m_movieFlag = false;
+    if (m_mainWindow->m_movieFlag) { menuStopAVISave(); }
+    m_mainWindow->m_saveOBJFileSequenceFlag = false;
     if (m_mainWindow->m_simulationWidget->aviWriter()) menuStopAVISave();
     if (m_mainWindow->m_simulation)
     {
@@ -738,12 +739,14 @@ void MainWindowActions::menuNew()
 
     if (status == QDialog::Accepted)
     {
+        if (m_mainWindow->m_movieFlag) { menuStopAVISave(); }
         if (m_mainWindow->m_simulation) delete m_mainWindow->m_simulation;
         m_mainWindow->m_simulation = nullptr;
         m_mainWindow->m_simulationWidget->setSimulation(m_mainWindow->m_simulation);
         m_mainWindow->m_stepCount = 0;
         m_mainWindow->ui->actionRun->setChecked(false);
         m_mainWindow->m_timer->stop();
+        m_mainWindow->m_saveOBJFileSequenceFlag = false;
         m_mainWindow->m_simulation = new Simulation();
         std::unique_ptr<Global> newGlobal = dialogGlobal.outputGlobal();
         newGlobal->setSimulation(m_mainWindow->m_simulation);
