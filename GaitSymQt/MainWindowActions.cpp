@@ -23,8 +23,6 @@
 #include "FacetedObject.h"
 #include "Warehouse.h"
 #include "Preferences.h"
-#include "SimulationWidget.h"
-#include "SimulationWindowQt3D.h"
 #include "DialogPreferences.h"
 #include "DialogOutputSelect.h"
 #include "DialogBodyBuilder.h"
@@ -47,6 +45,13 @@
 #include "TwoHingeJointDriver.h"
 #include "MarkerPositionDriver.h"
 #include "MarkerEllipseDriver.h"
+
+#ifdef USE_QT3D
+#include "SimulationWindowQt3D.h"
+#else
+#include "SimulationWidget.h"
+#endif
+
 
 #include "pystring.h"
 
@@ -74,7 +79,8 @@ void MainWindowActions::menuOpen()
 {
     if (m_mainWindow->isWindowModified())
     {
-        int ret = QMessageBox::warning(m_mainWindow, tr("Current document contains unsaved changes"), tr("Opening a new document will delete the current document.\nAre you sure you want to continue?"),
+        int ret = QMessageBox::warning(m_mainWindow, tr("Current document contains unsaved changes"),
+                                       tr("Opening a new document will delete the current document.\nAre you sure you want to continue?"),
                                        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
         if (ret == QMessageBox::Cancel) return;
     }
@@ -669,23 +675,37 @@ void MainWindowActions::menuStopAVISave()
 
 void MainWindowActions::menuStartOBJSequenceSave()
 {
+    m_mainWindow->m_objFileFormat = MainWindow::obj;
     QFileInfo info(Preferences::valueQString("LastFileOpened"));
 
-    m_mainWindow->m_objFileSequenceFolder = QFileDialog::getExistingDirectory(m_mainWindow, tr("Choose folder to the OBJ file sequence"), info.absolutePath());
+    m_mainWindow->m_objFileSequenceFolder = QFileDialog::getExistingDirectory(m_mainWindow, tr("Choose folder for writing the OBJ file sequence"), info.absolutePath());
+
+    if (m_mainWindow->m_objFileSequenceFolder.isNull() == false)
+    {
+        m_mainWindow->m_saveOBJFileSequenceFlag = true;    }
+}
+
+void MainWindowActions::menuStartUSDSequenceSave()
+{
+    m_mainWindow->m_objFileFormat = MainWindow::usda;
+    QFileInfo info(Preferences::valueQString("LastFileOpened"));
+
+    m_mainWindow->m_objFileSequenceFolder = QFileDialog::getExistingDirectory(m_mainWindow, tr("Choose folder for writing the USD file sequence"), info.absolutePath());
 
     if (m_mainWindow->m_objFileSequenceFolder.isNull() == false)
     {
         m_mainWindow->m_saveOBJFileSequenceFlag = true;
-        m_mainWindow->ui->actionStartOBJSequence->setEnabled(false);
-        m_mainWindow->ui->actionStopOBJSequence->setEnabled(true);
     }
 }
 
 void MainWindowActions::menuStopOBJSequenceSave()
 {
     m_mainWindow->m_saveOBJFileSequenceFlag = false;
-    m_mainWindow->ui->actionStartOBJSequence->setEnabled(true);
-    m_mainWindow->ui->actionStopOBJSequence->setEnabled(false);
+}
+
+void MainWindowActions::menuStopUSDSequenceSave()
+{
+    m_mainWindow->m_saveOBJFileSequenceFlag = false;
 }
 
 void MainWindowActions::menuNew()

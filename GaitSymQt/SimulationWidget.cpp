@@ -828,6 +828,9 @@ int SimulationWidget::WriteCADFrame(const QString &pathname)
             }
         }
     }
+    QString numberedFilename = QString("mesh%1.obj").arg(meshCount, 6, 10, QChar('0'));
+    m_globalAxes->WriteOBJFile(numberedFilename.toStdString());
+    meshCount++;
 
     QDir::setCurrent(workingFolder);
     return 0;
@@ -985,6 +988,8 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
             }
         }
     }
+    m_globalAxes->WriteUSDFile(usdStream, GSUtil::ToString("mesh%05d", meshCount));
+    meshCount++;
 
     usdStream <<
     "}\n";

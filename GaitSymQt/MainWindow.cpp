@@ -122,9 +122,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSelectAll, SIGNAL(triggered()), m_mainWindowActions, SLOT(selectAll()));
     connect(ui->actionSnapshot, SIGNAL(triggered()), m_mainWindowActions, SLOT(snapshot()));
     connect(ui->actionStartOBJSequence, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStartOBJSequenceSave()));
+    connect(ui->actionStartUSDSequence, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStartUSDSequenceSave()));
     connect(ui->actionStartWarehouseExport, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStartWarehouseExport()));
     connect(ui->actionStep, SIGNAL(triggered()), m_mainWindowActions, SLOT(step()));
     connect(ui->actionStopOBJSequence, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStopOBJSequenceSave()));
+    connect(ui->actionStopUSDSequence, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStopUSDSequenceSave()));
     connect(ui->actionStopWarehouseExport, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuStopWarehouseExport()));
     connect(ui->actionToggleFullscreen, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuToggleFullScreen()));
     connect(ui->actionViewBack, SIGNAL(triggered()), m_mainWindowActions, SLOT(buttonCameraBack()));
@@ -326,7 +328,17 @@ void MainWindow::processOneThing()
             {
                 QString filename = QString("%1%2").arg("Frame").arg(m_simulation->GetTime(), 12, 'f', 7, QChar('0'));
                 QString path = QDir(m_objFileSequenceFolder).filePath(filename);
-                m_simulationWidget->WriteCADFrame(path);
+                if (m_objFileFormat == usda) { path.append(".usda"); }
+                log(QString("Writing \"%1\"\n").arg(path));
+                switch (m_objFileFormat)
+                {
+                case obj:
+                    m_simulationWidget->WriteCADFrame(path);
+                    break;
+                case usda:
+                    m_simulationWidget->WriteUSDFrame(path);
+                    break;
+                }
             }
             QString time = QString("%1").arg(m_simulation->GetTime(), 0, 'f', 5);
             ui->lcdNumberTime->display(time);
@@ -337,10 +349,10 @@ void MainWindow::processOneThing()
         {
             log(QString::fromStdString(capturedCerr.str()));
             setStatusString(tr("Simulation ended normally"), 1);
-            ui->textEditLog->append(QString("Fitness = %1\n").arg(m_simulation->CalculateInstantaneousFitness(), 0, 'f', 5));
-            ui->textEditLog->append(QString("Time = %1\n").arg(m_simulation->GetTime(), 0, 'f', 5));
-            ui->textEditLog->append(QString("Metabolic Energy = %1\n").arg(m_simulation->GetMetabolicEnergy(), 0, 'f', 5));
-            ui->textEditLog->append(QString("Mechanical Energy = %1\n").arg(m_simulation->GetMechanicalEnergy(), 0, 'f', 5));
+            log(QString("Fitness = %1\n").arg(m_simulation->CalculateInstantaneousFitness(), 0, 'f', 5));
+            log(QString("Time = %1\n").arg(m_simulation->GetTime(), 0, 'f', 5));
+            log(QString("Metabolic Energy = %1\n").arg(m_simulation->GetMetabolicEnergy(), 0, 'f', 5));
+            log(QString("Mechanical Energy = %1\n").arg(m_simulation->GetMechanicalEnergy(), 0, 'f', 5));
             m_simulationWidget->update();
             QString time = QString("%1").arg(m_simulation->GetTime(), 0, 'f', 5);
             ui->lcdNumberTime->display(time);
@@ -730,8 +742,11 @@ void MainWindow::updateEnable()
     ui->actionStep->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
     ui->actionSnapshot->setEnabled(m_simulation != nullptr);
     ui->actionSaveOBJSnapshot->setEnabled(m_simulation != nullptr && m_mode == runMode);
-    ui->actionStartOBJSequence->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
-    ui->actionStopOBJSequence->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
+    ui->actionStartOBJSequence->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false && m_saveOBJFileSequenceFlag == false);
+    ui->actionStopOBJSequence->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false && m_saveOBJFileSequenceFlag == true && m_objFileFormat == obj);
+    ui->actionSaveUSDSnapshot->setEnabled(m_simulation != nullptr && m_mode == runMode);
+    ui->actionStartUSDSequence->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false && m_saveOBJFileSequenceFlag == false);
+    ui->actionStopUSDSequence->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false && m_saveOBJFileSequenceFlag == true && m_objFileFormat == usda);
     ui->actionImportMeshesAsBodies->setEnabled(m_simulation != nullptr && m_mode == constructionMode);
     ui->actionCreateBody->setEnabled(m_simulation != nullptr && m_mode == constructionMode);
     ui->actionCreateMarker->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0);

@@ -71,9 +71,11 @@ public slots:
     void menuSaveAs();
     void menuSaveDefaultView();
     void menuStartOBJSequenceSave();
+    void menuStartUSDSequenceSave();
     void menuStartWarehouseExport();
     void menuStopAVISave();
     void menuStopOBJSequenceSave();
+    void menuStopUSDSequenceSave();
     void menuStopWarehouseExport();
     void menuToggleFullScreen();
 

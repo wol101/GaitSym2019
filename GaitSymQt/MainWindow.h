@@ -119,6 +119,8 @@ private:
     bool m_movieFlag = false;
     bool m_saveOBJFileSequenceFlag = false;
     QString m_objFileSequenceFolder;
+    enum objFileFormat { obj, usda };
+    enum objFileFormat m_objFileFormat = obj;
     bool m_stepFlag = false;
     uint64_t m_stepCount = 0;
     int m_logLevel = 1;
