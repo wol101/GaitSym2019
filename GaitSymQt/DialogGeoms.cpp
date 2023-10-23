@@ -154,7 +154,7 @@ void DialogGeoms::accept() // this catches OK and return/enter
         if (m_properties.count("GeomColour1"))
             m_outputGeom->setColour1(qvariant_cast<QColor>(m_properties["GeomColour1"].value).name(QColor::HexArgb).toStdString());
         if (m_properties.count("GeomColour2"))
-            m_outputGeom->setColour1(qvariant_cast<QColor>(m_properties["GeomColour2"].value).name(QColor::HexArgb).toStdString());
+            m_outputGeom->setColour2(qvariant_cast<QColor>(m_properties["GeomColour2"].value).name(QColor::HexArgb).toStdString());
         if (m_properties.count("GeomSize1"))
             m_outputGeom->setSize1(m_properties["GeomSize1"].value.toDouble());
         if (m_properties.count("GeomSize2"))
