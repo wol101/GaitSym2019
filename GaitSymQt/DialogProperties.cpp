@@ -180,7 +180,7 @@ void DialogProperties::initialiseTab(const QString &tabName, const QVector<Setti
             QPushButton *pushButton = new QPushButton();
             pushButton->setText("Colour");
             QColor color = qvariant_cast<QColor>(item.value);
-            pushButton->setStyleSheet(COLOUR_STYLE.arg(color.name()).arg(getIdealTextColour(color).name()).arg( getAlphaColourHint(color).name()));
+            pushButton->setStyleSheet(COLOUR_STYLE.arg(color.name()).arg(getIdealTextColour(color).name()).arg(getAlphaColourHint(color).name()));
             pushButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             connect(pushButton, SIGNAL(clicked()), this, SLOT(colourButtonClicked()));
             gridLayout->addWidget(pushButton, row, 1);
@@ -253,8 +253,7 @@ QMap<QString, SettingsItem> DialogProperties::getOutputSettingsItems() const
 
 void DialogProperties::colourButtonClicked()
 {
-    const QString
-            COLOUR_STYLE("QPushButton { background-color : %1; color : %2; border: 4px solid %3; }");
+    const QString COLOUR_STYLE("QPushButton { background-color : %1; color : %2; border: 4px solid %3; }");
     int i;
     QPushButton *pushButton = dynamic_cast<QPushButton *>(QObject::sender());
     for (i = 0; i < m_SettingsWidgetList.size(); i++)
