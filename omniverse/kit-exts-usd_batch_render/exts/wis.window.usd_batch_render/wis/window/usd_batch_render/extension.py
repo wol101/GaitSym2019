@@ -190,7 +190,7 @@ class usd_batch_render(omni.ext.IExt):
                         self._ui_input_folder_path.model.set_value(self._preferences["input_folder"])
                         omni.ui.Button(omni.ui.get_custom_glyph_code("${glyphs}/folder.svg"),
                                        width=omni.ui.Pixel(60),
-                                       mouse_pressed_fn=self._on_input_folder_clicked)
+                                       clicked_fn=self._on_input_folder_clicked)
 
                     with omni.ui.HStack(height=0, spacing=10):
                         omni.ui.Label("Output Folder:", height=0, width=omni.ui.Pixel(100))
@@ -198,7 +198,7 @@ class usd_batch_render(omni.ext.IExt):
                         self._ui_output_folder_path.model.set_value(self._preferences["output_folder"])
                         omni.ui.Button(omni.ui.get_custom_glyph_code("${glyphs}/folder.svg"), 
                                        width=omni.ui.Pixel(60),
-                                       mouse_pressed_fn=self._on_output_folder_clicked)
+                                       clicked_fn=self._on_output_folder_clicked)
 
                     with omni.ui.HStack(height=0, spacing=10):
                         omni.ui.Label("File Name:", height=0, width=omni.ui.Pixel(100))
@@ -246,8 +246,8 @@ class usd_batch_render(omni.ext.IExt):
                     omni.ui.Separator(height=0)
                     with omni.ui.HStack(height=0):
                         omni.ui.Spacer()
-                        self._ui_cancel_button = omni.ui.Button("Cancel", height=0, width=omni.ui.Pixel(100), mouse_pressed_fn=self._on_cancel_clicked)
-                        self._ui_start_button = omni.ui.Button("Start", height=0, width=omni.ui.Pixel(100), mouse_pressed_fn=self._on_start_clicked)
+                        self._ui_cancel_button = omni.ui.Button("Cancel", height=0, width=omni.ui.Pixel(100), clicked_fn=self._on_cancel_clicked)
+                        self._ui_start_button = omni.ui.Button("Start", height=0, width=omni.ui.Pixel(100), clicked_fn=self._on_start_clicked)
     
 
 
@@ -259,7 +259,7 @@ class usd_batch_render(omni.ext.IExt):
             self._subs = None
         asyncio.ensure_future(_exitUpdateEvent())
 
-    def _on_input_folder_clicked(self, x, y, b, m):
+    def _on_input_folder_clicked(self):
         if self._input_folder_picker is None:
             show_collections = ["my-computer"]
             self._input_folder_picker = omni.kit.window.filepicker.FilePickerDialog(
@@ -288,7 +288,7 @@ class usd_batch_render(omni.ext.IExt):
         dialog.hide()
         self._ui_input_folder_path.model.set_value(self._filepicker_selected_folder)
 
-    def _on_output_folder_clicked(self, x, y, b, m):
+    def _on_output_folder_clicked(self):
         if self._output_folder_picker is None:
             show_collections = ["my-computer"]
             self._output_folder_picker = omni.kit.window.filepicker.FilePickerDialog(
@@ -317,7 +317,7 @@ class usd_batch_render(omni.ext.IExt):
         dialog.hide()
         self._ui_output_folder_path.model.set_value(self._filepicker_selected_folder)
     
-    def _on_start_clicked(self, x, y, b, m):
+    def _on_start_clicked(self):
         if not self._ui_start_button.enabled:
             return
         self._output_buffer += 'Starting\n'
@@ -340,7 +340,7 @@ class usd_batch_render(omni.ext.IExt):
                 if os.path.isfile(path):
                     self._usd_file_list.append(path)
 
-    def _on_cancel_clicked(self, x, y, b, m):
+    def _on_cancel_clicked(self):
         if not self._ui_cancel_button.enabled:
             return
         self._output_buffer += 'Cancelling\n'
