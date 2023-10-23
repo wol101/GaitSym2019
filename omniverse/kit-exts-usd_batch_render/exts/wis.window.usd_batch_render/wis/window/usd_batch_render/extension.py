@@ -16,7 +16,7 @@ class action(enum.Enum):
     render = 2
 
 FILETYPES = [".png", ".tga", ".exr"]
-RENDER_PRESETS = ["PATH_TRACE", "RAY_TRACE", "IRAY"]
+RENDER_PRESETS = ["RAY_TRACE", "PATH_TRACE", "IRAY"]
 
 
 class usd_batch_render(omni.ext.IExt):
@@ -41,6 +41,8 @@ class usd_batch_render(omni.ext.IExt):
     _ui_output_file_name = None
     _ui_output_folder_path = None
     _ui_output_text = None
+    _path_trace_spp = None
+    _ui_real_time_settle_latency_frames = None
     _ui_render_preset_index = None
     _ui_start_button = None
     _usd_file_list = []
@@ -56,7 +58,10 @@ class usd_batch_render(omni.ext.IExt):
                     'image_height':1080,
                     'camera_path':'',
                     'render_preset_index':0,
-                    'between_file_delay':5.0}
+                    'between_file_delay':5.0,
+                    'real_time_settle_latency_frames':0,
+                    'path_trace_spp':1
+                    }
 
 
     # Update event.
@@ -105,6 +110,8 @@ class usd_batch_render(omni.ext.IExt):
                 capture_extension.options._file_name = os.path.split(os.path.splitext(self._usd_file_list[self._usd_file_list_index])[0])[1]
             capture_extension.options._width = self._preferences['image_width']
             capture_extension.options._height = self._preferences['image_height']
+            capture_extension.options._real_time_settle_latency_frames = self._preferences['real_time_settle_latency_frames']
+            capture_extension.options._path_trace_spp = self._preferences['path_trace_spp']
             
             if RENDER_PRESETS[self._preferences['render_preset_index']] == 'PATH_TRACE': capture_extension.options._render_preset = omni.kit.capture.viewport.CaptureRenderPreset.PATH_TRACE
             if RENDER_PRESETS[self._preferences['render_preset_index']] == 'RAY_TRACE': capture_extension.options._render_preset = omni.kit.capture.viewport.CaptureRenderPreset.RAY_TRACE
@@ -194,6 +201,15 @@ class usd_batch_render(omni.ext.IExt):
                         self._ui_between_file_delay = omni.ui.FloatField(height=0, width=omni.ui.Percent(25))
                         self._ui_between_file_delay.precision = 1
                         self._ui_between_file_delay.model.set_value(self._preferences["between_file_delay"])
+                    
+                    omni.ui.Separator(height=0)
+                    with omni.ui.HStack(height=0, spacing=10):
+                        omni.ui.Label("Settle Latency:", height=0, width=omni.ui.Percent(25))
+                        self._ui_real_time_settle_latency_frames = omni.ui.IntField(height=0, width=omni.ui.Percent(25))
+                        self._ui_real_time_settle_latency_frames.model.set_value(self._preferences["real_time_settle_latency_frames"])
+                        omni.ui.Label("Samples Per Pixel:", height=0, width=omni.ui.Percent(25))
+                        self._ui_path_trace_spp = omni.ui.IntField(height=0, width=omni.ui.Percent(25))
+                        self._ui_path_trace_spp.model.set_value(self._preferences["path_trace_spp"])
 
                     with omni.ui.HStack(height=0, spacing=10):
                         omni.ui.Label("Render Preset:", height=0, width=omni.ui.Percent(25))
@@ -284,15 +300,6 @@ class usd_batch_render(omni.ext.IExt):
             return
         self._output_buffer += 'Starting\n'
         self._ui_output_text.model.set_value(self._output_buffer)
-        self._preferences['input_folder'] = self._ui_input_folder_path.model.get_value_as_string()
-        self._preferences['output_folder'] = self._ui_output_folder_path.model.get_value_as_string()
-        self._preferences['output_file_name'] = self._ui_output_file_name.model.get_value_as_string()
-        self._preferences['file_type_index'] = self._ui_capture_type.model.get_item_value_model().as_int
-        self._preferences['image_width'] = self._ui_image_width.model.get_value_as_int()
-        self._preferences['image_height'] = self._ui_image_height.model.get_value_as_int()
-        self._preferences['camera_path'] = self._ui_camera_path.model.get_value_as_string()
-        self._preferences['render_preset_index'] = self._ui_render_preset_index.model.get_item_value_model().as_int
-        self._preferences['between_file_delay'] = self._ui_between_file_delay.model.get_value_as_float()
         self._write_preferences()
         input_folder = self._preferences['input_folder']
         extensions = ['.usd' , '.usda' , '.usdc']
@@ -331,6 +338,17 @@ class usd_batch_render(omni.ext.IExt):
                             self._preferences[key] = config_data[key]
 
     def _write_preferences(self):
+        self._preferences['input_folder'] = self._ui_input_folder_path.model.get_value_as_string()
+        self._preferences['output_folder'] = self._ui_output_folder_path.model.get_value_as_string()
+        self._preferences['output_file_name'] = self._ui_output_file_name.model.get_value_as_string()
+        self._preferences['file_type_index'] = self._ui_capture_type.model.get_item_value_model().as_int
+        self._preferences['image_width'] = self._ui_image_width.model.get_value_as_int()
+        self._preferences['image_height'] = self._ui_image_height.model.get_value_as_int()
+        self._preferences['camera_path'] = self._ui_camera_path.model.get_value_as_string()
+        self._preferences['render_preset_index'] = self._ui_render_preset_index.model.get_item_value_model().as_int
+        self._preferences['between_file_delay'] = self._ui_between_file_delay.model.get_value_as_float()
+        self._preferences['real_time_settle_latency_frames'] = self._ui_real_time_settle_latency_frames.model.get_value_as_int()
+        self._preferences['path_trace_spp'] = self._ui_path_trace_spp.model.get_value_as_int()
         prefs_file_name = os.path.join(self._current_path, "usd_batch_render.json")
         with open(prefs_file_name, 'w', encoding='utf-8') as fp:
             json.dump(self._preferences, fp, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': '))
