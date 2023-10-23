@@ -14,6 +14,7 @@ import datetime
 class action(enum.Enum):
     load = 1
     render = 2
+    wait = 3
 
 FILETYPES = [".png", ".tga", ".exr"]
 RENDER_PRESETS = ["RAY_TRACE", "PATH_TRACE", "IRAY"]
@@ -23,12 +24,15 @@ class usd_batch_render(omni.ext.IExt):
     # I like to define all the class variables
     # grep -o -e 'self._[A-z_]*' extension.py | sort | uniq
     _current_path = None
+    _capture_extension = None
     _filepicker_selected_folder = None
+    _folder_contents_before_render = []
     _input_folder_picker = None
     _last_time = 0
     _next_action = action.load
     _output_buffer = ''
     _output_folder_picker = None
+    _render_start_time = 0
     _running = False
     _subs = None
     _ui_between_file_delay = None
@@ -99,23 +103,22 @@ class usd_batch_render(omni.ext.IExt):
 
             
         if self._next_action is action.render:
-            capture_extension = omni.kit.capture.viewport.CaptureExtension.get_instance()
-            capture_extension.options._output_folder = self._preferences['output_folder']
-            capture_extension.options._file_type = FILETYPES[self._preferences['file_type_index']]
-            if capture_extension.options._file_type == ".exr": capture_extension.options._hdr_output = True
-            else: capture_extension.options._hdr_output = False
+            self._capture_extension.options._output_folder = self._preferences['output_folder']
+            self._capture_extension.options._file_type = FILETYPES[self._preferences['file_type_index']]
+            if self._capture_extension.options._file_type == ".exr": self._capture_extension.options._hdr_output = True
+            else: self._capture_extension.options._hdr_output = False
             if self._preferences['output_file_name']:
-                capture_extension.options._file_name = self._preferences['output_file_name']
+                self._capture_extension.options._file_name = self._preferences['output_file_name']
             else:
-                capture_extension.options._file_name = os.path.split(os.path.splitext(self._usd_file_list[self._usd_file_list_index])[0])[1]
-            capture_extension.options._width = self._preferences['image_width']
-            capture_extension.options._height = self._preferences['image_height']
-            capture_extension.options._real_time_settle_latency_frames = self._preferences['real_time_settle_latency_frames']
-            capture_extension.options._path_trace_spp = self._preferences['path_trace_spp']
+                self._capture_extension.options._file_name = os.path.split(os.path.splitext(self._usd_file_list[self._usd_file_list_index])[0])[1]
+            self._capture_extension.options._width = self._preferences['image_width']
+            self._capture_extension.options._height = self._preferences['image_height']
+            self._capture_extension.options._real_time_settle_latency_frames = self._preferences['real_time_settle_latency_frames']
+            self._capture_extension.options._path_trace_spp = self._preferences['path_trace_spp']
             
-            if RENDER_PRESETS[self._preferences['render_preset_index']] == 'PATH_TRACE': capture_extension.options._render_preset = omni.kit.capture.viewport.CaptureRenderPreset.PATH_TRACE
-            if RENDER_PRESETS[self._preferences['render_preset_index']] == 'RAY_TRACE': capture_extension.options._render_preset = omni.kit.capture.viewport.CaptureRenderPreset.RAY_TRACE
-            if RENDER_PRESETS[self._preferences['render_preset_index']] == 'IRAY': capture_extension.options._render_preset = omni.kit.capture.viewport.CaptureRenderPreset.IRAY
+            if RENDER_PRESETS[self._preferences['render_preset_index']] == 'PATH_TRACE': self._capture_extension.options._render_preset = omni.kit.capture.viewport.CaptureRenderPreset.PATH_TRACE
+            if RENDER_PRESETS[self._preferences['render_preset_index']] == 'RAY_TRACE': self._capture_extension.options._render_preset = omni.kit.capture.viewport.CaptureRenderPreset.RAY_TRACE
+            if RENDER_PRESETS[self._preferences['render_preset_index']] == 'IRAY': self._capture_extension.options._render_preset = omni.kit.capture.viewport.CaptureRenderPreset.IRAY
 
             # set the camera
             stage = self._viewport.usd_context.get_stage()
@@ -127,23 +130,42 @@ class usd_batch_render(omni.ext.IExt):
                     if camera_name.startswith('/Omniverse'): omniverse_cameras.append(camera_name)
                     else: non_omniverse_cameras.append(camera_name)
             if self._preferences['camera_path'] in non_omniverse_cameras + omniverse_cameras:
-                capture_extension.options._camera = self._preferences['camera_path']
+                self._capture_extension.options._camera = self._preferences['camera_path']
             else:
-                if non_omniverse_cameras: capture_extension.options._camera = non_omniverse_cameras[0]
-                else: capture_extension.options._camera = omniverse_cameras[0]
-                self._output_buffer += 'Setting camera to "%s"\n' % (capture_extension.options._camera)
+                if non_omniverse_cameras: self._capture_extension.options._camera = non_omniverse_cameras[0]
+                else: self._capture_extension.options._camera = omniverse_cameras[0]
+                self._output_buffer += 'Setting camera to "%s"\n' % (self._capture_extension.options._camera)
                 self._ui_output_text.model.set_value(self._output_buffer)
 
-            self._output_buffer += 'Saving "%s%s" to "%s"\n' % (capture_extension.options._file_name, capture_extension.options._file_type, capture_extension.options._output_folder)
+            self._output_buffer += 'Saving "%s%s" to "%s"\n' % (self._capture_extension.options._file_name, self._capture_extension.options._file_type, self._capture_extension.options._output_folder)
             self._ui_output_text.model.set_value(self._output_buffer)
-            capture_extension.start()
+            self._folder_contents_before_render = os.listdir(self._capture_extension.options._output_folder)
+            self._render_start_time = current_time
+            self._capture_extension.start()
             self._usd_file_list_index += 1
-            self._next_action = action.load
+            self._next_action = action.wait
+            return
+        
+        if self._next_action is action.wait:
+            file_written = False
+            folder_contents = os.listdir(self._capture_extension.options._output_folder)
+            new_items = [a for a in folder_contents if a not in self._folder_contents_before_render]
+            for new_item in new_items:
+                if new_item.startswith(self._capture_extension.options._file_name):
+                    mod_time = os.path.getmtime(os.path.join(self._capture_extension.options._output_folder, new_item))
+                    if mod_time >= self._render_start_time:
+                        file_written = True
+                        break
+            if file_written:
+                self._next_action = action.load
+            return
+
 
     def on_startup(self, ext_id):
-        # Get main window viewport.
+        # Get main window viewport
         self._viewportWindow = omni.ui.Window('Viewport')
         self._viewport = omni.kit.viewport.utility.get_viewport_from_window_name('Viewport')
+        self._capture_extension = omni.kit.capture.viewport.CaptureExtension.get_instance()
 
         self._current_path = pathlib.Path(__file__).parent.resolve()
 
