@@ -1760,13 +1760,23 @@ void MainWindowActions::selectAll()
 
 void MainWindowActions::updateRecentFiles(const QString &recentFile)
 {
-    // first of all get the internal list up to date
+    // remove any existing reference to recentFile
     for (int i = m_recentFileList.size() - 1; i >= 0; i--)
     {
-        if (m_recentFileList[i] == recentFile) { m_recentFileList.remove(i); }
+        if (m_recentFileList[i] == recentFile) { m_recentFileList.removeAt(i); }
     }
-    if (recentFile.size()) m_recentFileList.push_front(recentFile);
-    if (m_recentFileList.size() >= m_maxRecentFiles) { m_recentFileList.resize(m_maxRecentFiles); }
+    // add recentFile to the front of the list
+    m_recentFileList.push_front(recentFile);
+    // remove any non-existent files
+    for (int i = m_recentFileList.size() - 1; i >= 0; i--)
+    {
+        QFileInfo checkFile(m_recentFileList[i]);
+        if (checkFile.exists() && checkFile.isFile()) continue;
+        m_recentFileList.removeAt(i);
+    }
+    // remove the last elements of the list if necessary
+    for (int i = m_recentFileList.size(); i >= m_maxRecentFiles; i--) { m_recentFileList.pop_back(); }
+    // delete the old recent file menu and create a new one
     QList<QMenu *>  menuList = m_mainWindow->menuBar()->findChildren<QMenu *>();
     for (auto && menu: menuList)
     {
