@@ -557,6 +557,7 @@ gaitsym_distribution_extras:
 	cp -rf glextrusion distribution/
 	cp -rf scripts distribution/
 	cp -rf python distribution/
+	cp -rf omniverse distribution/
 	cp makefile distribution/
 	find distribution -depth -type d -name CVS -print -exec rm -rf {} \;
 	rm -rf distribution/GaitSymQt/GaitSym*.pro.*
