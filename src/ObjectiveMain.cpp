@@ -158,7 +158,7 @@ int ObjectiveMain::WriteOutput()
         DataFile myFile;
         myFile.SetExitOnError(false);
         myFile.SetRawData(reinterpret_cast<char *>(&score), sizeof(double));
-        if (myFile.WriteFile(m_scoreFilename, true)) return __LINE__;
+        if (myFile.WriteFile(m_scoreFilename)) return __LINE__;
     }
 
     return 0;

@@ -7,6 +7,8 @@
  *
  */
 
+#ifndef USE_QT3
+
 #include "SimulationWidget.h"
 #include "Simulation.h"
 #include "Body.h"
@@ -27,6 +29,7 @@
 #include "FacetedSphere.h"
 #include "Preferences.h"
 #include "MainWindow.h"
+#include "GSUtil.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -53,6 +56,7 @@
 #include <sstream>
 #include <memory>
 #include <regex>
+#include <stdio.h>
 
 SimulationWidget::SimulationWidget(QWidget *parent)
     : QOpenGLWidget(parent)
@@ -824,8 +828,179 @@ int SimulationWidget::WriteCADFrame(const QString &pathname)
             }
         }
     }
+    QString numberedFilename = QString("mesh%1.obj").arg(meshCount, 6, 10, QChar('0'));
+    m_globalAxes->WriteOBJFile(numberedFilename.toStdString());
+    meshCount++;
 
     QDir::setCurrent(workingFolder);
+    return 0;
+}
+
+// write the scene to a USDA file
+int SimulationWidget::WriteUSDFrame(const QString &pathname)
+{
+    std::ostringstream usdStream;
+
+    usdStream <<
+    "#usda 1.0\n"
+    "(\n"
+    "    defaultPrim = \"World\"\n"
+    "    metersPerUnit = 1.0\n"
+    "    upAxis = \"Z\"\n"
+    ")\n";
+
+    usdStream <<
+    "def Xform \"World\"\n"
+    "{\n";
+
+    pgd::Vector3 cameraVector(m_cameraVecX, m_cameraVecY, m_cameraVecZ);
+    pgd::Vector3 centre(m_COIx, m_COIy, m_COIz);
+    pgd::Vector3 eye =  centre - m_cameraDistance * cameraVector;
+
+    // this code from gluLookAT
+    pgd::Vector3 forward = centre - eye;
+    pgd::Vector3 up(m_upX, m_upY, m_upZ);
+    forward.Normalize();
+    up.Normalize();
+    // Side = forward x up
+    pgd::Vector3 side = pgd::Cross(forward, up);
+    side.Normalize();
+    // Recompute up as: up = side x forward
+    up = pgd::Cross(side, forward);
+    // now assemble the matrix
+    pgd::Matrix3x3 cameraMatrix(side.x, up.x, -forward.x,
+                                side.y, up.y, -forward.y,
+                                side.z, up.z, -forward.z);
+    // and because we are moving the camera not the view, we need the inverse of this
+//    pgd::Matrix3x3 cameraMatrix2 = cameraMatrix.Inverse();
+//    // USD cameras are Y up and point along the Z axis so we need an extra rotation
+//    pgd::Matrix3x3 extraRotation(pgd::MakeQFromEulerAngles(0, 0, 0));
+//    pgd::Matrix3x3 cameraMatrix3 = cameraMatrix2 * extraRotation;
+    pgd::Vector3 euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix));
+//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
+//    euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix2));
+//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
+//     euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix3));
+//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
+
+    float sensorSize = 5; // approximate match via trial and error
+    std::string clippingRange = GSUtil::ToString("(%g,%g)", m_frontClip, m_backClip);
+    std::string focalLength = GSUtil::ToString("%g", sensorSize / (2 * std::tan(pgd::DegreesToRadians(m_FOV) / 2))); // FOV_angle = 2 * atan((sensorSize / 2) / focalLength)
+    std::string focusDistance = GSUtil::ToString("%g", m_cameraDistance);
+    std::string projection = "perspective";
+//    std::string projection = (m_orthographicProjection) ? "orthographic" : "perspective";
+    std::string rotateXYZ = GSUtil::ToString("(%g,%g,%g)", euler.x, euler.y, euler.z);
+    std::string translate = GSUtil::ToString("(%g,%g,%g)", eye.x, eye.y, eye.z);
+
+    usdStream <<
+    "def Xform \"Cameras\"\n"
+    "{\n"
+    "    def Camera \"Camera\"\n"
+    "    {\n"
+    "        float2 clippingRange = " << clippingRange << "\n"
+    "        float focalLength = " << focalLength << "\n"
+    "        float focusDistance = " << focusDistance << "\n"
+    "        token projection = \"" << projection << "\"\n"
+    "        double3 xformOp:rotateXYZ = " << rotateXYZ << "\n"
+    "        double3 xformOp:scale = (1, 1, 1)\n"
+    "        double3 xformOp:translate = " << translate << "\n"
+    "        uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n"
+    "    }\n"
+    "}\n"
+    ;
+
+    usdStream <<
+    "def Xform \"Colored_Lights\" (\n"
+    "    hide_in_stage_window = false\n"
+    "    no_delete = false\n"
+    ")\n"
+    "{\n"
+    "    matrix4d xformOp:transform = ( (0, 1, 0, 0), (0, 0, 1, 0), (1, 0, 0, 0), (0, 0, 0, 1) )\n"
+    "    uniform token[] xformOpOrder = [\"xformOp:transform\"]\n"
+    "   def DistantLight \"DistantLight\" (\n"
+    "       apiSchemas = [\"ShapingAPI\"]\n"
+    "   )\n"
+    "   {\n"
+    "       float angle = 5\n"
+    "       color3f color = (0.33692104, 0.76232195, 0.8996139)\n"
+    "       float exposure = 0.2\n"
+    "       float intensity = 2000\n"
+    "       float shaping:cone:angle = 180\n"
+    "       float shaping:cone:softness\n"
+    "       float shaping:focus\n"
+    "       color3f shaping:focusTint\n"
+    "       asset shaping:ies:file\n"
+    "       double3 xformOp:rotateXYZ = (293.12090746423974, 0, 0)\n"
+    "       double3 xformOp:scale = (1, 1, 1)\n"
+    "       double3 xformOp:translate = (0, 0, 0)\n"
+    "       uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n"
+    "   }\n"
+    "\n"
+    "   def DistantLight \"DistantLight_01\" (\n"
+    "       apiSchemas = [\"ShapingAPI\"]\n"
+    "   )\n"
+    "   {\n"
+    "       float angle = 10\n"
+    "       color3f color = (0.8108108, 0.44140664, 0.44140664)\n"
+    "       float exposure = 0\n"
+    "       float intensity = 2000\n"
+    "       float shaping:cone:angle = 180\n"
+    "       float shaping:cone:softness\n"
+    "       float shaping:focus\n"
+    "       color3f shaping:focusTint\n"
+    "       asset shaping:ies:file\n"
+    "       double3 xformOp:rotateXYZ = (315, -179.32902833160193, 0)\n"
+    "       double3 xformOp:scale = (1, 1, 1)\n"
+    "       double3 xformOp:translate = (0, 0, 0)\n"
+    "       uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n"
+    "   }\n"
+    "\n"
+    "   def DistantLight \"DistantLight_02\" (\n"
+    "       apiSchemas = [\"ShapingAPI\"]\n"
+    "   )\n"
+    "   {\n"
+    "       float angle = 10\n"
+    "       color3f color = (0.8918919, 0.5545123, 0.28926224)\n"
+    "       float exposure = 0\n"
+    "       float intensity = 2000\n"
+    "       float shaping:cone:angle = 180\n"
+    "       float shaping:cone:softness\n"
+    "       float shaping:focus\n"
+    "       color3f shaping:focusTint\n"
+    "       asset shaping:ies:file\n"
+    "       double3 xformOp:rotateXYZ = (293.12090746423974, -216.57111056617208, 0)\n"
+    "       double3 xformOp:scale = (1, 1, 1)\n"
+    "       double3 xformOp:translate = (0, 0, 0)\n"
+    "       uniform token[] xformOpOrder = [\"xformOp:translate\", \"xformOp:rotateXYZ\", \"xformOp:scale\"]\n"
+    "   }\n"
+    "}\n"
+    ;
+
+    int meshCount = 0;
+    for (auto &&drawableIter : m_drawables)
+    {
+        for (auto &&facetedObjectIter : drawableIter->facetedObjectList())
+        {
+            if (facetedObjectIter->GetNumVertices() && facetedObjectIter->visible() && facetedObjectIter->boundingBoxSize().Magnitude2() != 0)
+            {
+                facetedObjectIter->WriteUSDFile(usdStream, GSUtil::ToString("mesh%05d", meshCount));
+                meshCount++;
+            }
+        }
+    }
+    m_globalAxes->WriteUSDFile(usdStream, GSUtil::ToString("mesh%05d", meshCount));
+    meshCount++;
+
+    usdStream <<
+    "}\n";
+
+    DataFile file;
+    file.SetRawData(usdStream.str().data(), usdStream.str().size());
+    if (file.WriteFile(pathname.toStdString()))
+    {
+        QMessageBox::warning(nullptr, "WriteUSDFrame Error", QString("Error writing '%1'\nClick button to return to simulation").arg(pathname));
+        return __LINE__;
+    }
     return 0;
 }
 
@@ -1499,4 +1674,4 @@ QOpenGLShaderProgram *SimulationWidget::fixedColourObjectShader() const
     return m_fixedColourObjectShader;
 }
 
-
+#endif

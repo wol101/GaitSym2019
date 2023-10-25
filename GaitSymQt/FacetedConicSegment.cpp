@@ -19,7 +19,11 @@
 // radii are specified by r1 and r2 and the origin is the centre of r1
 // if r2 == 0 then draw a cone
 // if r1 == r2 then draw a cylinder
+#ifdef USE_QT3D
+FacetedConicSegment::FacetedConicSegment(double l, double r1, double r2, size_t sides, double ox, double oy, double oz, const QColor &blendColour, double blendFraction, Qt3DCore::QNode *parent) : FacetedObject(parent)
+#else
 FacetedConicSegment::FacetedConicSegment(double l, double r1, double r2, size_t sides, double ox, double oy, double oz, const QColor &blendColour, double blendFraction)
+#endif
 {
     setBlendColour(blendColour, blendFraction);
     m_R1 = r1;

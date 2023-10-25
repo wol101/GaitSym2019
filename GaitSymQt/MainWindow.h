@@ -13,12 +13,17 @@
 #include <QMainWindow>
 #include <QFileInfo>
 
+#ifdef USE_QT3D
+class SimulationWindowQt3D;
+#else
+class SimulationWidget;
+#endif
+
 namespace Ui {
 class MainWindow;
 }
 
 class Simulation;
-class SimulationWidget;
 class QTreeWidgetItem;
 class MainWindowActions;
 
@@ -36,7 +41,11 @@ public:
 
     Mode mode() const;
     Simulation *simulation() const;
+#ifdef USE_QT3D
+    SimulationWindowQt3D *simulationWidget() const;
+#else
     SimulationWidget *simulationWidget() const;
+#endif
 
     const QFileInfo &configFile() const;
 
@@ -99,12 +108,19 @@ private:
     void handleTracking();
 
     Ui::MainWindow *ui = nullptr;
+#ifdef USE_QT3D
+    SimulationWindowQt3D *m_simulationWidget = nullptr;
+#else
+    SimulationWidget *m_simulationWidget = nullptr;
+#endif
 
     QFileInfo m_configFile; // maybe use windowFilePath() and windowTitle() instead
 
     bool m_movieFlag = false;
     bool m_saveOBJFileSequenceFlag = false;
     QString m_objFileSequenceFolder;
+    enum objFileFormat { obj, usda };
+    enum objFileFormat m_objFileFormat = obj;
     bool m_stepFlag = false;
     uint64_t m_stepCount = 0;
     int m_logLevel = 1;

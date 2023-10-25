@@ -358,7 +358,7 @@ int DialogMarkerImportExport::ExportMarkers()
     DataFile dataFile;
     dataFile.SetRawData(data.data(), data.size());
     QString fileName = ui->lineEditFileName->text();
-    if (dataFile.WriteFile(fileName.toStdString(), true))
+    if (dataFile.WriteFile(fileName.toStdString()))
     {
         ui->plainTextEditLog->appendPlainText(QString("Error writing '%1'.\n").arg(fileName));
         QMessageBox::information(this, "Marker Export Errors", QString("Error writing '%1'.\n").arg(fileName), QMessageBox::Ok);

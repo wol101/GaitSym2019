@@ -1,7 +1,8 @@
 #ifndef SIMULATIONWIDGET_H
 #define SIMULATIONWIDGET_H
 
-#include "PGDMath.h"
+#ifndef USE_QT3
+
 #include "StrokeFont.h"
 #include "IntersectionHits.h"
 #include "DrawBody.h"
@@ -121,6 +122,7 @@ public:
     int WriteStillFrame(const QString &filename);
     int WriteMovieFrame();
     int WriteCADFrame(const QString &pathname);
+    int WriteUSDFrame(const QString &pathname);
     int StartAVISave(const QString &filename);
     int StopAVISave();
 
@@ -289,5 +291,7 @@ private:
     QMatrix4x4 m_model;
 
 };
+
+#endif
 
 #endif // SIMULATIONWIDGET_H

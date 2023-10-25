@@ -18,7 +18,11 @@ class FacetedBox : public FacetedObject
 {
 public:
     // draw a box of dimensions lx, ly, lz with origin at the centre
+#ifdef USE_QT3D
+    FacetedBox(double lx, double ly, double lz, const QColor &blendColour, double blendFraction, Qt3DCore::QNode *parent = nullptr);
+#else
     FacetedBox(double lx, double ly, double lz, const QColor &blendColour, double blendFraction);
+#endif
 
 private:
     void AddTriangleStrip(std::vector<pgd::Vector3> &triangleStrip);

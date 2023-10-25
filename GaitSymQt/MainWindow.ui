@@ -809,7 +809,7 @@
             </layout>
            </widget>
           </widget>
-          <widget class="SimulationWidget" name="widgetSimulation">
+          <widget class="QWidget" name="widgetSimulationPlaceholder" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>1</horstretch>
@@ -1069,6 +1069,10 @@
     <addaction name="actionSaveOBJSnapshot"/>
     <addaction name="actionStartOBJSequence"/>
     <addaction name="actionStopOBJSequence"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveUSDSnapshot"/>
+    <addaction name="actionStartUSDSequence"/>
+    <addaction name="actionStopUSDSequence"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -1681,6 +1685,24 @@
     <string>Clear Menu</string>
    </property>
   </action>
+  <action name="actionSaveUSDSnapshot">
+   <property name="text">
+    <string>Save USD Snapshot</string>
+   </property>
+   <property name="toolTip">
+    <string>Save a single USDA file as a snapshot</string>
+   </property>
+  </action>
+  <action name="actionStartUSDSequence">
+   <property name="text">
+    <string>Start USD Sequence...</string>
+   </property>
+  </action>
+  <action name="actionStopUSDSequence">
+   <property name="text">
+    <string>Stop USD Sequence</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1694,11 +1716,6 @@
    <class>ElementTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>ElementTreeWidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SimulationWidget</class>
-   <extends>QOpenGLWidget</extends>
-   <header>SimulationWidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

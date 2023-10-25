@@ -10,10 +10,8 @@
 // #pragma warning( disable : 4100 )
 
 #include "FacetedObject.h"
-#include "FacetedSphere.h"
 #include "DataFile.h"
 #include "GSUtil.h"
-#include "GLUtils.h"
 #include "PGDMath.h"
 #include "SimulationWidget.h"
 #include "Preferences.h"
@@ -21,15 +19,27 @@
 
 #define TINYPLY_IMPLEMENTATION
 #include "tinyply.h"
-#include "ode/ode.h"
 
 #include <QFileInfo>
 #include <QDir>
 #include <QDebug>
+
+#ifdef USE_QT3D
+#include <QMaterial>
+#include <QTransform>
+#include <QGeometryRenderer>
+#include <QBuffer>
+#include <QPerVertexColorMaterial>
+#include <QAttribute>
+#include <QLayer>
+#include <QParameter>
+#include <QEffect>
+#else
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLTexture>
 #if QT_VERSION >= 0x060000
 #include <QOpenGLVersionFunctionsFactory>
+#endif
 #endif
 
 
@@ -50,9 +60,16 @@
 using namespace std::literals::string_literals;
 
 // create object
+#if USE_QT3D
+FacetedObject::FacetedObject(Qt3DCore::QNode *parent)
+    : Qt3DCore::QEntity(parent)
+{
+}
+#else
 FacetedObject::FacetedObject()
 {
 }
+#endif
 
 // destroy object
 FacetedObject::~FacetedObject()
@@ -956,6 +973,137 @@ int FacetedObject::ReadFromResource(const QString &resourceName)
     return 0;
 }
 
+#if USE_QT3D
+void FacetedObject::InitialiseEntity()
+{
+    // Material
+    Qt3DRender::QMaterial *material;
+    if (m_effect)
+    {
+        material = new Qt3DRender::QMaterial(this);
+        material->setEffect(m_effect);
+        material->addParameter(new Qt3DRender::QParameter(QStringLiteral("meshColor"), QColor(Qt::blue)));
+    }
+    else
+    {
+        material = new Qt3DExtras::QPerVertexColorMaterial(this);
+    }
+
+    // Transform
+    m_transform = new Qt3DCore::QTransform(this);
+
+    // Custom Mesh
+    Qt3DRender::QGeometryRenderer *customMeshRenderer = new Qt3DRender::QGeometryRenderer(this);
+    Qt3DCore::QGeometry *customGeometry = new Qt3DCore::QGeometry(customMeshRenderer);
+
+    // the vertex data is interleaved
+    // vec3 for position
+    // vec3 for normals
+    // vec3 for colors
+    size_t numVertices = m_vertexList.size() / 3;
+    Q_ASSERT_X(numVertices == m_normalList.size() / 3, "FacetedObject::InitialiseEntity()",
+               "numVertices != m_normalList.size() / 3");
+    QByteArray vertexData;
+    vertexData.resize(int(numVertices * (3 + 3 + 3) * sizeof(float)));
+    float *vertexDataPtr = reinterpret_cast<float *>(vertexData.data());
+    for (size_t i = 0; i < numVertices; i++)
+    {
+        vertexDataPtr[i * (3 + 3 + 3) + 0] = float(m_vertexList[i * 3 + 0]);
+        vertexDataPtr[i * (3 + 3 + 3) + 1] = float(m_vertexList[i * 3 + 1]);
+        vertexDataPtr[i * (3 + 3 + 3) + 2] = float(m_vertexList[i * 3 + 2]);
+        vertexDataPtr[i * (3 + 3 + 3) + 3] = float(m_normalList[i * 3 + 0]);
+        vertexDataPtr[i * (3 + 3 + 3) + 4] = float(m_normalList[i * 3 + 1]);
+        vertexDataPtr[i * (3 + 3 + 3) + 5] = float(m_normalList[i * 3 + 2]);
+        vertexDataPtr[i * (3 + 3 + 3) + 6] = float(m_colourList[i * 3 + 0]);
+        vertexDataPtr[i * (3 + 3 + 3) + 7] = float(m_colourList[i * 3 + 1]);
+        vertexDataPtr[i * (3 + 3 + 3) + 8] = float(m_colourList[i * 3 + 2]);
+//        qDebug("Vertex %d (%f,%f,%f) (%f,%f,%f) (%f,%f,%f)", i,
+//               double(vertexDataPtr[i * (3 + 3 + 3) + 0]),
+//                double(vertexDataPtr[i * (3 + 3 + 3) + 1]),
+//                double(vertexDataPtr[i * (3 + 3 + 3) + 2]),
+//                double(vertexDataPtr[i * (3 + 3 + 3) + 3]),
+//                double(vertexDataPtr[i * (3 + 3 + 3) + 4]),
+//                double(vertexDataPtr[i * (3 + 3 + 3) + 5]),
+//                double(vertexDataPtr[i * (3 + 3 + 3) + 6]),
+//                double(vertexDataPtr[i * (3 + 3 + 3) + 7]),
+//                double(vertexDataPtr[i * (3 + 3 + 3) + 8]));
+    }
+
+    // the index data is just a list of uint32_t values
+    // and is the same length as the number of vertices because vertices are not shared
+    QByteArray vertexIndexData;
+    vertexIndexData.resize(int(numVertices * sizeof(uint32_t)));
+    uint32_t *vertexIndexDataPtr = reinterpret_cast<uint32_t *>(vertexIndexData.data());
+    for (size_t i = 0; i < numVertices; i++) vertexIndexDataPtr[i] = uint32_t(i);
+
+    Qt3DCore::QBuffer *vertexDataBuffer = new Qt3DCore::QBuffer(customGeometry);
+    Qt3DCore::QBuffer *indexDataBuffer = new Qt3DCore::QBuffer(customGeometry);
+    vertexDataBuffer->setUsage(Qt3DCore::QBuffer::StaticDraw);
+    indexDataBuffer->setUsage(Qt3DCore::QBuffer::StaticDraw);
+    vertexDataBuffer->setData(vertexData);
+    indexDataBuffer->setData(vertexIndexData);
+
+    // Attributes
+    Qt3DCore::QAttribute *positionAttribute = new Qt3DCore::QAttribute(this);
+    positionAttribute->setAttributeType(Qt3DCore::QAttribute::VertexAttribute);
+    positionAttribute->setBuffer(vertexDataBuffer);
+    positionAttribute->setVertexBaseType(Qt3DCore::QAttribute::Float);
+    positionAttribute->setVertexSize(3);
+    positionAttribute->setByteOffset(0);
+    positionAttribute->setByteStride(9 * sizeof(float));
+    positionAttribute->setCount(uint(numVertices));
+    positionAttribute->setName(Qt3DCore::QAttribute::defaultPositionAttributeName());
+
+    Qt3DCore::QAttribute *normalAttribute = new Qt3DCore::QAttribute(this);
+    normalAttribute->setAttributeType(Qt3DCore::QAttribute::VertexAttribute);
+    normalAttribute->setBuffer(vertexDataBuffer);
+    normalAttribute->setVertexBaseType(Qt3DCore::QAttribute::Float);
+    normalAttribute->setVertexSize(3);
+    normalAttribute->setByteOffset(3 * sizeof(float));
+    normalAttribute->setByteStride(9 * sizeof(float));
+    normalAttribute->setCount(uint(numVertices));
+    normalAttribute->setName(Qt3DCore::QAttribute::defaultNormalAttributeName());
+
+    Qt3DCore::QAttribute *colorAttribute = new Qt3DCore::QAttribute(this);
+    colorAttribute->setAttributeType(Qt3DCore::QAttribute::VertexAttribute);
+    colorAttribute->setBuffer(vertexDataBuffer);
+    colorAttribute->setVertexBaseType(Qt3DCore::QAttribute::Float);
+    colorAttribute->setVertexSize(3);
+    colorAttribute->setByteOffset(6 * sizeof(float));
+    colorAttribute->setByteStride(9 * sizeof(float));
+    colorAttribute->setCount(uint(numVertices));
+    colorAttribute->setName(Qt3DCore::QAttribute::defaultColorAttributeName());
+
+    Qt3DCore::QAttribute *indexAttribute = new Qt3DCore::QAttribute(this);
+    indexAttribute->setAttributeType(Qt3DCore::QAttribute::IndexAttribute);
+    indexAttribute->setBuffer(indexDataBuffer);
+    indexAttribute->setVertexBaseType(Qt3DCore::QAttribute::UnsignedInt);
+    indexAttribute->setVertexSize(1);
+    indexAttribute->setByteOffset(0);
+    indexAttribute->setByteStride(sizeof(uint32_t));
+    indexAttribute->setCount(uint(numVertices));
+
+    customGeometry->addAttribute(positionAttribute);
+    customGeometry->addAttribute(normalAttribute);
+    customGeometry->addAttribute(colorAttribute);
+    customGeometry->addAttribute(indexAttribute);
+
+    customMeshRenderer->setInstanceCount(1);
+    customMeshRenderer->setIndexOffset(0);
+    customMeshRenderer->setFirstInstance(0);
+    customMeshRenderer->setPrimitiveType(Qt3DRender::QGeometryRenderer::Triangles);
+    customMeshRenderer->setGeometry(customGeometry);
+    customMeshRenderer->setVertexCount(int(numVertices));
+
+    this->addComponent(customMeshRenderer);
+    this->addComponent(m_transform);
+    this->addComponent(material);
+    if (m_layer) this->addComponent(m_layer);
+
+
+//    std::cerr << numVertices << " initialised\n";
+}
+#else
 void FacetedObject::Draw()
 {
 #if QT_VERSION >= 0x060000
@@ -1072,6 +1220,7 @@ void FacetedObject::Draw()
 
     m_simulationWidget->facetedObjectShader()->release();
 }
+#endif
 
 // Write a FacetedObject out as a POVRay file
 void FacetedObject::WritePOVRay(std::string filename)
@@ -1095,6 +1244,7 @@ void FacetedObject::WritePOVRay(std::string filename)
         std::cerr << "Error writing " << filename << "\n";
     }
 }
+
 
 // write the object out as a POVRay string
 // currently assumes all faces are triangles (call Triangulate if conversion is necessary)
@@ -1305,6 +1455,134 @@ void FacetedObject::WriteOBJFile(std::ostringstream &out)
         m_vertexOffset += m_vertexList.size() / 3;
     }
 }
+
+// Write a FacetedObject out as a USD file
+void FacetedObject::WriteUSDFile(std::ostringstream &out, const std::string &name)
+{
+    // add the preamble
+    out << "def Xform \"" << name << "_xform\" (kind = \"component\")\n";
+    out << "{\n";
+
+    // create the extent string
+    pgd::Vector3 lb, ub;
+    ApplyDisplayTransformation(m_lowerBound, &lb);
+    ApplyDisplayTransformation(m_upperBound, &ub);
+    std::vector<char> buffer(512);
+    size_t l = std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),(%g,%g,%g)", lb.x, lb.y, lb.z, ub.x, ub.y, ub.z);
+    std::string extent(buffer.data(), l);
+
+    // now we need to split the mesh into triangles with the same colours
+    pgd::Vector3 v;
+    std::map<pgd::Vector3, std::vector<size_t>> colourMap;
+    size_t numVertices =  m_vertexList.size() / 3;
+    size_t numTriangles = numVertices / 3;
+    for (size_t i = 0; i < numTriangles; i++)
+    {
+        v.x = m_colourList[i * 9];
+        v.y = m_colourList[i * 9 + 1];
+        v.z = m_colourList[i * 9 + 2];
+        auto it = colourMap.find(v);
+        if (it == colourMap.end()) { colourMap[v] = std::vector<size_t>(); colourMap[v].reserve(numTriangles); }
+        colourMap[v].push_back(i * 3);
+    }
+
+    // output the materials
+    std::vector<pgd::Vector3> colourList;
+    colourList.reserve(colourMap.size());
+    for (auto &&it : colourMap)
+    {
+        double r = m_blendColour.redF() * m_blendFraction + (1 - m_blendFraction) * it.first.x;
+        double g = m_blendColour.greenF() * m_blendFraction + (1 - m_blendFraction) * it.first.y;
+        double b = m_blendColour.blueF() * m_blendFraction + (1 - m_blendFraction) * it.first.z;
+        size_t l = std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g)", r, g, b);
+        std::string diffuseColor(buffer.data(), l);
+        out << "def Material \"" << name << "_material_" << GSUtil::ToString(colourList.size()) << "\"\n";
+        out << "{\n";
+        out << "    token outputs:surface.connect = </World/" << name << "_xform/" << name << "_material_" << GSUtil::ToString(colourList.size()) << "/previewShader.outputs:surface>\n";
+        out << "    def Shader \"previewShader\"\n";
+        out << "    {\n";
+        out << "        uniform token info:id = \"UsdPreviewSurface\"\n";
+        out << "        color3f inputs:diffuseColor = " << diffuseColor << "\n";
+        out << "        float inputs:metallic = 0.5\n";
+        out << "        float inputs:roughness = 0.25\n";
+        out << "        token outputs:surface\n";
+        out << "    }\n";
+        out << "}\n";
+        colourList.push_back(it.first);
+    }
+
+    // output a separate mesh for each material
+    size_t colourCount = 0;
+    for (auto &&it : colourMap)
+    {
+        // set all the faceVertexCounts to 3
+        std::vector<char> faceVertexCounts;
+        faceVertexCounts.reserve(it.second.size() * 2);
+        for (size_t i = 0; i < it.second.size(); i++)
+        {
+            faceVertexCounts.push_back('3');
+            faceVertexCounts.push_back(',');
+        }
+        faceVertexCounts.back() = 0;
+
+        // handle the individual triangles
+        std::vector<char> faceVertexIndices;
+        std::vector<char> normals;
+        std::vector<char> points;
+        faceVertexIndices.reserve(it.second.size() * 30);
+        normals.reserve(it.second.size() * 150);
+        points.reserve(it.second.size() * 150);
+        pgd::Vector3 v1, v2;
+        for (size_t i = 0; i < it.second.size(); i++)
+        {
+            std::snprintf(buffer.data(), buffer.size(), "%zu,%zu,%zu,", i * 3, i * 3 + 1, i * 3 + 2);
+            for (char *ptr = buffer.data(); *ptr != 0; ptr++) { faceVertexIndices.push_back(*ptr); }
+
+            for (size_t j = 0; j < 3; j++)
+            {
+                v1.x = m_vertexList[(it.second[i] + j) * 3]; // qDebug() << (it.second[i] + j) * 3;
+                v1.y = m_vertexList[(it.second[i] + j) * 3 + 1]; // qDebug() << (it.second[i] + j) * 3 + 1;
+                v1.z = m_vertexList[(it.second[i] + j) * 3 + 2]; // qDebug() << (it.second[i] + j) * 3 + 2;
+                ApplyDisplayTransformation(v1, &v2);
+                std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
+                for (char *ptr = buffer.data(); *ptr != 0; ptr++) { points.push_back(*ptr); }
+
+                v1.x = m_normalList[(it.second[i] + j) * 3];
+                v1.y = m_normalList[(it.second[i] + j) * 3 + 1];
+                v1.z = m_normalList[(it.second[i] + j) * 3 + 2];
+                ApplyDisplayTransformation(v1, &v2);
+                std::snprintf(buffer.data(), buffer.size(), "(%g,%g,%g),", v2.x, v2.y, v2.z);
+                for (char *ptr = buffer.data(); *ptr != 0; ptr++) { normals.push_back(*ptr); }
+            }
+        }
+        faceVertexIndices.back() = 0;
+        points.back() = 0;
+        normals.back() = 0;
+
+        std::string_view faceVertexCountsView(faceVertexCounts.data(), faceVertexCounts.size() - 1);
+        std::string_view faceVertexIndicesView(faceVertexIndices.data(),faceVertexIndices .size() - 1);
+        std::string_view normalsView(normals.data(), normals.size() - 1);
+        std::string_view pointsView(points.data(), points.size() - 1);
+
+        out << "def Mesh \"" << name << "_mesh_" << GSUtil::ToString(colourCount) << "\"\n";
+        out << "{\n";
+        out << "    float3[] extent = [" << extent << "]\n";
+        out << "    int[] faceVertexCounts = [" << faceVertexCountsView << "]\n";
+        out << "    int[] faceVertexIndices = [" << faceVertexIndicesView << "]\n";
+        out << "    rel material:binding = </World/" << name << "_xform/" << name << "_material_" << GSUtil::ToString(colourCount) << ">\n";
+        out << "    normal3f[] normals = [" << normalsView << "] (\n";
+        out << "        interpolation = \"faceVarying\"\n";
+        out << "    )\n";
+        out << "    point3f[] points = [" << pointsView << "]\n";
+        out << "    uniform token subdivisionScheme = \"none\"\n";
+        out << "}\n";
+
+        colourCount++;
+    }
+
+    out << "}\n";
+}
+
 
 // utility to calculate a face normal
 // this assumes anticlockwise winding
@@ -2245,12 +2523,12 @@ int FacetedObject::FindIntersection(const pgd::Vector3 &rayOrigin, const pgd::Ve
     for (size_t i = 0; i < m_vertexList.size(); i += 9)
     {
 #ifdef PRECHECK_BOUNDINGBOX
-        double lowerBound[3] = {std::min({mVertexList[i], mVertexList[i + 3], mVertexList[i + 6]}), std::min({mVertexList[i + 1], mVertexList[i + 4], mVertexList[i + 7]}), std::min({mVertexList[i + 2], mVertexList[i + 5], mVertexList[i + 8]})};
-        double upperBound[3] = {std::max({mVertexList[i], mVertexList[i + 3], mVertexList[i + 6]}), std::max({mVertexList[i + 1], mVertexList[i + 4], mVertexList[i + 7]}), std::max({mVertexList[i + 2], mVertexList[i + 5], mVertexList[i + 8]})};
+        double lowerBound[3] = {std::min({m_vertexList[i], m_vertexList[i + 3], m_vertexList[i + 6]}), std::min({m_vertexList[i + 1], m_vertexList[i + 4], m_vertexList[i + 7]}), std::min({m_vertexList[i + 2], m_vertexList[i + 5], m_vertexList[i + 8]})};
+        double upperBound[3] = {std::max({m_vertexList[i], m_vertexList[i + 3], m_vertexList[i + 6]}), std::max({m_vertexList[i + 1], m_vertexList[i + 4], m_vertexList[i + 7]}), std::max({m_vertexList[i + 2], m_vertexList[i + 5], m_vertexList[i + 8]})};
         bbHit = HitBoundingBox(lowerBound, upperBound, rayOrigin.constData(), rayVector.constData(), coord);
         if (bbHit)
         {
-            triHit = RayIntersectsTriangle(rayOrigin, rayVectorNorm, &mVertexList[i], &mVertexList[i + 3], &mVertexList[i + 6], &outIntersectionPoint);
+            triHit = RayIntersectsTriangle(rayOrigin, rayVectorNorm, &m_vertexList[i], &m_vertexList[i + 3], &m_vertexList[i + 6], &outIntersectionPoint);
             if (triHit)
             {
                 hitCount++;;
@@ -2388,5 +2666,15 @@ QColor FacetedObject::blendColour() const
 double FacetedObject::blendFraction() const
 {
     return m_blendFraction;
+}
+
+double FacetedObject::boundingBoxVolume()
+{
+    return (m_upperBound[0] - m_lowerBound[0]) * (m_upperBound[1] - m_lowerBound[1]) * (m_upperBound[2] - m_lowerBound[2]);
+}
+
+pgd::Vector3 FacetedObject::boundingBoxSize()
+{
+    return pgd::Vector3(m_upperBound[0] - m_lowerBound[0], m_upperBound[1] - m_lowerBound[1], m_upperBound[2] - m_lowerBound[2]);
 }
 

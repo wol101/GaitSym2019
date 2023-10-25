@@ -71,9 +71,11 @@ public slots:
     void menuSaveAs();
     void menuSaveDefaultView();
     void menuStartOBJSequenceSave();
+    void menuStartUSDSequenceSave();
     void menuStartWarehouseExport();
     void menuStopAVISave();
     void menuStopOBJSequenceSave();
+    void menuStopUSDSequenceSave();
     void menuStopWarehouseExport();
     void menuToggleFullScreen();
 
@@ -90,6 +92,7 @@ public slots:
     void elementInfo(const QString &elementType, const QString &elementName);
     void elementHide(const QString &elementType, const QString &elementName);
 
+    void usdSnapshot();
     void objSnapshot();
     void run();
     void snapshot();

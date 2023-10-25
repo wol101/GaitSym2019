@@ -11,7 +11,11 @@
 
 // draw a capped cylinder of length l and radius r, aligned along the x axis
 
+#ifdef USE_QT3D
+FacetedCappedCylinder::FacetedCappedCylinder(double l, double r, size_t capped_cylinder_quality, const QColor &blendColour, double blendFraction, Qt3DCore::QNode *parent) : FacetedObject(parent)
+#else
 FacetedCappedCylinder::FacetedCappedCylinder(double l, double r, size_t capped_cylinder_quality, const QColor &blendColour, double blendFraction)
+#endif
 {
     setBlendColour(blendColour, blendFraction);
 

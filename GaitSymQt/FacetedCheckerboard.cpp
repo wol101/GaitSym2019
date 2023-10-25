@@ -8,13 +8,16 @@
  */
 
 #include "FacetedCheckerboard.h"
-#include "PGDMath.h"
 
 // draw a faceted checkerboard with origin at the centre
 // uses 2 colours and the check resolution is cx, cy
 // it draws 2x nx, ny checks
 
+#ifdef USE_QT3D
+FacetedCheckerboard::FacetedCheckerboard(size_t nx, size_t ny, double cx, double cy, const QColor &colour1, const QColor &colour2, Qt3DCore::QNode *parent) : FacetedObject(parent)
+#else
 FacetedCheckerboard::FacetedCheckerboard(size_t nx, size_t ny, double cx, double cy, const QColor &colour1, const QColor &colour2)
+#endif
 {
     double x, y;
     double cx2 = cx / 2.0;

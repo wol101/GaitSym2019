@@ -74,7 +74,11 @@ typedef struct
 static point *normalize( point *p );
 static point *midpoint( point *a, point *b );
 
+#ifdef USE_QT3D
+FacetedSphere::FacetedSphere(double radius, size_t maxlevels, const QColor &blendColour, double blendFraction, Qt3DCore::QNode *parent) : FacetedObject(parent)
+#else
 FacetedSphere::FacetedSphere(double radius, size_t maxlevels, const QColor &blendColour, double blendFraction)
+#endif
 {
     setBlendColour(blendColour, blendFraction);
 
