@@ -924,6 +924,18 @@ std::string GSUtil::ToString(int32_t v)
     return *ToString(v, &output);
 }
 
+std::string GSUtil::ToString(int64_t v)
+{
+    std::string output;
+    return *ToString(v, &output);
+}
+
+std::string GSUtil::ToString(uint32_t v)
+{
+    std::string output;
+    return *ToString(v, &output);
+}
+
 std::string GSUtil::ToString(uint64_t v)
 {
     std::string output;

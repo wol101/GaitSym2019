@@ -531,6 +531,8 @@ static std::string *ToString(uint32_t address, uint16_t port, std::string *outpu
 static std::string ToString(double v);
 static std::string ToString(float v);
 static std::string ToString(int32_t v);
+static std::string ToString(int64_t v);
+static std::string ToString(uint32_t v);
 static std::string ToString(uint64_t v);
 static std::string ToString(bool v);
 static std::string ToString(const double *v, size_t n);
