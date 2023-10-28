@@ -856,6 +856,7 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     pgd::Vector3 cameraVector(m_cameraVecX, m_cameraVecY, m_cameraVecZ);
     pgd::Vector3 centre(m_COIx, m_COIy, m_COIz);
     pgd::Vector3 eye =  centre - m_cameraDistance * cameraVector;
+    std::string translate = GSUtil::ToString("(%g,%g,%g)", eye.x, eye.y, eye.z);
 
     // this code from gluLookAT
     pgd::Vector3 forward = centre - eye;
@@ -871,17 +872,9 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     pgd::Matrix3x3 cameraMatrix(side.x, up.x, -forward.x,
                                 side.y, up.y, -forward.y,
                                 side.z, up.z, -forward.z);
-    // and because we are moving the camera not the view, we need the inverse of this
-//    pgd::Matrix3x3 cameraMatrix2 = cameraMatrix.Inverse();
-//    // USD cameras are Y up and point along the Z axis so we need an extra rotation
-//    pgd::Matrix3x3 extraRotation(pgd::MakeQFromEulerAngles(0, 0, 0));
-//    pgd::Matrix3x3 cameraMatrix3 = cameraMatrix2 * extraRotation;
+    // convert to Euler angles
     pgd::Vector3 euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix));
-//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
-//    euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix2));
-//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
-//     euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix3));
-//    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
+    std::string rotateXYZ = GSUtil::ToString("(%g,%g,%g)", euler.x, euler.y, euler.z);
 
     // we want to create a sensor that approximates that of a 35mm film camera so that the focal length is the 35mm equivalent
     // we use the width-based EFL rather than the diagonal becuase it isn't that important and width is easier to calculate
@@ -893,10 +886,17 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     std::string focusDistance = GSUtil::ToString("%g", m_cameraDistance);
     std::string verticalAperture = GSUtil::ToString("%g", sensorHeight);
     std::string horizontalAperture = GSUtil::ToString("%g", sensorWidth);
-    // std::string projection = "perspective";
-    std::string projection = (m_orthographicProjection) ? "orthographic" : "perspective";
-    std::string rotateXYZ = GSUtil::ToString("(%g,%g,%g)", euler.x, euler.y, euler.z);
-    std::string translate = GSUtil::ToString("(%g,%g,%g)", eye.x, eye.y, eye.z);
+    std::string projection = "perspective";
+    if (m_orthographicProjection == true)
+    {
+        // for orthographic, the sensor width is the field width * 10 and focal length and distance are not used [the x10 is a cm/mm bit of wierdness in omniverse/usd even though gaitsym units are generally m)
+        // if the camera is switched back to perspective in omniverse, then the horizontal aperture needs to go back to 36 for the views to match
+        float halfViewHeight = std::sin(pgd::DegreesToRadians(m_FOV) / 2.0f) * m_cameraDistance; // because in gluPerspective the FoV refers to the height of the view (not width or diagonal)
+        float halfViewWidth = halfViewHeight * aspectRatio;
+        verticalAperture = GSUtil::ToString("%g", halfViewHeight * 20);
+        horizontalAperture = GSUtil::ToString("%g", halfViewWidth * 20);
+        projection = "orthographic";
+    }
 
     usdStream <<
     "def Xform \"Cameras\"\n"
