@@ -142,6 +142,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->comboBoxMeshDisplay, SIGNAL(currentTextChanged(const QString &)), this, SLOT(comboBoxMeshDisplayMapCurrentTextChanged(const QString &)));
     connect(ui->comboBoxMuscleColourMap, SIGNAL(currentTextChanged(const QString &)), this, SLOT(comboBoxMuscleColourMapCurrentTextChanged(const QString &)));
     connect(ui->comboBoxTrackingMarker, SIGNAL(currentTextChanged(const QString &)), this, SLOT(comboBoxTrackingMarkerCurrentTextChanged(const QString &)));
+    connect(ui->comboBoxProjection, SIGNAL(currentTextChanged(const QString &)), this, SLOT(comboBoxProjectionCurrentTextChanged(const QString &)));
     connect(ui->doubleSpinBoxCOIX, SIGNAL(valueChanged(double)), this, SLOT(spinboxCOIXChanged(double)));
     connect(ui->doubleSpinBoxCOIY, SIGNAL(valueChanged(double)), this, SLOT(spinboxCOIYChanged(double)));
     connect(ui->doubleSpinBoxCOIZ, SIGNAL(valueChanged(double)), this, SLOT(spinboxCOIZChanged(double)));
@@ -1122,6 +1123,13 @@ void MainWindow::comboBoxMeshDisplayMapCurrentTextChanged(const QString &text)
         m_simulationWidget->setDrawBodyMesh2(true);
         m_simulationWidget->setDrawBodyMesh3(true);
     }
+    m_simulationWidget->update();
+}
+
+void MainWindow::comboBoxProjectionCurrentTextChanged(const QString &text)
+{
+    if (text == QString("Orthographic")) { m_simulationWidget->setOrthographicProjection(true); }
+    if (text == QString("Perspective")) { m_simulationWidget->setOrthographicProjection(false); }
     m_simulationWidget->update();
 }
 

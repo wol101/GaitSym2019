@@ -55,6 +55,7 @@ public slots:
 
     void comboBoxMeshDisplayMapCurrentTextChanged(const QString &text);
     void comboBoxMuscleColourMapCurrentTextChanged(const QString &text);
+    void comboBoxProjectionCurrentTextChanged(const QString &text);
     void comboBoxTrackingMarkerCurrentTextChanged(const QString &text);
     void deleteExistingBody(const QString &, bool force = false);
     void deleteExistingDriver(const QString &name, bool force = false);

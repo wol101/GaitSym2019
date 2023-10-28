@@ -451,7 +451,7 @@ void MainWindowActions::usdSnapshot()
         count = numberString.toInt() + 1;
     }
     QString filename = dir.absoluteFilePath(QString("Snapshot%1.usda").arg(count, 5, 10, QChar('0')));
-    filename = QFileDialog::getSaveFileName(m_mainWindow, tr("Save current view as USD file"), filename, tr("Images (*.usd *.usda *.usdc)"));
+    // filename = QFileDialog::getSaveFileName(m_mainWindow, tr("Save current view as USD file"), filename, tr("Images (*.usd *.usda *.usdc)"));
 
     if (filename.isNull() == false)
     {

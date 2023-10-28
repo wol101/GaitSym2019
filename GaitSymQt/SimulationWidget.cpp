@@ -157,13 +157,13 @@ void SimulationWidget::paintGL()
 
     // set the projection matrix
     float aspectRatio = float(width()) / float(height());
-    float viewHeight = 2.0f * std::sin((m_FOV / 2.0f) * float(M_PI) / 180.0f) * m_cameraDistance;
-    float viewWidth = viewHeight * aspectRatio;
+    float halfViewHeight = std::sin(pgd::DegreesToRadians(m_FOV) / 2.0f) * m_cameraDistance; // because in gluPerspective the FoV refers to the height of the view (not width or diagonal)
+    float halfViewWidth = halfViewHeight * aspectRatio;
 
     m_proj.setToIdentity();
     if (m_orthographicProjection)
     {
-        m_proj.ortho(-viewWidth, viewWidth, -viewHeight, viewHeight, m_frontClip, m_backClip); // multiply by orthographic projection matrix
+        m_proj.ortho(-halfViewWidth, halfViewWidth, -halfViewHeight, halfViewHeight, m_frontClip, m_backClip); // multiply by orthographic projection matrix
     }
     else
     {
@@ -883,12 +883,18 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
 //     euler = pgd::MakeEulerAnglesFromQ(pgd::MakeQfromM(cameraMatrix3));
 //    qDebug("(%g,%g,%g)", euler.x, euler.y, euler.z);
 
-    float sensorSize = 5; // approximate match via trial and error
+    // we want to create a sensor that approximates that of a 35mm film camera so that the focal length is the 35mm equivalent
+    // we use the width-based EFL rather than the diagonal becuase it isn't that important and width is easier to calculate
+    float aspectRatio = float(width()) / float(height());
+    float sensorWidth = 36; // 35mm film standard
+    float sensorHeight = sensorWidth / aspectRatio;
     std::string clippingRange = GSUtil::ToString("(%g,%g)", m_frontClip, m_backClip);
-    std::string focalLength = GSUtil::ToString("%g", sensorSize / (2 * std::tan(pgd::DegreesToRadians(m_FOV) / 2))); // FOV_angle = 2 * atan((sensorSize / 2) / focalLength)
+    std::string focalLength = GSUtil::ToString("%g", sensorHeight / (2 * std::tan(pgd::DegreesToRadians(m_FOV) / 2))); // FOV_angle = 2 * atan((sensorHeight / 2) / focalLength) [height because that is what gluPerspective uses]
     std::string focusDistance = GSUtil::ToString("%g", m_cameraDistance);
-    std::string projection = "perspective";
-//    std::string projection = (m_orthographicProjection) ? "orthographic" : "perspective";
+    std::string verticalAperture = GSUtil::ToString("%g", sensorHeight);
+    std::string horizontalAperture = GSUtil::ToString("%g", sensorWidth);
+    // std::string projection = "perspective";
+    std::string projection = (m_orthographicProjection) ? "orthographic" : "perspective";
     std::string rotateXYZ = GSUtil::ToString("(%g,%g,%g)", euler.x, euler.y, euler.z);
     std::string translate = GSUtil::ToString("(%g,%g,%g)", eye.x, eye.y, eye.z);
 
@@ -900,6 +906,8 @@ int SimulationWidget::WriteUSDFrame(const QString &pathname)
     "        float2 clippingRange = " << clippingRange << "\n"
     "        float focalLength = " << focalLength << "\n"
     "        float focusDistance = " << focusDistance << "\n"
+    "        float verticalAperture = " << verticalAperture << "\n"
+    "        float horizontalAperture = " << horizontalAperture << "\n"
     "        token projection = \"" << projection << "\"\n"
     "        double3 xformOp:rotateXYZ = " << rotateXYZ << "\n"
     "        double3 xformOp:scale = (1, 1, 1)\n"
