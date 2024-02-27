@@ -18,10 +18,13 @@ def transform_bodies_construction():
     parser.add_argument("-r1", "--rotation_angle_axis_1", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
     parser.add_argument("-r2", "--rotation_angle_axis_2", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
     parser.add_argument("-r3", "--rotation_angle_axis_3", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
+    parser.add_argument("-x", "--set_x_position", type=float, help="Set the x position value to this")
+    parser.add_argument("-y", "--set_y_position", type=float, help="Set the y position value to this")
+    parser.add_argument("-z", "--set_z_position", type=float, help="Set the z position value to this")
     parser.add_argument("-b", "--bodies_list", nargs='*', type=str, default=[], help="only process these bodies if defined []")
     parser.add_argument("-ig", "--input_graphics_folder", default='.', help="location of the input OBJ files [.]")
     parser.add_argument("-og", "--output_graphics_folder", default='converted', help="location of the output OBJ files [converted]")
-    parser.add_argument("-z", "--zero_start_poses", action="store_true", help="zero the start poses of all bodies in the output XML")
+    parser.add_argument("-zs", "--zero_start_poses", action="store_true", help="zero the start poses of all bodies in the output XML")
     parser.add_argument("-rp", "--retain_graphics_path", action="store_true", help="keep the path information in GraphicFile* attributes")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")
     parser.add_argument("-v", "--verbose", action="store_true", help="write out more information whilst processing")
@@ -65,6 +68,7 @@ def transform_bodies_construction():
     relative_graphics_path = os.path.relpath(output_file_path, output_graphics_path)
     
     # loop through bodies
+    body_translation = {}
     for child in input_root:
         if child.tag == "GLOBAL":
             if relative_graphics_path and relative_graphics_path != '.':
@@ -95,6 +99,10 @@ def transform_bodies_construction():
                 p2 = Sub3x1(p1, rotation_centre)
                 p3 = QuaternionVectorRotate(rotation, p2)
                 p4 = Add3x1(p3, rotation_centre)
+                body_translation[child.attrib["ID"]] = translation
+                if type(args.set_x_position) == float: body_translation[child.attrib["ID"]] [0] = args.set_x_position - p4[0]
+                if type(args.set_y_position) == float: body_translation[child.attrib["ID"]] [1] = args.set_y_position - p4[1]
+                if type(args.set_z_position) == float: body_translation[child.attrib["ID"]] [2] = args.set_x_position - p4[2]
                 p5 = Add3x1(p4, translation)
                 child.attrib["ConstructionPosition"] = " ".join(format(x, ".18e") for x in p5)
                 if args.verbose:
@@ -102,15 +110,16 @@ def transform_bodies_construction():
                 if child.attrib["GraphicFile1"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile1"] = os.path.split(child.attrib["GraphicFile1"])[1]
                     transform_obj_files(child.attrib["GraphicFile1"], args.input_graphics_folder, args.output_graphics_folder,
-                                        rotation_centre, rotation, translation, args.verbose, args.force)
+                                        rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
                 if child.attrib["GraphicFile2"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile2"] = os.path.split(child.attrib["GraphicFile2"])[1]
                     transform_obj_files(child.attrib["GraphicFile2"], args.input_graphics_folder, args.output_graphics_folder,
-                                        rotation_centre, rotation, translation, args.verbose, args.force)
+                                        rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
                 if child.attrib["GraphicFile3"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile3"] = os.path.split(child.attrib["GraphicFile3"])[1]
                     transform_obj_files(child.attrib["GraphicFile3"], args.input_graphics_folder, args.output_graphics_folder,
-                                        rotation_centre, rotation, translation, args.verbose, args.force)
+                                        rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
+                
             if args.zero_start_poses:
                 if args.verbose:
                     print('Old: BODY ID="%s" Position="%s" Quaternion="%s"' % (child.attrib["ID"], child.attrib["Position"], child.attrib["Quaternion"]))
