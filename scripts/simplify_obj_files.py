@@ -40,7 +40,8 @@ def simplify_obj_file(input_obj_file, output_obj_file, decimal_places, repair, v
     try:
         mesh = trimesh.load(input_obj_file, process=True, force='mesh')            
         # mesh.faces = trimesh.geometry.triangulate_quads(mesh.faces) # not needed - it looks like triangulation happens at load
-    except:
+    except Exception as e:
+        print(e)
         print('Error reading "%s"' % (input_obj_file))
         sys.exit(1)
     
