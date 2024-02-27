@@ -7,7 +7,6 @@ import argparse
 import re
 import xml.etree.ElementTree
 import math
-import shutil
 
 def transform_bodies_construction():
 
@@ -23,6 +22,7 @@ def transform_bodies_construction():
     parser.add_argument("-ig", "--input_graphics_folder", default='.', help="location of the input OBJ files [.]")
     parser.add_argument("-og", "--output_graphics_folder", default='converted', help="location of the output OBJ files [converted]")
     parser.add_argument("-z", "--zero_start_poses", action="store_true", help="zero the start poses of all bodies in the output XML")
+    parser.add_argument("-rp", "--retain_graphics_path", action="store_true", help="keep the path information in GraphicFile* attributes")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")
     parser.add_argument("-v", "--verbose", action="store_true", help="write out more information whilst processing")
     args = parser.parse_args()
@@ -77,12 +77,15 @@ def transform_bodies_construction():
                 if args.verbose:
                     print('Not rotating : BODY ID="%s"' % (child.attrib["ID"]))
                 if child.attrib["GraphicFile1"]:
+                    if not args.retain_graphics_path: child.attrib["GraphicFile1"] = os.path.split(child.attrib["GraphicFile1"])[1]
                     transform_obj_files(child.attrib["GraphicFile1"], args.input_graphics_folder, args.output_graphics_folder,
                                         [0, 0, 0], [1, 0, 0, 0], [0, 0, 0], args.verbose, args.force)
                 if child.attrib["GraphicFile2"]:
+                    if not args.retain_graphics_path: child.attrib["GraphicFile2"] = os.path.split(child.attrib["GraphicFile2"])[1]
                     transform_obj_files(child.attrib["GraphicFile2"], args.input_graphics_folder, args.output_graphics_folder,
                                         [0, 0, 0], [1, 0, 0, 0], [0, 0, 0], args.verbose, args.force)
                 if child.attrib["GraphicFile3"]:
+                    if not args.retain_graphics_path: child.attrib["GraphicFile3"] = os.path.split(child.attrib["GraphicFile3"])[1]
                     transform_obj_files(child.attrib["GraphicFile3"], args.input_graphics_folder, args.output_graphics_folder,
                                         [0, 0, 0], [1, 0, 0, 0], [0, 0, 0], args.verbose, args.force)
             else:
@@ -97,12 +100,15 @@ def transform_bodies_construction():
                 if args.verbose:
                     print('New: BODY ID="%s" ConstructionPosition="%s"' % (child.attrib["ID"], child.attrib["ConstructionPosition"]))
                 if child.attrib["GraphicFile1"]:
+                    if not args.retain_graphics_path: child.attrib["GraphicFile1"] = os.path.split(child.attrib["GraphicFile1"])[1]
                     transform_obj_files(child.attrib["GraphicFile1"], args.input_graphics_folder, args.output_graphics_folder,
                                         rotation_centre, rotation, translation, args.verbose, args.force)
                 if child.attrib["GraphicFile2"]:
+                    if not args.retain_graphics_path: child.attrib["GraphicFile2"] = os.path.split(child.attrib["GraphicFile2"])[1]
                     transform_obj_files(child.attrib["GraphicFile2"], args.input_graphics_folder, args.output_graphics_folder,
                                         rotation_centre, rotation, translation, args.verbose, args.force)
                 if child.attrib["GraphicFile3"]:
+                    if not args.retain_graphics_path: child.attrib["GraphicFile3"] = os.path.split(child.attrib["GraphicFile3"])[1]
                     transform_obj_files(child.attrib["GraphicFile3"], args.input_graphics_folder, args.output_graphics_folder,
                                         rotation_centre, rotation, translation, args.verbose, args.force)
             if args.zero_start_poses:
