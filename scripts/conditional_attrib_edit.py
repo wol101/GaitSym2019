@@ -10,8 +10,8 @@ import xml.etree.ElementTree
 def conditional_attrib_edit():
 
     parser = argparse.ArgumentParser(description="Conditional XML attribute editor (as a side effect it sorts attributes)")
-    parser.add_argument("-i", "--input_xml_file", required=True, help="the input old format GaitSym XML config file")
-    parser.add_argument("-o", "--output_xml_file", required=True, help="the output GaitSym2019 XML config file")
+    parser.add_argument("-i", "--input_xml_file", required=True, help="the input GaitSym XML config file")
+    parser.add_argument("-o", "--output_xml_file", required=True, help="the output GaitSym XML config file")
     parser.add_argument("-ct", "--condition_tag", required=True, help="the tag to match to allow change (regex search)")
     parser.add_argument("-ca", "--condition_attrib", required=True, help="the attribute to match to allow change (regex search)")
     parser.add_argument("-cav", "--condition_attrib_value", required=True, help="the attribute value to match to allow change (regex search)")

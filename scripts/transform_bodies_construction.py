@@ -13,11 +13,12 @@ def transform_bodies_construction():
     parser = argparse.ArgumentParser(description="Transform the bodies in a GaitSym file")
     parser.add_argument("-i", "--input_xml_file", required=True, help="input GaitSym XML config file")
     parser.add_argument("-o", "--output_xml_file", required=True, help="output GaitSym XML config file")
-    parser.add_argument("-t", "--translation", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="translation vector x y z [0, 0, 0])")
-    parser.add_argument("-rc", "--rotation_centre", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="rotation centre x y z [0, 0, 0])")
-    parser.add_argument("-r1", "--rotation_angle_axis_1", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
-    parser.add_argument("-r2", "--rotation_angle_axis_2", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
-    parser.add_argument("-r3", "--rotation_angle_axis_3", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0])")
+    parser.add_argument("-t", "--translation", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="translation vector x y z [0, 0, 0]")
+    parser.add_argument("-tf", "--translation_file", help="body translation file body_id x y z")
+    parser.add_argument("-rc", "--rotation_centre", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="rotation centre x y z [0, 0, 0]")
+    parser.add_argument("-r1", "--rotation_angle_axis_1", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0]")
+    parser.add_argument("-r2", "--rotation_angle_axis_2", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0]")
+    parser.add_argument("-r3", "--rotation_angle_axis_3", nargs=4, type=float, default=[0.0, 1.0, 0.0, 0.0], help="rotation angle axis r x y z degrees [0, 1, 0, 0]")
     parser.add_argument("-x", "--set_x_position", type=float, help="Set the x position value to this")
     parser.add_argument("-y", "--set_y_position", type=float, help="Set the y position value to this")
     parser.add_argument("-z", "--set_z_position", type=float, help="Set the z position value to this")
@@ -38,13 +39,22 @@ def transform_bodies_construction():
     preflight_write_file(args.output_xml_file, args.force)
     preflight_read_folder(args.input_graphics_folder)
     preflight_write_folder(args.output_graphics_folder)
+    
+    translation_file_dict = {}
+    if args.translation_file:
+        preflight_read_file(args.translation_file)
+        with open(args.translation_file, "r") as in_file:
+            lines = in_file.read().splitlines()
+        for line in lines:
+            tokens = line.split()
+            if len(tokens) < 4:
+                print('Error parsing "%s"' % (args.translation_file))
+                sys.exit()
+            translation_file_dict[tokens[0]] = [float(eval(s)) for s in tokens[1:4]]
 
     # read the input XML file
     input_tree = xml.etree.ElementTree.parse(args.input_xml_file)
     input_root = input_tree.getroot()
-    
-    translation = args.translation
-    rotation_centre = args.rotation_centre
     
     axis = args.rotation_angle_axis_1[1:4]
     angle = args.rotation_angle_axis_1[0] * math.pi / 180.0
@@ -65,7 +75,7 @@ def transform_bodies_construction():
     # find the relative path from the output file to the output graphics
     output_file_path = os.path.dirname(os.path.abspath(args.output_xml_file))
     output_graphics_path = os.path.abspath(args.output_graphics_folder)
-    relative_graphics_path = os.path.relpath(output_file_path, output_graphics_path)
+    relative_graphics_path = os.path.relpath(output_graphics_path, output_file_path)
     
     # loop through bodies
     body_translation = {}
@@ -96,29 +106,32 @@ def transform_bodies_construction():
                 if args.verbose:
                     print('Old: BODY ID="%s" ConstructionPosition="%s"' % (child.attrib["ID"], child.attrib["ConstructionPosition"]))
                 p1 = [float(i) for i in child.attrib["ConstructionPosition"].split()]
-                p2 = Sub3x1(p1, rotation_centre)
+                p2 = Sub3x1(p1, args.rotation_centre)
                 p3 = QuaternionVectorRotate(rotation, p2)
-                p4 = Add3x1(p3, rotation_centre)
-                body_translation[child.attrib["ID"]] = translation
+                p4 = Add3x1(p3, args.rotation_centre)
+                if child.attrib["ID"] in translation_file_dict:
+                    body_translation[child.attrib["ID"]] = translation_file_dict[child.attrib["ID"]]
+                else:
+                    body_translation[child.attrib["ID"]] = args.translation
                 if type(args.set_x_position) == float: body_translation[child.attrib["ID"]] [0] = args.set_x_position - p4[0]
                 if type(args.set_y_position) == float: body_translation[child.attrib["ID"]] [1] = args.set_y_position - p4[1]
                 if type(args.set_z_position) == float: body_translation[child.attrib["ID"]] [2] = args.set_x_position - p4[2]
-                p5 = Add3x1(p4, translation)
+                p5 = Add3x1(p4, body_translation[child.attrib["ID"]])
                 child.attrib["ConstructionPosition"] = " ".join(format(x, ".18e") for x in p5)
                 if args.verbose:
                     print('New: BODY ID="%s" ConstructionPosition="%s"' % (child.attrib["ID"], child.attrib["ConstructionPosition"]))
                 if child.attrib["GraphicFile1"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile1"] = os.path.split(child.attrib["GraphicFile1"])[1]
                     transform_obj_files(child.attrib["GraphicFile1"], args.input_graphics_folder, args.output_graphics_folder,
-                                        rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
+                                        args.rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
                 if child.attrib["GraphicFile2"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile2"] = os.path.split(child.attrib["GraphicFile2"])[1]
                     transform_obj_files(child.attrib["GraphicFile2"], args.input_graphics_folder, args.output_graphics_folder,
-                                        rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
+                                        args.rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
                 if child.attrib["GraphicFile3"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile3"] = os.path.split(child.attrib["GraphicFile3"])[1]
                     transform_obj_files(child.attrib["GraphicFile3"], args.input_graphics_folder, args.output_graphics_folder,
-                                        rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
+                                        args.rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
                 
             if args.zero_start_poses:
                 if args.verbose:
@@ -136,10 +149,10 @@ def transform_bodies_construction():
                 continue
             p1 = get_relative_vector(child.attrib["Position"], 3)[1]
             p2 = QuaternionVectorRotate(rotation, p1)
-            child.attrib["Position"] = " ".join(format(x, ".18e") for x in p2)
+            child.attrib["Position"] = body + " " + " ".join(format(x, ".18e") for x in p2)
             q1 = get_relative_vector(child.attrib["Quaternion"], 4)[1]
             q2 = QuaternionQuaternionMultiply(rotation, q1)
-            child.attrib["Quaternion"] = " ".join(format(x, ".18e") for x in q2)
+            child.attrib["Quaternion"] = body + " " + " ".join(format(x, ".18e") for x in q2)
             if args.verbose:
                 print('New: MARKER ID="%s" Position="%s" Quaternion="%s"' % (child.attrib["ID"], child.attrib["Position"], child.attrib["Quaternion"]))
         
@@ -518,6 +531,7 @@ def preflight_write_folder(folder):
         try:
             os.makedirs(folder, exist_ok = True)
         except OSError as error:
+            print(error)
             print('Directory "%s" can not be created' % folder)
             sys.exit(1)
 
