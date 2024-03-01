@@ -202,7 +202,7 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
                             iter.second->SetGraphicFile3(newFileInfo.fileName().toStdString());
                             break;
                         default:
-                            qDebug() << "Error IN MainWindowActions::menuOpen(): invalid nameIndex = " << nameIndex;
+                            qDebug() << "Error In MainWindowActions::menuOpen(): invalid nameIndex = " << nameIndex;
                         }
                         QString newPath = currentDir.relativeFilePath(newFileInfo.absolutePath());
                         if (newPath.size() == 0) newPath = ".";
@@ -251,9 +251,16 @@ void MainWindowActions::menuOpen(const QString &fileName, const QByteArray *file
 
     // set menu activations for loaded model
     m_mainWindow->m_noName = false;
-    if (meshPathChanged) m_mainWindow->setWindowModified(true);
-    else  m_mainWindow->setWindowModified(false);
-    enterRunMode();
+    if (meshPathChanged)
+    {
+        m_mainWindow->setWindowModified(true);
+        enterConstructionMode();
+    }
+    else
+    {
+        m_mainWindow->setWindowModified(false);
+        enterRunMode();
+    }
     m_mainWindow->updateEnable();
     Preferences::Write();
 }
