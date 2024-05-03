@@ -268,12 +268,17 @@ def convert_body(body, marker_list, args):
         (vertices, triangles, objects) = read_obj_file(filename, args.verbose)
         p = [float(s) for s in strip_world(body.attrib["Position"]).split()]
         o = [float(s) for s in strip_world(body.attrib["Offset"]).split()]
+        scale = [1.0, 1.0, 1.0]
+        if "Scale" in body.attrib:
+            scale = [float(s) for s in body.attrib["Scale"].split()]
+            if len(scale) != 3: scale = [scale[0], scale[0], scale[0]]
         delta = Sub3x1(p, o)
         new_vertices = []
         for vertex in vertices:
-            new_vertices.append(Add3x1(vertex, delta))
+            new_vertices.append(Add3x1(Mul3x1(vertex, scale), delta))
         new_filename = os.path.join(args.translated_obj_folder, new_body.attrib["GraphicFile1"])
         if args.verbose:
+            print('"%s" scale = %f, %f, %f' % (new_filename, scale[0], scale[1], scale[2]))
             print('"%s" delta = %f, %f, %f' % (new_filename, delta[0], delta[1], delta[2]))
         write_obj_file(new_filename, new_vertices, triangles, objects, args.verbose)
 
@@ -950,6 +955,22 @@ def Sub3x1(a, b):
     c[0] = a[0] - b[0]
     c[1] = a[1] - b[1]
     c[2] = a[2] - b[2]
+    return c
+
+# multiply two vectors element by element
+def Mul3x1(a, b):
+    c = [0, 0, 0]
+    c[0] = a[0] * b[0]
+    c[1] = a[1] * b[1]
+    c[2] = a[2] * b[2]
+    return c
+
+# Divide two vectors element by element
+def Div3x1(a, b):
+    c = [0, 0, 0]
+    c[0] = a[0] / b[0]
+    c[1] = a[1] / b[1]
+    c[2] = a[2] / b[2]
     return c
 
 # calculate cross product (vector product)
