@@ -292,22 +292,26 @@ def convert_body(body, marker_list, args):
             print('Error: mesh "%s" missing' % (filename))
             sys.exit(1)
         (vertices, triangles, objects) = read_obj_file(filename, args.verbose)
-        p = [float(s) for s in strip_world(body.attrib["Position"]).split()]
-        o = [float(s) for s in strip_world(body.attrib["Offset"]).split()]
+        position = [float(s) for s in strip_world(body.attrib["Position"]).split()]
+        offset = [float(s) for s in strip_world(body.attrib["Offset"]).split()]
         scale = [1.0, 1.0, 1.0]
         if "Scale" in body.attrib:
             scale = [float(s) for s in body.attrib["Scale"].split()]
             if len(scale) != 3: scale = [scale[0], scale[0], scale[0]]
-        delta = Sub3x1(p, o)
         new_vertices = []
         for vertex in vertices:
+            v_scale = Mul3x1(scale, vertex)
             if args.zero_rotations:
-                vertex = QuaternionVectorRotate(quaternion, vertex)
-            new_vertices.append(Add3x1(Mul3x1(vertex, scale), delta))
+                v_rot = QuaternionVectorRotate(quaternion, v_scale)
+            else:
+                v_rot = v_scale
+            v_offset = Add3x1(v_rot, offset)
+            v_position = Add3x1(v_offset, position)
+            new_vertices.append(v_position)
         new_filename = os.path.join(args.translated_obj_folder, new_body.attrib["GraphicFile1"])
         if args.verbose:
             print('"%s" scale = %f, %f, %f' % (new_filename, scale[0], scale[1], scale[2]))
-            print('"%s" delta = %f, %f, %f' % (new_filename, delta[0], delta[1], delta[2]))
+            print('"%s" offset = %f, %f, %f' % (new_filename, offset[0], offset[1], offset[2]))
         write_obj_file(new_filename, new_vertices, triangles, objects, args.verbose)
 
     # and then create any new markers needed
