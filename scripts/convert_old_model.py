@@ -19,6 +19,7 @@ def convert_old_model():
     parser.add_argument("-m2", "--mesh2regex", nargs=2, help="Set mesh2 based on a regex search and replace of GraphicFile")
     parser.add_argument("-m3", "--mesh3regex", nargs=2, help="Set mesh3 based on a regex search and replace of GraphicFile")
     parser.add_argument("-t", "--tag_attribute_value", nargs=3, action="append", help="add a new attribute to a tag. Format TAG ATTRIBUTE VALUE")
+    parser.add_argument("-z", "--zero_rotations", action="store_true", help="rezero all the body rotations")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")
     parser.add_argument("-v", "--verbose", action="store_true", help="write out more information whilst processing")
     args = parser.parse_args()
@@ -126,7 +127,7 @@ def convert_old_model():
     if args.verbose: print('Copying the GLOBAL')
     global_element.text = ""
     global_element.tail = "\n"
-    new_tree.append(convert_global(global_element))
+    new_tree.append(convert_global(global_element, args))
 
     # collect the markers
     for key in joint_list:
@@ -212,7 +213,7 @@ def convert_old_model():
     out_file.write(xml.etree.ElementTree.tostring(new_tree, encoding="utf-8", method="xml"))
     out_file.close()
 
-def convert_global(global_element):
+def convert_global(global_element, args):
     new_global = xml.etree.ElementTree.Element("GLOBAL")
     new_global.tail = "\n"
     required_attributes = ["AllowInternalCollisions", "BMR", "CFM", "ContactMaxCorrectingVel",
@@ -231,6 +232,7 @@ def convert_global(global_element):
     new_global.attrib["DampingConstant"] = format(damping_constant, ".18e")
     new_global.attrib["StepType"] = new_global.attrib["StepType"].replace("Step", "")
     new_global.attrib["ID"] = "global"
+    new_global.attrib["MeshSearchPath"] = ".:" + os.path.relpath(args.translated_obj_folder, os.path.split(args.output_xml_file)[0])
     return new_global
 
 def convert_body(body, marker_list, args):
@@ -239,11 +241,33 @@ def convert_body(body, marker_list, args):
     new_body.tail = "\n"
     new_body.attrib["ID"] = body.attrib["ID"]
     new_body.attrib["Mass"] = body.attrib["Mass"]
+    new_body.attrib["Quaternion"] = "World 1 0 0 0"
+    quaternion = [float(s) for s in strip_world(body.attrib["Quaternion"]).split()]
+    angle = QuaternionGetAngle(quaternion)
+    if math.fabs(angle) > 1.0e-7 and not args.zero_rotations:
+        print('Error: BODY ID="%s" Quaternion="%s" and --zero_rotations not used' % (body.attrib["ID"], body.attrib["Quaternion"]))
+        sys.exit(1)
     new_body.attrib["MOI"] = body.attrib["MOI"]
+    if args.zero_rotations:
+        matrix = MatrixFromQuaternion(quaternion)
+        moi = [float(s) for s in body.attrib["MOI"].split()]
+        moi_tensor = Matrix()
+        moi_tensor.e11 = moi[0]
+        moi_tensor.e22 = moi[1]
+        moi_tensor.e33 = moi[2]
+        moi_tensor.e12 = moi[3]
+        moi_tensor.e21 = moi[3]
+        moi_tensor.e13 = moi[4]
+        moi_tensor.e31 = moi[4]
+        moi_tensor.e23 = moi[5]
+        moi_tensor.e32 = moi[5]
+        moi_tensor_r = MatrixMul(MatrixMul(matrix, moi_tensor), MatrixTrans(matrix))
+        moi_r = [moi_tensor_r.e11, moi_tensor_r.e22, moi_tensor_r.e33, moi_tensor_r.e12, moi_tensor_r.e13, moi_tensor_r.e23]
+        new_body.attrib["MOI"] = " ".join(format(x, ".18g") for x in moi_r)
+        
     new_body.attrib["ConstructionPosition"] = "World " + strip_world(body.attrib["Position"])
     new_body.attrib["ConstructionDensity"] = "1000"
     new_body.attrib["Position"] = "World " + strip_world(body.attrib["Position"])
-    new_body.attrib["Quaternion"] = "World " + strip_world(body.attrib["Quaternion"])
     new_body.attrib["LinearVelocity"] = body.attrib["LinearVelocity"]
     new_body.attrib["AngularVelocity"] = body.attrib["AngularVelocity"]
     if "PositionLowBound" in body.attrib: new_body.attrib["PositionLowBound"] = body.attrib["PositionLowBound"]
@@ -365,7 +389,7 @@ def convert_joint(joint, marker_list, markers_only):
         v1 = [float(i) for i in strip_world(joint.attrib["UniversalAxis1"]).split()]
         v2 = [float(i) for i in strip_world(joint.attrib["UniversalAxis2"]).split()]
         v3 = Normalise3x1(CrossProduct3x1(v1, v2))
-        R = matrix()
+        R = Matrix()
         R.e11 = v1[0]; R.e21 = v1[1]; R.e31 = v1[2]
         R.e12 = v2[0]; R.e22 = v2[1]; R.e32 = v2[2]
         R.e13 = v3[0]; R.e23 = v3[1]; R.e33 = v3[2]
@@ -1126,17 +1150,27 @@ def QuaternionQuaternionMultiply(q1, q2):
               q1[0]*q2[2] + q1[2]*q2[0] + q1[3]*q2[1] - q1[1]*q2[3],
               q1[0]*q2[3] + q1[3]*q2[0] + q1[1]*q2[2] - q1[2]*q2[1]]
 
-class matrix:
-    def __init__(self):
-        self.e11 = 0
-        self.e12 = 0
-        self.e13 = 0
-        self.e21 = 0
-        self.e22 = 0
-        self.e23 = 0
-        self.e31 = 0
-        self.e32 = 0
-        self.e33 = 0
+class Matrix:
+    def __init__(self, 
+                 r1c1=0.0, r1c2=0.0, r1c3=0.0,
+                 r2c1=0.0, r2c2=0.0, r2c3=0.0,
+                 r3c1=0.0, r3c2=0.0, r3c3=0.0):
+        self.e11 = r1c1
+        self.e12 = r1c2
+        self.e13 = r1c3
+        self.e21 = r2c1
+        self.e22 = r2c2
+        self.e23 = r2c3
+        self.e31 = r3c1
+        self.e32 = r3c2
+        self.e33 = r3c3
+    
+class Quaternion:
+    def __init__(self, nn=1.0, xx=0.0, yy=0.0, zz=0.0):
+        self.n = nn
+        self.x = xx
+        self.y = yy
+        self.z = zz
 
 def QuaternionFromMatrix(R):
     # quaternion is [w, x, y, z]
@@ -1188,6 +1222,44 @@ def QuaternionFromMatrix(R):
         q[0] = (R.e32 - R.e23) * s
         return q
 
+def MatrixFromQuaternion(R):
+    # quaternion is R[w, x, y, z] (externally)
+    # quaternion is q.n q.x qy q.z (internally)
+    # matrix is:
+    # m.e11 m.e12 m.e13
+    # m.e21 m.e22 m.e23
+    # m.e31 m.e32 m.e33
+    m = Matrix()
+    q = Quaternion(R[0], R[1], R[2], R[3])
+    qq1 = 2*q.x*q.x
+    qq2 = 2*q.y*q.y
+    qq3 = 2*q.z*q.z
+    m.e11 = 1 - qq2 - qq3
+    m.e12 = 2*(q.x*q.y - q.n*q.z)
+    m.e13 = 2*(q.x*q.z + q.n*q.y)
+    m.e21 = 2*(q.x*q.y + q.n*q.z)
+    m.e22 = 1 - qq1 - qq3
+    m.e23 = 2*(q.y*q.z - q.n*q.x)
+    m.e31 = 2*(q.x*q.z - q.n*q.y)
+    m.e32 = 2*(q.y*q.z + q.n*q.x)
+    m.e33 = 1 - qq1 - qq2
+    return m 
+
+def MatrixMul(m1, m2):
+    m = Matrix(m1.e11*m2.e11 + m1.e12*m2.e21 + m1.e13*m2.e31,
+               m1.e11*m2.e12 + m1.e12*m2.e22 + m1.e13*m2.e32,
+               m1.e11*m2.e13 + m1.e12*m2.e23 + m1.e13*m2.e33,
+               m1.e21*m2.e11 + m1.e22*m2.e21 + m1.e23*m2.e31,
+               m1.e21*m2.e12 + m1.e22*m2.e22 + m1.e23*m2.e32,
+               m1.e21*m2.e13 + m1.e22*m2.e23 + m1.e23*m2.e33,
+               m1.e31*m2.e11 + m1.e32*m2.e21 + m1.e33*m2.e31,
+               m1.e31*m2.e12 + m1.e32*m2.e22 + m1.e33*m2.e32,
+               m1.e31*m2.e13 + m1.e32*m2.e23 + m1.e33*m2.e33)
+    return m
+
+def MatrixTrans(m):
+    mt = Matrix(m.e11,m.e21,m.e31,m.e12,m.e22,m.e32,m.e13,m.e23,m.e33)
+    return mt  
 
 # program starts here
 if __name__ == "__main__":
