@@ -53,14 +53,13 @@ def convert_old_model():
             os.mkdir(args.translated_obj_folder)
 
     # handle the attributes to add
-    add_tags = []
-    add_attributes = []
-    add_values = []
+    add_tags = {}
     if args.tag_attribute_value:
         for tag_attribute_value in args.tag_attribute_value:
-            add_tags.append(tag_attribute_value[0])
-            add_attributes.append(tag_attribute_value[1])
-            add_values.append(tag_attribute_value[2])
+            if not tag_attribute_value[0] in add_tags:                
+                add_tags[tag_attribute_value[0]] = [[tag_attribute_value[1], tag_attribute_value[2]]]
+            else:
+                add_tags[tag_attribute_value[0]] = add_tags[tag_attribute_value[0]].append([tag_attribute_value[1], tag_attribute_value[2]])
 
     # read the input XML file
     if args.verbose: print('Reading "%s"' % (args.input_xml_file))
@@ -78,9 +77,6 @@ def convert_old_model():
     driver_list = {}
     data_target_list = {}
     for child in input_root:
-        indexes = [i for i, e in enumerate(add_tags) if e == child.tag]
-        for index in indexes:
-            child.attrib[add_attributes[index]] = add_values[index]
     
         if child.tag == "GLOBAL":
             global_element = child
@@ -207,6 +203,12 @@ def convert_old_model():
         if child.tag == "DATATARGET":
             child.attrib["Size1"] = "0.05"
             child.attrib["Colour1"] = "Gold1"
+        
+        # always do the custom tag code at the end
+        if child.tag in add_tags:
+            tags_to_add = add_tags[child.tag]
+            for tag_to_add in tags_to_add:
+                child.attrib[tag_to_add[0]] = tag_to_add[1]
 
     if args.verbose: print('Writing "%s"' % (args.output_xml_file))
     out_file = open(args.output_xml_file, "wb")
@@ -299,6 +301,8 @@ def convert_body(body, marker_list, args):
         delta = Sub3x1(p, o)
         new_vertices = []
         for vertex in vertices:
+            if args.zero_rotations:
+                vertex = QuaternionVectorRotate(quaternion, vertex)
             new_vertices.append(Add3x1(Mul3x1(vertex, scale), delta))
         new_filename = os.path.join(args.translated_obj_folder, new_body.attrib["GraphicFile1"])
         if args.verbose:
