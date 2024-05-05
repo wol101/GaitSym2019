@@ -57,8 +57,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>183</width>
-              <height>754</height>
+              <width>194</width>
+              <height>854</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_10">
@@ -859,8 +859,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>358</width>
-              <height>474</height>
+              <width>362</width>
+              <height>467</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
@@ -967,7 +967,7 @@
           <x>0</x>
           <y>0</y>
           <width>1137</width>
-          <height>306</height>
+          <height>309</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
@@ -1033,7 +1033,7 @@
      <x>0</x>
      <y>0</y>
      <width>1157</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1058,6 +1058,7 @@
     <addaction name="separator"/>
     <addaction name="actionExportMarkers"/>
     <addaction name="actionImportMeshesAsBodies"/>
+    <addaction name="actionExportGaitSym5"/>
     <addaction name="separator"/>
     <addaction name="actionClearMeshCache"/>
     <addaction name="separator"/>
@@ -1722,6 +1723,11 @@
   <action name="actionStopUSDSequence">
    <property name="text">
     <string>Stop USD Sequence</string>
+   </property>
+  </action>
+  <action name="actionExportGaitSym5">
+   <property name="text">
+    <string>Export GaitSym5...</string>
    </property>
   </action>
  </widget>

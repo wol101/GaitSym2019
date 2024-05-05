@@ -1477,6 +1477,66 @@ void MainWindowActions::menuDeleteAssembly()
     }
 }
 
+void MainWindowActions::menuExportGaitSym5()
+{
+    Q_ASSERT_X(m_mainWindow->m_simulation, "MainWindowActions::menuExportGaitSym5", "m_mainWindow->m_simulation undefined");
+    QFileInfo info(Preferences::valueQString("LastFileOpened"));
+    QString fileName = QFileDialog::getSaveFileName(m_mainWindow, tr("Export GaitSym5"), info.absoluteFilePath(), tr("Config Files (*.gaitsym);;XML files (*.xml)"), nullptr);
+    if (fileName.isNull() == false)
+    {
+        if (m_mainWindow->m_mode == MainWindow::constructionMode) // need to put everything into run mode to save properly
+        {
+            for (auto &&it : *m_mainWindow->m_simulation->GetBodyList()) it.second->EnterRunMode();
+            for (auto &&it : *m_mainWindow->m_simulation->GetMuscleList()) it.second->LateInitialisation();
+            for (auto &&it : *m_mainWindow->m_simulation->GetFluidSacList()) it.second->LateInitialisation();
+            for (auto &&it : *m_mainWindow->m_simulation->GetJointList()) it.second->LateInitialisation();
+        }
+        m_mainWindow->setStatusString(fileName + QString(" saving"), 2);
+        QFileInfo fileNameInfo(fileName);
+        QDir currentDir(fileNameInfo.absolutePath());
+        QString meshPath, relativeMeshPath;
+        for (auto &&it : *m_mainWindow->m_simulation->GetBodyList())
+        {
+            meshPath = QString::fromStdString(it.second->GetGraphicFile1());
+            relativeMeshPath = currentDir.relativeFilePath(meshPath);
+            it.second->SetGraphicFile1(relativeMeshPath.toStdString());
+            meshPath = QString::fromStdString(it.second->GetGraphicFile2());
+            relativeMeshPath = currentDir.relativeFilePath(meshPath);
+            it.second->SetGraphicFile2(relativeMeshPath.toStdString());
+            meshPath = QString::fromStdString(it.second->GetGraphicFile3());
+            relativeMeshPath = currentDir.relativeFilePath(meshPath);
+            it.second->SetGraphicFile3(relativeMeshPath.toStdString());
+        }
+        std::string xmlString = m_mainWindow->m_simulation->SaveToXML();
+        ParseXML parser;
+        parser.LoadModel(xmlString.data(), xmlString.size(), "GAITSYM2019"s);
+        std::vector<std::unique_ptr<ParseXML::XMLElement>> *elementList = parser.elementList();
+        for (auto && iter : *elementList)
+        {
+            if (iter->tag == "GLOBAL"s)
+            {
+                iter->attributes["PhysicsEngine"s] = "ODE"s;
+            }
+        }
+        QFile file(fileName);
+        file.open(QIODevice::WriteOnly);
+        xmlString = parser.SaveModel("GAITSYM2019"s, "Exported from GaitSym2019: "s + Preferences::valueQString("LastFileOpened").toStdString());
+        file.write(xmlString.data(), xmlString.size());
+        file.close();
+
+        if (m_mainWindow->m_mode == MainWindow::constructionMode)
+        {
+            for (auto &&it : *m_mainWindow->m_simulation->GetBodyList()) it.second->EnterConstructionMode();
+            for (auto &&it : *m_mainWindow->m_simulation->GetMuscleList()) it.second->LateInitialisation();
+            for (auto &&it : *m_mainWindow->m_simulation->GetFluidSacList()) it.second->LateInitialisation();
+        }
+    }
+    else
+    {
+        m_mainWindow->ui->statusBar->showMessage(QString("Export GaitSym5... cancelled"));
+    }
+}
+
 void MainWindowActions::menuExportMarkers()
 {
     Q_ASSERT_X(m_mainWindow->m_simulation, "MainWindowActions::menuExportMarkers", "m_mainWindow->m_simulation undefined");

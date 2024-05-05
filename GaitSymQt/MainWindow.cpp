@@ -98,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionLoadDefaultView, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuLoadDefaultView()));
     connect(ui->actionDeleteAssembly, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuDeleteAssembly()));
     connect(ui->actionEditGlobal, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuEditGlobal()));
+    connect(ui->actionExportGaitSym5, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuExportGaitSym5()));
     connect(ui->actionExportMarkers, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuExportMarkers()));
     connect(ui->actionImportMeshesAsBodies, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuImportMeshes()));
     connect(ui->actionImportWarehouse, SIGNAL(triggered()), m_mainWindowActions, SLOT(menuImportWarehouse()));
@@ -736,6 +737,7 @@ void MainWindow::updateEnable()
     ui->actionRenameElement->setEnabled(m_simulation != nullptr && m_mode == constructionMode);
     ui->actionCreateMirrorElements->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetBodyList()->size() > 0);
     ui->actionCreateTestingDrivers->setEnabled(m_simulation != nullptr && m_mode == constructionMode && m_simulation->GetMuscleList()->size() > 0);
+    ui->actionExportGaitSym5->setEnabled(m_simulation != nullptr);
     ui->actionExportMarkers->setEnabled(m_simulation != nullptr);
     ui->actionStartWarehouseExport->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);
     ui->actionStopWarehouseExport->setEnabled(m_simulation != nullptr && m_mode == runMode && isWindowModified() == false);

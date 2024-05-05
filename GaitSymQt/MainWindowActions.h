@@ -55,6 +55,7 @@ public slots:
     void menuLoadDefaultView();
     void menuDeleteAssembly();
     void menuEditGlobal();
+    void menuExportGaitSym5();
     void menuExportMarkers();
     void menuImportMeshes();
     void menuImportWarehouse();
