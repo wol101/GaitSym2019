@@ -251,6 +251,10 @@ def convert_body(body, marker_list, args):
         sys.exit(1)
     new_body.attrib["MOI"] = body.attrib["MOI"]
     if args.zero_rotations:
+        if args.verbose:
+            q_angle = QuaternionGetAngle(quaternion)
+            q_axis = QuaternionGetAxis(quaternion)
+            print('Rotating BODY ID="%s" %gr radian about %g,%g,%g' % (body.attrib["ID"], q_angle, q_axis[0], q_axis[1], q_axis[2]))
         matrix = MatrixFromQuaternion(quaternion)
         moi = [float(s) for s in body.attrib["MOI"].split()]
         moi_tensor = Matrix()
