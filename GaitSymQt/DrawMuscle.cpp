@@ -366,6 +366,7 @@ void DrawMuscle::Draw()
         m_facetedObjectForceList.at(i)->Draw();
     }
     m_muscle->setRedraw(false);
+    m_muscle->GetStrap()->setRedraw(false);
 }
 
 
