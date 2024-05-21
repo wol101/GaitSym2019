@@ -56,7 +56,7 @@ def convert_old_model():
     add_tags = {}
     if args.tag_attribute_value:
         for tag_attribute_value in args.tag_attribute_value:
-            if not tag_attribute_value[0] in add_tags:                
+            if not tag_attribute_value[0] in add_tags:
                 add_tags[tag_attribute_value[0]] = [[tag_attribute_value[1], tag_attribute_value[2]]]
             else:
                 add_tags[tag_attribute_value[0]] = add_tags[tag_attribute_value[0]].append([tag_attribute_value[1], tag_attribute_value[2]])
@@ -77,7 +77,7 @@ def convert_old_model():
     driver_list = {}
     data_target_list = {}
     for child in input_root:
-    
+
         if child.tag == "GLOBAL":
             global_element = child
             cfm = global_element.attrib['CFM']
@@ -203,7 +203,7 @@ def convert_old_model():
         if child.tag == "DATATARGET":
             child.attrib["Size1"] = "0.05"
             child.attrib["Colour1"] = "Gold1"
-        
+
         # always do the custom tag code at the end
         if child.tag in add_tags:
             tags_to_add = add_tags[child.tag]
@@ -270,7 +270,7 @@ def convert_body(body, marker_list, args):
         moi_tensor_r = MatrixMul(MatrixMul(matrix, moi_tensor), MatrixTrans(matrix))
         moi_r = [moi_tensor_r.e11, moi_tensor_r.e22, moi_tensor_r.e33, moi_tensor_r.e12, moi_tensor_r.e13, moi_tensor_r.e23]
         new_body.attrib["MOI"] = " ".join(format(x, ".18g") for x in moi_r)
-        
+
     new_body.attrib["ConstructionPosition"] = "World " + strip_world(body.attrib["Position"])
     new_body.attrib["ConstructionDensity"] = "1000"
     new_body.attrib["Position"] = "World " + strip_world(body.attrib["Position"])
@@ -305,12 +305,12 @@ def convert_body(body, marker_list, args):
         new_vertices = []
         for vertex in vertices:
             v_scale = Mul3x1(scale, vertex)
+            v_offset = Add3x1(v_scale, offset)
             if args.zero_rotations:
-                v_rot = QuaternionVectorRotate(quaternion, v_scale)
+                v_rot = QuaternionVectorRotate(quaternion, v_offset)
             else:
-                v_rot = v_scale
-            v_offset = Add3x1(v_rot, offset)
-            v_position = Add3x1(v_offset, position)
+                v_rot = v_offset
+            v_position = Add3x1(v_rot, position)
             new_vertices.append(v_position)
         new_filename = os.path.join(args.translated_obj_folder, new_body.attrib["GraphicFile1"])
         if args.verbose:
@@ -805,7 +805,7 @@ def convert_muscle(muscle, marker_list, markers_only):
             sys.exit(1)
 
     return (new_strap, new_muscle)
-    
+
 def convert_driver(driver_element):
     new_driver = xml.etree.ElementTree.Element("DRIVER")
     new_driver.tail = "\n"
@@ -907,7 +907,7 @@ def convert_to_spring_and_damping_constants(erp, cfm, integration_stepsize):
     spring_constant = kp
     damping_constant = kd
     return (spring_constant, damping_constant)
-    
+
 def write_obj_file(filename, vertices, triangles, objects, verbose):
     if verbose:
         print('Writing "%s"' % (filename))
@@ -960,7 +960,7 @@ def read_obj_file(filename, verbose):
         print('Read %d vertices and %d triangles' % (len(vertices), len(triangles)))
         print('%d objects found' % (len(objects)))
     return (vertices, triangles, objects)
-    
+
 def pretty_print_sys_argv(sys_argv):
     quoted_sys_argv = quoted_if_necessary(sys_argv)
     print((" ".join(quoted_sys_argv)))
@@ -1163,7 +1163,7 @@ def QuaternionQuaternionMultiply(q1, q2):
               q1[0]*q2[3] + q1[3]*q2[0] + q1[1]*q2[2] - q1[2]*q2[1]]
 
 class Matrix:
-    def __init__(self, 
+    def __init__(self,
                  r1c1=0.0, r1c2=0.0, r1c3=0.0,
                  r2c1=0.0, r2c2=0.0, r2c3=0.0,
                  r3c1=0.0, r3c2=0.0, r3c3=0.0):
@@ -1176,7 +1176,7 @@ class Matrix:
         self.e31 = r3c1
         self.e32 = r3c2
         self.e33 = r3c3
-    
+
 class Quaternion:
     def __init__(self, nn=1.0, xx=0.0, yy=0.0, zz=0.0):
         self.n = nn
@@ -1255,7 +1255,7 @@ def MatrixFromQuaternion(R):
     m.e31 = 2*(q.x*q.z - q.n*q.y)
     m.e32 = 2*(q.y*q.z + q.n*q.x)
     m.e33 = 1 - qq1 - qq2
-    return m 
+    return m
 
 def MatrixMul(m1, m2):
     m = Matrix(m1.e11*m2.e11 + m1.e12*m2.e21 + m1.e13*m2.e31,
@@ -1271,7 +1271,7 @@ def MatrixMul(m1, m2):
 
 def MatrixTrans(m):
     mt = Matrix(m.e11,m.e21,m.e31,m.e12,m.e22,m.e32,m.e13,m.e23,m.e33)
-    return mt  
+    return mt
 
 # program starts here
 if __name__ == "__main__":
