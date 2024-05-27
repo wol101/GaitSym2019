@@ -767,6 +767,12 @@ std::string *Simulation::ParseJoint(const ParseXML::XMLElement *node)
 
 std::string *Simulation::ParseGeom(const ParseXML::XMLElement *node)
 {
+    // GEOMs require a valid GLOBAL to get step size
+    if (!m_global)
+    {
+        setLastError("Simulation::ParseGeom requires a valid GLOBAL"s);
+        return lastErrorPtr();
+    }
     std::unique_ptr<Geom> geom;
     std::string buf = NamedObject::searchNames(node->attributes, "Type"s);
     std::string *errorMessage = nullptr;

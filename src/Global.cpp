@@ -326,6 +326,7 @@ void Global::appendToAttributes()
     setAttribute("WarehouseDecreaseThresholdFactor", *GSUtil::ToString(m_WarehouseDecreaseThresholdFactor, &buf));
     setAttribute("WarehouseFailDistanceAbort", *GSUtil::ToString(m_WarehouseFailDistanceAbort, &buf));
     setAttribute("WarehouseUnitIncreaseDistanceThreshold", *GSUtil::ToString(m_WarehouseUnitIncreaseDistanceThreshold, &buf));
+    setAttribute("PhysicsEngine", "ODE"s);
 
     std::vector<std::string> encodedMeshSearchPath;
     for (size_t i = 0; i < m_MeshSearchPath.size(); i++) encodedMeshSearchPath.push_back(percentEncode(m_MeshSearchPath[i], "%:"s));
