@@ -299,7 +299,7 @@ void DataTargetVector::appendToAttributes()
 {
     DataTarget::appendToAttributes();
     std::string buf;
-    setAttribute("Type"s, "Scalar"s);
+    setAttribute("Type"s, "Vector"s);
     std::vector<double> valueList;
     valueList.reserve(m_VValueList.size() * 3);
     for (size_t i = 0; i < m_VValueList.size(); i++)

@@ -222,7 +222,7 @@ void DataTargetQuaternion::appendToAttributes()
 {
     DataTarget::appendToAttributes();
     std::string buf;
-    setAttribute("Type"s, "Scalar"s);
+    setAttribute("Type"s, "Quaternion"s);
     std::vector<double> valueList;
     valueList.reserve(m_QValueList.size() * 4);
     for (size_t i = 0; i < m_QValueList.size(); i++)
