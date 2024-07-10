@@ -1058,7 +1058,6 @@
     <addaction name="separator"/>
     <addaction name="actionExportMarkers"/>
     <addaction name="actionImportMeshesAsBodies"/>
-    <addaction name="actionExportGaitSym5"/>
     <addaction name="separator"/>
     <addaction name="actionClearMeshCache"/>
     <addaction name="separator"/>
