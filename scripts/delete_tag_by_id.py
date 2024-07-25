@@ -26,12 +26,12 @@ def delete_tag_by_id():
     # read the input XML file
     input_tree = xml.etree.ElementTree.parse(args.input_xml_file)
     input_root = input_tree.getroot()
-    
+
     # create a new empty tree
-    new_tree = xml.etree.ElementTree.Element("GAITSYM2019")
+    new_tree = xml.etree.ElementTree.Element(input_root.tag)
     new_tree.text = "\n"
     new_tree.tail = "\n"
-    
+
     if args.regex:
         for child in input_root:
             if re.search(args.delete_tag, child.tag) and re.search(args.delete_tag_id, child.attrib['ID']):
