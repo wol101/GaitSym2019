@@ -237,7 +237,7 @@ def GetNumberListFromTokenList(tokenList, match):
     
 def IsANumber(theString):
     """checks to see whether a string is a valid number"""
-    if re.match('([+-]?)(?=\d|\.\d)\d*(\.\d*)?([Ee]([+-]?\d+))?', theString) == None: return 0
+    if re.match(r'([+-]?)(?=\d|\.\d)\d*(\.\d*)?([Ee]([+-]?\d+))?', theString) == None: return 0
     return 1
 
 # program starts here
