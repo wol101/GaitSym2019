@@ -441,6 +441,8 @@ def convert_joint(joint, marker_list, markers_only):
         body1_marker.tail = "\n"
         body1_marker.attrib["ID"] = joint.attrib["ID"] + "_Body1_Marker"
         body1_marker.attrib["BodyID"] = joint.attrib["Body1ID"]
+        if not "StressCalculationType" in joint.attrib:
+            joint.attrib["StressCalculationType"] = "None"
         if joint.attrib["StressCalculationType"] == "None":
             body1_marker.attrib["Position"] = "0 0 0"
             body1_marker.attrib["Quaternion"] = "1 0 0 0"
