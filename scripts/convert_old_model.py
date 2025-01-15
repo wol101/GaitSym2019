@@ -243,7 +243,7 @@ def convert_body(body, marker_list, args):
     new_body.tail = "\n"
     new_body.attrib["ID"] = body.attrib["ID"]
     new_body.attrib["Mass"] = body.attrib["Mass"]
-    new_body.attrib["Quaternion"] = "World 1 0 0 0"
+    new_body.attrib["Quaternion"] = "1 0 0 0"
     quaternion = [float(s) for s in strip_world(body.attrib["Quaternion"]).split()]
     angle = QuaternionGetAngle(quaternion)
     if math.fabs(angle) > 1.0e-7 and not args.zero_rotations:
@@ -271,9 +271,9 @@ def convert_body(body, marker_list, args):
         moi_r = [moi_tensor_r.e11, moi_tensor_r.e22, moi_tensor_r.e33, moi_tensor_r.e12, moi_tensor_r.e13, moi_tensor_r.e23]
         new_body.attrib["MOI"] = " ".join(format(x, ".18g") for x in moi_r)
 
-    new_body.attrib["ConstructionPosition"] = "World " + strip_world(body.attrib["Position"])
+    new_body.attrib["ConstructionPosition"] = strip_world(body.attrib["Position"])
     new_body.attrib["ConstructionDensity"] = "1000"
-    new_body.attrib["Position"] = "World " + strip_world(body.attrib["Position"])
+    new_body.attrib["Position"] = strip_world(body.attrib["Position"])
     new_body.attrib["LinearVelocity"] = body.attrib["LinearVelocity"]
     new_body.attrib["AngularVelocity"] = body.attrib["AngularVelocity"]
     if "PositionLowBound" in body.attrib: new_body.attrib["PositionLowBound"] = body.attrib["PositionLowBound"]

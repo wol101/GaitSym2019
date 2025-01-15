@@ -90,15 +90,15 @@ def transform_bodies_construction():
             if args.bodies_list and not child.attrib["ID"] in args.bodies_list:
                 if args.verbose:
                     print('Not rotating : BODY ID="%s"' % (child.attrib["ID"]))
-                if child.attrib["GraphicFile1"]:
+                if "GraphicFile1" in child.attrib and child.attrib["GraphicFile1"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile1"] = os.path.split(child.attrib["GraphicFile1"])[1]
                     transform_obj_files(child.attrib["GraphicFile1"], args.input_graphics_folder, args.output_graphics_folder,
                                         [0, 0, 0], [1, 0, 0, 0], [0, 0, 0], args.verbose, args.force)
-                if child.attrib["GraphicFile2"]:
+                if "GraphicFile2" in child.attrib and child.attrib["GraphicFile2"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile2"] = os.path.split(child.attrib["GraphicFile2"])[1]
                     transform_obj_files(child.attrib["GraphicFile2"], args.input_graphics_folder, args.output_graphics_folder,
                                         [0, 0, 0], [1, 0, 0, 0], [0, 0, 0], args.verbose, args.force)
-                if child.attrib["GraphicFile3"]:
+                if "GraphicFile3" in child.attrib and child.attrib["GraphicFile3"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile3"] = os.path.split(child.attrib["GraphicFile3"])[1]
                     transform_obj_files(child.attrib["GraphicFile3"], args.input_graphics_folder, args.output_graphics_folder,
                                         [0, 0, 0], [1, 0, 0, 0], [0, 0, 0], args.verbose, args.force)
@@ -120,15 +120,15 @@ def transform_bodies_construction():
                 child.attrib["ConstructionPosition"] = " ".join(format(x, ".18e") for x in p5)
                 if args.verbose:
                     print('New: BODY ID="%s" ConstructionPosition="%s"' % (child.attrib["ID"], child.attrib["ConstructionPosition"]))
-                if child.attrib["GraphicFile1"]:
+                if "GraphicFile1" in child.attrib and child.attrib["GraphicFile1"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile1"] = os.path.split(child.attrib["GraphicFile1"])[1]
                     transform_obj_files(child.attrib["GraphicFile1"], args.input_graphics_folder, args.output_graphics_folder,
                                         args.rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
-                if child.attrib["GraphicFile2"]:
+                if "GraphicFile2" in child.attrib and child.attrib["GraphicFile2"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile2"] = os.path.split(child.attrib["GraphicFile2"])[1]
                     transform_obj_files(child.attrib["GraphicFile2"], args.input_graphics_folder, args.output_graphics_folder,
                                         args.rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
-                if child.attrib["GraphicFile3"]:
+                if "GraphicFile3" in child.attrib and child.attrib["GraphicFile3"]:
                     if not args.retain_graphics_path: child.attrib["GraphicFile3"] = os.path.split(child.attrib["GraphicFile3"])[1]
                     transform_obj_files(child.attrib["GraphicFile3"], args.input_graphics_folder, args.output_graphics_folder,
                                         args.rotation_centre, rotation, body_translation[child.attrib["ID"]] , args.verbose, args.force)
