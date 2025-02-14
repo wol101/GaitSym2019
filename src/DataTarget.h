@@ -15,6 +15,7 @@
 
 #include <cfloat>
 #include <tuple>
+#include <cstdint>
 
 class Body;
 class SimulationWindow;

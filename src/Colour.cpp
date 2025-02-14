@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <cctype>
 #include <regex>
+#include <cstdint>
 
 using namespace  std::string_literals;
 
