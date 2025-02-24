@@ -60,3 +60,4 @@ GaitSymQt/build/
 */.qmake.stash
 distribution.zip
 /distribution
+*.exe
