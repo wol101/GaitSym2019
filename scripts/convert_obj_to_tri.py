@@ -300,9 +300,9 @@ def read_obj_file(filename, verbose, ignore_uv, ignore_normal):
                 triangles.append([int(i.split('/')[0]) - 1 for i in tokens[1:4]])
                 if 'Kd' in current_material:
                     triangle_colours.append(current_material['Kd'])
-            if test_list[1] and not ignore_uv:
+            if len(test_list) > 1 and test_list[1] and not ignore_uv:
                 triangle_textures.append([int(i.split('/')[1]) - 1 for i in tokens[1:4]])
-            if test_list[2] and not ignore_normal:
+            if len(test_list) > 2 and test_list[2] and not ignore_normal:
                 triangle_normals.append([int(i.split('/')[2]) - 1 for i in tokens[1:4]])
 
     if verbose:
