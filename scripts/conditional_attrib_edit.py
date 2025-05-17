@@ -7,6 +7,9 @@ import argparse
 import re
 import xml.etree.ElementTree
 
+# this line means that all the math functions do not require the math. prefix
+from math import *
+
 def conditional_attrib_edit():
 
     parser = argparse.ArgumentParser(description="Conditional XML attribute editor (as a side effect it sorts attributes)")
@@ -17,6 +20,7 @@ def conditional_attrib_edit():
     parser.add_argument("-cav", "--condition_attrib_value", required=True, help="the attribute value to match to allow change (regex search)")
     parser.add_argument("-ac", "--attrib_to_change", required=True, help="the attribute to change or create (exact)")
     parser.add_argument("-av", "--attrib_new_value", required=True, help="the attribute new value (exact)")
+    parser.add_argument("-p", "--python", action="store_true", help="evaluate the attrib_new_value as python with v as the current value")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")
     parser.add_argument("-v", "--verbose", action="store_true", help="write out more information whilst processing")
     args = parser.parse_args()
@@ -60,7 +64,12 @@ def process_children(node, args):
                     if args.verbose:
                         print('Attrib "%s" matches "%s"' % (node.attrib[args.condition_attrib], args.condition_attrib_value))
                         print('Changing attrib "%s" to "%s"' % (args.attrib_to_change, args.attrib_new_value))
-                    node.attrib[args.attrib_to_change] = args.attrib_new_value
+                    if args.python:
+                        python_string = 'v="%s";%s' % (node.attrib[args.attrib_to_change], args.attrib_new_value)
+                        result = eval(python_string)
+                        node.attrib[args.attrib_to_change] = result
+                    else:
+                        node.attrib[args.attrib_to_change] = args.attrib_new_value
 
     for child in node:
         process_children(child, args)
