@@ -63,12 +63,18 @@ def process_children(node, args):
                 if re.search(args.condition_attrib_value, node.attrib[args.condition_attrib]):
                     if args.verbose:
                         print('Attrib "%s" matches "%s"' % (node.attrib[args.condition_attrib], args.condition_attrib_value))
-                        print('Changing attrib "%s" to "%s"' % (args.attrib_to_change, args.attrib_new_value))
                     if args.python:
-                        python_string = 'v="%s";%s' % (node.attrib[args.attrib_to_change], args.attrib_new_value)
-                        result = eval(python_string)
+                        
+                        python_string = args.attrib_new_value
+                        global_dict = {}
+                        local_dict = {'v': node.attrib[args.attrib_to_change]}
+                        result = eval(python_string, global_dict, local_dict)
+                        if args.verbose:
+                            print('Changing tag "%s" from "%s" to "%s" using "%s"' % (args.attrib_to_change, node.attrib[args.attrib_to_change], result, python_string))
                         node.attrib[args.attrib_to_change] = result
                     else:
+                        if args.verbose:
+                            print('Changing attrib "%s" to "%s"' % (args.attrib_to_change, args.attrib_new_value))
                         node.attrib[args.attrib_to_change] = args.attrib_new_value
 
     for child in node:
