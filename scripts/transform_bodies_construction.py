@@ -27,6 +27,7 @@ def transform_bodies_construction():
     parser.add_argument("-og", "--output_graphics_folder", default='converted', help="location of the output OBJ files [converted]")
     parser.add_argument("-zs", "--zero_start_poses", action="store_true", help="zero the start poses of all bodies in the output XML")
     parser.add_argument("-rp", "--retain_graphics_path", action="store_true", help="keep the path information in GraphicFile* attributes")
+    parser.add_argument("-q", "--quaternion", action="store_true", help="rotations are in quaternions w x y x")
     parser.add_argument("-f", "--force", action="store_true", help="force overwrite of destination file")
     parser.add_argument("-v", "--verbose", action="store_true", help="write out more information whilst processing")
     args = parser.parse_args()
@@ -56,15 +57,20 @@ def transform_bodies_construction():
     input_tree = xml.etree.ElementTree.parse(args.input_xml_file)
     input_root = input_tree.getroot()
     
-    axis = args.rotation_angle_axis_1[1:4]
-    angle = args.rotation_angle_axis_1[0] * math.pi / 180.0
-    rotation1 = QuaternionFromAxisAngle(axis, angle)
-    axis = args.rotation_angle_axis_2[1:4]
-    angle = args.rotation_angle_axis_2[0] * math.pi / 180.0
-    rotation2 = QuaternionFromAxisAngle(axis, angle)
-    axis = args.rotation_angle_axis_3[1:4]
-    angle = args.rotation_angle_axis_3[0] * math.pi / 180.0
-    rotation3 = QuaternionFromAxisAngle(axis, angle)
+    if args.quaternion:
+        rotation1 = args.rotation_angle_axis_1
+        rotation2 = args.rotation_angle_axis_2
+        rotation3 = args.rotation_angle_axis_3
+    else:
+        axis = args.rotation_angle_axis_1[1:4]
+        angle = args.rotation_angle_axis_1[0] * math.pi / 180.0
+        rotation1 = QuaternionFromAxisAngle(axis, angle)
+        axis = args.rotation_angle_axis_2[1:4]
+        angle = args.rotation_angle_axis_2[0] * math.pi / 180.0
+        rotation2 = QuaternionFromAxisAngle(axis, angle)
+        axis = args.rotation_angle_axis_3[1:4]
+        angle = args.rotation_angle_axis_3[0] * math.pi / 180.0
+        rotation3 = QuaternionFromAxisAngle(axis, angle)
     rotation21 = QuaternionQuaternionMultiply(rotation2, rotation1)
     rotation = QuaternionQuaternionMultiply(rotation3, rotation21)
     axis = QuaternionGetAxis(rotation)
