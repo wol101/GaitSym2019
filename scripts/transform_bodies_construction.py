@@ -10,7 +10,7 @@ import math
 
 def transform_bodies_construction():
 
-    parser = argparse.ArgumentParser(description="Transform the bodies in a GaitSym file")
+    parser = argparse.ArgumentParser(description="Transform construction positions of the bodies in a GaitSym file - transforms the mesh files and the attached markers so everthing should work")
     parser.add_argument("-i", "--input_xml_file", required=True, help="input GaitSym XML config file")
     parser.add_argument("-o", "--output_xml_file", required=True, help="output GaitSym XML config file")
     parser.add_argument("-t", "--translation", nargs=3, type=float, default=[0.0, 0.0, 0.0], help="translation vector x y z [0, 0, 0]")
