@@ -6,6 +6,7 @@ import os
 import argparse
 import re
 import xml.etree.ElementTree
+import math
 
 def merge_config_files():
 
@@ -24,7 +25,7 @@ def merge_config_files():
     if args.verbose:
         pretty_print_sys_argv(sys.argv)
         pretty_print_argparse_args(args)
-    
+
     preflight_read_file(args.input_xml_file1, args.verbose)
     preflight_read_file(args.input_xml_file2, args.verbose)
     preflight_write_file(args.output_xml_file, args.force, args.verbose)
@@ -36,15 +37,15 @@ def merge_config_files():
     if args.verbose: print('Reading "%s"' % (args.input_xml_file2))
     input_tree2 = xml.etree.ElementTree.parse(args.input_xml_file2)
     input_root2 = input_tree2.getroot()
-    
+
     new_tree = xml.etree.ElementTree.Element(input_root1.tag)
-    new_tree.text = '\n'    
-    
+    new_tree.text = '\n'
+
     # loop first tree and append to output tree
     if args.verbose: print('Iterating input_root1')
     for child in input_root1:
         new_tree.append(child)
-    
+
     # loop through second tree and append all new IDs
     if args.verbose: print('Iterating input_root2')
     body_list = {}
@@ -61,7 +62,7 @@ def merge_config_files():
             new_tree.append(child)
         else:
             if args.debug: print('Skipping ID="%s"' % (ID))
-    
+
     if args.verbose: print('Writing "%s"' % (args.output_xml_file))
     with open(args.output_xml_file, "wb") as out_file:
         out_file.write(xml.etree.ElementTree.tostring(new_tree, encoding="utf-8", method="xml"))
