@@ -793,6 +793,26 @@ def convert_muscle(muscle, marker_list, markers_only):
             new_muscle.attrib["StartActivation"] = (muscle.attrib["StartActivation"] if "StartActivation" in muscle.attrib else "0")
             new_muscle.attrib["MinimumActivation"] = (muscle.attrib["MinimumActivation"] if "MinimumActivation" in muscle.attrib else "0.0001")
             new_muscle.attrib["StrapID"] = new_strap.attrib["ID"]
+        elif muscle.attrib["Type"] == "MinettiAlexanderExtended":
+            required_attributes = ["ActivationK","ActivationKinetics","FibreLength","ForcePerUnitArea",
+                                    "ID","InitialFibreLength","PCA","ParallelStrainAtFmax",
+                                    "SerialStrainAtFmax","TendonLength","VMaxFactor"]
+            test_required_attributes(muscle, required_attributes, required_only_flag = False, quiet_flag = True)
+            new_muscle = xml.etree.ElementTree.Element("MUSCLE")
+            new_muscle.tail = "\n"
+            new_muscle.text = "\n"
+            for attribute in required_attributes:
+                new_muscle.attrib[attribute] = muscle.attrib[attribute]
+            new_muscle.attrib["Type"] = "MinettiAlexanderComplete"
+            new_muscle.attrib["StartActivation"] = (muscle.attrib["StartActivation"] if "StartActivation" in muscle.attrib else "0")
+            new_muscle.attrib["MinimumActivation"] = (muscle.attrib["MinimumActivation"] if "MinimumActivation" in muscle.attrib else "0.0001")
+            new_muscle.attrib["Width"] = (muscle.attrib["Width"] if "Width" in muscle.attrib else "1.0")
+            new_muscle.attrib["SerialStrainRateAtFmax"] = (muscle.attrib["SerialStrainRateAtFmax"] if "SerialStrainRateAtFmax" in muscle.attrib else "0.0")
+            new_muscle.attrib["ParallelStrainRateAtFmax"] = (muscle.attrib["ParallelStrainRateAtFmax"] if "ParallelStrainRateAtFmax" in muscle.attrib else "0.0")
+            new_muscle.attrib["SerialStrainModel"] = (muscle.attrib["SerialStrainModel"] if "SerialStrainModel" in muscle.attrib else "Linear")
+            new_muscle.attrib["ParallelStrainModel"] = (muscle.attrib["ParallelStrainModel"] if "ParallelStrainModel" in muscle.attrib else "Linear")
+            new_muscle.attrib["ActivationRate"] = (muscle.attrib["ActivationRate"] if "ActivationRate" in muscle.attrib else "500")
+            new_muscle.attrib["StrapID"] = new_strap.attrib["ID"]
         elif muscle.attrib["Type"] == "MinettiAlexander":
             required_attributes = ["ActivationK","FibreLength","ForcePerUnitArea","ID","PCA","Type","VMaxFactor"]
             test_required_attributes(muscle, required_attributes, required_only_flag = False, quiet_flag = True)
@@ -802,6 +822,7 @@ def convert_muscle(muscle, marker_list, markers_only):
             for attribute in required_attributes:
                 new_muscle.attrib[attribute] = muscle.attrib[attribute]
             new_muscle.attrib["StrapID"] = new_strap.attrib["ID"]
+            
         else:
             print("Error: muscle type \"%s\" unsupported" % (muscle.attrib["Type"]))
             sys.exit(1)
